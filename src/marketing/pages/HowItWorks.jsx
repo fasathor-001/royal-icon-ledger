@@ -52,7 +52,7 @@ export default function HowItWorks({ navigate }) {
           <h1 className="m-display" style={{ fontSize: 'clamp(36px, 5vw, 60px)', color: '#E8E2D5', marginBottom: '20px' }}>
             One income.
             <br />
-            <em style={{ color: '#D97757', fontStyle: 'italic' }}>Every rand allocated.</em>
+            <em style={{ color: '#D97757', fontStyle: 'italic' }}>Every unit allocated.</em>
             <br />
             Zero guesswork.
           </h1>
