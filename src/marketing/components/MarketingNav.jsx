@@ -58,10 +58,10 @@ export default function MarketingNav() {
             className="m-nav-brand"
             style={{ textDecoration: 'none' }}
           >
-            <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', fontWeight: 700, color: '#E8E2D5' }}>
+            <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '28px', fontWeight: 700, color: '#E8E2D5' }}>
               Royal-Icon
             </span>
-            <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', fontWeight: 700, fontStyle: 'italic', color: '#D97757' }}>
+            <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '28px', fontWeight: 700, fontStyle: 'italic', color: '#D97757' }}>
               {' '}Ledger
             </span>
           </NavLink>
