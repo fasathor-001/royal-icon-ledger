@@ -90,9 +90,9 @@ export default function Home({ navigate }) {
             </button>
             <button
               className="m-btn m-btn-outline m-btn-lg"
-              onClick={() => navigate('/product')}
+              onClick={() => navigate('/how-it-works')}
             >
-              View Product →
+              See how it works
             </button>
           </div>
 
@@ -100,6 +100,26 @@ export default function Home({ navigate }) {
             {['Working product', 'Private beta', 'Invite-based access', 'No credit card'].map((t, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '12px', color: '#3A3028' }}>
                 <span style={{ color: '#7FA068' }}>✓</span>
+                {t}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════
+          POSITIONING STRIP
+      ════════════════════════════════════════════ */}
+      <section className="m-section-xs" style={{ borderBottom: '1px solid #1A1610' }}>
+        <div className="m-wrap">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '40px', flexWrap: 'wrap' }}>
+            {[
+              'A system, not a spreadsheet replacement.',
+              'Designed for control, not just tracking.',
+              'Built for real-world income patterns.',
+            ].map(t => (
+              <div key={t} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#5C5648' }}>
+                <span style={{ color: '#D97757', fontSize: '10px' }}>◆</span>
                 {t}
               </div>
             ))}
@@ -141,72 +161,28 @@ export default function Home({ navigate }) {
       </section>
 
       {/* ════════════════════════════════════════════
-          SOLUTION
+          HOW IT WORKS
       ════════════════════════════════════════════ */}
       <section className="m-section" style={{ background: '#0F0D0A', borderBottom: '1px solid #1A1610' }}>
         <div className="m-wrap">
-          <div style={{ maxWidth: '640px', marginBottom: '56px' }}>
-            <Label>The System</Label>
-            <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 48px)', color: '#E8E2D5', marginBottom: '16px' }}>
-              Give every{' '}
-              <em style={{ color: '#D97757', fontStyle: 'italic' }}>rand</em>
-              {' '}a job
-              <br />
-              before you spend it.
+          <div className="m-section-header">
+            <Label>How It Works</Label>
+            <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 48px)', color: '#E8E2D5' }}>
+              Structure before{' '}
+              <em style={{ color: '#D97757', fontStyle: 'italic' }}>spending.</em>
             </h2>
-            <p className="m-body" style={{ fontSize: '16px' }}>
-              Royal-Icon Ledger allocates income automatically — to the right bucket, at the right stage, before you open your wallet.
-            </p>
           </div>
-
-          {/* Flow diagram */}
-          <div style={{ marginBottom: '48px' }}>
-            <div className="m-flow" style={{ gap: '6px' }}>
-              {[
-                { label: 'Income', accent: true },
-                { arrow: true },
-                { label: 'Tax Reserve' },
-                { arrow: true },
-                { label: 'Family Buffer' },
-                { arrow: true },
-                { label: 'Salary' },
-                { arrow: true },
-                { label: 'Spending Gate' },
-                { arrow: true },
-                { label: 'Long-Term' },
-                { arrow: true },
-                { label: 'Growth', accent: true },
-              ].map((item, i) =>
-                item.arrow
-                  ? <span key={i} className="m-flow-arrow">→</span>
-                  : <div key={i} className={`m-flow-node${item.accent ? ' accent' : ''}`}>{item.label}</div>
-              )}
-            </div>
-          </div>
-
-          {/* Three principles */}
-          <div className="m-grid-3">
+          <div className="m-grid-4">
             {[
-              {
-                num: '01',
-                title: 'Allocate first',
-                body: 'Income enters and is split before you touch it. Buffer, tax, salary — each gets its share based on your stage rules.',
-              },
-              {
-                num: '02',
-                title: 'Spend within limits',
-                body: 'Your spending budget is pre-defined. The Spending Gate enforces it in real time. No guesswork, no regret.',
-              },
-              {
-                num: '03',
-                title: 'Compound deliberately',
-                body: 'Long-term and trading capital grow according to stage progression — not feelings.',
-              },
+              { num: '01', title: 'Plan',     body: 'Define what your money should do before it arrives.' },
+              { num: '02', title: 'Allocate', body: 'Assign every rand to a purpose — not just categories.' },
+              { num: '03', title: 'Execute',  body: 'Spend, save, or invest with structure already in place.' },
+              { num: '04', title: 'Track',    body: 'See what\'s working — and what needs adjusting.' },
             ].map(({ num, title, body }) => (
-              <div key={num} className="m-card" style={{ padding: '28px 24px' }}>
-                <div className="m-mono" style={{ fontSize: '11px', color: '#3A3028', marginBottom: '12px', letterSpacing: '0.1em' }}>{num}</div>
-                <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#E8E2D5', marginBottom: '10px' }}>{title}</h3>
-                <p style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.65 }}>{body}</p>
+              <div key={num} className="m-card" style={{ padding: '32px 24px' }}>
+                <div className="m-mono" style={{ fontSize: '11px', color: '#3A3028', marginBottom: '16px', letterSpacing: '0.1em' }}>{num}</div>
+                <h3 className="m-display" style={{ fontSize: '22px', color: '#E8E2D5', marginBottom: '12px' }}>{title}</h3>
+                <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.65 }}>{body}</p>
               </div>
             ))}
           </div>
@@ -289,14 +265,6 @@ export default function Home({ navigate }) {
                     <span style={{ fontSize: '13px', color: accent ? '#E8E2D5' : '#5C5648', lineHeight: 1.5 }}>{item}</span>
                   </div>
                 ))}
-              </div>
-            ))}
-          </div>
-          <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap' }}>
-            {['A system, not a spreadsheet replacement.', 'Designed for control, not just tracking.', 'Built for real-world income patterns.'].map(t => (
-              <div key={t} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#3A3028' }}>
-                <span style={{ color: '#D97757' }}>—</span>
-                {t}
               </div>
             ))}
           </div>

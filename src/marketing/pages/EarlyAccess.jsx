@@ -151,6 +151,9 @@ export default function EarlyAccess({ navigate }) {
           <p className="m-body" style={{ fontSize: '16px', marginBottom: '12px' }}>
             Built for people who don't earn the same every month.
           </p>
+          <p style={{ fontSize: '13px', color: '#D97757', fontWeight: 500, marginBottom: '8px' }}>
+            Limited early rollout.
+          </p>
           <p style={{ fontSize: '13px', color: '#3A3028' }}>
             No spam. No noise. We'll only reach out when access opens.
           </p>
@@ -245,7 +248,10 @@ export default function EarlyAccess({ navigate }) {
                 >
                   {submitting ? 'Submitting…' : 'Submit Application'}
                 </button>
-                <p style={{ fontSize: '12px', color: '#3A3028', marginTop: '14px', textAlign: 'center', lineHeight: 1.6 }}>
+                <p style={{ fontSize: '14px', color: '#5C5648', marginTop: '20px', textAlign: 'center', fontWeight: 500 }}>
+                  No subscriptions. No noise. Just control.
+                </p>
+                <p style={{ fontSize: '12px', color: '#3A3028', marginTop: '8px', textAlign: 'center', lineHeight: 1.6 }}>
                   No credit card required. We'll contact you when your invite is ready.
                   <br />
                   We do not sell or share your information.

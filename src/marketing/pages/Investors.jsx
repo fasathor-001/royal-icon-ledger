@@ -14,20 +14,20 @@ const ROADMAP = [
 
 const WHY_NOW = [
   {
-    title: 'Freelance workforce is growing',
-    body: 'The global freelance population is growing faster than any employment category. These earners are underserved by every major financial product on the market.',
+    title: 'Variable income is rising globally',
+    body: 'Freelance, contract, and gig work is growing faster than any traditional employment category. The financial tools serving these earners haven\'t kept pace.',
   },
   {
-    title: 'Trading accessibility has democratised risk',
-    body: 'More individuals are trading than ever before. Without financial operating systems designed for volatile income, household risk is rising alongside trading activity.',
+    title: 'The shift to flexible work is permanent',
+    body: 'Remote work, portfolio careers, and self-employment are structural — not cyclical. The population that needs a financial OS is expanding every year.',
   },
   {
-    title: 'The "budget app" category is saturated — and wrong',
-    body: 'The existing tools all solve the same problem: tracking. None of them solve allocation, discipline enforcement, or stage-based progression. The category gap is structural.',
+    title: 'Inflation and instability are accelerating the problem',
+    body: 'As costs rise and income becomes less predictable, the gap between needing a system and having one becomes more expensive to ignore.',
   },
   {
-    title: 'Mobile-first, offline-first, global',
-    body: 'Royal-Icon Ledger was built PWA-first, works offline, and supports multiple currencies. This is not a product designed for one market.',
+    title: 'The need is structural — not temporary',
+    body: 'This is not a trend. The variable-income population is growing, globally distributed, and completely underserved by every existing financial product category.',
   },
 ];
 
@@ -41,14 +41,14 @@ export default function Investors({ navigate }) {
         <div className="m-wrap-md">
           <div className="m-label" style={{ marginBottom: '16px' }}>Investors</div>
           <h1 className="m-display" style={{ fontSize: 'clamp(36px, 5vw, 60px)', color: '#E8E2D5', marginBottom: '20px' }}>
-            The financial OS
+            The financial system
             <br />
             nobody built.
             <br />
             <em style={{ color: '#D97757', fontStyle: 'italic' }}>Until now.</em>
           </h1>
           <p className="m-body" style={{ fontSize: '17px', maxWidth: '520px', marginBottom: '32px' }}>
-            Hundreds of millions of people earn variably. Every financial product on the market was built for someone else. Royal-Icon Ledger is the first financial operating system designed around how they actually earn.
+            Millions of people earn differently. Their tools never adapted.
           </p>
           <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center', padding: '10px 16px', background: '#14110E', border: '1px solid #26221C', borderRadius: '4px' }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#7FA068' }} />
@@ -63,9 +63,9 @@ export default function Investors({ navigate }) {
           <div className="m-section-header">
             <div className="m-label" style={{ marginBottom: '16px' }}>The problem</div>
             <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 46px)', color: '#E8E2D5', marginBottom: '16px' }}>
-              Hundreds of millions of earners.
+              Financial tools assume stable income.
               <br />
-              <em style={{ color: '#D97757', fontStyle: 'italic' }}>Zero tools built for them.</em>
+              <em style={{ color: '#D97757', fontStyle: 'italic' }}>Most people don't have it.</em>
             </h2>
           </div>
 
@@ -105,10 +105,16 @@ export default function Investors({ navigate }) {
           </div>
 
           <div className="m-card" style={{ padding: '32px', background: '#0F0D0A' }}>
-            <p style={{ fontSize: '16px', color: '#8B8478', lineHeight: 1.8 }}>
-              Every budgeting app, savings tool, and personal finance product on the market was built around one assumption: a stable monthly salary.
-              Freelancers, traders, business owners, and gig workers — hundreds of millions of people — are using tools that were never designed for them.
-              The result is financial fragility that gets blamed on behaviour. It's not behaviour. It's the wrong architecture.
+            <div style={{ marginBottom: '20px' }}>
+              {['Freelancers', 'Traders', 'Side-income earners', 'Emerging market professionals'].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', borderBottom: i < 3 ? '1px solid #1A1610' : 'none' }}>
+                  <span style={{ color: '#D97757', fontSize: '13px', flexShrink: 0 }}>→</span>
+                  <span style={{ fontSize: '15px', color: '#8B8478' }}>{item}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: '16px', color: '#8B8478', lineHeight: 1.7 }}>
+              The result isn't bad behaviour. It's the wrong system.
             </p>
           </div>
         </div>
@@ -150,8 +156,7 @@ export default function Investors({ navigate }) {
           <div className="m-section-header">
             <div className="m-label" style={{ marginBottom: '16px' }}>Why now</div>
             <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#E8E2D5' }}>
-              Four reasons the timing is{' '}
-              <em style={{ color: '#D97757', fontStyle: 'italic' }}>structural</em>.
+              Why now.
             </h2>
           </div>
           <div className="m-grid-2">
@@ -262,22 +267,25 @@ export default function Investors({ navigate }) {
           <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#E8E2D5', marginBottom: '20px' }}>
             Early conversations welcome.
           </h2>
-          <p className="m-body" style={{ marginBottom: '36px' }}>
+          <p className="m-body" style={{ marginBottom: '12px' }}>
             We're speaking with investors and strategic partners who see the variable-income market for what it is: underserved, global, and growing.
+          </p>
+          <p style={{ fontSize: '13px', color: '#5C5648', marginBottom: '36px' }}>
+            Be part of the first rollout.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <button
               className="m-btn m-btn-primary m-btn-lg"
               onClick={() => navigate('/early-access')}
             >
-              Request Investor Deck
+              Request Early Access
             </button>
             <button className="m-btn m-btn-outline m-btn-lg" onClick={() => navigate('/about')}>
               About the project →
             </button>
           </div>
           <p style={{ marginTop: '16px', fontSize: '12px', color: '#3A3028' }}>
-            Please use the early access form and select your interest type. We'll respond to investor inquiries directly.
+            Use the early access form and mention investor interest in your note. We respond to all inquiries directly.
           </p>
         </div>
       </section>
