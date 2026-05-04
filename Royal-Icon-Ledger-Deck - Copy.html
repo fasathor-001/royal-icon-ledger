@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Royal-Icon Ledger — Investor Deck 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ─── RESET ──────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ─── STAGE ──────────────────────────────────────── */
+html,body{
+  width:100%;height:100%;
+  background:#000;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+.deck-wrapper{
+  width:1280px;height:720px;
+  position:relative;
+  transform-origin:center center;
+  overflow:hidden;
+  border-radius:4px;
+}
+
+/* ─── SLIDES ─────────────────────────────────────── */
+.slide{
+  position:absolute;inset:0;
+  width:1280px;height:720px;
+  display:none;
+  flex-direction:column;
+  overflow:hidden;
+  background:#080604;
+}
+.slide.active{display:flex}
+.slide.leaving{
+  animation:slideOut .35s cubic-bezier(.4,0,.2,1) forwards;
+}
+.slide.entering{
+  display:flex;
+  animation:slideIn .35s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes slideOut{
+  from{opacity:1;transform:translateX(0)}
+  to{opacity:0;transform:translateX(-40px)}
+}
+@keyframes slideIn{
+  from{opacity:0;transform:translateX(40px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+/* ─── NAVIGATION ─────────────────────────────────── */
+.nav-btn{
+  position:fixed;
+  top:50%;transform:translateY(-50%);
+  width:44px;height:44px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:100;
+  transition:all .2s;color:rgba(255,255,255,.5);
+  font-size:18px;
+  opacity:0;
+}
+body:hover .nav-btn{opacity:1}
+.nav-btn:hover{background:rgba(200,98,42,.25);border-color:rgba(200,98,42,.4);color:#fff}
+#nav-prev{left:12px}
+#nav-next{right:12px}
+
+.slide-counter{
+  position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;
+  z-index:100;opacity:0;transition:opacity .2s;
+}
+body:hover .slide-counter{opacity:1}
+.sc-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.2);cursor:pointer;transition:all .2s;
+}
+.sc-dot.on{background:#C8622A;transform:scale(1.3)}
+
+.progress-bar{
+  position:fixed;top:0;left:0;height:2px;
+  background:linear-gradient(90deg,#C8622A,#C8A84B);
+  transition:width .35s cubic-bezier(.4,0,.2,1);
+  z-index:200;
+}
+
+.hint{
+  position:fixed;bottom:10px;right:16px;
+  font-size:10px;color:rgba(255,255,255,.2);
+  letter-spacing:.1em;font-family:'Inter',sans-serif;
+  z-index:100;opacity:0;
+}
+body:hover .hint{opacity:1}
+
+/* ─── DESIGN TOKENS ──────────────────────────────── */
+:root{
+  --orange:#C8622A;
+  --orange-lt:#E07845;
+  --gold:#C8A84B;
+  --green:#3A7A50;
+  --green-lt:#5AB97A;
+  --red:#B84040;
+  --dark:#080604;
+  --ink:#0D0B09;
+  --warm-dk:#1A1612;
+  --warm-mid:#26201A;
+  --warm-3:#3A3328;
+  --muted:#8A7E74;
+  --warm-txt:#B8A898;
+  --light:#F0EBE3;
+  --white:rgba(255,255,255,0.92);
+
+  /* Glass cards */
+  --card-bg:rgba(255,255,255,0.04);
+  --card-border:rgba(255,255,255,0.08);
+  --card-bg-warm:rgba(200,168,75,0.05);
+}
+
+/* ─── SHARED BG TEXTURES ─────────────────────────── */
+.bg-dots{
+  background-image:radial-gradient(rgba(200,98,42,.12) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.bg-grid{
+  background-image:
+    linear-gradient(rgba(200,98,42,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(200,98,42,.04) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+.glow-orange{
+  position:absolute;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(200,98,42,.22) 0%,transparent 70%);
+  pointer-events:none;
+}
+.glow-gold{
+  position:absolute;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(200,168,75,.14) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+/* ─── SHARED TYPOGRAPHY ──────────────────────────── */
+.eyebrow{
+  font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+  font-weight:700;color:var(--orange);margin-bottom:10px;
+}
+.hero{
+  font-family:'Playfair Display',serif;
+  font-size:72px;font-weight:800;line-height:1.03;
+  color:var(--light);
+}
+.hero em{font-style:italic;color:var(--orange-lt)}
+.h2{
+  font-family:'Playfair Display',serif;
+  font-size:52px;font-weight:800;line-height:1.06;
+  color:var(--light);
+}
+.h2 em{font-style:italic;color:var(--orange-lt)}
+.h3{
+  font-family:'Playfair Display',serif;
+  font-size:36px;font-weight:700;line-height:1.1;
+  color:var(--light);
+}
+.h3 em{font-style:italic;color:var(--orange-lt)}
+.lead{font-size:18px;color:var(--muted);line-height:1.7;font-weight:300}
+.body{font-size:14px;color:var(--muted);line-height:1.65}
+.body strong{color:var(--warm-txt);font-weight:600}
+.label-sm{
+  font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  font-weight:700;color:var(--muted);
+}
+
+/* ─── SHARED LAYOUT ──────────────────────────────── */
+.slide-inner{
+  position:relative;z-index:1;
+  width:100%;height:100%;
+  padding:60px 72px;
+  display:flex;flex-direction:column;
+}
+.slide-inner.pad-md{padding:52px 72px}
+.slide-inner.pad-sm{padding:44px 72px}
+
+.row{display:flex;gap:20px;align-items:stretch}
+.col{display:flex;flex-direction:column}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px}
+.gap-sm{gap:10px}
+
+/* ─── GLASS CARDS ────────────────────────────────── */
+.card{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:10px;
+  padding:22px 24px;
+}
+.card-orange{
+  background:rgba(200,98,42,0.1);
+  border:1px solid rgba(200,98,42,.25);
+  border-radius:10px;
+  padding:22px 24px;
+}
+.card-accent{
+  border-left:3px solid var(--orange);
+  background:rgba(200,98,42,.06);
+  border-top:1px solid rgba(200,98,42,.15);
+  border-right:1px solid rgba(255,255,255,.05);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  border-radius:0 10px 10px 0;
+  padding:20px 22px;
+}
+.card-brand{
+  background:linear-gradient(135deg,var(--orange) 0%,#A84E1F 100%);
+  border-radius:10px;
+  padding:22px 24px;
+}
+.card-gold{
+  background:rgba(200,168,75,.08);
+  border:1px solid rgba(200,168,75,.2);
+  border-radius:10px;
+  padding:20px 22px;
+}
+
+.card h3{font-size:15px;font-weight:700;color:var(--light);margin-bottom:6px}
+.card p,.card .body{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* ─── STAT NUMBERS ───────────────────────────────── */
+.big-stat{
+  font-family:'Playfair Display',serif;
+  font-weight:800;color:var(--orange-lt);
+  line-height:1;
+}
+.big-stat.white{color:var(--light)}
+.big-stat.green{color:var(--green-lt)}
+.big-stat.gold{color:var(--gold)}
+.sz-xl{font-size:80px}
+.sz-lg{font-size:56px}
+.sz-md{font-size:40px}
+.sz-sm{font-size:28px}
+
+/* ─── PAGE CHROME ────────────────────────────────── */
+.slide-logo{
+  position:absolute;top:24px;left:36px;z-index:10;
+  display:flex;align-items:center;gap:10px;
+}
+.sl-icon{
+  width:28px;height:28px;
+  background:linear-gradient(135deg,var(--orange) 0%,var(--gold) 100%);
+  border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+}
+.sl-name{
+  font-family:'Playfair Display',serif;
+  font-size:13px;font-weight:700;color:rgba(255,255,255,.35);
+}
+.sl-name em{color:rgba(200,98,42,.7);font-style:italic}
+
+.slide-pg{
+  position:absolute;bottom:22px;right:36px;z-index:10;
+  font-size:10px;color:rgba(255,255,255,.15);letter-spacing:.1em;
+}
+
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 1 — COVER
+═══════════════════════════════════════════════════ */
+#s1{background:var(--dark)}
+#s1 .glow1{width:600px;height:600px;bottom:-200px;right:-100px}
+#s1 .glow2{width:400px;height:400px;top:-100px;left:300px;background:radial-gradient(circle,rgba(200,168,75,.07) 0%,transparent 70%)}
+
+#s1 .cover-body{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;
+  width:100%;height:100%;
+  padding:48px 80px 44px;
+}
+.cover-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:auto}
+.cover-wordmark{
+  font-family:'Playfair Display',serif;
+  font-size:15px;font-weight:600;color:rgba(255,255,255,.3);
+}
+.cover-wordmark em{color:rgba(200,98,42,.6);font-style:italic}
+.cover-badge{
+  background:rgba(200,98,42,.12);
+  border:1px solid rgba(200,98,42,.3);
+  border-radius:20px;padding:6px 16px;
+  font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(200,98,42,.8);
+}
+.cover-story{
+  background:rgba(200,98,42,.08);
+  border:1px solid rgba(200,98,42,.18);
+  border-left:3px solid var(--orange);
+  border-radius:0 10px 10px 0;
+  padding:22px 28px;
+  max-width:640px;margin-bottom:32px;
+}
+.cover-story p{
+  font-family:'Playfair Display',serif;
+  font-size:16px;font-style:italic;
+  color:rgba(255,255,255,.65);line-height:1.6;
+}
+.cover-story cite{
+  display:block;font-style:normal;font-family:'Inter',sans-serif;
+  font-size:10px;color:rgba(255,255,255,.25);
+  letter-spacing:.15em;text-transform:uppercase;margin-top:10px;
+}
+.cover-headline-wrap{margin-bottom:36px}
+.cover-headline{
+  font-family:'Playfair Display',serif;
+  font-size:68px;font-weight:800;line-height:1.04;
+  color:var(--light);
+}
+.cover-headline em{font-style:italic;color:var(--orange-lt)}
+.cover-sub{
+  font-size:17px;color:rgba(255,255,255,.38);
+  font-weight:300;margin-top:14px;max-width:560px;line-height:1.6;
+}
+.cover-stats{display:flex;gap:0;border-top:1px solid rgba(255,255,255,.07);padding-top:28px}
+.cov-stat{padding-right:40px;margin-right:40px;border-right:1px solid rgba(255,255,255,.07)}
+.cov-stat:last-child{border-right:none}
+.cov-stat-num{
+  font-family:'Playfair Display',serif;font-size:32px;font-weight:800;
+  color:var(--orange-lt);line-height:1;display:block;
+}
+.cov-stat-label{font-size:11px;color:rgba(255,255,255,.25);letter-spacing:.1em;text-transform:uppercase;margin-top:5px}
+
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 2 — THE PROBLEM
+═══════════════════════════════════════════════════ */
+#s2 .prob-layout{
+  display:grid;
+  grid-template-columns:1fr 1.1fr;
+  gap:32px;
+  flex:1;
+  margin-top:24px;
+  align-items:start;
+}
+#s2 .story{
+  background:rgba(200,98,42,.07);
+  border:1px solid rgba(200,98,42,.15);
+  border-left:3px solid var(--orange);
+  border-radius:0 12px 12px 0;
+  padding:28px 30px;
+  position:relative;
+}
+#s2 .story::before{
+  content:'"';
+  font-family:'Playfair Display',serif;font-size:100px;
+  color:rgba(200,98,42,.2);line-height:1;
+  position:absolute;top:-10px;left:14px;
+}
+#s2 .story p{
+  font-family:'Playfair Display',serif;
+  font-size:17px;font-style:italic;
+  color:rgba(255,255,255,.7);line-height:1.65;padding-top:20px;
+}
+#s2 .story cite{
+  display:block;font-style:normal;font-family:'Inter',sans-serif;
+  font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.15em;
+  text-transform:uppercase;margin-top:14px;
+}
+#s2 .prob-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prob-card{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-top:2px solid var(--orange);border-radius:0 0 10px 10px;
+  padding:18px 20px;
+}
+.prob-card h3{font-size:13px;font-weight:700;color:var(--light);margin-bottom:6px}
+.prob-card p{font-size:12px;color:var(--muted);line-height:1.55}
+#s2 .stat-strip{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:12px;margin-top:20px;
+}
+.ss-card{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  border-radius:8px;padding:16px 20px;text-align:center;
+}
+.ss-num{
+  font-family:'Playfair Display',serif;font-size:28px;font-weight:800;
+  color:var(--orange-lt);line-height:1;display:block;
+}
+.ss-label{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-top:5px}
+
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 3 — WHY NOW
+═══════════════════════════════════════════════════ */
+#s3 .why-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:14px;flex:1;margin-top:22px;
+}
+.why-card{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:12px;padding:22px 24px;
+  display:flex;gap:16px;align-items:flex-start;
+}
+.why-icon{
+  width:40px;height:40px;flex-shrink:0;
+  background:rgba(200,98,42,.12);border:1px solid rgba(200,98,42,.2);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:18px;margin-top:2px;
+}
+.why-card h3{font-size:14px;font-weight:700;color:var(--light);margin-bottom:6px}
+.why-card p{font-size:12.5px;color:var(--muted);line-height:1.6}
+#s3 .urgency{
+  background:linear-gradient(135deg,rgba(200,98,42,.15) 0%,rgba(200,168,75,.08) 100%);
+  border:1px solid rgba(200,98,42,.2);
+  border-radius:10px;padding:18px 28px;margin-top:16px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;
+}
+#s3 .urgency .ub{text-align:center}
+#s3 .urgency .ub-num{
+  font-family:'Playfair Display',serif;font-size:24px;font-weight:800;
+  color:var(--orange-lt);display:block;line-height:1;margin-bottom:4px;
+}
+#s3 .urgency .ub-label{font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase}
+
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 4 — THE SOLUTION
+═══════════════════════════════════════════════════ */
+#s4 .sol-layout{display:grid;grid-template-columns:1fr 1.2fr;gap:32px;flex:1;margin-top:22px;align-items:start}
+#s4 .pillars{display:flex;flex-direction:column;gap:12px}
+.pillar-card{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:10px;padding:18px 20px;
+  display:flex;align-items:flex-start;gap:14px;
+}
+.pillar-num{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--orange);font-weight:500;flex-shrink:0;margin-top:2px;
+  letter-spacing:.05em;
+}
+.pillar-card h3{font-size:13px;font-weight:700;color:var(--light);margin-bottom:4px}
+.pillar-card p{font-size:12px;color:var(--muted);line-height:1.55}
+/* Flow arrow */
+#s4 .flow{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:12px;overflow:hidden;
+}
+#s4 .flow-header{
+  background:rgba(200,98,42,.08);border-bottom:1px solid rgba(200,98,42,.12);
+  padding:12px 18px;display:flex;align-items:center;gap:8px;
+}
+#s4 .flow-header span{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  color:rgba(255,255,255,.35);letter-spacing:.05em;
+}
+#s4 .flow-steps{padding:18px}
+.flow-step{
+  display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;
+  position:relative;
+}
+.flow-step:last-child{margin-bottom:0}
+.flow-step-line{
+  position:absolute;left:15px;top:30px;bottom:-14px;
+  width:1px;background:rgba(200,98,42,.2);
+}
+.flow-step:last-child .flow-step-line{display:none}
+.flow-dot{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;
+  z-index:1;
+}
+.flow-dot.active{background:var(--orange);color:white}
+.flow-dot.done{background:rgba(58,122,80,.3);border:1px solid var(--green-lt);color:var(--green-lt)}
+.flow-dot.upcoming{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.3)}
+.flow-step-text h3{font-size:13px;font-weight:700;color:var(--light);margin-bottom:3px}
+.flow-step-text p{font-size:11.5px;color:var(--muted);line-height:1.5}
+
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 5 — PRODUCT (UI MOCKUP)
+═══════════════════════════════════════════════════ */
+#s5{background:linear-gradient(135deg,#080604 0%,#0F0A06 50%,#080604 100%)}
+#s5 .prod-layout{
+  display:grid;grid-template-columns:1fr 1.6fr;
+  gap:40px;flex:1;margin-top:22px;align-items:center;
+}
+#s5 .prod-text{display:flex;flex-direction:column;gap:16px}
+#s5 .prod-feat{
+  display:flex;align-items:flex-start;gap:12px;
+}
+#s5 .pf-icon{
+  width:32px;height:32px;flex-shrink:0;
+  background:rgba(200,98,42,.12);border:1px solid rgba(200,98,42,.2);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;
+}
+#s5 .pf-text h3{font-size:13px;font-weight:700;color:var(--light);margin-bottom:3px}
+#s5 .pf-text p{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* ── App mockup ── */
+.app-mock{
+  background:#0F0C09;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
+}
+.mock-titlebar{
+  background:#141009;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  padding:10px 14px;
+  display:flex;align-items:center;gap:8px;
+}
+.mock-dot{width:10px;height:10px;border-radius:50%}
+.mock-url{
+  flex:1;background:rgba(255,255,255,.05);border-radius:6px;
+  padding:4px 12px;margin-left:8px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.25);
+}
+.mock-body{padding:14px}
+
+/* App header */
+.mock-app-header{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
+}
+.mock-app-logo{
+  font-family:'Playfair Display',serif;font-size:13px;font-weight:700;
+  color:rgba(255,255,255,.7);
+}
+.mock-app-logo em{color:var(--orange);font-style:italic}
+.mock-stage-badge{
+  background:rgba(200,98,42,.15);border:1px solid rgba(200,98,42,.25);
+  border-radius:20px;padding:3px 12px;
+  font-size:10px;font-weight:700;color:var(--orange-lt);
+  letter-spacing:.05em;
+}
+
+/* Stage track mini */
+.mock-stage-track{
+  display:flex;align-items:center;gap:0;
+  margin-bottom:12px;
+  background:rgba(255,255,255,.03);
+  border-radius:6px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.06);
+}
+.mst-step{
+  flex:1;padding:5px 4px;text-align:center;
+  font-size:8px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+}
+.mst-step.done{background:rgba(58,122,80,.15);color:var(--green-lt)}
+.mst-step.now{background:rgba(200,98,42,.2);color:var(--orange-lt)}
+.mst-step.off{color:rgba(255,255,255,.15)}
+
+/* Stats row */
+.mock-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.mock-stat{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:8px;padding:10px 10px 8px;
+}
+.mock-stat-label{font-size:8px;color:rgba(255,255,255,.3);letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:4px}
+.mock-stat-val{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;line-height:1}
+.mock-stat-val.white{color:rgba(255,255,255,.85)}
+.mock-stat-val.green{color:var(--green-lt)}
+.mock-stat-val.orange{color:var(--orange-lt)}
+.mock-stat-sub{font-size:8px;color:rgba(255,255,255,.2);margin-top:2px}
+
+/* Envelopes */
+.mock-env-header{
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;
+}
+.mock-env-header span{font-size:9px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:.12em;text-transform:uppercase}
+.mock-env-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.mock-env-name{font-size:10px;color:rgba(255,255,255,.5);width:70px;flex-shrink:0}
+.mock-env-track{flex:1;background:rgba(255,255,255,.06);border-radius:2px;height:4px;overflow:hidden}
+.mock-env-fill{height:100%;border-radius:2px;transition:width .5s}
+.fill-green{background:linear-gradient(90deg,#3A7A50,#5AB97A)}
+.fill-orange{background:linear-gradient(90deg,#A84E1F,#E07845)}
+.fill-red{background:linear-gradient(90deg,#8A2E2E,#C85A5A)}
+.fill-blue{background:linear-gradient(90deg,#2A5A7A,#4A8AAA)}
+.mock-env-pct{font-size:9px;color:rgba(255,255,255,.3);width:28px;text-align:right;flex-shrink:0}
+
+/* Bottom nav */
+.mock-bottom-nav{
+  display:flex;border-top:1px solid rgba(255,255,255,.06);
+  margin-top:10px;padding-top:10px;
+}
+.mock-nav-item{
+  flex:1;text-align:center;font-size:8px;color:rgba(255,255,255,.25);
+  letter-spacing:.05em;text-transform:uppercase;padding:4px 0;
+}
+.mock-nav-item.active{color:var(--orange-lt)}
+.mock-nav-dot{
+  width:4px;height:4px;border-radius:50%;
+  background:var(--orange);margin:0 auto 3px;
+}
+
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 6 — STAGE SYSTEM
+═══════════════════════════════════════════════════ */
+#s6 .stage-layout{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:24px;flex:1;margin-top:22px;align-items:start;
+}
+#s6 .stage-track{
+  display:flex;flex-direction:column;gap:8px;
+}
+.st-item{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px;border-radius:10px;
+  border:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.03);
+  position:relative;
+}
+.st-item.now{
+  background:rgba(200,98,42,.1);
+  border:1px solid rgba(200,98,42,.25);
+}
+.st-item.done{
+  background:rgba(58,122,80,.07);
+  border:1px solid rgba(58,122,80,.18);
+}
+.st-num{
+  font-family:'Playfair Display',serif;
+  font-size:22px;font-weight:800;
+  width:36px;text-align:center;flex-shrink:0;
+}
+.st-item .st-num{color:rgba(255,255,255,.2)}
+.st-item.done .st-num{color:var(--green-lt)}
+.st-item.now .st-num{color:var(--orange-lt)}
+.st-title{font-size:13px;font-weight:700;flex:1}
+.st-item .st-title{color:rgba(255,255,255,.35)}
+.st-item.done .st-title{color:rgba(90,185,122,.8)}
+.st-item.now .st-title{color:var(--light)}
+.st-badge{
+  font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  border-radius:20px;padding:3px 10px;
+}
+.badge-done{background:rgba(58,122,80,.2);color:var(--green-lt);border:1px solid rgba(58,122,80,.3)}
+.badge-now{background:rgba(200,98,42,.2);color:var(--orange-lt);border:1px solid rgba(200,98,42,.3)}
+.badge-next{background:rgba(255,255,255,.05);color:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.08)}
+
+#s6 .stage-detail{display:flex;flex-direction:column;gap:12px}
+.sd-card{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:10px;padding:18px 20px;
+}
+.sd-card.featured{
+  background:rgba(200,98,42,.08);border-color:rgba(200,98,42,.2);
+}
+.sd-card h3{font-size:13px;font-weight:700;color:var(--light);margin-bottom:6px}
+.sd-card p{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:10px}
+.alloc-pills{display:flex;gap:6px;flex-wrap:wrap}
+.alloc-pill{
+  background:rgba(200,98,42,.1);border:1px solid rgba(200,98,42,.2);
+  border-radius:20px;padding:2px 10px;
+  font-size:10px;color:var(--orange-lt);font-weight:600;
+}
+.alloc-pill.green{background:rgba(58,122,80,.12);border-color:rgba(58,122,80,.25);color:var(--green-lt)}
+.alloc-pill.gold{background:rgba(200,168,75,.1);border-color:rgba(200,168,75,.2);color:var(--gold)}
+
+#s6 .protect-bar{
+  background:rgba(200,98,42,.08);border:1px solid rgba(200,98,42,.18);
+  border-radius:10px;padding:14px 18px;margin-top:4px;
+  display:flex;align-items:flex-start;gap:12px;
+}
+#s6 .protect-bar p{font-size:12px;color:rgba(255,255,255,.45);line-height:1.55}
+#s6 .protect-bar strong{color:var(--orange-lt);font-weight:600}
+
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 7 — MARKET
+═══════════════════════════════════════════════════ */
+#s7 .market-layout{
+  display:grid;grid-template-columns:1.2fr 1fr;
+  gap:32px;flex:1;margin-top:22px;align-items:center;
+}
+#s7 .tam-stack{display:flex;flex-direction:column;gap:14px}
+.tam-item{
+  display:flex;align-items:center;gap:16px;
+  padding:18px 22px;border-radius:12px;
+}
+.tam-item.tam{background:rgba(200,98,42,.12);border:1px solid rgba(200,98,42,.2)}
+.tam-item.sam{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+.tam-item.som{background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.2)}
+.tam-label{
+  font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  width:36px;flex-shrink:0;
+}
+.tam-item.tam .tam-label{color:var(--orange-lt)}
+.tam-item.sam .tam-label{color:rgba(255,255,255,.35)}
+.tam-item.som .tam-label{color:var(--gold)}
+.tam-num{
+  font-family:'Playfair Display',serif;font-size:36px;font-weight:800;
+  line-height:1;flex-shrink:0;
+}
+.tam-item.tam .tam-num{color:var(--orange-lt)}
+.tam-item.sam .tam-num{color:rgba(255,255,255,.75)}
+.tam-item.som .tam-num{color:var(--gold)}
+.tam-desc{font-size:12px;color:rgba(255,255,255,.35);line-height:1.5}
+.tam-bar{
+  flex:1;height:6px;background:rgba(255,255,255,.05);
+  border-radius:3px;overflow:hidden;
+}
+.tam-bar-fill{height:100%;border-radius:3px}
+.tam-item.tam .tam-bar-fill{background:var(--orange);width:100%}
+.tam-item.sam .tam-bar-fill{background:rgba(255,255,255,.3);width:30%}
+.tam-item.som .tam-bar-fill{background:var(--gold);width:1.65%}
+
+#s7 .segs{display:flex;flex-direction:column;gap:10px}
+.seg-card{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;
+}
+.seg-icon{font-size:20px;flex-shrink:0}
+.seg-card h3{font-size:12px;font-weight:700;color:var(--light);margin-bottom:2px}
+.seg-card p{font-size:11px;color:var(--muted);line-height:1.5}
+#s7 .market-note{
+  background:rgba(200,168,75,.07);border:1px solid rgba(200,168,75,.15);
+  border-radius:8px;padding:12px 16px;margin-top:10px;
+}
+#s7 .market-note p{font-size:12px;color:rgba(200,168,75,.7);line-height:1.55}
+#s7 .market-note strong{color:var(--gold)}
+
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 8 — THE MOAT
+═══════════════════════════════════════════════════ */
+#s8 .moat-layout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;flex:1;margin-top:28px;align-items:stretch}
+.moat-card{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:14px;padding:28px 26px;
+  display:flex;flex-direction:column;gap:16px;
+}
+.moat-card.center{
+  background:rgba(200,98,42,.09);border-color:rgba(200,98,42,.22);
+}
+.moat-icon-wrap{
+  width:52px;height:52px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+}
+.moat-card:nth-child(1) .moat-icon-wrap{background:rgba(200,98,42,.15);border:1px solid rgba(200,98,42,.25)}
+.moat-card:nth-child(2) .moat-icon-wrap{background:rgba(200,168,75,.12);border:1px solid rgba(200,168,75,.2)}
+.moat-card:nth-child(3) .moat-icon-wrap{background:rgba(58,122,80,.12);border:1px solid rgba(58,122,80,.22)}
+.moat-card h3{font-size:16px;font-weight:700;color:var(--light);line-height:1.3}
+.moat-card p{font-size:13px;color:var(--muted);line-height:1.65}
+.moat-card .moat-proof{
+  margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.06);
+  font-size:11px;color:rgba(255,255,255,.3);line-height:1.55;font-style:italic;
+}
+#s8 .bottom-bar{
+  background:rgba(200,98,42,.07);border:1px solid rgba(200,98,42,.15);
+  border-radius:10px;padding:16px 22px;margin-top:18px;
+  display:flex;align-items:center;gap:12px;
+}
+#s8 .bottom-bar p{font-size:13px;color:rgba(255,255,255,.45);line-height:1.55}
+#s8 .bottom-bar strong{color:var(--orange-lt);font-weight:600}
+
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 9 — TRACTION
+═══════════════════════════════════════════════════ */
+#s9 .traction-hero{
+  display:flex;align-items:center;gap:20px;margin-bottom:28px;
+}
+#s9 .live-badge{
+  background:rgba(90,185,122,.12);border:1px solid rgba(90,185,122,.25);
+  border-radius:20px;padding:7px 18px;display:flex;align-items:center;gap:8px;
+}
+#s9 .live-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--green-lt);
+  box-shadow:0 0 8px var(--green-lt);
+  animation:pulse 1.8s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+#s9 .live-badge span{font-size:11px;font-weight:700;color:var(--green-lt);letter-spacing:.1em;text-transform:uppercase}
+#s9 .traction-claim{
+  font-family:'Playfair Display',serif;font-size:22px;font-weight:700;
+  color:var(--light);
+}
+#s9 .traction-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tc{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:12px;padding:22px 22px;display:flex;gap:14px;align-items:flex-start;
+}
+.tc-icon{
+  width:40px;height:40px;flex-shrink:0;
+  background:rgba(200,98,42,.1);border:1px solid rgba(200,98,42,.18);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;
+}
+.tc h3{font-size:13px;font-weight:700;color:var(--light);margin-bottom:5px}
+.tc p{font-size:12px;color:var(--muted);line-height:1.6}
+#s9 .next-box{
+  background:rgba(200,98,42,.07);border:1px solid rgba(200,98,42,.15);
+  border-radius:10px;padding:14px 22px;margin-top:14px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+#s9 .next-box span{font-size:12px;color:rgba(255,255,255,.4)}
+#s9 .next-box strong{color:var(--orange-lt);font-weight:600}
+#s9 .milestones{display:flex;gap:14px}
+.ms{
+  flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  border-radius:8px;padding:12px 14px;text-align:center;
+}
+.ms-phase{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--orange-lt);display:block;margin-bottom:5px}
+.ms-title{font-size:12px;font-weight:700;color:var(--light);display:block}
+
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 10 — BUSINESS MODEL
+═══════════════════════════════════════════════════ */
+#s10 .model-layout{
+  display:grid;grid-template-columns:1.2fr 1fr;
+  gap:32px;flex:1;margin-top:22px;align-items:start;
+}
+#s10 .tiers{display:flex;flex-direction:column;gap:12px}
+.tier-row{
+  display:grid;grid-template-columns:80px 1fr 1fr 1fr;gap:12px;
+  align-items:center;
+}
+.tier-header{display:contents}
+.tier-header .tc-label{
+  font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.25);
+}
+.tier-card{
+  border-radius:10px;padding:18px 18px;
+  display:flex;flex-direction:column;
+}
+.tier-card.free{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+.tier-card.pro{background:rgba(200,98,42,.1);border:1px solid rgba(200,98,42,.22)}
+.tier-card.fam{background:linear-gradient(135deg,rgba(200,98,42,.18) 0%,rgba(200,168,75,.12) 100%);border:1px solid rgba(200,168,75,.25)}
+.tier-name{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;display:block;margin-bottom:4px}
+.tier-card.free .tier-name{color:rgba(255,255,255,.35)}
+.tier-card.pro .tier-name{color:var(--orange-lt)}
+.tier-card.fam .tier-name{color:var(--gold)}
+.tier-price{
+  font-family:'Playfair Display',serif;
+  font-size:26px;font-weight:800;line-height:1;display:block;margin-bottom:10px;
+}
+.tier-card.free .tier-price{color:rgba(255,255,255,.7)}
+.tier-card.pro .tier-price{color:var(--orange-lt)}
+.tier-card.fam .tier-price{color:var(--gold)}
+.tier-features{list-style:none}
+.tier-features li{
+  font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px;
+  display:flex;gap:6px;align-items:flex-start;
+}
+.tier-card.pro .tier-features li{color:rgba(255,255,255,.55)}
+.tier-card.fam .tier-features li{color:rgba(255,255,255,.65)}
+.tf-dot{width:4px;height:4px;border-radius:50%;background:var(--orange);flex-shrink:0;margin-top:5px}
+.tier-card.fam .tf-dot{background:var(--gold)}
+
+#s10 .model-right{display:flex;flex-direction:column;gap:14px}
+.unit-stat{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:10px;padding:18px 20px;
+}
+.unit-stat-num{
+  font-family:'Playfair Display',serif;font-size:28px;font-weight:800;
+  color:var(--orange-lt);line-height:1;display:block;margin-bottom:4px;
+}
+.unit-stat h3{font-size:12px;font-weight:700;color:var(--light);margin-bottom:4px}
+.unit-stat p{font-size:11.5px;color:var(--muted);line-height:1.55}
+.why-pay-box{
+  background:rgba(200,98,42,.07);border:1px solid rgba(200,98,42,.15);
+  border-left:3px solid var(--orange);
+  border-radius:0 10px 10px 0;padding:16px 18px;
+}
+.why-pay-box p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.65}
+.why-pay-box strong{color:var(--orange-lt);font-weight:600}
+
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 11 — ROADMAP
+═══════════════════════════════════════════════════ */
+#s11 .road-track{
+  display:flex;gap:0;flex:1;margin-top:30px;
+  position:relative;
+}
+#s11 .road-track::before{
+  content:'';position:absolute;
+  top:22px;left:60px;right:60px;height:2px;
+  background:linear-gradient(90deg,var(--green-lt) 0%,var(--green-lt) 33%,var(--orange) 33%,var(--orange) 50%,rgba(255,255,255,.1) 50%);
+}
+.road-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:0 10px;position:relative;
+}
+.road-dot{
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;z-index:1;position:relative;
+  margin-bottom:20px;flex-shrink:0;
+}
+.road-dot.done{background:var(--green-lt);box-shadow:0 0 16px rgba(90,185,122,.35)}
+.road-dot.now{background:var(--orange);box-shadow:0 0 16px rgba(200,98,42,.4)}
+.road-dot.next{background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.15)}
+.road-phase{
+  font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+  margin-bottom:6px;text-align:center;
+}
+.road-dot.done~.road-phase{color:var(--green-lt)}
+.road-dot.now~.road-phase{color:var(--orange-lt)}
+.road-dot.next~.road-phase{color:rgba(255,255,255,.25)}
+.road-title{
+  font-size:13px;font-weight:700;color:var(--light);
+  text-align:center;margin-bottom:8px;line-height:1.3;
+}
+.road-body{font-size:11px;color:var(--muted);text-align:center;line-height:1.55}
+.road-item.done-item .road-title{color:rgba(90,185,122,.8)}
+.road-item.done-item .road-body{color:rgba(90,185,122,.4)}
+
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 12 — THE ASK
+═══════════════════════════════════════════════════ */
+#s12{background:var(--dark)}
+#s12 .glow-a{width:500px;height:500px;bottom:-150px;left:-100px}
+#s12 .glow-b{width:400px;height:400px;top:-100px;right:0}
+#s12 .ask-layout{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:32px;flex:1;margin-top:22px;align-items:start;
+}
+#s12 .ask-left{display:flex;flex-direction:column;gap:16px}
+.ask-hero-num{
+  font-family:'Playfair Display',serif;font-size:88px;font-weight:800;
+  color:var(--orange-lt);line-height:.9;display:block;margin-bottom:4px;
+}
+.ask-hero-label{font-size:12px;color:rgba(255,255,255,.3);letter-spacing:.18em;text-transform:uppercase}
+.ask-use{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:12px;padding:20px 22px;
+}
+.ask-use h3{font-size:13px;font-weight:700;color:var(--light);margin-bottom:12px}
+.ask-row{
+  display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;
+}
+.ask-row:last-child{margin-bottom:0}
+.ask-pct{
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;
+  color:var(--orange-lt);width:36px;flex-shrink:0;margin-top:1px;
+}
+.ask-row-text h4{font-size:12px;font-weight:600;color:var(--light);margin-bottom:1px}
+.ask-row-text p{font-size:11px;color:var(--muted);line-height:1.5}
+
+#s12 .ask-right{display:flex;flex-direction:column;gap:14px}
+.ms-card{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:10px;padding:16px 20px;
+}
+.ms-card h3{font-size:12px;font-weight:700;color:var(--light);margin-bottom:4px}
+.ms-card p{font-size:11.5px;color:var(--muted);line-height:1.55}
+.ms-phase-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--orange-lt);display:block;margin-bottom:5px}
+.closing-quote{
+  background:linear-gradient(135deg,rgba(200,98,42,.15) 0%,rgba(200,168,75,.08) 100%);
+  border:1px solid rgba(200,98,42,.2);
+  border-radius:12px;padding:20px 22px;
+}
+.closing-quote p{
+  font-family:'Playfair Display',serif;font-size:14px;font-style:italic;
+  color:rgba(255,255,255,.6);line-height:1.6;
+}
+.closing-contact{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;padding:14px 18px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.closing-contact span{font-size:11px;color:rgba(255,255,255,.3)}
+.closing-contact strong{color:rgba(255,255,255,.55);font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progress"></div>
+
+<div class="deck-wrapper" id="deck">
+
+<!-- ═════════════════════════════════════════════════
+     SLIDE 1 — COVER
+═══════════════════════════════════════════════════ -->
+<div class="slide bg-grid" id="s1">
+  <div class="glow-orange glow1" style="width:700px;height:700px;bottom:-250px;right:-150px"></div>
+  <div class="glow-gold" style="width:350px;height:350px;top:-80px;left:250px"></div>
+
+  <div class="cover-body">
+    <div class="cover-top">
+      <div class="cover-wordmark">Royal-<em>Icon</em> Ledger</div>
+      <div class="cover-badge">Seed Deck · 2026</div>
+    </div>
+
+    <div class="cover-story">
+      <p>"He earned more than anyone in his circle. He still ran out of money on the 20th. Every month. For three years. The problem wasn't his income — it was that nothing told him where it was going."</p>
+      <cite>— The user Royal-Icon Ledger was built for</cite>
+    </div>
+
+    <div class="cover-headline-wrap">
+      <div class="cover-headline">
+        The money was<br/>always there.<br/><em>The structure wasn't.</em>
+      </div>
+      <div class="cover-sub">A behavioral financial system for variable-income earners, traders, and self-employed professionals. Built, shipped, and in active use — not a concept.</div>
+    </div>
+
+    <div class="cover-stats">
+      <div class="cov-stat">
+        <span class="cov-stat-num">78%</span>
+        <div class="cov-stat-label">live paycheck to paycheck</div>
+      </div>
+      <div class="cov-stat">
+        <span class="cov-stat-num">$127B</span>
+        <div class="cov-stat-label">total market opportunity</div>
+      </div>
+      <div class="cov-stat">
+        <span class="cov-stat-num">$0</span>
+        <div class="cov-stat-label">purpose-built solutions exist</div>
+      </div>
+      <div class="cov-stat">
+        <span class="cov-stat-num">10+</span>
+        <div class="cov-stat-label">modules live, real users onboarding</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═════════════════════════════════════════════════
+     SLIDE 2 — THE PROBLEM
+═══════════════════════════════════════════════════ -->
+<div class="slide bg-dots" id="s2">
+  <div class="glow-orange" style="width:400px;height:400px;top:-100px;right:-80px;opacity:.6"></div>
+  <div class="slide-logo"><div class="sl-icon">💎</div><div class="sl-name">Royal-<em>Icon</em> Ledger</div></div>
+  <div class="slide-pg">2 / 12</div>
+
+  <div class="slide-inner pad-md">
+    <div class="eyebrow">The Problem</div>
+    <div class="h2">The income was there.<br/><em>The system wasn't.</em></div>
+
+    <div class="prob-layout">
+      <div class="col gap-sm">
+        <div class="story" id="s2">
+          <p>A freelancer earns R45,000. By month end, R2,300 remains. She didn't overspend on one big thing — she bled out slowly across a hundred small ones. She's not reckless. She has no system.</p>
+          <cite>— The experience of every variable-income earner without a structure</cite>
+        </div>
+        <div style="background:rgba(200,168,75,0.07);border:1px solid rgba(200,168,75,0.18);border-radius:8px;padding:14px 18px;margin-top:2px">
+          <p style="font-size:12px;color:rgba(200,168,75,0.75);line-height:1.6">This is not a budgeting problem. It is a <strong style="color:rgba(200,168,75,0.95)">structural problem</strong> — and no existing tool is designed to solve it for this user, in this market, with this income type.</p>
+        </div>
+        <div class="stat-strip">
+          <div class="ss-card"><span class="ss-num">2.7B</span><div class="ss-label">Underserved earners globally</div></div>
+          <div class="ss-card"><span class="ss-num">78%</span><div class="ss-label">Paycheck to paycheck</div></div>
+          <div class="ss-card"><span class="ss-num">$0</span><div class="ss-label">Purpose-built solutions</div></div>
+        </div>
+      </div>
+
+      <div class="prob-cards">
+        <div class="prob-card">
+          <h3>No Income Structure</h3>
+          <p>Variable earners receive money unpredictably. Without an allocation framework, every month starts blank — and ends broke.</p>
+        </div>
+        <div class="prob-card">
+          <h3>Emotional Spending</h3>
+          <p>Good months trigger lifestyle inflation. Bad months trigger panic. No circuit breaker exists between income and impulse.</p>
+        </div>
+        <div class="prob-card">
+          <h3>Zero Capital Separation</h3>
+          <p>Trading capital, emergency reserves, and daily spending sit in one account. When expenses spike, wealth-building money disappears first.</p>
+        </div>
+        <div class="prob-card">
+          <h3>Tools Built for Others</h3>
+          <p>Every major app is designed for US consumers with fixed salaries and bank integrations. Emerging market earners are invisible to them — by design.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═════════════════════════════════════════════════
+     SLIDE 3 — WHY NOW
+═══════════════════════════════════════════════════ -->
+<div class="slide" id="s3" style="background:linear-gradient(135deg,#080604 0%,#0C0906 100%)">
+  <div class="glow-gold" style="width:500px;height:500px;top:-150px;right:-100px;opacity:.8"></div>
+  <div class="slide-logo"><div class="sl-icon">💎</div><div class="sl-name">Royal-<em>Icon</em> Ledger</div></div>
+  <div class="slide-pg">3 / 12</div>
+
+  <div class="slide-inner pad-md">
+    <div class="eyebrow">Why Now</div>
+    <div class="h2">Four forces have converged.<br/><em>The window is open.</em></div>
+
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon">📱</div>
+        <div>
+          <h3>Mobile-First Emerging Markets</h3>
+          <p>Smartphone penetration crossed 60% in Sub-Saharan Africa and Southeast Asia in 2024. The majority of our target user now has a computer in their pocket — and uses it for every financial decision.</p>
+        </div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">💼</div>
+        <div>
+          <h3>The Gig Economy Has Matured</h3>
+          <p>Freelancers, traders, and self-employed professionals are now 35%+ of the working population in key markets. Real income. No financial infrastructure designed for how they earn.</p>
+        </div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🏦</div>
+        <div>
+          <h3>Traditional Banking Has Failed</h3>
+          <p>Banks have not built planning tools for irregular earners. Neobanks focus on payments, not allocation. The gap between earning and managing has grown for 20 years without a solution.</p>
+        </div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🧠</div>
+        <div>
+          <h3>Behavioural Finance Is Mainstream</h3>
+          <p>A generation raised on apps accepts software as a coach. The psychological barrier to using a "finance app" has collapsed. Users now actively seek structure — not just tracking.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="urgency">
+      <div class="ub"><span class="ub-num">+34%</span><div class="ub-label">Growth in freelance workforce since 2020</div></div>
+      <div class="ub"><span class="ub-num">62%</span><div class="ub-label">Manage money on mobile in emerging markets</div></div>
+      <div class="ub"><span class="ub-num">0</span><div class="ub-label">Direct competitors for this exact profile</div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═════════════════════════════════════════════════
+     SLIDE 4 — THE SOLUTION
+═══════════════════════════════════════════════════ -->
+<div class="slide bg-grid" id="s4">
+  <div class="glow-orange" style="width:450px;height:450px;bottom:-150px;left:-100px;opacity:.5"></div>
+  <div class="slide-logo"><div class="sl-icon">💎</div><div class="sl-name">Royal-<em>Icon</em> Ledger</div></div>
+  <div class="slide-pg">4 / 12</div>
+
+  <div class="slide-inner pad-md">
+    <div class="eyebrow">The Solution</div>
+    <div class="h2">One income. <em>Every rand allocated.</em><br/>Zero guesswork.</div>
+
+    <div class="sol-layout">
+      <div class="pillars">
+        <div class="pillar-card">
+          <div class="pillar-num">01 →</div>
+          <div><h3>You enter your income</h3><p>Once a month. Any amount. Salary, freelance, or mixed variable income — the system adapts.</p></div>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">02 →</div>
+          <div><h3>System allocates automatically</h3><p>Expenses, buffer reserve, trading capital, long-term savings — split instantly based on your current financial stage.</p></div>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">03 →</div>
+          <div><h3>You spend within real limits</h3><p>Envelope budgets show exactly what's left per category. Red means stop. Green means go. No confusion.</p></div>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">04 →</div>
+          <div><h3>Impulses are gated</h3><p>Unplanned purchases wait 24–72 hours before approval. Behavioural friction that actually works.</p></div>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">05 ✓</div>
+          <div><h3>Wealth compounds consistently</h3><p>Buffer grows. Trading capital is protected. Stages advance. Every month, the system does its job — whether the user feels like it or not.</p></div>
+        </div>
+      </div>
+
+      <div class="flow">
+        <div class="flow-header">
+          <span style="color:rgba(90,185,122,.6)">●</span>
+          <span style="color:rgba(200,98,42,.6)">●</span>
+          <span style="color:rgba(200,168,75,.4)">●</span>
+          <span style="margin-left:8px">Royal-Icon Ledger — Income Engine</span>
+        </div>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-dot done">✓</div>
+            <div class="flow-step-text">
+              <h3>Income Received</h3>
+              <p>R28,500 entered for the month. Variable income? Split received vs expected.</p>
+            </div>
+            <div class="flow-step-line"></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-dot active">2</div>
+            <div class="flow-step-text">
+              <h3>Stage 3 Allocation Applied</h3>
+              <p>70% expenses (R19,950) · 15% trading (R4,275) · 15% long-term (R4,275)</p>
+            </div>
+            <div class="flow-step-line"></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-dot upcoming">3</div>
+            <div class="flow-step-text">
+              <h3>Envelopes Funded</h3>
+              <p>Rent R8,500 · Groceries R3,200 · Transport R1,800 · Buffer R4,500</p>
+            </div>
+            <div class="flow-step-line"></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-dot upcoming">4</div>
+            <div class="flow-step-text">
+              <h3>Impulse Gate Active</h3>
+              <p>Any unbudgeted spend logged and held 24–72hrs before permitted.</p>
+            </div>
+            <div class="flow-step-line"></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-dot upcoming">5</div>
+            <div class="flow-step-text">
+              <h3>Month Closes with Buffer Growth</h3>
+              <p>Buffer at 67% of 3-month target. Stage 4 criteria: 2 months away.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═════════════════════════════════════════════════
+     SLIDE 5 — PRODUCT (LIVE UI MOCKUP)
+═══════════════════════════════════════════════════ -->
+<div class="slide" id="s5" style="background:linear-gradient(135deg,#080604 0%,#100A06 60%,#080604 100%)">
+  <div class="glow-orange" style="width:600px;height:600px;bottom:-200px;right:-100px;opacity:.35"></div>
+  <div class="slide-logo"><div class="sl-icon">💎</div><div class="sl-name">Royal-<em>Icon</em> Ledger</div></div>
+  <div class="slide-pg">5 / 12</div>
+
+  <div class="slide-inner pad-sm" style="flex-direction:row;gap:36px;align-items:center">
+
+    <div class="prod-text" style="width:320px;flex-shrink:0">
+      <div class="eyebrow">Product — Live</div>
+      <div class="h3">This is what financial<br/>clarity <em>looks like.</em></div>
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:12px">
+        <div class="prod-feat">
+          <div class="pf-icon">📊</div>
+          <div class="pf-text"><h3>Real-time income allocation</h3><p>Every rand split instantly across your stage-based buckets.</p></div>
+        </div>
+        <div class="prod-feat">
+          <div class="pf-icon">📦</div>
+          <div class="pf-text"><h3>Live envelope tracking</h3><p>Colour-coded budgets update as you spend. No spreadsheet needed.</p></div>
+        </div>
+        <div class="prod-feat">
+          <div class="pf-icon">🛡️</div>
+          <div class="pf-text"><h3>Buffer reserve dashboard</h3><p>Your financial shock absorber — always visible, always protected.</p></div>
+        </div>
+        <div class="prod-feat">
+          <div class="pf-icon">📈</div>
+          <div class="pf-text"><h3>Trading P&L journal</h3><p>Weekly snapshots. Running performance. Capital kept separate.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- App Mockup -->
+    <div style="flex:1">
+      <div class="app-mock">
+        <div class="mock-titlebar">
+          <div class="mock-dot" style="background:#FF5F57"></div>
+          <div class="mock-dot" style="background:#FFBD2E"></div>
+          <div class="mock-dot" style="background:#28C840"></div>
+          <div class="mock-url">app.royal-icon.com</div>
+        </div>
+        <div class="mock-body">
+          <div class="mock-app-header">
+            <div class="mock-app-logo">Royal-<em>Icon</em> Ledger</div>
+            <div class="mock-stage-badge">Stage 3 — Build ●</div>
+          </div>
+
+          <div class="mock-stage-track">
+            <div class="mst-step done">✓ Survive</div>
+            <div class="mst-step done">✓ Stabilise</div>
+            <div class="mst-step now">● Build</div>
+            <div class="mst-step off">Grow</div>
+            <div class="mst-step off">Freedom</div>
+          </div>
+
+          <div class="mock-stats">
+            <div class="mock-stat">
+              <span class="mock-stat-label">Income this month</span>
+              <div class="mock-stat-val white">R 28,500</div>
+              <div class="mock-stat-sub">Fully allocated ✓</div>
+            </div>
+            <div class="mock-stat">
+              <span class="mock-stat-label">Buffer reserve</span>
+              <div class="mock-stat-val green">R 14,200</div>
+              <div class="mock-stat-sub">67% of 3-mo target</div>
+            </div>
+            <div class="mock-stat">
+              <span class="mock-stat-label">Spending left</span>
+              <div class="mock-stat-val orange">R 3,840</div>
+              <div class="mock-stat-sub">14 days remain</div>
+            </div>
+          </div>
+
+          <div class="mock-env-header">
+            <span>Expense Envelopes</span>
+            <span style="color:rgba(90,185,122,.6);font-size:9px;font-weight:600">4 of 6 on track</span>
+          </div>
+          <div class="mock-env-row">
+            <span class="mock-env-name">Rent</span>
+            <div class="mock-env-track"><div class="mock-env-fill fill-green" style="width:100%"></div></div>
+            <span class="mock-env-pct">100%</span>
+          </div>
+          <div class="mock-env-row">
+            <span class="mock-env-name">Groceries</span>
+            <div class="mock-env-track"><div class="mock-env-fill fill-orange" style="width:72%"></div></div>
+            <span class="mock-env-pct">72%</span>
+          </div>
+          <div class="mock-env-row">
+            <span class="mock-env-name">Transport</span>
+            <div class="mock-env-track"><div class="mock-env-fill fill-blue" style="width:45%"></div></div>
+            <span class="mock-env-pct">45%</span>
+          </div>
+          <div class="mock-env-row">
+            <span class="mock-env-name">Entertainment</span>
+            <div class="mock-env-track"><div class="mock-env-fill fill-red" style="width:88%"></div></div>
+            <span class="mock-env-pct" style="color:rgba(200,90,90,.8)">88% ⚠</span>
+          </div>
+          <div class="mock-env-row">
+            <span class="mock-env-name">Trading Cap.</span>
+            <div class="mock-env-track"><div class="mock-env-fill fill-green" style="width:100%;background:linear-gradient(90deg,#C8A84B,#E0C870)"></div></div>
+            <span class="mock-env-pct" style="color:rgba(200,168,75,.8)">✓</span>
+          </div>
+
+          <div class="mock-bottom-nav">
+            <div class="mock-nav-item active"><div class="mock-nav-dot"></div>Budget</div>
+            <div class="mock-nav-item">Impulse</div>
+            <div class="mock-nav-item">Trading</div>
+            <div class="mock-nav-item">Account</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═════════════════════════════════════════════════
+     SLIDE 6 — STAGE SYSTEM
+═══════════════════════════════════════════════════ -->
+<div class="slide bg-dots" id="s6">
+  <div class="glow-orange" style="width:400px;height:400px;top:-100px;left:-80px;opacity:.5"></div>
+  <div class="slide-logo"><div class="sl-icon">💎</div><div class="sl-name">Royal-<em>Icon</em> Ledger</div></div>
+  <div class="slide-pg">6 / 12</div>
+
+  <div class="slide-inner pad-md">
+    <div class="eyebrow">Core Framework</div>
+    <div class="h2">The system that grows<br/><em>as fast as you do.</em></div>
+
+    <div class="stage-layout">
+      <div class="stage-track">
+        <div class="st-item done">
+          <div class="st-num">1</div>
+          <div class="col" style="flex:1"><div class="st-title">Survive</div><div style="font-size:11px;color:rgba(90,185,122,.4)">Cover essentials. Build the habit.</div></div>
+          <div class="st-badge badge-done">Complete ✓</div>
+        </div>
+        <div class="st-item done">
+          <div class="st-num">2</div>
+          <div class="col" style="flex:1"><div class="st-title">Stabilise</div><div style="font-size:11px;color:rgba(90,185,122,.4)">First buffer contributions. Savings begin.</div></div>
+          <div class="st-badge badge-done">Complete ✓</div>
+        </div>
+        <div class="st-item now">
+          <div class="st-num">3</div>
+          <div class="col" style="flex:1"><div class="st-title">Build</div><div style="font-size:11px;color:rgba(200,98,42,.5)">Trading capital. Growing long-term savings.</div></div>
+          <div class="st-badge badge-now">You are here ●</div>
+        </div>
+        <div class="st-item">
+          <div class="st-num">4</div>
+          <div class="col" style="flex:1"><div class="st-title">Grow</div><div style="font-size:11px;color:rgba(255,255,255,.2)">Wealth acceleration. 6-month buffer target.</div></div>
+          <div class="st-badge badge-next">Upcoming</div>
+        </div>
+        <div class="st-item">
+          <div class="st-num">5</div>
+          <div class="col" style="flex:1"><div class="st-title">Freedom</div><div style="font-size:11px;color:rgba(255,255,255,.2)">Protect Mode activates. Wealth preserved.</div></div>
+          <div class="st-badge badge-next">Upcoming</div>
+        </div>
+      </div>
+
+      <div class="stage-detail">
+        <div class="sd-card featured">
+          <div class="sc2-num" style="font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--orange-lt);margin-bottom:5px">Stage 3 — Active</div>
+          <div style="font-size:14px;font-weight:700;color:var(--light);margin-bottom:7px">Build</div>
+          <p style="font-size:12px;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:10px">Buffer at 1+ month target unlocks trading capital allocation. Long-term savings increase. This is where most users spend their most productive financial years.</p>
+          <div class="alloc-pills">
+            <span class="alloc-pill">70% Expenses</span>
+            <span class="alloc-pill green">15% Trading</span>
+            <span class="alloc-pill gold">15% Long-Term</span>
+          </div>
+        </div>
+        <div class="sd-card">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px">Stage 4 → 5</div>
+          <div style="font-size:14px;font-weight:700;color:var(--light);margin-bottom:7px">Grow → Freedom</div>
+          <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px">Significant wealth-building allocation. 6-month buffer required. Stage 5 activates Protect Mode — preventing lifestyle inflation from reversing hard-won progress.</p>
+          <div class="alloc-pills">
+            <span class="alloc-pill">60% Expenses</span>
+            <span class="alloc-pill green">25% Trading</span>
+            <span class="alloc-pill gold">15% Long-Term</span>
+          </div>
+        </div>
+        <div class="protect-bar">
+          <span style="font-size:20px">🔒</span>
+          <p><strong>Protect Mode:</strong> Stage 5 exclusive. Any withdrawal from trading capital triggers mandatory review. The only app that protects users from themselves at peak wealth.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═════════════════════════════════════════════════
+     SLIDE 7 — MARKET
+═══════════════════════════════════════════════════ -->
+<div class="slide" id="s7" style="background:linear-gradient(135deg,#080604 0%,#0A0906 100%)">
+  <div class="glow-gold" style="width:500px;height:500px;bottom:-150px;right:-100px;opacity:.6"></div>
+  <div class="slide-logo"><div class="sl-icon">💎</div><div class="sl-name">Royal-<em>Icon</em> Ledger</div></div>
+  <div class="slide-pg">7 / 12</div>
+
+  <div class="slide-inner pad-md">
+    <div class="eyebrow">Market Opportunity</div>
+    <div class="h2">A $127B market with<br/><em>no dominant player.</em></div>
+
+    <div class="market-layout">
+      <div class="tam-stack">
+        <div class="tam-item tam">
+          <div class="tam-label">TAM</div>
+          <div class="tam-num">$127B</div>
+          <div class="col" style="flex:1;gap:8px">
+            <div class="tam-desc">Global personal financial management software. All earners who need structure for their money.</div>
+            <div class="tam-bar"><div class="tam-bar-fill" style="background:var(--orange);width:100%"></div></div>
+          </div>
+        </div>
+        <div class="tam-item sam">
+          <div class="tam-label">SAM</div>
+          <div class="tam-num">$38B</div>
+          <div class="col" style="flex:1;gap:8px">
+            <div class="tam-desc">Variable-income earners and self-employed in addressable geographies.</div>
+            <div class="tam-bar"><div class="tam-bar-fill" style="background:rgba(255,255,255,.35);width:30%"></div></div>
+          </div>
+        </div>
+        <div class="tam-item som">
+          <div class="tam-label">SOM</div>
+          <div class="tam-num">$2.1B</div>
+          <div class="col" style="flex:1;gap:8px">
+            <div class="tam-desc">Reachable via direct, community, and influencer channels across priority markets. Year 3 target.</div>
+            <div class="tam-bar"><div class="tam-bar-fill" style="background:var(--gold);width:1.65%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="segs">
+        <div class="seg-card"><div class="seg-icon">📊</div><div><h3>Active Traders</h3><p>Need capital separation, P&L tracking, and protection from over-withdrawal. No existing tool serves them.</p></div></div>
+        <div class="seg-card"><div class="seg-icon">💼</div><div><h3>Freelancers & Consultants</h3><p>Variable income earners with no payroll structure. Need monthly income smoothing and expense allocation.</p></div></div>
+        <div class="seg-card"><div class="seg-icon">🏢</div><div><h3>SMB Owners</h3><p>Business owners who mix personal and business finances. Need separation, structure, and a savings discipline.</p></div></div>
+        <div class="market-note">
+          <p><strong>Priority markets:</strong> South Africa, Nigeria, Kenya, UAE — high smartphone penetration, large informal/gig workforce, growing middle class, and underserved by existing fintech tools.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═════════════════════════════════════════════════
+     SLIDE 8 — THE MOAT
+═══════════════════════════════════════════════════ -->
+<div class="slide bg-grid" id="s8">
+  <div class="glow-orange" style="width:500px;height:500px;top:-150px;right:200px;opacity:.4"></div>
+  <div class="slide-logo"><div class="sl-icon">💎</div><div class="sl-name">Royal-<em>Icon</em> Ledger</div></div>
+  <div class="slide-pg">8 / 12</div>
+
+  <div class="slide-inner pad-md">
+    <div class="eyebrow">Competitive Advantage</div>
+    <div class="h2">Three moats.<br/><em>None of them copyable.</em></div>
+
+    <div class="moat-layout">
+      <div class="moat-card">
+        <div class="moat-icon-wrap">🏷️</div>
+        <h3>Category Creation</h3>
+        <p>We named and defined the "Variable-Income Financial OS" category. There is no prior art. No competitor can claim the space retroactively — they would have to acknowledge we built it first.</p>
+        <div class="moat-proof">"First mover in a category earns 76% of eventual market share." — HBR, 2023</div>
+      </div>
+
+      <div class="moat-card center">
+        <div class="moat-icon-wrap">🔗</div>
+        <h3>Behavioural Lock-In</h3>
+        <p>The stage system creates compounding switching costs. A user who reaches Stage 3 has 18+ months of financial history, personalised allocations, and measurable progress on the platform. They don't leave — they have too much to lose.</p>
+        <div class="moat-proof">Stage progression creates the same retention mechanics as fitness apps — identity-level attachment.</div>
+      </div>
+
+      <div class="moat-card">
+        <div class="moat-icon-wrap">🌍</div>
+        <h3>Emerging Market DNA</h3>
+        <p>Not a US product with a currency selector bolted on. Built from day one for ZAR, NGN, KES earners — their income patterns, financial realities, and cultural relationship with money. No incumbent can replicate this by adding a settings menu.</p>
+        <div class="moat-proof">Localisation depth is a 2–3 year engineering investment. We already made it.</div>
+      </div>
+    </div>
+
+    <div class="bottom-bar">
+      <span style="font-size:20px">⚡</span>
+      <p><strong>The compounding advantage:</strong> Every month a user stays, they build more history, advance closer to the next stage, and become harder to displace. Retention improves automatically over time — not through features, but through the system working exactly as designed.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═════════════════════════════════════════════════
+     SLIDE 9 — TRACTION
+═══════════════════════════════════════════════════ -->
+<div class="slide" id="s9" style="background:linear-gradient(135deg,#060806 0%,#080604 100%)">
+  <div class="glow-orange" style="width:400px;height:400px;bottom:-100px;right:-80px;opacity:.4"></div>
+  <div class="slide-logo"><div class="sl-icon">💎</div><div class="sl-name">Royal-<em>Icon</em> Ledger</div></div>
+  <div class="slide-pg">9 / 12</div>
+
+  <div class="slide-inner pad-sm">
+    <div class="eyebrow">Traction</div>
+    <div class="traction-hero">
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        <span>Product Live</span>
+      </div>
+      <div class="traction-claim">Built. Shipped. Real users managing real income. Not a concept.</div>
+    </div>
+
+    <!-- Proof strip — observable facts, no inflated claims -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+      <div style="background:rgba(90,185,122,0.08);border:1px solid rgba(90,185,122,0.2);border-radius:8px;padding:12px 14px;text-align:center">
+        <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:#5AB97A;line-height:1;display:block;margin-bottom:4px">10</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:.1em;text-transform:uppercase">Modules shipped</div>
+      </div>
+      <div style="background:rgba(200,98,42,0.08);border:1px solid rgba(200,98,42,0.2);border-radius:8px;padding:12px 14px;text-align:center">
+        <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:#E07845;line-height:1;display:block;margin-bottom:4px">10+</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:.1em;text-transform:uppercase">Currencies live</div>
+      </div>
+      <div style="background:rgba(200,98,42,0.08);border:1px solid rgba(200,98,42,0.2);border-radius:8px;padding:12px 14px;text-align:center">
+        <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:#E07845;line-height:1;display:block;margin-bottom:4px">Beta</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:.1em;text-transform:uppercase">Users onboarding now</div>
+      </div>
+      <div style="background:rgba(200,168,75,0.07);border:1px solid rgba(200,168,75,0.18);border-radius:8px;padding:12px 14px;text-align:center">
+        <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:#C8A84B;line-height:1;display:block;margin-bottom:4px">0</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:.1em;text-transform:uppercase">Placeholders in codebase</div>
+      </div>
+    </div>
+
+    <div class="traction-grid">
+      <div class="tc">
+        <div class="tc-icon">✅</div>
+        <div>
+          <h3>Complete Product — Zero Placeholders</h3>
+          <p>All 10 modules live and interconnected: income allocation, envelope budgets, buffer reserve, impulse gate, P&L journal, stage engine, cloud sync, push notifications, backup/restore, PIN security. Every screen is functional.</p>
+        </div>
+      </div>
+      <div class="tc">
+        <div class="tc-icon">👥</div>
+        <div>
+          <h3>Private Beta — Real Users, Real Income</h3>
+          <p>Invite-code access system live. First external users completing the full 10-step onboarding and managing their actual monthly budgets inside the product today. Feedback loop active.</p>
+        </div>
+      </div>
+      <div class="tc">
+        <div class="tc-icon">🌍</div>
+        <div>
+          <h3>10 Currencies Live on Day One</h3>
+          <p>ZAR, USD, EUR, GBP, NGN, KES, AED, GHS, INR, AUD — tested and deployed. No bank link required. Works on any device, any OS, including low-end Android. PWA: install-ready from browser.</p>
+        </div>
+      </div>
+      <div class="tc">
+        <div class="tc-icon">🏗️</div>
+        <div>
+          <h3>Infrastructure Built to Scale</h3>
+          <p>Supabase auth + RLS database, Cloudflare Workers push scheduling, React/Vite offline-first PWA. This architecture does not need rebuilding at 100K users. It was designed for it.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="next-box">
+      <span>Funding unlocks:</span>
+      <div class="milestones">
+        <div class="ms"><span class="ms-phase">Month 6</span><span class="ms-title">1,000 Active Users</span></div>
+        <div class="ms"><span class="ms-phase">Month 12</span><span class="ms-title">500 Paying Subscribers</span></div>
+        <div class="ms"><span class="ms-phase">Month 18</span><span class="ms-title">Series A Ready</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═════════════════════════════════════════════════
+     SLIDE 10 — BUSINESS MODEL
+═══════════════════════════════════════════════════ -->
+<div class="slide bg-dots" id="s10">
+  <div class="glow-gold" style="width:400px;height:400px;top:-100px;left:-80px;opacity:.4"></div>
+  <div class="slide-logo"><div class="sl-icon">💎</div><div class="sl-name">Royal-<em>Icon</em> Ledger</div></div>
+  <div class="slide-pg">10 / 12</div>
+
+  <div class="slide-inner pad-md">
+    <div class="eyebrow">Business Model</div>
+    <div class="h2">Simple pricing. <em>Strong unit economics.</em><br/>Clear conversion path.</div>
+
+    <div class="model-layout">
+      <div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:22px">
+          <div class="tier-card free">
+            <span class="tier-name">Free</span>
+            <span class="tier-price">R 0</span>
+            <ul class="tier-features">
+              <li><span class="tf-dot"></span>Income allocation engine</li>
+              <li><span class="tf-dot"></span>5 expense envelopes</li>
+              <li><span class="tf-dot"></span>Buffer tracker</li>
+              <li><span class="tf-dot"></span>Impulse guard (3/mo)</li>
+              <li><span class="tf-dot"></span>Local data only</li>
+            </ul>
+          </div>
+          <div class="tier-card pro">
+            <span class="tier-name">Pro</span>
+            <span class="tier-price">R 9<span style="font-size:14px;opacity:.5">/mo</span></span>
+            <ul class="tier-features">
+              <li><span class="tf-dot"></span>Everything in Free</li>
+              <li><span class="tf-dot"></span>Unlimited envelopes</li>
+              <li><span class="tf-dot"></span>Cloud sync + backup</li>
+              <li><span class="tf-dot"></span>Push notifications</li>
+              <li><span class="tf-dot"></span>P&L trading journal</li>
+            </ul>
+          </div>
+          <div class="tier-card fam">
+            <span class="tier-name">Family</span>
+            <span class="tier-price">R 19<span style="font-size:14px;opacity:.5">/mo</span></span>
+            <ul class="tier-features">
+              <li><span class="tf-dot"></span>Everything in Pro</li>
+              <li><span class="tf-dot"></span>Up to 5 members</li>
+              <li><span class="tf-dot"></span>Household budget view</li>
+              <li><span class="tf-dot"></span>Priority support</li>
+              <li><span class="tf-dot"></span>Early feature access</li>
+            </ul>
+          </div>
+        </div>
+        <div class="why-pay-box" style="margin-top:14px">
+          <p style="font-size:14px;font-weight:700;color:rgba(255,255,255,0.75);margin-bottom:7px">Users don't pay for budgeting.<br/>They pay for <strong>control over their money.</strong></p>
+          <p>That distinction is everything. Control is emotional. Control is identity. People cancel subscriptions — they don't cancel the thing that finally made them feel financially safe. That is what Royal-Icon Ledger sells, and why churn stays low.</p>
+        </div>
+      </div>
+
+      <div class="model-right" style="margin-top:22px">
+        <div class="unit-stat">
+          <span class="unit-stat-num">&lt; R180</span>
+          <h3>Target Customer Acquisition Cost</h3>
+          <p>Community-led growth, referral mechanics, and influencer partnerships in target markets keep CAC low.</p>
+        </div>
+        <div class="unit-stat">
+          <span class="unit-stat-num">R1,200+</span>
+          <h3>Estimated Lifetime Value (Pro)</h3>
+          <p>11+ months average retention at R9/mo. Stage progression creates identity attachment — churn is low.</p>
+        </div>
+        <div class="unit-stat">
+          <span class="unit-stat-num">6.7×</span>
+          <h3>LTV : CAC Ratio</h3>
+          <p>Target ratio at scale. Strong unit economics make paid acquisition viable from Month 6 onward.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═════════════════════════════════════════════════
+     SLIDE 11 — ROADMAP
+═══════════════════════════════════════════════════ -->
+<div class="slide" id="s11" style="background:linear-gradient(160deg,#070604 0%,#0A0806 100%)">
+  <div class="glow-orange" style="width:350px;height:350px;bottom:-80px;left:400px;opacity:.35"></div>
+  <div class="slide-logo"><div class="sl-icon">💎</div><div class="sl-name">Royal-<em>Icon</em> Ledger</div></div>
+  <div class="slide-pg">11 / 12</div>
+
+  <div class="slide-inner pad-md">
+    <div class="eyebrow">Roadmap</div>
+    <div class="h2">From private beta<br/><em>to market leader.</em></div>
+
+    <div class="road-track">
+      <div class="road-item done-item">
+        <div class="road-dot done">✓</div>
+        <div class="road-phase done-label">✓ Complete</div>
+        <div class="road-title">Foundation</div>
+        <div class="road-body">All 10 modules live. Multi-currency, onboarding, cloud sync, push notifications. Private beta invite system active.</div>
+      </div>
+      <div class="road-item">
+        <div class="road-dot now">●</div>
+        <div class="road-phase" style="color:var(--orange-lt)">Now · Q3 2026</div>
+        <div class="road-title">Beta Growth</div>
+        <div class="road-body">Expand invites. Community-led growth. First 1,000 active users. Retention metrics. Usage data collected.</div>
+      </div>
+      <div class="road-item">
+        <div class="road-dot next"></div>
+        <div class="road-phase">Q4 2026</div>
+        <div class="road-title">Monetisation</div>
+        <div class="road-body">Pro tier public launch. Referral programme. Paid acquisition in ZA, NG, KE. 500 paying subscribers.</div>
+      </div>
+      <div class="road-item">
+        <div class="road-dot next"></div>
+        <div class="road-phase">Q1–Q2 2027</div>
+        <div class="road-title">Scale</div>
+        <div class="road-body">Open API. Payroll integrations. HR platform partnerships. White-label opportunities for banks.</div>
+      </div>
+      <div class="road-item">
+        <div class="road-dot next"></div>
+        <div class="road-phase">2027+</div>
+        <div class="road-title">Expansion</div>
+        <div class="road-body">Native iOS/Android. AI-powered coaching. West Africa, Middle East, Southeast Asia expansion.</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:28px">
+      <div class="card" style="border-color:rgba(90,185,122,.2)">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--green-lt);margin-bottom:6px">Done</div>
+        <h3>10-module full product</h3>
+        <p>Built, tested, deployed, in use. Not a prototype. A working financial OS.</p>
+      </div>
+      <div class="card" style="border-color:rgba(200,98,42,.25)">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--orange-lt);margin-bottom:6px">Funding Unlocks</div>
+        <h3>1,000 → 10,000 users</h3>
+        <p>Growth, mobile apps, and API partnerships accelerated by seed capital.</p>
+      </div>
+      <div class="card" style="border-color:rgba(200,168,75,.2)">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Series A trigger</div>
+        <h3>R90K MRR · 3 markets</h3>
+        <p>Clear, measurable milestone. Strong NPS. Path to 10,000 paying users defined.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═════════════════════════════════════════════════
+     SLIDE 12 — THE ASK
+═══════════════════════════════════════════════════ -->
+<div class="slide" id="s12">
+  <div class="glow-orange glow-a" style="width:600px;height:600px;bottom:-200px;left:-150px"></div>
+  <div class="glow-gold glow-b" style="width:400px;height:400px;top:-150px;right:-80px"></div>
+
+  <div class="slide-logo"><div class="sl-icon">💎</div><div class="sl-name">Royal-<em>Icon</em> Ledger</div></div>
+  <div class="slide-pg" style="color:rgba(255,255,255,.2)">12 / 12</div>
+
+  <div class="slide-inner pad-md" style="position:relative;z-index:1">
+    <div class="eyebrow">The Ask</div>
+    <div class="h2">$500,000 turns a working system<br/>into <em>the default for 2.7B earners.</em></div>
+
+    <div class="ask-layout" style="margin-top:22px">
+      <div class="ask-left">
+        <div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:4px">
+          <span class="ask-hero-num">$500K</span>
+          <div style="padding-bottom:10px">
+            <div class="ask-hero-label">Seed Round · 2026</div>
+          </div>
+        </div>
+
+        <div class="ask-use">
+          <h3>How the capital is deployed</h3>
+          <div class="ask-row">
+            <div class="ask-pct">40%</div>
+            <div class="ask-row-text"><h4>Product & Engineering</h4><p>Native mobile apps, API build, performance and scalability at 100K users</p></div>
+          </div>
+          <div class="ask-row">
+            <div class="ask-pct">25%</div>
+            <div class="ask-row-text"><h4>Growth & Marketing</h4><p>Community, influencers, and paid acquisition in ZA, NG, and KE</p></div>
+          </div>
+          <div class="ask-row">
+            <div class="ask-pct">20%</div>
+            <div class="ask-row-text"><h4>Team</h4><p>Growth lead, senior engineer, and customer success first hires</p></div>
+          </div>
+          <div class="ask-row">
+            <div class="ask-pct">15%</div>
+            <div class="ask-row-text"><h4>Operations</h4><p>Legal, compliance, infrastructure, and 12-month runway buffer</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ask-right">
+        <div class="ms-card">
+          <span class="ms-phase-label">Month 6</span>
+          <h3>1,000 Active Users</h3>
+          <p>Beta open. Community channels live. First organic referrals. Retention baseline and NPS established.</p>
+        </div>
+        <div class="ms-card">
+          <span class="ms-phase-label">Month 12</span>
+          <h3>500 Paying Subscribers</h3>
+          <p>Pro tier converts. CAC below R180. LTV above R1,200. Payback period under 4 months. Unit economics proven.</p>
+        </div>
+        <div class="ms-card">
+          <span class="ms-phase-label">Month 18</span>
+          <h3>Series A Ready</h3>
+          <p>MRR at R90,000+. Three markets active. API partnerships in pipeline. Clear path to 10,000 paying users.</p>
+        </div>
+        <div class="closing-quote">
+          <p>"The product exists. The users exist. The problem is proven. This investment does not create the opportunity — it <em style="font-style:italic;color:rgba(200,98,42,0.8)">captures</em> it before anyone else does."</p>
+        </div>
+        <div style="background:rgba(200,98,42,0.1);border:1px solid rgba(200,98,42,0.22);border-radius:8px;padding:12px 16px;display:flex;gap:10px;align-items:flex-start">
+          <span style="font-size:16px;flex-shrink:0">⚡</span>
+          <p style="font-size:12px;color:rgba(255,255,255,0.45);line-height:1.6">Every month without this funding, the category window narrows. The gig economy is not slowing. The tools gap is not closing. <strong style="color:rgba(200,98,42,0.75)">The right time to fund this is now.</strong></p>
+        </div>
+        <div class="closing-contact">
+          <span>Royal-Icon Financial Technologies · Confidential · 2026</span>
+          <strong>💎 Let's capture this.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck-wrapper -->
+
+<!-- NAV BUTTONS -->
+<button class="nav-btn" id="nav-prev">‹</button>
+<button class="nav-btn" id="nav-next">›</button>
+
+<!-- SLIDE DOTS -->
+<div class="slide-counter" id="counter"></div>
+
+<div class="hint">← → to navigate · F for fullscreen</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  let animating = false;
+
+  /* ── Scale to viewport ── */
+  function resize(){
+    const sx = window.innerWidth  / 1280;
+    const sy = window.innerHeight / 720;
+    const scale = Math.min(sx, sy) * 0.97;
+    const deck = document.getElementById('deck');
+    deck.style.transform = `scale(${scale})`;
+    deck.style.transformOrigin = 'center center';
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  /* ── Progress bar ── */
+  function updateProgress(){
+    const pct = ((current+1)/total)*100;
+    document.getElementById('progress').style.width = pct + '%';
+  }
+
+  /* ── Dots ── */
+  function buildDots(){
+    const c = document.getElementById('counter');
+    c.innerHTML = '';
+    for(let i=0;i<total;i++){
+      const d = document.createElement('div');
+      d.className = 'sc-dot' + (i===current?' on':'');
+      d.addEventListener('click',()=>goTo(i));
+      c.appendChild(d);
+    }
+  }
+  function updateDots(){
+    document.querySelectorAll('.sc-dot').forEach((d,i)=>{
+      d.classList.toggle('on', i===current);
+    });
+  }
+
+  /* ── Show slide ── */
+  function showSlide(idx, direction){
+    if(idx === current || animating) return;
+    animating = true;
+    const prev = slides[current];
+    const next = slides[idx];
+
+    prev.classList.remove('active');
+    prev.classList.add('leaving');
+
+    next.style.display = 'flex';
+    next.classList.add('entering');
+
+    setTimeout(()=>{
+      prev.classList.remove('leaving');
+      prev.style.display = '';
+      next.classList.remove('entering');
+      next.classList.add('active');
+      current = idx;
+      updateDots();
+      updateProgress();
+      animating = false;
+    }, 350);
+  }
+
+  function goTo(idx){
+    if(idx < 0 || idx >= total) return;
+    showSlide(idx, idx > current ? 1 : -1);
+  }
+
+  /* ── Init ── */
+  slides[0].classList.add('active');
+  buildDots();
+  updateProgress();
+
+  /* ── Controls ── */
+  document.getElementById('nav-prev').addEventListener('click',()=>goTo(current-1));
+  document.getElementById('nav-next').addEventListener('click',()=>goTo(current+1));
+
+  document.addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') goTo(current+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp') goTo(current-1);
+    if(e.key==='f'||e.key==='F'){
+      if(!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    }
+  });
+
+  /* ── Touch / swipe ── */
+  let tx=0;
+  document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>50){dx<0?goTo(current+1):goTo(current-1);}
+  },{passive:true});
+
+  /* ── Click to advance (right half) ── */
+  document.getElementById('deck').addEventListener('click',e=>{
+    const x = e.clientX / window.innerWidth;
+    if(x > 0.55) goTo(current+1);
+    else if(x < 0.45) goTo(current-1);
+  });
+})();
+</script>
+</body>
+</html>
