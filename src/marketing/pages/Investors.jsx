@@ -41,12 +41,14 @@ export default function Investors({ navigate }) {
         <div className="m-wrap-md">
           <div className="m-label" style={{ marginBottom: '16px' }}>Investors</div>
           <h1 className="m-display" style={{ fontSize: 'clamp(36px, 5vw, 60px)', color: '#E8E2D5', marginBottom: '20px' }}>
-            A new category.
+            The financial OS
             <br />
-            <em style={{ color: '#D97757', fontStyle: 'italic' }}>Early.</em>
+            nobody built.
+            <br />
+            <em style={{ color: '#D97757', fontStyle: 'italic' }}>Until now.</em>
           </h1>
           <p className="m-body" style={{ fontSize: '17px', maxWidth: '520px', marginBottom: '32px' }}>
-            Royal-Icon Ledger is creating a new product category: the financial operating system for variable-income earners. This is an overview for investors and strategic partners.
+            Hundreds of millions of people earn variably. Every financial product on the market was built for someone else. Royal-Icon Ledger is the first financial operating system designed around how they actually earn.
           </p>
           <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center', padding: '10px 16px', background: '#14110E', border: '1px solid #26221C', borderRadius: '4px' }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#7FA068' }} />
@@ -61,9 +63,9 @@ export default function Investors({ navigate }) {
           <div className="m-section-header">
             <div className="m-label" style={{ marginBottom: '16px' }}>The problem</div>
             <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 46px)', color: '#E8E2D5', marginBottom: '16px' }}>
-              A large population with
+              Hundreds of millions of earners.
               <br />
-              <em style={{ color: '#D97757', fontStyle: 'italic' }}>no adequate financial tools</em>.
+              <em style={{ color: '#D97757', fontStyle: 'italic' }}>Zero tools built for them.</em>
             </h2>
           </div>
 
@@ -104,9 +106,9 @@ export default function Investors({ navigate }) {
 
           <div className="m-card" style={{ padding: '32px', background: '#0F0D0A' }}>
             <p style={{ fontSize: '16px', color: '#8B8478', lineHeight: 1.8 }}>
-              The personal finance market is served almost entirely by tools designed for fixed-income earners: expense trackers, savings apps, and budgeting tools built around the assumption of a stable monthly salary.
-              Freelancers, traders, business owners, and gig workers — who together represent hundreds of millions of people globally — are trying to use tools that were not designed for them.
-              The result is financial fragility disguised as bad behaviour.
+              Every budgeting app, savings tool, and personal finance product on the market was built around one assumption: a stable monthly salary.
+              Freelancers, traders, business owners, and gig workers — hundreds of millions of people — are using tools that were never designed for them.
+              The result is financial fragility that gets blamed on behaviour. It's not behaviour. It's the wrong architecture.
             </p>
           </div>
         </div>
@@ -116,14 +118,14 @@ export default function Investors({ navigate }) {
       <section className="m-section" style={{ background: '#0F0D0A', borderBottom: '1px solid #1A1610' }}>
         <div className="m-wrap-md">
           <div className="m-section-header">
-            <div className="m-label" style={{ marginBottom: '16px' }}>Category</div>
+            <div className="m-label" style={{ marginBottom: '16px' }}>Why This Wins</div>
             <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#E8E2D5', marginBottom: '16px' }}>
-              We are not building
+              A different category.
               <br />
-              another budget app.
+              <em style={{ color: '#D97757', fontStyle: 'italic' }}>Not a better budget app.</em>
             </h2>
             <p className="m-body" style={{ maxWidth: '520px' }}>
-              Royal-Icon Ledger is a financial operating system. The distinction matters structurally, not just for marketing.
+              Financial OS is a structurally distinct product category. It does things tracking apps cannot do — and solves problems they were never designed to address.
             </p>
           </div>
 
@@ -148,7 +150,8 @@ export default function Investors({ navigate }) {
           <div className="m-section-header">
             <div className="m-label" style={{ marginBottom: '16px' }}>Why now</div>
             <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#E8E2D5' }}>
-              Four converging tailwinds.
+              Four reasons the timing is{' '}
+              <em style={{ color: '#D97757', fontStyle: 'italic' }}>structural</em>.
             </h2>
           </div>
           <div className="m-grid-2">
@@ -166,11 +169,11 @@ export default function Investors({ navigate }) {
       <section className="m-section" style={{ background: '#0F0D0A', borderBottom: '1px solid #1A1610' }}>
         <div className="m-wrap-md">
           <div className="m-section-header">
-            <div className="m-label" style={{ marginBottom: '16px' }}>Product status</div>
+            <div className="m-label" style={{ marginBottom: '16px' }}>The Product</div>
             <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#E8E2D5' }}>
-              Working product.
+              Not a concept.
               <br />
-              <em style={{ color: '#D97757', fontStyle: 'italic' }}>Private beta.</em>
+              <em style={{ color: '#D97757', fontStyle: 'italic' }}>A working product.</em>
             </h2>
           </div>
 
@@ -257,10 +260,10 @@ export default function Investors({ navigate }) {
         <div className="m-wrap-sm" style={{ textAlign: 'center' }}>
           <div className="m-label" style={{ marginBottom: '16px' }}>Get in touch</div>
           <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#E8E2D5', marginBottom: '20px' }}>
-            Interested in the opportunity?
+            Early conversations welcome.
           </h2>
           <p className="m-body" style={{ marginBottom: '36px' }}>
-            We're open to conversations with investors and strategic partners who understand the variable-income market.
+            We're speaking with investors and strategic partners who see the variable-income market for what it is: underserved, global, and growing.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <button

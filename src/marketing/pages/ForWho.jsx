@@ -7,7 +7,7 @@ const SEGMENTS = [
     emoji: '💼',
     title: 'Freelancers',
     tagline: 'Feast and famine — managed.',
-    pain: 'A R30,000 month followed by a R6,000 month. A big client who pays late. A dry Q1. Freelance income is not unpredictable — it just requires a different financial architecture.',
+    pain: 'A R30,000 month followed by R6,000. A client who pays late. A dry quarter. Freelance income isn\'t unpredictable — it just requires different financial architecture.',
     outcomes: [
       'Salary is computed from expenses, not guessed from last month\'s invoice',
       'Buffer absorbs lean months without lifestyle disruption',
@@ -20,7 +20,7 @@ const SEGMENTS = [
     emoji: '📈',
     title: 'Traders & Investors',
     tagline: 'Business and household. Separate by design.',
-    pain: 'A losing month in the market should not mean the family budget changes. Trading capital should have its own rules, its own risk protocols, and its own tracking — completely isolated from the household.',
+    pain: 'A losing month shouldn\'t change the family budget. Trading capital needs its own rules, its own risk protocols, and its own tracking — isolated from the household.',
     outcomes: [
       'Trading P&L tracked separately from household finances',
       'Drawdown protocols enforce position-size reductions automatically',
@@ -34,7 +34,7 @@ const SEGMENTS = [
     emoji: '🏢',
     title: 'Business Owners',
     tagline: 'Pay yourself correctly. Finally.',
-    pain: 'Owner compensation in a small business is often the last priority — or worse, it\'s whatever is left over. Business volatility bleeds into household decisions. The line between business and personal finance is blurred.',
+    pain: 'Owner compensation is often whatever\'s left over. Business volatility bleeds into household decisions. The line between business and personal finance disappears.',
     outcomes: [
       'Salary computed from household expenses — not from business cashflow',
       'Buffer shields the household from business volatility',
@@ -47,7 +47,7 @@ const SEGMENTS = [
     emoji: '⚡',
     title: 'Gig Workers',
     tagline: 'Irregular payments. Consistent structure.',
-    pain: 'Gig income arrives in small, frequent, unpredictable amounts. Without a system, every payment feels like a bonus — which means it gets spent like one. The financial architecture most gig workers use is: earn it, spend it.',
+    pain: 'Every payment feels like a bonus — so it gets spent like one. Without structure, gig income is earn it, spend it.',
     outcomes: [
       'Every income event is allocated on receipt — not on feeling',
       'Buffer builds incrementally from every small payment',
@@ -60,7 +60,7 @@ const SEGMENTS = [
     emoji: '🏠',
     title: 'Salaried + Side Income',
     tagline: 'Your primary income is structured. Your side income shouldn\'t be wasted.',
-    pain: 'You have a fixed salary and a growing side business or investment portfolio. The salary covers the basics — but irregular top-ups from the side income get spent without a system. Over five years, that\'s hundreds of thousands in unallocated value.',
+    pain: 'The salary covers the basics. Side income gets spent without a system. Over five years, that\'s hundreds of thousands in unallocated value.',
     outcomes: [
       'Fixed income handles household baseline expenses',
       'Variable side income allocated to buffer, long-term, and goals',
@@ -73,7 +73,7 @@ const SEGMENTS = [
     emoji: '👨‍👩‍👧',
     title: 'Families & Sole Earners',
     tagline: 'One income. One family. No room for error.',
-    pain: 'When you are the sole earner for a household with dependents, financial error has real consequences. A month without a plan is a month the family feels. There is no partner income to fall back on.',
+    pain: 'Financial error has real consequences when you\'re the sole earner. A month without a plan is a month the family feels.',
     outcomes: [
       'Buffer target is set in months of salary — not an arbitrary number',
       'Family expenses drive the salary computation',
@@ -100,7 +100,7 @@ function SegmentCard({ segment, navigate }) {
             {segment.pain}
           </p>
           <div className="m-card" style={{ padding: '20px 24px' }}>
-            <p style={{ fontSize: '18px', color: '#D97757', fontStyle: 'italic', lineHeight: 1.6, fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300 }}>
+            <p style={{ fontSize: '18px', color: '#D97757', fontStyle: 'italic', lineHeight: 1.6, fontFamily: "'Fraunces', Georgia, serif", fontWeight: 300 }}>
               "{segment.quote}"
             </p>
           </div>
@@ -169,7 +169,7 @@ export default function ForWho({ navigate }) {
             Apply for early access. Limited invites available.
           </p>
           <button className="m-btn m-btn-primary m-btn-lg" onClick={() => navigate('/early-access')}>
-            Request Early Access
+            Get Early Access
           </button>
         </div>
       </section>

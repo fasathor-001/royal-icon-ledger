@@ -74,8 +74,11 @@ export default function Home({ navigate }) {
             {' '}wasn't.
           </h1>
 
-          <p className="m-body m-fade-up-3" style={{ fontSize: '18px', maxWidth: '560px', marginBottom: '40px', color: '#8B8478' }}>
-            Royal-Icon Ledger is a financial operating system for freelancers, traders, and anyone with unpredictable income.
+          <p className="m-body m-fade-up-3" style={{ fontSize: '18px', maxWidth: '560px', marginBottom: '8px', color: '#8B8478' }}>
+            Royal-Icon Ledger gives every rand a role — before you spend it.
+          </p>
+          <p className="m-body m-fade-up-3" style={{ fontSize: '18px', maxWidth: '560px', marginBottom: '40px', color: '#5C5648' }}>
+            Built for freelancers, traders, and anyone with unpredictable income.
           </p>
 
           <div className="m-fade-up-3" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
@@ -83,7 +86,7 @@ export default function Home({ navigate }) {
               className="m-btn m-btn-primary m-btn-lg"
               onClick={() => navigate('/early-access')}
             >
-              Request Early Access
+              Get Early Access
             </button>
             <button
               className="m-btn m-btn-outline m-btn-lg"
@@ -273,7 +276,7 @@ export default function Home({ navigate }) {
             <em style={{ color: '#D97757', fontStyle: 'italic' }}>This is a steering wheel.</em>
           </h2>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', marginBottom: '40px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', marginBottom: '32px' }}>
             {[
               { label: 'Other apps',  items: ['Track spending after it happens', 'Fixed-income logic', 'Manual categorisation', 'No behavioural friction', 'No allocation system'] },
               { label: 'Royal-Icon Ledger', accent: true, items: ['Control decisions before they happen', 'Built for variable income', 'Automatic allocation by stage', 'Spending Gate + 24h hold', 'Stage-based progression system'] },
@@ -286,6 +289,14 @@ export default function Home({ navigate }) {
                     <span style={{ fontSize: '13px', color: accent ? '#E8E2D5' : '#5C5648', lineHeight: 1.5 }}>{item}</span>
                   </div>
                 ))}
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap' }}>
+            {['A system, not a spreadsheet replacement.', 'Designed for control, not just tracking.', 'Built for real-world income patterns.'].map(t => (
+              <div key={t} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#3A3028' }}>
+                <span style={{ color: '#D97757' }}>—</span>
+                {t}
               </div>
             ))}
           </div>
@@ -381,7 +392,7 @@ export default function Home({ navigate }) {
             className="m-btn m-btn-primary m-btn-lg"
             onClick={() => navigate('/early-access')}
           >
-            Request Early Access
+            Get Early Access
           </button>
           <p style={{ marginTop: '16px', fontSize: '12px', color: '#3A3028' }}>
             Invite-based access only. No credit card required.

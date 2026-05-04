@@ -3,7 +3,7 @@
    Prefix: m-   (scoped to marketing, no collision with app styles)
    ───────────────────────────────────────────────────────────────── */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 /* ── Base reset ─────────────────────────────── */
 .m-root { font-family: 'Inter', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
@@ -28,7 +28,7 @@
 }
 
 /* ── Typography ─────────────────────────────── */
-.m-display      { font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; font-weight: 300; line-height: 1.12; letter-spacing: -0.01em; }
+.m-display      { font-family: 'Fraunces', Georgia, serif; font-weight: 400; line-height: 1.12; letter-spacing: -0.01em; }
 .m-label        { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #5C5648; }
 .m-label-orange { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #D97757; }
 .m-body         { font-size: 16px; line-height: 1.75; color: #8B8478; }

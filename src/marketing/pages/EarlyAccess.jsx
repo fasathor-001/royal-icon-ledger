@@ -145,11 +145,14 @@ export default function EarlyAccess({ navigate }) {
         <div className="m-wrap-sm">
           <div className="m-label" style={{ marginBottom: '16px' }}>Early Access</div>
           <h1 className="m-display" style={{ fontSize: 'clamp(36px, 5vw, 60px)', color: '#E8E2D5', marginBottom: '20px' }}>
-            Request your{' '}
-            <em style={{ color: '#D97757', fontStyle: 'italic' }}>invite</em>.
+            Get{' '}
+            <em style={{ color: '#D97757', fontStyle: 'italic' }}>early access</em>.
           </h1>
-          <p className="m-body" style={{ fontSize: '16px' }}>
-            Royal-Icon Ledger is invite-only. We're opening access to a limited number of early users who are serious about building financial structure.
+          <p className="m-body" style={{ fontSize: '16px', marginBottom: '12px' }}>
+            Built for people who don't earn the same every month.
+          </p>
+          <p style={{ fontSize: '13px', color: '#3A3028' }}>
+            No spam. No noise. We'll only reach out when access opens.
           </p>
         </div>
       </section>
