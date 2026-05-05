@@ -27,7 +27,7 @@ const MODULES = [
     title: 'Envelope Budgeting',
     subtitle: 'Money with a purpose',
     what: 'Assign every rand to an envelope before you spend it — groceries, family, transport, personal. Each envelope has its own cap, block mode, and rollover rule.',
-    why: 'Envelope budgeting is the oldest and most effective budgeting method. Royal-Icon Ledger brings it into the digital era with rollover logic, hard blocks, and PIN overrides.',
+    why: 'Envelope budgeting is the oldest and most effective budgeting method. Royal Ledger brings it into the digital era with rollover logic, hard blocks, and PIN overrides.',
     points: ['Custom envelopes with icons', 'Soft warning / hard block / PIN override modes', 'Roll-over, reset, or sweep-to-buffer at month end', 'Smart setup suggestions', 'Monthly review flow'],
   },
   {
@@ -62,7 +62,7 @@ const MODULES = [
     icon: '📈',
     title: 'Stage System',
     subtitle: 'A progression, not just a tracker',
-    what: 'Royal-Icon Ledger places you in one of four stages based on your buffer level, and advances you automatically as the buffer grows. Each stage has different allocation rules.',
+    what: 'Royal Ledger places you in one of four stages based on your buffer level, and advances you automatically as the buffer grows. Each stage has different allocation rules.',
     why: 'Financial progress isn\'t linear. The stage system reflects this — protecting the household first, then growing long-term, then enabling lifestyle. Sequence matters.',
     points: ['Stage 1: Crisis floor (6 months)', 'Stage 1.5: Comfort zone (12 months)', 'Stage 2: Fortified (target months)', 'Stage 3: Full waterfall — wealth compounds', 'Automatic stage advancement'],
   },
@@ -111,7 +111,7 @@ export default function Product({ navigate }) {
             <em style={{ color: '#D97757', fontStyle: 'italic' }}>One system.</em>
           </h1>
           <p className="m-body" style={{ fontSize: '17px', maxWidth: '540px' }}>
-            Royal-Icon Ledger is not a collection of features. It's a financial operating system — each module connected, each decision informed by the same underlying rules.
+            Royal Ledger is not a collection of features. It's a financial operating system — each module connected, each decision informed by the same underlying rules.
           </p>
         </div>
       </section>
@@ -191,7 +191,7 @@ export default function Product({ navigate }) {
             Ready to put it to work?
           </h2>
           <p className="m-body" style={{ marginBottom: '32px' }}>
-            Royal-Icon Ledger is in private beta. Apply for early access today.
+            Royal Ledger is in private beta. Apply for early access today.
           </p>
           <button className="m-btn m-btn-primary m-btn-lg" onClick={() => navigate('/early-access')}>
             Get Early Access

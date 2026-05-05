@@ -210,7 +210,7 @@ export default function Onboarding({ data, setData, onComplete }) {
           <div>
             <Heart size={32} style={{ color: '#D97757', marginBottom: '24px' }} />
             <h1 className="ob-display" style={{ fontSize: '48px', lineHeight: 1.1, marginBottom: '24px', fontWeight: 300 }}>
-              Welcome to <span style={{ fontStyle: 'italic', color: '#D97757' }}>Royal-Icon Ledger</span>.
+              Welcome to <span style={{ fontStyle: 'italic', color: '#D97757' }}>Royal Ledger</span>.
             </h1>
             <p style={{ fontSize: '17px', lineHeight: 1.7, color: '#E8E2D5', marginBottom: '20px' }}>
               This is a personal finance system built around three ideas:

@@ -1,4 +1,4 @@
-# Royal-Icon Ledger — User Guide
+# Royal Ledger — User Guide
 
 *Personal finance for the disciplined.*
 
@@ -6,7 +6,7 @@
 
 ## 1. App Philosophy
 
-Royal-Icon Ledger is a discipline system, not a tracker. Most finance apps tell you what you've already spent — this one prevents you from spending what you shouldn't. Every feature exists to enforce a single principle: **protect family money first, build future money second**. The pause between impulse and payment is where wealth is built. If you remove the pause, no budget survives.
+Royal Ledger is a discipline system, not a tracker. Most finance apps tell you what you've already spent — this one prevents you from spending what you shouldn't. Every feature exists to enforce a single principle: **protect family money first, build future money second**. The pause between impulse and payment is where wealth is built. If you remove the pause, no budget survives.
 
 ---
 
@@ -469,4 +469,4 @@ The discipline isn't in saying no. The discipline is in always asking the questi
 
 ---
 
-*Royal-Icon Ledger. Personal finance for the disciplined.*
+*Royal Ledger. Personal finance for the disciplined.*

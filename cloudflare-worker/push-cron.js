@@ -1,5 +1,5 @@
 /**
- * Royal-Icon Ledger — Push Notification Cron Worker
+ * Royal Ledger — Push Notification Cron Worker
  *
  * Deploy to Cloudflare Workers with a cron trigger: "0 * * * *" (every hour).
  *
@@ -247,7 +247,7 @@ function buildScheduledNotification(sub, appData, currency, { isSunday, isLastTh
   // Month-end Checkpoint — highest priority — last 3 days of month
   if (isLastThreeDays && sub.monthly_enabled) {
     return {
-      title: 'Royal-Icon Ledger — Month-end Checkpoint',
+      title: 'Royal Ledger — Month-end Checkpoint',
       body: morning
         ? `Buffer: ${fmt(buffer, currency)}. Time to sweep and review — month closes soon.`
         : `Evening wrap-up: ${fmt(spent, currency)} spent, ${fmt(remaining, currency)} left. Don't forget your monthly review.`,
@@ -257,7 +257,7 @@ function buildScheduledNotification(sub, appData, currency, { isSunday, isLastTh
   // Sunday Pulse — morning AND evening
   if (isSunday && sub.weekly_enabled) {
     return {
-      title: 'Royal-Icon Ledger — Sunday Pulse',
+      title: 'Royal Ledger — Sunday Pulse',
       body: morning
         ? `Good morning. ${fmt(spent, currency)} of ${fmt(budget, currency)} spent this month. Check your envelopes.`
         : `Sunday evening: ${fmt(remaining, currency)} left in budget. Buffer at ${fmt(buffer, currency)}.`,
@@ -267,7 +267,7 @@ function buildScheduledNotification(sub, appData, currency, { isSunday, isLastTh
   // Daily reminder — morning AND evening
   if (sub.daily_enabled) {
     return {
-      title: 'Royal-Icon Ledger',
+      title: 'Royal Ledger',
       body: morning
         ? `Good morning — Buffer: ${fmt(buffer, currency)}. ${fmt(remaining, currency)} left to spend this month${paceLabel ? ` (${paceLabel})` : ''}.`
         : `Evening check — ${fmt(spent, currency)} spent today's month total. Buffer: ${fmt(buffer, currency)}.`,
@@ -288,13 +288,13 @@ function buildEventNotification(event, appData, currency) {
         ? appData.bufferTarget * ((appData.bufferProtectMonths || 6) / (appData.bufferTargetMonths || 18))
         : 0;
       return {
-        title: '⚠️ Royal-Icon Ledger — Drawdown Alert',
+        title: '⚠️ Royal Ledger — Drawdown Alert',
         body: `Buffer ${fmt(buffer, currency)} has fallen below your crisis floor (${fmt(floor, currency)}). Protect mode activating.`,
       };
     }
     case 'override':
       return {
-        title: '🔓 Royal-Icon Ledger — Spending Override',
+        title: '🔓 Royal Ledger — Spending Override',
         body: `A hard spending block was just overridden${event.payload?.item ? ` on "${event.payload.item}"` : ''}. Logged with a red badge in History.`,
       };
     case 'stage_change': {
@@ -302,7 +302,7 @@ function buildEventNotification(event, appData, currency) {
       const newStage = event.payload?.newStage;
       const name = stageNames[newStage] || `Stage ${newStage}`;
       return {
-        title: `🎉 Royal-Icon Ledger — ${name} Reached!`,
+        title: `🎉 Royal Ledger — ${name} Reached!`,
         body: newStage === 3
           ? `Your foundation is solid. Family is protected. Buffer at ${fmt(buffer, currency)}.`
           : `You've levelled up to ${name}. Buffer at ${fmt(buffer, currency)}. Keep building.`,

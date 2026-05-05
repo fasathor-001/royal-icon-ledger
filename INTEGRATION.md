@@ -1,4 +1,4 @@
-# Royal-Icon Ledger — Supabase Integration Guide
+# Royal Ledger — Supabase Integration Guide
 
 Complete setup for cloud sync, cross-device access, and the v2 auth layer.
 

@@ -13,7 +13,7 @@ export default defineConfig({
       includeAssets: ['favicon.ico'],
       manifest: {
         id: '/',
-        name: 'Royal-Icon Ledger',
+        name: 'Royal Ledger',
         short_name: 'Royal Ledger',
         description: 'Personal finance for the disciplined trader and their family.',
         theme_color: '#0A0908',

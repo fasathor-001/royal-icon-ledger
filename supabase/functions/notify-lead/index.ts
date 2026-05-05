@@ -47,7 +47,7 @@ async function sendEmail(
 ): Promise<void> {
   const html = `
     <div style="font-family:Inter,sans-serif;background:#0A0908;color:#E8E2D5;padding:32px;border-radius:6px;max-width:540px;">
-      <div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#5C5648;margin-bottom:8px;">Royal-Icon Ledger</div>
+      <div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#5C5648;margin-bottom:8px;">Royal Ledger</div>
       <h1 style="font-size:22px;font-weight:400;margin:0 0 24px;color:#E8E2D5;">New early access application</h1>
 
       <table style="width:100%;border-collapse:collapse;font-size:14px;">
@@ -77,7 +77,7 @@ async function sendEmail(
       'Content-Type':  'application/json',
     },
     body: JSON.stringify({
-      from:    'Royal-Icon Ledger <onboarding@resend.dev>',
+      from:    'Royal Ledger <onboarding@resend.dev>',
       to:      [toEmail],
       subject: `New lead: ${name} (${incomeType})`,
       html,

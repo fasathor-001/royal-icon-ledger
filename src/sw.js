@@ -10,7 +10,7 @@ self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim(
 // ── Push event ──────────────────────────────────────────────────────────────
 self.addEventListener('push', (event) => {
   if (!event.data) return;
-  const { title = 'Royal-Icon Ledger', body = '', url = '/' } = event.data.json();
+  const { title = 'Royal Ledger', body = '', url = '/' } = event.data.json();
 
   event.waitUntil(
     self.registration.showNotification(title, {

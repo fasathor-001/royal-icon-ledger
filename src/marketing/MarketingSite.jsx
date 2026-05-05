@@ -33,15 +33,15 @@ function ScrollToTop() {
 
 // ── Page titles per route ───────────────────────────────────────
 const PAGE_TITLES = {
-  '/':             'Royal-Icon Ledger — Financial OS for Variable-Income Earners',
-  '/product':      'Product — Royal-Icon Ledger',
-  '/how-it-works': 'How It Works — Royal-Icon Ledger',
-  '/for-who':      'For Who — Royal-Icon Ledger',
-  '/security':     'Security & Privacy — Royal-Icon Ledger',
-  '/investors':    'Investors — Royal-Icon Ledger',
-  '/early-access': 'Get Early Access — Royal-Icon Ledger',
-  '/about':        'About — Royal-Icon Ledger',
-  '/privacy':      'Privacy Policy — Royal-Icon Ledger',
+  '/':             'Royal Ledger — Financial OS for Variable-Income Earners',
+  '/product':      'Product — Royal Ledger',
+  '/how-it-works': 'How It Works — Royal Ledger',
+  '/for-who':      'For Who — Royal Ledger',
+  '/security':     'Security & Privacy — Royal Ledger',
+  '/investors':    'Investors — Royal Ledger',
+  '/early-access': 'Get Early Access — Royal Ledger',
+  '/about':        'About — Royal Ledger',
+  '/privacy':      'Privacy Policy — Royal Ledger',
 };
 
 function TitleSync() {

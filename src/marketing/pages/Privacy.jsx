@@ -56,7 +56,7 @@ const SECTIONS = [
   {
     title: 'Cookies',
     body: [
-      'The marketing website (royalicon.net) uses no advertising or tracking cookies.',
+      'The marketing website (royalledger.app) uses no advertising or tracking cookies.',
       'The app uses a session cookie for authentication. This is essential and cannot be disabled without breaking sign-in.',
       'Cloudflare analytics uses no cookies and does not fingerprint visitors.',
     ],

@@ -57,7 +57,7 @@ export default function HowItWorks({ navigate }) {
             Zero guesswork.
           </h1>
           <p className="m-body" style={{ fontSize: '17px', maxWidth: '520px' }}>
-            The system does the thinking. You do the living. Here's how Royal-Icon Ledger works from first login to financial structure.
+            The system does the thinking. You do the living. Here's how Royal Ledger works from first login to financial structure.
           </p>
         </div>
       </section>
@@ -127,7 +127,7 @@ export default function HowItWorks({ navigate }) {
             <em style={{ color: '#D97757', fontStyle: 'italic' }}>unstructured</em>."
           </h2>
           <p style={{ fontSize: '13px', color: '#3A3028', letterSpacing: '0.06em' }}>
-            — The belief behind Royal-Icon Ledger
+            — The belief behind Royal Ledger
           </p>
         </div>
       </section>

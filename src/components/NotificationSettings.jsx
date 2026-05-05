@@ -90,7 +90,7 @@ function IOSInstallGuide() {
           {
             icon: '🏠',
             label: 'Open from your Home Screen',
-            desc: 'Tap the Royal-Icon Ledger icon — not Safari. It must launch in full-screen mode.',
+            desc: 'Tap the Royal Ledger icon — not Safari. It must launch in full-screen mode.',
           },
           {
             icon: '🔔',
@@ -142,7 +142,7 @@ function DeniedGuide() {
       <ol style={{ color: '#8B8478', lineHeight: 1.9, marginTop: 8, paddingLeft: 18, fontSize: 13 }}>
         <li>Open the iPhone <strong style={{ color: '#E8E2D5' }}>Settings</strong> app</li>
         <li>Scroll to <strong style={{ color: '#E8E2D5' }}>Safari → Advanced → Website Data</strong></li>
-        <li>Or go to <strong style={{ color: '#E8E2D5' }}>Settings → Notifications → Royal-Icon Ledger</strong></li>
+        <li>Or go to <strong style={{ color: '#E8E2D5' }}>Settings → Notifications → Royal Ledger</strong></li>
         <li>Enable <strong style={{ color: '#E8E2D5' }}>Allow Notifications</strong>, then return here</li>
       </ol>
     </div>
@@ -640,7 +640,7 @@ export function PushPromptBanner({ user, data, setData }) {
         }} onClick={e => e.stopPropagation()}>
           <div style={{ fontSize: 15, fontWeight: 600, color: '#C56B5A', marginBottom: 8 }}>Notifications blocked</div>
           <div style={{ fontSize: 13, color: '#8B8478', lineHeight: 1.6, marginBottom: 16 }}>
-            To enable: go to <strong style={{ color: '#E8E2D5' }}>Settings → Notifications → Royal-Icon Ledger</strong> and allow notifications.
+            To enable: go to <strong style={{ color: '#E8E2D5' }}>Settings → Notifications → Royal Ledger</strong> and allow notifications.
           </div>
           <button onClick={() => setStatus('hidden')} style={{
             width: '100%', padding: '13px', background: '#26221C', border: 'none',
@@ -684,7 +684,7 @@ export function PushPromptBanner({ user, data, setData }) {
           Stay on top of your money
         </div>
         <div style={{ fontSize: 14, color: '#8B8478', lineHeight: 1.7, marginBottom: 24 }}>
-          Royal-Icon Ledger will send you:
+          Royal Ledger will send you:
         </div>
 
         {/* Benefit list */}

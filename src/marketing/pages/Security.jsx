@@ -6,7 +6,7 @@ const TRUST_ITEMS = [
   {
     icon: '🔒',
     title: 'Your data is yours',
-    body: 'Royal-Icon Ledger does not aggregate, sell, or use your financial data for any purpose beyond running your system. Your records are private financial records — treated as such.',
+    body: 'Royal Ledger does not aggregate, sell, or use your financial data for any purpose beyond running your system. Your records are private financial records — treated as such.',
     strong: true,
   },
   {
@@ -18,7 +18,7 @@ const TRUST_ITEMS = [
   {
     icon: '📴',
     title: 'Offline-first architecture',
-    body: 'Royal-Icon Ledger is a Progressive Web App (PWA). All core functionality works without an internet connection. Your data is stored locally first, synced when online. A network outage never breaks your system.',
+    body: 'Royal Ledger is a Progressive Web App (PWA). All core functionality works without an internet connection. Your data is stored locally first, synced when online. A network outage never breaks your system.',
     strong: false,
   },
   {
@@ -42,7 +42,7 @@ const TRUST_ITEMS = [
   {
     icon: '🚫',
     title: 'No advertising. No data selling.',
-    body: 'Royal-Icon Ledger does not run advertisements. We do not sell your data to third parties. We do not share your financial information with anyone. The product is the service — not a data pipeline.',
+    body: 'Royal Ledger does not run advertisements. We do not sell your data to third parties. We do not share your financial information with anyone. The product is the service — not a data pipeline.',
     strong: true,
   },
   {
@@ -156,7 +156,7 @@ export default function Security({ navigate }) {
                   You control your sessions
                 </h3>
                 <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, marginBottom: '16px' }}>
-                  Royal-Icon Ledger provides a Sessions view in Account Settings. You can see every active device session and sign out of any or all of them remotely. If you ever lose access to a device, you can revoke it immediately.
+                  Royal Ledger provides a Sessions view in Account Settings. You can see every active device session and sign out of any or all of them remotely. If you ever lose access to a device, you can revoke it immediately.
                 </p>
                 <p style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.6 }}>
                   Your PIN is never stored on any server. It lives only on your device, and is never sent over the network.
@@ -174,7 +174,7 @@ export default function Security({ navigate }) {
             <em style={{ color: '#D97757', fontStyle: 'italic' }}>Your system.</em>
           </h2>
           <p className="m-body" style={{ marginBottom: '32px' }}>
-            Royal-Icon Ledger is built around one principle: your financial records are private. Apply for early access and take control.
+            Royal Ledger is built around one principle: your financial records are private. Apply for early access and take control.
           </p>
           <button className="m-btn m-btn-primary m-btn-lg" onClick={() => navigate('/early-access')}>
             Get Early Access

@@ -1,4 +1,4 @@
-# Royal-Icon Ledger — User Guide
+# Royal Ledger — User Guide
 
 A field manual for setting up and operating the app correctly.
 
@@ -35,7 +35,7 @@ A field manual for setting up and operating the app correctly.
 
 ## 1. App Philosophy
 
-Royal-Icon Ledger is a discipline system, not a tracker. Generic finance apps tell you what you've already spent. This one prevents the spending you shouldn't do, automates the saving you said you'd do, and protects the money your family depends on.
+Royal Ledger is a discipline system, not a tracker. Generic finance apps tell you what you've already spent. This one prevents the spending you shouldn't do, automates the saving you said you'd do, and protects the money your family depends on.
 
 Three operating principles:
 
@@ -1098,4 +1098,4 @@ If PIN override is above 2/month, your envelope caps don't match reality. Edit t
 
 ---
 
-*Royal-Icon Ledger. Personal finance for the disciplined.*
+*Royal Ledger. Personal finance for the disciplined.*

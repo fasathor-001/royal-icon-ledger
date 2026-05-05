@@ -145,7 +145,7 @@ export default function ForWho({ navigate }) {
             <em style={{ color: '#D97757', fontStyle: 'italic' }}>differently</em>.
           </h1>
           <p className="m-body" style={{ fontSize: '17px', maxWidth: '520px' }}>
-            Royal-Icon Ledger was not designed for someone with a stable monthly salary and a pension plan. It was designed for everyone else.
+            Royal Ledger was not designed for someone with a stable monthly salary and a pension plan. It was designed for everyone else.
           </p>
         </div>
       </section>

@@ -222,7 +222,7 @@ export default function Investors({ navigate }) {
             <div style={{ fontSize: '16px', flexShrink: 0, marginTop: '2px' }}>⚠️</div>
             <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.7 }}>
               <strong style={{ color: '#E8E2D5' }}>Honest statement: </strong>
-              Royal-Icon Ledger is in early private beta. We are not claiming thousands of users, revenue, partnerships, or regulatory approval. We are a working product with a clear category, an honest problem statement, and a team focused on building the right thing.
+              Royal Ledger is in early private beta. We are not claiming thousands of users, revenue, partnerships, or regulatory approval. We are a working product with a clear category, an honest problem statement, and a team focused on building the right thing.
             </p>
           </div>
         </div>

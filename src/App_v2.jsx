@@ -322,7 +322,7 @@ function LoginPage() {
         {/* Logo */}
         <div style={{ marginBottom: '32px' }}>
           <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 400, marginBottom: '4px' }}>
-            Royal-Icon <span style={{ fontStyle: 'italic', color: '#D97757' }}>Ledger</span>
+            Royal <span style={{ fontStyle: 'italic', color: '#D97757' }}>Ledger</span>
           </div>
           <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#5C5648', fontWeight: 600 }}>
             Personal finance for the disciplined
@@ -544,7 +544,7 @@ function SetNewPasswordPage() {
       <div style={{ maxWidth: '420px', width: '100%', padding: '44px 40px', background: '#14110E', border: '1px solid #26221C', borderRadius: '6px', color: '#E8E2D5' }}>
         <div style={{ marginBottom: '28px' }}>
           <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 400, marginBottom: '4px' }}>
-            Royal-Icon <span style={{ fontStyle: 'italic', color: '#D97757' }}>Ledger</span>
+            Royal <span style={{ fontStyle: 'italic', color: '#D97757' }}>Ledger</span>
           </div>
         </div>
 

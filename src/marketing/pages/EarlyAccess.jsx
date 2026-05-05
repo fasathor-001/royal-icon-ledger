@@ -245,7 +245,7 @@ export default function EarlyAccess({ navigate }) {
                 <textarea
                   id="ea-interest"
                   className="m-input m-textarea"
-                  placeholder="Tell us briefly about your financial situation and what you're hoping Royal-Icon Ledger can help with…"
+                  placeholder="Tell us briefly about your financial situation and what you're hoping Royal Ledger can help with…"
                   value={form.interest}
                   onChange={e => set('interest', e.target.value)}
                 />

@@ -33,7 +33,7 @@ export default function MarketingFooter() {
           {/* Brand column */}
           <div>
             <Link to="/" style={{ textDecoration: 'none', marginBottom: '16px', display: 'inline-block' }}>
-              <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', fontWeight: 400, color: '#E8E2D5' }}>Royal-Icon </span>
+              <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', fontWeight: 400, color: '#E8E2D5' }}>Royal </span>
               <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', fontWeight: 400, fontStyle: 'italic', color: '#D97757' }}>Ledger</span>
             </Link>
             <p style={{ fontSize: '13px', color: '#3A3028', lineHeight: 1.7, maxWidth: '240px', marginBottom: '20px', marginTop: '4px' }}>
@@ -157,7 +157,7 @@ export default function MarketingFooter() {
 
             <div style={{ marginTop: '20px' }}>
               <p style={{ fontSize: '12px', color: '#3A3028', lineHeight: 1.65 }}>
-                Royal-Icon Ledger does not provide financial advice. This is a personal financial management tool.
+                Royal Ledger does not provide financial advice. This is a personal financial management tool.
               </p>
             </div>
           </div>
@@ -168,7 +168,7 @@ export default function MarketingFooter() {
         <hr className="m-divider" style={{ marginBottom: '28px' }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
           <span style={{ fontSize: '12px', color: '#3A3028' }}>
-            © {year} Royal-Icon Ledger. All rights reserved.
+            © {year} Royal Ledger. All rights reserved.
           </span>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
             <Link to="/privacy" style={{ fontSize: '12px', color: '#3A3028', textDecoration: 'none' }}>Privacy Policy</Link>

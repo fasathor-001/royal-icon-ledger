@@ -1,4 +1,4 @@
-# Royal-Icon Ledger — Release Checklist
+# Royal Ledger — Release Checklist
 
 > Run `npm run release:check` first. If the build fails, stop. If it passes, work through this document top to bottom before deploying.
 
@@ -200,7 +200,7 @@ Use this before every deploy. If any item fails, do not release.
 - [ ] Sync pill shows `↻ Retry` link when sync has failed
 - [ ] Data & Sync tab sections are labelled: CLOUD SYNC / BACKUP / SETUP
 - [ ] Danger zone: AlertTriangle banner visible; "What will be deleted" list present; button is PIN-gated
-- [ ] `Royal-Icon Ledger · v1.0.0` version footer visible at bottom of Settings
+- [ ] `Royal Ledger · v1.0.0` version footer visible at bottom of Settings
 - [ ] Currency section: active tile has orange border + check icon; unselected tiles are visually dimmed
 
 ---
@@ -329,4 +329,4 @@ git checkout v0.9.0   # last good tag
 
 ---
 
-*Generated for Royal-Icon Ledger · Architecture: React/Vite PWA · Supabase · Cloudflare Workers · Web Push (VAPID)*
+*Generated for Royal Ledger · Architecture: React/Vite PWA · Supabase · Cloudflare Workers · Web Push (VAPID)*

@@ -106,7 +106,7 @@ export default function About({ navigate }) {
               </div>
             </div>
             <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.7 }}>
-              Royal-Icon Ledger changes how money is handled — not just how it's recorded.
+              Royal Ledger changes how money is handled — not just how it's recorded.
             </p>
           </div>
 
@@ -130,7 +130,7 @@ export default function About({ navigate }) {
           {/* Transition */}
           <div style={{ marginTop: '64px', paddingTop: '48px', borderTop: '1px solid #1A1610', maxWidth: '400px' }}>
             <p style={{ fontSize: '15px', color: '#5C5648', lineHeight: 1.85, margin: 0 }}>
-              This is the thinking behind Royal-Icon Ledger.
+              This is the thinking behind Royal Ledger.
             </p>
             <p style={{ fontSize: '15px', color: '#3A3028', lineHeight: 1.85, margin: '6px 0 0' }}>
               And the reason it was built.
@@ -187,7 +187,7 @@ export default function About({ navigate }) {
             </p>
 
             <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
-              That gap is what led to Royal-Icon Ledger.
+              That gap is what led to Royal Ledger.
             </p>
 
             <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
@@ -231,7 +231,7 @@ export default function About({ navigate }) {
               </div>
               <div>
                 <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '19px', color: '#E8E2D5', fontStyle: 'italic' }}>— Amb. Frank A.</div>
-                <div style={{ fontSize: '13px', color: '#5C5648', marginTop: '2px' }}>Founder, Royal-Icon Ledger</div>
+                <div style={{ fontSize: '13px', color: '#5C5648', marginTop: '2px' }}>Founder, Royal Ledger</div>
                 <div style={{ fontSize: '12px', color: '#3A3028', marginTop: '3px' }}>Building financial systems for variable-income earners.</div>
               </div>
             </div>

@@ -75,7 +75,7 @@ export default function Home({ navigate }) {
           </h1>
 
           <p className="m-body m-fade-up-3" style={{ fontSize: '18px', maxWidth: '560px', marginBottom: '8px', color: '#8B8478' }}>
-            Royal-Icon Ledger gives every unit of income a role — before you spend it.
+            Royal Ledger gives every unit of income a role — before you spend it.
           </p>
           <p className="m-body m-fade-up-3" style={{ fontSize: '18px', maxWidth: '560px', marginBottom: '40px', color: '#5C5648' }}>
             Built for freelancers, traders, and anyone with unpredictable income.
@@ -124,7 +124,7 @@ export default function Home({ navigate }) {
             </div>
             <img
               src="/app-preview.png"
-              alt="Royal-Icon Ledger Command Dashboard"
+              alt="Royal Ledger Command Dashboard"
               style={{ width: '100%', display: 'block' }}
             />
           </div>
@@ -171,7 +171,7 @@ export default function Home({ navigate }) {
               { text: 'Not because you\'re careless — because there\'s no system.', muted: false },
               { text: 'Variable income is impossible to budget with fixed-income logic.', muted: true },
               { text: 'Most apps count what\'s already gone. That\'s not control — it\'s accounting.', muted: true },
-              { text: 'Royal-Icon Ledger controls decisions before the money leaves.', muted: false },
+              { text: 'Royal Ledger controls decisions before the money leaves.', muted: false },
             ].map((line, i) => (
               <p key={i} style={{
                 fontSize: '17px',
@@ -282,7 +282,7 @@ export default function Home({ navigate }) {
           <div className="home-compare-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', marginBottom: '32px' }}>
             {[
               { label: 'Other apps',  items: ['Track spending after it happens', 'Fixed-income logic', 'Manual categorisation', 'No behavioural friction', 'No allocation system'] },
-              { label: 'Royal-Icon Ledger', accent: true, items: ['Control decisions before they happen', 'Built for variable income', 'Automatic allocation by stage', 'Spending Gate + 24h hold', 'Stage-based progression system'] },
+              { label: 'Royal Ledger', accent: true, items: ['Control decisions before they happen', 'Built for variable income', 'Automatic allocation by stage', 'Spending Gate + 24h hold', 'Stage-based progression system'] },
             ].map(({ label, items, accent }) => (
               <div key={label} className={accent ? 'm-card-warm' : 'm-card-flat'} style={{ padding: '28px 24px' }}>
                 <div style={{ fontSize: '12px', fontWeight: 600, color: accent ? '#D97757' : '#3A3028', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '20px' }}>{label}</div>
@@ -382,11 +382,11 @@ export default function Home({ navigate }) {
             {[
               {
                 q: 'How is this different from YNAB, Mint, or other budget apps?',
-                a: 'Budget apps track what already happened. Royal-Icon Ledger controls decisions before they happen. Income is allocated automatically on arrival. Spending has limits enforced by the system — not your willpower. It is not a tracker. It is an operating system.',
+                a: 'Budget apps track what already happened. Royal Ledger controls decisions before they happen. Income is allocated automatically on arrival. Spending has limits enforced by the system — not your willpower. It is not a tracker. It is an operating system.',
               },
               {
                 q: 'Does it work on mobile?',
-                a: 'Yes. Royal-Icon Ledger is a Progressive Web App (PWA). Install it on your iPhone or Android home screen and it works exactly like a native app — including offline. No App Store required.',
+                a: 'Yes. Royal Ledger is a Progressive Web App (PWA). Install it on your iPhone or Android home screen and it works exactly like a native app — including offline. No App Store required.',
               },
               {
                 q: 'Do I need to connect my bank account?',

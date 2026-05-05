@@ -59,7 +59,7 @@ export default function MarketingNav() {
             style={{ textDecoration: 'none' }}
           >
             <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', fontWeight: 400, color: '#E8E2D5' }}>
-              Royal-Icon
+              Royal
             </span>
             <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', fontWeight: 400, fontStyle: 'italic', color: '#D97757' }}>
               {' '}Ledger

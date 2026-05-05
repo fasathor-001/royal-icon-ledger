@@ -1,5 +1,5 @@
 /**
- * Royal-Icon Ledger — MVP curated IANA timezone list
+ * Royal Ledger — MVP curated IANA timezone list
  *
  * 13 zones covering target regions:
  *   Nigeria · South Africa · UK · Europe · United States · Canada

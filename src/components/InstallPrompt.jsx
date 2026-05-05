@@ -165,7 +165,7 @@ export default function InstallPrompt() {
             <Download size={18} style={{ color: '#0A0908' }} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '2px' }}>Install Royal-Icon Ledger</div>
+            <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '2px' }}>Install Royal Ledger</div>
             <div style={{ fontSize: '12px', color: '#8B8478' }}>
               {platform === 'ios' || platform === 'android' ? 'Add to your home screen' : 'Install as desktop app'}
             </div>

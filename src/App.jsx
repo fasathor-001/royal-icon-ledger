@@ -548,7 +548,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
         <div className="max-w-6xl mx-auto flex items-center justify-between" style={{ padding: '14px 20px' }}>
           <div className="flex items-baseline gap-3">
             <h1 className="display" style={{ fontSize: 22 }}>
-              Royal-Icon <span style={{ fontStyle: 'italic', color: '#D97757' }}>Ledger</span>
+              Royal <span style={{ fontStyle: 'italic', color: '#D97757' }}>Ledger</span>
             </h1>
             <span className="label hidden sm:inline" style={{ color: '#5C5648' }}>Personal finance for the disciplined</span>
           </div>
@@ -3409,7 +3409,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
         textAlign: 'center', fontSize: '11px', color: '#2A241E',
         paddingTop: '24px', letterSpacing: '0.05em',
       }}>
-        Royal-Icon Ledger · v{APP_VERSION}
+        Royal Ledger · v{APP_VERSION}
       </div>
     </div>
   );
