@@ -56,12 +56,17 @@ export default function MarketingNav() {
           <NavLink
             to="/"
             className="m-nav-brand"
-            style={{ textDecoration: 'none' }}
+            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}
           >
+            <img
+              src="/icon-128.png"
+              alt=""
+              style={{ height: '38px', width: '38px', display: 'block', objectFit: 'contain' }}
+            />
             <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', fontWeight: 400, color: '#E8E2D5' }}>
               Royal
             </span>
-            <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', fontWeight: 400, fontStyle: 'italic', color: '#D97757' }}>
+            <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', fontWeight: 400, fontStyle: 'italic', color: '#D97757', marginLeft: '-4px' }}>
               {' '}Ledger
             </span>
           </NavLink>
