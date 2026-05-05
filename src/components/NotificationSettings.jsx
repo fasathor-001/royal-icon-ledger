@@ -128,22 +128,69 @@ function IOSInstallGuide() {
 }
 
 function DeniedGuide() {
+  // Detect browser for tailored instructions
+  const ua = navigator.userAgent;
+  const isEdge  = /Edg\//.test(ua);
+  const isChrome = /Chrome\//.test(ua) && !isEdge;
+  const isFirefox = /Firefox\//.test(ua);
+  const isSafariDesktop = /Safari\//.test(ua) && !/Chrome/.test(ua) && !/Edg\//.test(ua);
+  const isIOS = /iphone|ipad|ipod/i.test(ua);
+
+  let steps = [];
+  if (isIOS) {
+    steps = [
+      'Open iPhone Settings app',
+      'Go to Notifications → Royal Ledger',
+      'Enable Allow Notifications',
+      'Return here and tap Enable',
+    ];
+  } else if (isEdge) {
+    steps = [
+      <>Click the <strong style={{ color: '#E8E2D5' }}>🔒 lock icon</strong> in the Edge address bar</>,
+      <>Click <strong style={{ color: '#E8E2D5' }}>Permissions for this site</strong></>,
+      <>Set <strong style={{ color: '#E8E2D5' }}>Notifications</strong> to <strong style={{ color: '#E8E2D5' }}>Ask</strong> or <strong style={{ color: '#E8E2D5' }}>Allow</strong></>,
+      <>Press <strong style={{ color: '#E8E2D5' }}>Ctrl + Shift + R</strong> to reload, then click Enable</>,
+    ];
+  } else if (isChrome) {
+    steps = [
+      <>Click the <strong style={{ color: '#E8E2D5' }}>🔒 lock icon</strong> in the Chrome address bar</>,
+      <>Set <strong style={{ color: '#E8E2D5' }}>Notifications</strong> to <strong style={{ color: '#E8E2D5' }}>Allow</strong></>,
+      <>Reload the page (<strong style={{ color: '#E8E2D5' }}>Ctrl + Shift + R</strong>), then click Enable</>,
+    ];
+  } else if (isFirefox) {
+    steps = [
+      <>Click the <strong style={{ color: '#E8E2D5' }}>🔒 lock icon</strong> in the Firefox address bar</>,
+      <>Click <strong style={{ color: '#E8E2D5' }}>Connection secure → More information</strong></>,
+      <>Go to <strong style={{ color: '#E8E2D5' }}>Permissions → Send Notifications → Allow</strong></>,
+      <>Reload the page, then click Enable</>,
+    ];
+  } else if (isSafariDesktop) {
+    steps = [
+      <>In the menu bar go to <strong style={{ color: '#E8E2D5' }}>Safari → Settings → Websites → Notifications</strong></>,
+      <>Find <strong style={{ color: '#E8E2D5' }}>my.royalledger.app</strong> and set it to <strong style={{ color: '#E8E2D5' }}>Allow</strong></>,
+      <>Reload the page, then click Enable</>,
+    ];
+  } else {
+    steps = [
+      'Click the lock icon in your browser address bar',
+      'Find Notifications and set it to Allow',
+      'Reload the page, then click Enable',
+    ];
+  }
+
   return (
     <div style={{
       background: '#160E0C', border: '1px solid #3A1E18', borderRadius: 6,
-      padding: '14px 16px', fontSize: 13,
+      padding: '16px 18px', fontSize: 13, marginBottom: 16,
     }}>
-      <div style={{ color: '#C56B5A', fontWeight: 600, marginBottom: 8 }}>
-        Notifications blocked
+      <div style={{ color: '#C56B5A', fontWeight: 600, marginBottom: 8, fontSize: 14 }}>
+        🔕 Notifications blocked by your browser
       </div>
-      <div style={{ color: '#8B8478', lineHeight: 1.6 }}>
-        You previously denied permission. To re-enable:
+      <div style={{ color: '#8B8478', lineHeight: 1.6, marginBottom: 10 }}>
+        The browser is preventing the permission prompt from appearing. To fix it:
       </div>
-      <ol style={{ color: '#8B8478', lineHeight: 1.9, marginTop: 8, paddingLeft: 18, fontSize: 13 }}>
-        <li>Open the iPhone <strong style={{ color: '#E8E2D5' }}>Settings</strong> app</li>
-        <li>Scroll to <strong style={{ color: '#E8E2D5' }}>Safari → Advanced → Website Data</strong></li>
-        <li>Or go to <strong style={{ color: '#E8E2D5' }}>Settings → Notifications → Royal Ledger</strong></li>
-        <li>Enable <strong style={{ color: '#E8E2D5' }}>Allow Notifications</strong>, then return here</li>
+      <ol style={{ color: '#8B8478', lineHeight: 2, paddingLeft: 18, fontSize: 13, margin: 0 }}>
+        {steps.map((step, i) => <li key={i}>{step}</li>)}
       </ol>
     </div>
   );
@@ -242,8 +289,13 @@ export default function NotificationSettings({ user, data, setData }) {
   const enable = async () => {
     setPushStatus('loading');
     try {
-      const permission = await Notification.requestPermission();
-      if (permission === 'denied') { setPushStatus('denied'); return; }
+      // Some browsers (Edge) silently block the prompt — the Promise never resolves.
+      // Race it against a 6 s timeout so the button doesn't stay stuck forever.
+      const permission = await Promise.race([
+        Notification.requestPermission(),
+        new Promise((resolve) => setTimeout(() => resolve('timeout'), 6000)),
+      ]);
+      if (permission === 'denied' || permission === 'timeout') { setPushStatus('denied'); return; }
       if (permission !== 'granted') { setPushStatus('idle'); return; }
 
       const reg = await navigator.serviceWorker.ready;
@@ -574,8 +626,11 @@ export function PushPromptBanner({ user, data, setData }) {
   const enable = async () => {
     setStatus('loading');
     try {
-      const permission = await Notification.requestPermission();
-      if (permission === 'denied') {
+      const permission = await Promise.race([
+        Notification.requestPermission(),
+        new Promise((resolve) => setTimeout(() => resolve('timeout'), 6000)),
+      ]);
+      if (permission === 'denied' || permission === 'timeout') {
         savePromptState({ lastDismissed: Date.now(), dismissCount: 99 }); // stop prompting
         setStatus('denied');
         return;
