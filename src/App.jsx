@@ -546,17 +546,11 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
 
       <header className="border-b" style={{ borderColor: '#26221C', background: '#0A0908', flexShrink: 0, zIndex: 10 }}>
         <div className="max-w-6xl mx-auto flex items-center justify-between" style={{ padding: '14px 20px' }}>
-          <div className="flex items-center gap-3">
-            <img
-              src="/logo.svg"
-              alt=""
-              style={{ height: '32px', width: 'auto', display: 'block' }}
-            />
-            <div className="flex items-baseline gap-1">
-              <span className="display" style={{ fontSize: '20px', fontWeight: 400, color: '#E8E2D5' }}>Royal</span>
-              <span className="display" style={{ fontSize: '20px', fontWeight: 400, fontStyle: 'italic', color: '#D97757' }}>Ledger</span>
-            </div>
-            <span className="label hidden sm:inline" style={{ color: '#5C5648', marginLeft: '4px' }}>Personal finance for the disciplined</span>
+          <div className="flex items-baseline gap-3">
+            <h1 className="display" style={{ fontSize: 22 }}>
+              Royal <span style={{ fontStyle: 'italic', color: '#D97757' }}>Ledger</span>
+            </h1>
+            <span className="label hidden sm:inline" style={{ color: '#5C5648' }}>Personal finance for the disciplined</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             {user && (
