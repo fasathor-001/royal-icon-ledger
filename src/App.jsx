@@ -991,7 +991,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           </div>
           {(() => {
             const pct = data.spendingBudget > 0 ? stats.thisMonthSpend / data.spendingBudget : 0;
-            const barColor = pct > 1 ? '#C56B5A' : pct > 0.8 ? '#D97757' : '#7FA068';
+            const barColor = pct > 0.8 ? '#C56B5A' : pct > 0.5 ? '#D97757' : '#7FA068';
             const pctDisplay = Math.round(pct * 100);
             return (
               <>
