@@ -279,7 +279,7 @@ export default function Home({ navigate }) {
             <em style={{ color: '#D97757', fontStyle: 'italic' }}>This is a steering wheel.</em>
           </h2>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', marginBottom: '32px' }}>
+          <div className="home-compare-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', marginBottom: '32px' }}>
             {[
               { label: 'Other apps',  items: ['Track spending after it happens', 'Fixed-income logic', 'Manual categorisation', 'No behavioural friction', 'No allocation system'] },
               { label: 'Royal-Icon Ledger', accent: true, items: ['Control decisions before they happen', 'Built for variable income', 'Automatic allocation by stage', 'Spending Gate + 24h hold', 'Stage-based progression system'] },
@@ -440,6 +440,11 @@ export default function Home({ navigate }) {
         </div>
       </section>
 
+      <style>{`
+        @media (max-width: 600px) {
+          .home-compare-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
+        }
+      `}</style>
     </div>
   );
 }

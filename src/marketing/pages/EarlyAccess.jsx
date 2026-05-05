@@ -282,7 +282,7 @@ export default function EarlyAccess({ navigate }) {
           {/* Pricing signal */}
           <div style={{ marginTop: '40px', paddingTop: '40px', borderTop: '1px solid #1A1610' }}>
             <div className="m-label" style={{ marginBottom: '16px' }}>What does it cost?</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+            <div className="ea-pricing-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
               <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '16px 18px' }}>
                 <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#5C5648', textTransform: 'uppercase', marginBottom: '8px' }}>Core — Free</div>
                 <div style={{ fontSize: '16px', fontWeight: 700, color: '#E8E2D5', marginBottom: '6px' }}>Always free</div>
@@ -316,6 +316,12 @@ export default function EarlyAccess({ navigate }) {
           </div>
         </div>
       </section>
+
+      <style>{`
+        @media (max-width: 480px) {
+          .ea-pricing-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }
