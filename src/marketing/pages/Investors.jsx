@@ -113,7 +113,10 @@ export default function Investors({ navigate }) {
                 </div>
               ))}
             </div>
-            <p style={{ fontSize: '16px', color: '#8B8478', lineHeight: 1.7 }}>
+            <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.7, marginBottom: '16px' }}>
+              All of them are managing money with tools designed for someone else.
+            </p>
+            <p style={{ fontSize: '16px', color: '#E8E2D5', lineHeight: 1.7 }}>
               The result isn't bad behaviour. It's the wrong system.
             </p>
           </div>
@@ -147,6 +150,19 @@ export default function Investors({ navigate }) {
               </div>
             ))}
           </div>
+
+          <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {[
+              'Built specifically for unpredictable income — not adapted from fixed-salary logic.',
+              'Combines planning, allocation, and execution in a single system.',
+              'Control is established before money is spent — not reviewed after.',
+            ].map((line, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <span style={{ color: '#D97757', fontSize: '13px', flexShrink: 0, marginTop: '3px' }}>→</span>
+                <span style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7 }}>{line}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -156,7 +172,9 @@ export default function Investors({ navigate }) {
           <div className="m-section-header">
             <div className="m-label" style={{ marginBottom: '16px' }}>Why now</div>
             <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#E8E2D5' }}>
-              Why now.
+              The shift is structural.
+              <br />
+              <em style={{ color: '#D97757', fontStyle: 'italic' }}>Not cyclical.</em>
             </h2>
           </div>
           <div className="m-grid-2">
