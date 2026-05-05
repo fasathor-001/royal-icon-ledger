@@ -353,7 +353,13 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     if (stage === 1) { nextThreshold = stage1End; progressPct = stage1End > 0 ? (data.buffer / stage1End) * 100 : 0; }
     else if (stage === 1.5) { nextThreshold = stage15End; progressPct = ((data.buffer - stage1End) / (stage15End - stage1End)) * 100; }
     else if (stage === 2) { nextThreshold = stage2End; progressPct = ((data.buffer - stage15End) / (stage2End - stage15End)) * 100; }
-    else if (stage === 'protect') { nextThreshold = bufferTarget; progressPct = bufferTarget > 0 ? (data.buffer / bufferTarget) * 100 : 0; }
+    else if (stage === 'protect') {
+      // Show the next stage milestone the user needs to reach, not the full target
+      if (progressStage === 1)        { nextThreshold = stage1End;   progressPct = stage1End > 0 ? (data.buffer / stage1End) * 100 : 0; }
+      else if (progressStage === 1.5) { nextThreshold = stage15End;  progressPct = ((data.buffer - stage1End) / (stage15End - stage1End)) * 100; }
+      else if (progressStage === 2)   { nextThreshold = stage2End;   progressPct = ((data.buffer - stage15End) / (stage2End - stage15End)) * 100; }
+      else                            { nextThreshold = bufferTarget; progressPct = bufferTarget > 0 ? (data.buffer / bufferTarget) * 100 : 0; }
+    }
 
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
