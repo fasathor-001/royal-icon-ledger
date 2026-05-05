@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Royal-Icon Ledger — Future Implementations</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0A0908;
+    --bg2:       #0F0D0A;
+    --bg3:       #14110E;
+    --border:    #26221C;
+    --border2:   #1A1610;
+    --text:      #E8E2D5;
+    --muted:     #8B8478;
+    --dim:       #5C5648;
+    --dimmer:    #3A3028;
+    --orange:    #D97757;
+    --green:     #7FA068;
+    --red:       #C56B5A;
+    --gold:      #B89968;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 15px;
+    line-height: 1.75;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── Save button ── */
+  .save-btn {
+    position: fixed;
+    top: 24px; right: 24px;
+    background: var(--orange);
+    color: var(--bg);
+    border: none;
+    padding: 10px 22px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    border-radius: 3px;
+    z-index: 999;
+  }
+  @media print { .save-btn { display: none; } }
+
+  /* ── Layout ── */
+  .page { max-width: 820px; margin: 0 auto; padding: 64px 48px; }
+
+  /* ── Header ── */
+  .doc-header { border-bottom: 1px solid var(--border2); padding-bottom: 48px; margin-bottom: 56px; }
+  .doc-label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); margin-bottom: 16px; }
+  .doc-title { font-size: clamp(32px, 5vw, 52px); font-weight: 300; color: var(--text); line-height: 1.15; margin-bottom: 20px; }
+  .doc-title em { color: var(--orange); font-style: italic; }
+  .doc-meta { font-size: 13px; color: var(--dim); }
+  .doc-meta span { color: var(--dimmer); margin: 0 8px; }
+
+  /* ── Section ── */
+  .section { margin-bottom: 64px; page-break-inside: avoid; }
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); margin-bottom: 20px; }
+  .section-title { font-size: clamp(22px, 3vw, 32px); font-weight: 300; color: var(--text); line-height: 1.25; margin-bottom: 28px; }
+  .section-title em { color: var(--orange); font-style: italic; }
+
+  /* ── Priority badge ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .badge-now    { background: #1A2A18; color: var(--green); }
+  .badge-soon   { background: #2A1E10; color: var(--orange); }
+  .badge-later  { background: #1A1610; color: var(--dim); }
+  .badge-product{ background: #1A1420; color: #A06B8C; }
+
+  /* ── Item card ── */
+  .item {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    padding: 24px 28px;
+    margin-bottom: 12px;
+    page-break-inside: avoid;
+  }
+  .item-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .item-title { font-size: 16px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
+  .item-body { font-size: 14px; color: var(--muted); line-height: 1.75; }
+  .item-body p { margin-bottom: 8px; }
+  .item-body p:last-child { margin-bottom: 0; }
+
+  /* ── Sub-list ── */
+  .sub-list { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .sub-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--dim); line-height: 1.6; }
+  .sub-item .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--dimmer); flex-shrink: 0; margin-top: 7px; }
+  .sub-item .arr { color: var(--orange); flex-shrink: 0; font-size: 12px; margin-top: 1px; }
+
+  /* ── Files list ── */
+  .file-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 11px;
+    background: #0F0D0A;
+    border: 1px solid var(--border);
+    color: var(--orange);
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin: 2px 2px 2px 0;
+  }
+
+  /* ── Divider ── */
+  .divider { border: none; border-top: 1px solid var(--border2); margin: 48px 0; }
+
+  /* ── Phase header ── */
+  .phase-header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 24px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+  .phase-num { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: var(--dimmer); text-transform: uppercase; }
+  .phase-title { font-size: 17px; font-weight: 600; color: var(--text); }
+  .phase-timing { margin-left: auto; font-size: 12px; color: var(--dim); }
+
+  /* ── Note box ── */
+  .note {
+    padding: 16px 20px;
+    background: var(--bg2);
+    border-left: 3px solid var(--orange);
+    border-radius: 2px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-top: 16px;
+  }
+  .note strong { color: var(--text); }
+
+  /* ── Two col ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* ── Summary table ── */
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
+  th { text-align: left; padding: 10px 14px; background: var(--bg2); color: var(--dim); font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--border2); color: var(--muted); vertical-align: top; line-height: 1.6; }
+  td:first-child { color: var(--text); font-weight: 500; }
+  tr:last-child td { border-bottom: none; }
+
+  /* ── Footer ── */
+  .doc-footer { margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--border2); display: flex; justify-content: space-between; align-items: center; flex-wrap: gap; }
+  .footer-brand { font-size: 18px; font-style: italic; color: var(--orange); }
+  .footer-meta { font-size: 12px; color: var(--dimmer); text-align: right; }
+
+  @media print {
+    body { padding: 0; }
+    .page { padding: 32px 40px; }
+    .section { page-break-inside: avoid; }
+    .item { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<button class="save-btn" onclick="window.print()">Save as PDF →</button>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <div class="doc-label">Royal-Icon Ledger</div>
+    <h1 class="doc-title">
+      Future Implementations<br />
+      <em>&amp; Roadmap.</em>
+    </h1>
+    <div class="doc-meta">
+      Compiled from development session
+      <span>·</span>
+      May 2026
+      <span>·</span>
+      Internal reference
+    </div>
+  </div>
+
+  <!-- Overview -->
+  <div class="section">
+    <div class="section-label">Overview</div>
+    <div class="section-title">Everything discussed.<br /><em>Prioritised by sequence.</em></div>
+    <div class="item-body">
+      <p>This document captures every future implementation item discussed across the build session — from immediate actions before the first invite wave, through to long-term product roadmap items. Items are grouped by timing and priority.</p>
+    </div>
+
+    <div class="note">
+      <strong>Current state:</strong> The app is live at app.royalicon.net. Marketing site is live at royalicon.net. All audit fixes are committed. The soft launch plan is ready. The first 8 users have not yet been invited.
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Phase 1: Immediate -->
+  <div class="section">
+    <div class="phase-header">
+      <div>
+        <div class="phase-num">Phase 1</div>
+        <div class="phase-title">Immediate — Do This Now</div>
+      </div>
+      <div class="phase-timing">Before first invite wave</div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Push all pending commits to production</div>
+        <span class="badge badge-now">Now</span>
+      </div>
+      <div class="item-body">
+        <p>Multiple commits were made during this session but not pushed. Run <code style="font-family:monospace;color:var(--orange)">git push</code> from your terminal to deploy everything to Cloudflare Pages.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="arr">→</span> All marketing page updates (About, Investors, Homepage)</div>
+          <div class="sub-item"><span class="arr">→</span> All 19 audit fixes from the codebase audit</div>
+          <div class="sub-item"><span class="arr">→</span> Mobile readability fixes (Home, EarlyAccess grids)</div>
+          <div class="sub-item"><span class="arr">→</span> Soft launch plan HTML document</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Save User Guide and Soft Launch Plan as PDFs</div>
+        <span class="badge badge-now">Now</span>
+      </div>
+      <div class="item-body">
+        <p>Open each HTML file in Chrome, click Save as PDF. The User Guide attaches to every invite email. The Soft Launch Plan is your execution reference.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="arr">→</span> <span class="file-tag">Royal-Icon-Ledger-User-Guide.html</span> → Chrome → Print → Save as PDF</div>
+          <div class="sub-item"><span class="arr">→</span> <span class="file-tag">Royal-Icon-Ledger-Soft-Launch-Plan.html</span> → Chrome → Print → Save as PDF</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Generate 8 invite codes in Supabase</div>
+        <span class="badge badge-now">Now</span>
+      </div>
+      <div class="item-body">
+        <p>Go to Supabase → Table Editor → invite_codes. Create 8 codes for your first wave. Suggested format: RI-ALPHA-001 through RI-ALPHA-008.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="arr">→</span> Tie each code to the recipient's email (email restriction column)</div>
+          <div class="sub-item"><span class="arr">→</span> Keep a local record of who received which code</div>
+          <div class="sub-item"><span class="arr">→</span> The app validates and claims codes automatically on signup</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Select and invite first 8 users</div>
+        <span class="badge badge-now">Now</span>
+      </div>
+      <div class="item-body">
+        <p>Check early_access_leads table in Supabase. Prioritise traders, freelancers, and variable-income earners — they feel the problem most. Send the personal invite email template from the Soft Launch Plan (Section 10).</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="arr">→</span> Go to Supabase → Table Editor → early_access_leads</div>
+          <div class="sub-item"><span class="arr">→</span> Select 8 applicants by income_type (trader, freelancer, variable first)</div>
+          <div class="sub-item"><span class="arr">→</span> Send personal email with invite code + PDF User Guide attached</div>
+          <div class="sub-item"><span class="arr">→</span> Mark them as 'invited' in the status column</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Phase 2: Before Wave 2 -->
+  <div class="section">
+    <div class="phase-header">
+      <div>
+        <div class="phase-num">Phase 2</div>
+        <div class="phase-title">Before Wave 2 — Build These First</div>
+      </div>
+      <div class="phase-timing">Week 2–3 · Before Reddit posts go live</div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Admin Dashboard — Onboarding Monitor</div>
+        <span class="badge badge-soon">Soon</span>
+      </div>
+      <div class="item-body">
+        <p>A lightweight internal dashboard to monitor the onboarding funnel without needing to open Supabase manually. Critical before any public posting where signups could spike.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="arr">→</span> View early_access_leads — name, email, country, income_type, status</div>
+          <div class="sub-item"><span class="arr">→</span> View invite_codes — which codes are used/unused, tied to which emails</div>
+          <div class="sub-item"><span class="arr">→</span> View user_data — who has completed onboarding (has currency + incomeType set)</div>
+          <div class="sub-item"><span class="arr">→</span> Drop-off indicator — invited but never activated</div>
+          <div class="sub-item"><span class="arr">→</span> One-click approve/invite from waitlist</div>
+        </div>
+        <div class="note">
+          <strong>No SQL changes needed.</strong> All data already exists — early_access_leads, invite_codes, and user_data are live tables. The dashboard is a read-only front-end over existing data.
+        </div>
+        <div class="sub-list" style="margin-top:12px;">
+          <div class="sub-item"><span class="dot"></span>Files to create: <span class="file-tag">src/admin/AdminDashboard.jsx</span> <span class="file-tag">src/admin/AdminRoute.jsx</span></div>
+          <div class="sub-item"><span class="dot"></span>Protected by: service-role key or owner auth check</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Currency Expansion — Data-Driven</div>
+        <span class="badge badge-soon">Soon</span>
+      </div>
+      <div class="item-body">
+        <p>Expand from 10 to ~25–30 currencies based on what your first users' country data shows. Do NOT expand blindly — let the data tell you which currencies to add.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="arr">→</span> Step 1: Check early_access_leads.country field after first wave</div>
+          <div class="sub-item"><span class="arr">→</span> Step 2: Add only the currencies that appear in that data</div>
+          <div class="sub-item"><span class="arr">→</span> Step 3: Add corresponding timezone entries to match</div>
+          <div class="sub-item"><span class="arr">→</span> Step 4: Redesign currency tiles to be compact (smaller grid)</div>
+        </div>
+        <div class="note">
+          <strong>No SQL changes needed.</strong> Currency is stored as a plain string inside the user_data JSONB column. The database doesn't validate it. Adding INR to currency.js means the app stores "INR" automatically — no schema changes.
+        </div>
+        <div class="sub-list" style="margin-top:12px;">
+          <div class="sub-item"><span class="dot"></span>Files affected: <span class="file-tag">src/lib/currency.js</span> <span class="file-tag">src/lib/timezones.js</span> <span class="file-tag">src/components/Onboarding.jsx</span></div>
+          <div class="sub-item"><span class="dot"></span>Candidate currencies: INR, BRL, MXN, PHP, IDR, MYR, PKR, KES, GHS, TRY, SEK, NOK, CHF, NZD, HKD, EGP, ZMW</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Smaller Currency Tiles in Onboarding</div>
+        <span class="badge badge-soon">Soon</span>
+      </div>
+      <div class="item-body">
+        <p>With 25+ currencies, the current large tile layout will break visually. The currency picker grid needs to be redesigned to be compact and scrollable before the expansion goes live.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="dot"></span>File: <span class="file-tag">src/components/Onboarding.jsx</span></div>
+          <div class="sub-item"><span class="dot"></span>Change: Reduce tile size, increase column count, add scroll if needed</div>
+          <div class="sub-item"><span class="dot"></span>Do this at the same time as the currency expansion — one PR</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Phase 3: Medium Term -->
+  <div class="section">
+    <div class="phase-header">
+      <div>
+        <div class="phase-num">Phase 3</div>
+        <div class="phase-title">Medium-Term — After First Feedback</div>
+      </div>
+      <div class="phase-timing">Week 3–6 · Post Wave 1 feedback</div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Founder Photo — About Page</div>
+        <span class="badge badge-soon">Soon</span>
+      </div>
+      <div class="item-body">
+        <p>The About page currently shows an "FA" initials placeholder. When ready to add your photo, it's a 3-step process requiring no code knowledge.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="arr">→</span> Step 1: Save your photo as <span class="file-tag">founder.jpg</span> and drop it into the <span class="file-tag">public/</span> folder</div>
+          <div class="sub-item"><span class="arr">→</span> Step 2: Open <span class="file-tag">src/marketing/pages/About.jsx</span> — find the comment that says <code style="font-family:monospace;font-size:11px;color:var(--orange)">PHOTO: swap the div below</code></div>
+          <div class="sub-item"><span class="arr">→</span> Step 3: Replace the FA span with: <code style="font-family:monospace;font-size:11px;color:var(--orange)">&lt;img src="/founder.jpg" alt="Amb. Frank A." style=&#123;&#123; width:'100%', height:'100%', objectFit:'cover' &#125;&#125; /&gt;</code></div>
+          <div class="sub-item"><span class="arr">→</span> Step 4: git add → commit → push</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Structured Feedback System</div>
+        <span class="badge badge-soon">Soon</span>
+      </div>
+      <div class="item-body">
+        <p>After the first 8–10 users have been using the product for 1–2 weeks, collect structured feedback through personal conversations and a short feedback form.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="arr">→</span> Personal 20-minute calls with each early user</div>
+          <div class="sub-item"><span class="arr">→</span> Key questions: onboarding friction, features missing, what they actually use</div>
+          <div class="sub-item"><span class="arr">→</span> Document patterns — what breaks for more than 1 user is a priority fix</div>
+          <div class="sub-item"><span class="arr">→</span> Use feedback to determine Wave 2 invite criteria</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Reddit &amp; Social Posts — Wave 2 Seeding</div>
+        <span class="badge badge-soon">Soon</span>
+      </div>
+      <div class="item-body">
+        <p>Full scripts are in the Soft Launch Plan (Sections 7–9). Do NOT post until currency expansion is done and admin dashboard is live. You need to be able to handle the inbound.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="arr">→</span> r/freelance — primary target, highest signal audience</div>
+          <div class="sub-item"><span class="arr">→</span> r/personalfinance — broader reach</div>
+          <div class="sub-item"><span class="arr">→</span> r/Daytrading — trader-specific</div>
+          <div class="sub-item"><span class="arr">→</span> r/Entrepreneur — business owners</div>
+          <div class="sub-item"><span class="arr">→</span> Twitter/X thread — 8-tweet sequence (in Soft Launch Plan Section 8)</div>
+          <div class="sub-item"><span class="arr">→</span> LinkedIn post — with first-comment link (Section 9)</div>
+        </div>
+        <div class="note">
+          <strong>Prerequisite:</strong> Currency expansion must be live before Reddit posts. Users from India, Brazil, Mexico, Philippines will apply — they need to find their currency in onboarding.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Phase 4: Product Roadmap -->
+  <div class="section">
+    <div class="phase-header">
+      <div>
+        <div class="phase-num">Phase 4</div>
+        <div class="phase-title">Product Roadmap — Longer Term</div>
+      </div>
+      <div class="phase-timing">Closed beta → Public launch</div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Pro Tier — Subscription Pricing</div>
+        <span class="badge badge-later">Later</span>
+      </div>
+      <div class="item-body">
+        <p>Pricing research to be conducted during closed beta. Primary revenue tier. Do not set pricing before you have real usage data — let users tell you what they'd pay.</p>
+        <div class="two-col">
+          <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:4px;padding:16px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--dim);text-transform:uppercase;margin-bottom:8px;">Core — Free</div>
+            <div style="font-size:13px;color:var(--muted);">Local device. All core modules. Offline-first. No sync. User acquisition at zero cost.</div>
+          </div>
+          <div style="background:var(--bg2);border:1px solid #3A2010;border-radius:4px;padding:16px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--orange);text-transform:uppercase;margin-bottom:8px;">Pro — Subscription</div>
+            <div style="font-size:13px;color:var(--muted);">Cloud sync, multi-device, push notifications, sessions. Primary revenue tier.</div>
+          </div>
+        </div>
+        <div class="sub-list" style="margin-top:12px;">
+          <div class="sub-item"><span class="dot"></span>Business tier (future): multi-user household, shared envelopes, accountant access, API</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Bank Feed Integration</div>
+        <span class="badge badge-later">Later</span>
+      </div>
+      <div class="item-body">
+        <p>Currently mentioned in the FAQ as "on the roadmap." Manual income logging is intentional for the beta — it improves financial awareness. Automate only after the manual system is validated.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="dot"></span>Research: Plaid (US/UK), Mono (Nigeria), Stitch (SA), TrueLayer (EU)</div>
+          <div class="sub-item"><span class="dot"></span>Risk: automation removes the intentionality that makes the system work</div>
+          <div class="sub-item"><span class="dot"></span>Approach: offer as opt-in, not default</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Multi-Currency Display Improvements</div>
+        <span class="badge badge-later">Later</span>
+      </div>
+      <div class="item-body">
+        <p>After currency expansion, improve how amounts are displayed across different locales — proper decimal separators, right-to-left currency symbols, compact number formatting for large amounts.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="dot"></span>File: <span class="file-tag">src/lib/currency.js</span> — makeFmt() function</div>
+          <div class="sub-item"><span class="dot"></span>Currently uses en-US formatting for consistency — revisit per-currency</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Community &amp; Accountability Features</div>
+        <span class="badge badge-later">Later</span>
+      </div>
+      <div class="item-body">
+        <p>Phase 4 of the product roadmap. Shared goals, accountability partners, community milestones. Only build after the core financial OS is fully validated.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="dot"></span>Shared envelope tracking (family/household use cases)</div>
+          <div class="sub-item"><span class="dot"></span>Goal accountability partners</div>
+          <div class="sub-item"><span class="dot"></span>Community milestones and stage celebrations</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">API Integrations &amp; Platform Expansion</div>
+        <span class="badge badge-later">Later</span>
+      </div>
+      <div class="item-body">
+        <p>Open the platform to third-party integrations — accounting software, financial educators, employer financial wellness programmes.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="dot"></span>Accountant access (read-only view for clients)</div>
+          <div class="sub-item"><span class="dot"></span>Financial educator partnerships</div>
+          <div class="sub-item"><span class="dot"></span>Employer financial wellness (B2B2C model)</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Known technical debt -->
+  <div class="section">
+    <div class="phase-header">
+      <div>
+        <div class="phase-num">Technical</div>
+        <div class="phase-title">Known Technical Items</div>
+      </div>
+      <div class="phase-timing">Address as needed</div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Bundle Size Warning</div>
+        <span class="badge badge-later">Low priority</span>
+      </div>
+      <div class="item-body">
+        <p>Every build shows: <em style="color:var(--orange);">"Some chunks are larger than 500 kB after minification."</em> The main bundle is ~1.2MB (332KB gzipped). This is acceptable for a PWA but should be addressed before public launch.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="dot"></span>Solution: Code-split with dynamic import() — lazy-load tabs that aren't immediately visible</div>
+          <div class="sub-item"><span class="dot"></span>File: <span class="file-tag">src/App_v2.jsx</span> — split Budget, Goals, Trading, MonthlyReview into lazy chunks</div>
+          <div class="sub-item"><span class="dot"></span>Impact: Faster initial load, especially on mobile networks</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Telegram Bot Token — Rotate if Exposed</div>
+        <span class="badge badge-now">Done / Verify</span>
+      </div>
+      <div class="item-body">
+        <p>The Telegram bot token was exposed in chat during setup. The user confirmed it was revoked. Verify the new token is set correctly in Supabase Edge Function secrets.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="arr">→</span> Supabase → Edge Functions → notify-lead → Secrets</div>
+          <div class="sub-item"><span class="arr">→</span> Confirm: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, RESEND_API_KEY, NOTIFY_EMAIL</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-header">
+        <div class="item-title">Per-Page OG Meta Tags</div>
+        <span class="badge badge-later">Later</span>
+      </div>
+      <div class="item-body">
+        <p>Currently all pages share the same OG image and title from index.html. For richer social sharing (different preview per page), per-page meta injection is needed.</p>
+        <div class="sub-list">
+          <div class="sub-item"><span class="dot"></span>Option A: Cloudflare Workers — inject meta tags per route server-side</div>
+          <div class="sub-item"><span class="dot"></span>Option B: Accept shared OG tags for now (current state — acceptable)</div>
+          <div class="sub-item"><span class="dot"></span>The current og-image.png is correct and looks good — no urgency</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Summary table -->
+  <div class="section">
+    <div class="section-label">Summary</div>
+    <div class="section-title">All items at a glance.</div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Priority</th>
+          <th>Timing</th>
+          <th>SQL needed?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Git push all commits</td>
+          <td><span class="badge badge-now">Now</span></td>
+          <td>Today</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Save User Guide + Soft Launch Plan as PDFs</td>
+          <td><span class="badge badge-now">Now</span></td>
+          <td>Today</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Generate 8 invite codes in Supabase</td>
+          <td><span class="badge badge-now">Now</span></td>
+          <td>Today</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Invite first 8 users</td>
+          <td><span class="badge badge-now">Now</span></td>
+          <td>This week</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Admin dashboard (onboarding monitor)</td>
+          <td><span class="badge badge-soon">Soon</span></td>
+          <td>Before Wave 2</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Currency expansion (data-driven)</td>
+          <td><span class="badge badge-soon">Soon</span></td>
+          <td>Before Reddit posts</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Smaller currency tiles in Onboarding</td>
+          <td><span class="badge badge-soon">Soon</span></td>
+          <td>With currency expansion</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Founder photo — About page</td>
+          <td><span class="badge badge-soon">Soon</span></td>
+          <td>When ready</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Structured feedback from Wave 1 users</td>
+          <td><span class="badge badge-soon">Soon</span></td>
+          <td>Week 3–4</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Reddit + social posts (Wave 2)</td>
+          <td><span class="badge badge-soon">Soon</span></td>
+          <td>After currency expansion</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Pro tier subscription billing</td>
+          <td><span class="badge badge-later">Later</span></td>
+          <td>Closed beta</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>Bank feed integration</td>
+          <td><span class="badge badge-later">Later</span></td>
+          <td>Post-validation</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>Bundle size optimisation (code splitting)</td>
+          <td><span class="badge badge-later">Later</span></td>
+          <td>Before public launch</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Multi-currency display improvements</td>
+          <td><span class="badge badge-later">Later</span></td>
+          <td>After expansion</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Community + accountability features</td>
+          <td><span class="badge badge-later">Later</span></td>
+          <td>Phase 4</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>API integrations + platform expansion</td>
+          <td><span class="badge badge-later">Later</span></td>
+          <td>Phase 4</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>Per-page OG meta tags</td>
+          <td><span class="badge badge-later">Later</span></td>
+          <td>Before public launch</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Verify Telegram bot token (rotated)</td>
+          <td><span class="badge badge-now">Verify</span></td>
+          <td>Now</td>
+          <td>No</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Footer -->
+  <div class="doc-footer">
+    <div class="footer-brand">Royal-Icon Ledger</div>
+    <div class="footer-meta">
+      Future Implementations Reference<br />
+      May 2026 · Internal use only
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
