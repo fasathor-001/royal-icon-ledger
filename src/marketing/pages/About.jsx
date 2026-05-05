@@ -2,29 +2,6 @@
 
 import React from 'react';
 
-const BELIEFS = [
-  {
-    heading: 'People fail financially because they are unstructured.',
-    body: 'Not careless. Not irresponsible. Unstructured. When income is variable, fixed-income financial logic breaks down entirely. The problem is architectural, not behavioural.',
-  },
-  {
-    heading: 'Systems beat willpower — every time.',
-    body: 'Budgeting advice tells you to spend less. Royal-Icon Ledger builds the infrastructure that makes it structurally difficult to spend out of sequence. The system replaces the instruction.',
-  },
-  {
-    heading: 'The household is the foundation.',
-    body: 'Every financial decision — trading, investing, business — should be made from a position of household security. Buffer first. Everything else second. This is not conservative. This is correct.',
-  },
-  {
-    heading: 'Variable income is not a problem. It is a different type of income.',
-    body: 'Freelancers, traders, and business owners are not broken versions of salaried employees. They need financial tools that understand their reality — not tools that assume a fixed monthly paycheck.',
-  },
-  {
-    heading: 'Discipline requires infrastructure, not inspiration.',
-    body: 'You cannot motivate yourself into financial discipline indefinitely. You can build systems that enforce it. Royal-Icon Ledger is not a motivational tool. It is a structural one.',
-  },
-];
-
 export default function About({ navigate }) {
   return (
     <div>
@@ -34,72 +11,136 @@ export default function About({ navigate }) {
       <section className="m-section-sm" style={{ borderBottom: '1px solid #1A1610' }}>
         <div className="m-wrap-md">
           <div className="m-label" style={{ marginBottom: '16px' }}>About</div>
-          <h1 className="m-display" style={{ fontSize: 'clamp(36px, 5vw, 60px)', color: '#E8E2D5', marginBottom: '20px' }}>
-            Why this exists.
+          <h1 className="m-display" style={{ fontSize: 'clamp(36px, 5vw, 60px)', color: '#E8E2D5', marginBottom: '24px' }}>
+            Financial tools were built for a world that no longer exists.
           </h1>
-          <p className="m-body" style={{ fontSize: '17px', maxWidth: '540px' }}>
-            Royal-Icon Ledger was built by someone who needed it — and couldn't find it anywhere else.
-          </p>
+          <div style={{ fontSize: '15px', color: '#8B8478', maxWidth: '520px', lineHeight: 1.95 }}>
+            <p style={{ margin: '0 0 16px' }}>
+              They assume predictable income.<br />
+              Fixed cycles.<br />
+              Stable patterns.
+            </p>
+            <p style={{ margin: '0 0 16px' }}>
+              But millions of people don't operate that way.
+            </p>
+            <p style={{ margin: '0 0 16px', color: '#5C5648' }}>
+              Freelancers.<br />
+              Traders.<br />
+              Entrepreneurs.<br />
+              Side-income earners.
+            </p>
+            <p style={{ margin: '0 0 16px' }}>
+              Their income is irregular.<br />
+              Their decisions are constant.<br />
+              And the margin for error is smaller.
+            </p>
+            <p style={{ margin: 0, color: '#5C5648' }}>
+              Yet the systems they rely on haven't changed.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Origin story */}
+      {/* The Problem / The Shift */}
       <section className="m-section">
         <div className="m-wrap-md">
+
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'start', marginBottom: '72px' }} className="about-grid">
             <div>
-              <div className="m-label" style={{ marginBottom: '20px' }}>The origin</div>
+              <div className="m-label" style={{ marginBottom: '20px' }}>The Problem</div>
               <div className="m-display" style={{ fontSize: 'clamp(22px, 3vw, 32px)', color: '#E8E2D5', lineHeight: 1.3, marginBottom: '24px' }}>
-                Variable income and a family to protect. No tool that understood both.
+                Most people don't have a money problem. They have a structure problem.
               </div>
-              <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.8, marginBottom: '16px' }}>
-                Most personal finance tools are designed for predictability. A salary that arrives on the same day every month. A fixed mortgage. Predictable expenses. That is not the reality for millions of freelancers, traders, and business owners.
+              <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85, marginBottom: '14px' }}>
+                Income comes in. Spending happens. Decisions are made in the moment.
               </p>
-              <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.8 }}>
-                Royal-Icon Ledger was built to answer one question: what does a financial system look like when the income isn't fixed — but the responsibilities are?
+              <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85, marginBottom: '14px' }}>
+                By the time money is tracked, it's already gone.
+              </p>
+              <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+                This isn't a behaviour issue.{' '}
+                <span style={{ color: '#E8E2D5', fontStyle: 'italic' }}>It's the wrong system.</span>
               </p>
             </div>
             <div>
-              <div className="m-label" style={{ marginBottom: '20px' }}>The solution</div>
+              <div className="m-label" style={{ marginBottom: '20px' }}>The Shift</div>
               <div className="m-card-warm" style={{ padding: '28px' }}>
-                <p className="m-display" style={{ fontSize: '22px', color: '#E8E2D5', lineHeight: 1.4, marginBottom: '20px', fontStyle: 'italic' }}>
-                  "A financial operating system — not a tracker."
+                <p className="m-display" style={{ fontSize: '21px', color: '#E8E2D5', lineHeight: 1.45, marginBottom: '20px', fontStyle: 'italic' }}>
+                  "Structure before money is spent — not visibility after."
                 </p>
-                <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.7 }}>
-                  Budget apps track what happened. Spreadsheets require manual work every month. Neither provides a system that runs automatically, allocates income on receipt, and enforces discipline structurally.
+                <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.75 }}>
+                  Not by adding more tracking. Not by offering better reports. But by introducing structure before money moves.
                 </p>
                 <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #3A2A1E' }}>
-                  <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7 }}>
-                    Royal-Icon Ledger is that system. It runs in the background. It enforces the rules. It protects the household. It tracks the business. It compounds the wealth.
+                  <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.75 }}>
+                    A system where every unit is assigned a role before it's used. Where decisions are made intentionally — not reactively. Where control exists regardless of how income arrives.
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Core beliefs */}
+          {/* What It Is */}
+          <div style={{ marginBottom: '72px' }}>
+            <div className="m-label" style={{ marginBottom: '24px' }}>What it is</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }} className="about-grid">
+              <div className="m-card" style={{ padding: '24px' }}>
+                <div style={{ fontSize: '11px', color: '#3A3028', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>Not</div>
+                {['A budgeting app', 'An expense tracker'].map(item => (
+                  <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                    <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#3A3028', flexShrink: 0 }} />
+                    <span style={{ fontSize: '14px', color: '#5C5648' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="m-card" style={{ padding: '24px', borderColor: '#2A3A1E' }}>
+                <div style={{ fontSize: '11px', color: '#D97757', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>But</div>
+                {['A planning system', 'An allocation framework', 'A control layer'].map(item => (
+                  <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                    <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#7FA068', flexShrink: 0 }} />
+                    <span style={{ fontSize: '14px', color: '#8B8478' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.7 }}>
+              Royal-Icon Ledger changes how money is handled — not just how it's recorded.
+            </p>
+          </div>
+
+          {/* What We Believe */}
           <div>
-            <div className="m-label" style={{ marginBottom: '32px' }}>What we believe</div>
-            {BELIEFS.map((belief, i) => (
+            <div className="m-label" style={{ marginBottom: '28px' }}>What we believe</div>
+            {[
+              'Money should be structured before it is spent.',
+              'Income should not determine control.',
+              'Clarity should not depend on consistency.',
+            ].map((line, i, arr) => (
               <div key={i} style={{
-                padding: '28px 0',
-                borderBottom: i < BELIEFS.length - 1 ? '1px solid #1A1610' : 'none',
-                display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'start',
-              }} className="belief-grid">
-                <h3 className="m-display" style={{ fontSize: 'clamp(18px, 2.5vw, 26px)', color: '#E8E2D5', lineHeight: 1.3 }}>
-                  {belief.heading}
-                </h3>
-                <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.75 }}>{belief.body}</p>
+                padding: '20px 0',
+                borderBottom: i < arr.length - 1 ? '1px solid #1A1610' : 'none',
+              }}>
+                <p style={{ fontSize: 'clamp(16px, 2vw, 21px)', color: '#E8E2D5', lineHeight: 1.5, margin: 0, fontWeight: 300 }}>{line}</p>
               </div>
             ))}
           </div>
+
+          {/* Transition */}
+          <div style={{ marginTop: '64px', paddingTop: '48px', borderTop: '1px solid #1A1610', maxWidth: '400px' }}>
+            <p style={{ fontSize: '15px', color: '#5C5648', lineHeight: 1.85, margin: 0 }}>
+              This is the thinking behind Royal-Icon Ledger.
+            </p>
+            <p style={{ fontSize: '15px', color: '#3A3028', lineHeight: 1.85, margin: '6px 0 0' }}>
+              And the reason it was built.
+            </p>
+          </div>
+
         </div>
       </section>
 
       <style>{`
         @media (max-width: 768px) {
-          .about-grid  { grid-template-columns: 1fr !important; gap: 32px !important; }
-          .belief-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .about-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
         }
       `}</style>
 
@@ -108,7 +149,6 @@ export default function About({ navigate }) {
         <div className="m-wrap-sm">
           <div className="m-label" style={{ marginBottom: '40px' }}>Founder's Note</div>
 
-          {/* The note */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
             <p style={{ fontSize: '16px', color: '#E8E2D5', lineHeight: 1.85, fontWeight: 400 }}>
@@ -166,7 +206,6 @@ export default function About({ navigate }) {
 
             {/* Signature */}
             <div style={{ marginTop: '16px', paddingTop: '32px', borderTop: '1px solid #1A1610', display: 'flex', alignItems: 'center', gap: '16px' }}>
-              {/* Initials avatar */}
               <div style={{
                 width: 44, height: 44, borderRadius: '50%',
                 background: '#14110E', border: '1px solid #26221C',
@@ -175,7 +214,6 @@ export default function About({ navigate }) {
               }}>
                 <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '15px', color: '#D97757', fontStyle: 'italic', letterSpacing: '0.02em' }}>FA</span>
               </div>
-              {/* Identity */}
               <div>
                 <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '19px', color: '#E8E2D5', fontStyle: 'italic' }}>— Amb. Frank A.</div>
                 <div style={{ fontSize: '13px', color: '#5C5648', marginTop: '2px' }}>Founder, Royal-Icon Ledger</div>
@@ -210,8 +248,8 @@ export default function About({ navigate }) {
         <div className="m-wrap-md">
           <div className="m-grid-3">
             {[
-              { label: 'Stage', value: 'Private beta', sub: 'Working product, invite-based access' },
-              { label: 'Category', value: 'Financial OS', sub: 'Variable-income earners globally' },
+              { label: 'Stage',      value: 'Private beta',          sub: 'Working product, invite-based access' },
+              { label: 'Category',   value: 'Financial OS',           sub: 'Variable-income earners globally' },
               { label: 'Philosophy', value: 'Structure over willpower', sub: 'Systems beat motivation, always' },
             ].map(({ label, value, sub }) => (
               <div key={label} className="m-card" style={{ padding: '28px 24px' }}>
@@ -227,12 +265,15 @@ export default function About({ navigate }) {
       {/* CTA */}
       <section className="m-section-sm" style={{ borderTop: '1px solid #1A1610' }}>
         <div className="m-wrap-sm" style={{ textAlign: 'center' }}>
-          <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#E8E2D5', marginBottom: '20px' }}>
-            Interested in what we're building?
+          <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#E8E2D5', marginBottom: '12px' }}>
+            Get early access.
           </h2>
+          <p className="m-body" style={{ marginBottom: '28px' }}>
+            Be part of the first rollout.
+          </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <button className="m-btn m-btn-primary" onClick={() => navigate('/early-access')}>
-              Get Early Access
+              Get Early Access →
             </button>
             <button className="m-btn m-btn-outline" onClick={() => navigate('/investors')}>
               Investor Overview →
@@ -240,6 +281,7 @@ export default function About({ navigate }) {
           </div>
         </div>
       </section>
+
     </div>
   );
 }
