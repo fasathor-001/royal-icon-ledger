@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Royal-Icon Ledger — Soft Launch Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0A0908;
+    --bg2:       #14110E;
+    --bg3:       #1A1610;
+    --border:    #26221C;
+    --border2:   #3A3028;
+    --muted:     #3A3028;
+    --subtle:    #5C5648;
+    --dim:       #8B8478;
+    --body:      #C8C2B8;
+    --bright:    #E8E2D5;
+    --orange:    #D97757;
+    --orange2:   #C56B5A;
+    --green:     #7FA068;
+    --blue:      #5B7FB8;
+    --gold:      #B89968;
+    --purple:    #A06B8C;
+  }
+
+  html { font-size: 15px; }
+
+  body {
+    background: var(--bg);
+    color: var(--body);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.7;
+    padding: 0;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    .no-print { display: none !important; }
+    body { background: #fff; color: #1a1a1a; }
+    .cover { background: #1a1a1a !important; }
+    .cover * { color: #fff !important; }
+    .page-break { page-break-before: always; }
+    section { page-break-inside: avoid; }
+    .card, .card-warm { border: 1px solid #ccc !important; background: #fafafa !important; }
+    h1, h2, h3 { color: #1a1a1a !important; }
+    p, li, td, th { color: #333 !important; }
+    .label { color: #888 !important; }
+    .tag { border: 1px solid #ccc !important; }
+  }
+
+  /* ── LAYOUT ── */
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 32px; }
+
+  /* ── COVER ── */
+  .cover {
+    background: linear-gradient(160deg, #14110E 0%, #0A0908 60%, #1A0E08 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, #D9775715 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover-inner { max-width: 860px; margin: 0 auto; width: 100%; }
+  .cover-tag {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--orange); font-weight: 600; margin-bottom: 32px;
+  }
+  .cover h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(44px, 7vw, 72px);
+    font-weight: 300;
+    color: var(--bright);
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .cover h1 em { color: var(--orange); font-style: italic; }
+  .cover-sub {
+    font-size: 18px; color: var(--dim); margin-top: 20px;
+    max-width: 540px; line-height: 1.6;
+  }
+  .cover-meta {
+    margin-top: 64px;
+    display: flex; gap: 40px; flex-wrap: wrap;
+  }
+  .cover-meta-item { }
+  .cover-meta-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--subtle); margin-bottom: 4px; }
+  .cover-meta-value { font-size: 14px; color: var(--body); font-weight: 500; }
+
+  /* ── TOC ── */
+  .toc-section { padding: 80px 0 60px; }
+  .toc-section h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 28px; font-weight: 300; color: var(--bright);
+    margin-bottom: 32px;
+  }
+  .toc-list { list-style: none; }
+  .toc-list li {
+    display: flex; align-items: baseline; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .toc-list li:last-child { border-bottom: none; }
+  .toc-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--orange); min-width: 24px; }
+  .toc-title { color: var(--body); flex: 1; }
+  .toc-phase { font-size: 11px; color: var(--subtle); letter-spacing: 0.08em; }
+
+  /* ── MAIN CONTENT ── */
+  .content { padding: 60px 0 120px; }
+
+  .chapter {
+    margin-bottom: 80px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+  .chapter:first-child { border-top: none; padding-top: 0; }
+
+  .chapter-tag {
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--orange); font-weight: 600; margin-bottom: 16px;
+  }
+  .chapter h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 300; color: var(--bright);
+    line-height: 1.2; margin-bottom: 12px;
+  }
+  .chapter h2 em { color: var(--orange); font-style: italic; }
+  .chapter-desc {
+    font-size: 16px; color: var(--dim);
+    max-width: 620px; line-height: 1.7;
+    margin-bottom: 36px;
+  }
+
+  h3 {
+    font-size: 15px; font-weight: 600; color: var(--bright);
+    margin: 32px 0 12px; letter-spacing: 0.02em;
+  }
+  h4 {
+    font-size: 13px; font-weight: 600; color: var(--dim);
+    margin: 24px 0 8px; text-transform: uppercase; letter-spacing: 0.1em;
+  }
+
+  p { color: var(--body); line-height: 1.75; margin-bottom: 16px; }
+  p:last-child { margin-bottom: 0; }
+
+  strong { color: var(--bright); font-weight: 600; }
+  em { color: var(--orange); font-style: italic; }
+
+  ul, ol { padding-left: 20px; margin-bottom: 16px; }
+  li { color: var(--body); line-height: 1.75; margin-bottom: 6px; }
+  li strong { color: var(--bright); }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card-warm {
+    background: linear-gradient(135deg, #1A1208 0%, #14110E 100%);
+    border: 1px solid #3A2A14;
+    border-radius: 6px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card-green {
+    background: #0E1A0E;
+    border: 1px solid #2A3A1E;
+    border-radius: 6px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card-blue {
+    background: #0E1220;
+    border: 1px solid #1E2840;
+    border-radius: 6px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card-purple {
+    background: #160E18;
+    border: 1px solid #2E1A30;
+    border-radius: 6px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--orange); font-weight: 600; margin-bottom: 12px;
+  }
+  .card-title.green { color: var(--green); }
+  .card-title.blue { color: var(--blue); }
+  .card-title.gold { color: var(--gold); }
+  .card-title.purple { color: var(--purple); }
+
+  /* ── TABLES ── */
+  table {
+    width: 100%; border-collapse: collapse;
+    margin-bottom: 24px; font-size: 13.5px;
+  }
+  th {
+    text-align: left; padding: 10px 14px;
+    background: var(--bg3);
+    color: var(--subtle); font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+  }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--body); vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg3); }
+
+  /* ── TAGS / BADGES ── */
+  .tag {
+    display: inline-block;
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    font-weight: 600; padding: 3px 10px; border-radius: 999px;
+    border: 1px solid var(--border2); color: var(--subtle);
+    margin-right: 6px; margin-bottom: 6px;
+  }
+  .tag-orange { border-color: var(--orange); color: var(--orange); background: #2A1A0E; }
+  .tag-green  { border-color: var(--green);  color: var(--green);  background: #0E1A0E; }
+  .tag-blue   { border-color: var(--blue);   color: var(--blue);   background: #0E1220; }
+  .tag-gold   { border-color: var(--gold);   color: var(--gold);   background: #1A1408; }
+
+  /* ── TIMELINE ── */
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 6px; top: 8px; bottom: 8px;
+    width: 1px; background: var(--border);
+  }
+  .timeline-item { position: relative; margin-bottom: 28px; }
+  .timeline-item::before {
+    content: '';
+    position: absolute; left: -22px; top: 7px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--orange); border: 2px solid var(--bg);
+  }
+  .timeline-day {
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--orange); font-weight: 600; margin-bottom: 4px;
+  }
+  .timeline-title { font-size: 14px; color: var(--bright); font-weight: 600; margin-bottom: 4px; }
+  .timeline-desc { font-size: 13px; color: var(--dim); line-height: 1.6; }
+
+  /* ── CODE BLOCKS (for post copy) ── */
+  .post-block {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--orange);
+    border-radius: 4px;
+    padding: 24px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--body);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .post-block strong { color: var(--bright); }
+
+  /* ── CHECKLIST ── */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .check-box {
+    width: 18px; height: 18px; border: 1px solid var(--border2);
+    border-radius: 3px; flex-shrink: 0; margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .check-done { background: var(--green); border-color: var(--green); color: #fff; font-size: 11px; }
+  .check-text { color: var(--body); line-height: 1.5; }
+  .check-sub { font-size: 12px; color: var(--subtle); margin-top: 2px; }
+
+  /* ── GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 640px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+
+  /* ── STAT CARDS ── */
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 36px; font-weight: 300; color: var(--orange);
+    line-height: 1;
+  }
+  .stat-label { font-size: 11px; color: var(--subtle); margin-top: 6px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* ── DIVIDER ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* ── QUOTE ── */
+  .quote {
+    border-left: 3px solid var(--orange);
+    padding: 16px 24px;
+    margin: 24px 0;
+    background: var(--bg2);
+    border-radius: 0 4px 4px 0;
+  }
+  .quote p { font-style: italic; color: var(--bright); font-size: 15px; margin: 0; }
+  .quote-attr { font-size: 12px; color: var(--subtle); margin-top: 8px; }
+
+  /* ── PRINT BUTTON ── */
+  .save-btn {
+    position: fixed; bottom: 32px; right: 32px; z-index: 999;
+    background: var(--orange); color: #0A0908;
+    border: none; border-radius: 4px;
+    padding: 14px 24px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+    box-shadow: 0 4px 24px rgba(217, 119, 87, 0.4);
+    transition: transform 100ms;
+  }
+  .save-btn:hover { transform: translateY(-1px); }
+
+  /* ── WARNING / NOTE BOXES ── */
+  .note {
+    background: #1A1A0E;
+    border: 1px solid #3A3A14;
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: var(--gold);
+  }
+  .note strong { color: var(--bright); }
+
+  /* Section numbers */
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 72px; font-weight: 400;
+    color: var(--bg3); line-height: 1;
+    margin-bottom: -20px; display: block;
+    user-select: none;
+  }
+</style>
+</head>
+<body>
+
+<button class="save-btn no-print" onclick="window.print()">Save as PDF →</button>
+
+<!-- ══════════════════════════════════════════════════════════ COVER -->
+<div class="cover">
+  <div class="cover-inner">
+    <div class="cover-tag">Royal-Icon Ledger · Private Beta</div>
+    <h1>Soft <em>Launch</em><br>Plan.</h1>
+    <p class="cover-sub">
+      A complete execution playbook to acquire your first 20 active users —
+      wave strategy, community scripts, social content, and a 30-day calendar.
+    </p>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Goal</div>
+        <div class="cover-meta-value">20 active users in 30 days</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Version</div>
+        <div class="cover-meta-value">v0.2-beta</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Prepared</div>
+        <div class="cover-meta-value">May 2026</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Product</div>
+        <div class="cover-meta-value">app.royalicon.net</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ TOC -->
+<div class="wrap">
+  <div class="toc-section">
+    <h2>Contents</h2>
+    <ul class="toc-list">
+      <li><span class="toc-num">01</span><span class="toc-title">What "active user" means — and why it matters</span><span class="toc-phase">Foundation</span></li>
+      <li><span class="toc-num">02</span><span class="toc-title">Pre-launch status — everything already done</span><span class="toc-phase">Foundation</span></li>
+      <li><span class="toc-num">03</span><span class="toc-title">Phase 1 — Wave 1: Early access list (Users 1–8)</span><span class="toc-phase">Week 1</span></li>
+      <li><span class="toc-num">04</span><span class="toc-title">Phase 2 — Community seeding (Users 9–15)</span><span class="toc-phase">Week 2–3</span></li>
+      <li><span class="toc-num">05</span><span class="toc-title">Phase 3 — Social proof loop (Users 16–20)</span><span class="toc-phase">Week 3–4</span></li>
+      <li><span class="toc-num">06</span><span class="toc-title">Phase 4 — Feedback system (runs parallel)</span><span class="toc-phase">Ongoing</span></li>
+      <li><span class="toc-num">07</span><span class="toc-title">Reddit post — complete scripts</span><span class="toc-phase">Content</span></li>
+      <li><span class="toc-num">08</span><span class="toc-title">Twitter / X thread — complete script</span><span class="toc-phase">Content</span></li>
+      <li><span class="toc-num">09</span><span class="toc-title">LinkedIn post — complete script</span><span class="toc-phase">Content</span></li>
+      <li><span class="toc-num">10</span><span class="toc-title">Personal invite email — complete template</span><span class="toc-phase">Content</span></li>
+      <li><span class="toc-num">11</span><span class="toc-title">Follow-up sequence — 3 emails</span><span class="toc-phase">Content</span></li>
+      <li><span class="toc-num">12</span><span class="toc-title">30-day execution calendar — day by day</span><span class="toc-phase">Execution</span></li>
+      <li><span class="toc-num">13</span><span class="toc-title">Metrics to track — what success looks like</span><span class="toc-phase">Metrics</span></li>
+      <li><span class="toc-num">14</span><span class="toc-title">What comes after 20 users</span><span class="toc-phase">Next</span></li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ CONTENT -->
+  <div class="content">
+
+    <!-- 01 -->
+    <div class="chapter">
+      <span class="section-num">01</span>
+      <div class="chapter-tag">Foundation</div>
+      <h2>What <em>active user</em> means</h2>
+      <p class="chapter-desc">Before you count signups, define what you're actually trying to achieve. A signup is not a user.</p>
+
+      <div class="card-warm">
+        <div class="card-title">Definition — Active User</div>
+        <p>A user who has completed all three of the following within their first 30 days:</p>
+        <ul style="margin-top: 12px;">
+          <li>✅ Completed all 10 onboarding steps with real numbers</li>
+          <li>✅ Entered at least one month of real expense or profit data</li>
+          <li>✅ Logged at least one impulse, allocation, or budget review</li>
+        </ul>
+      </div>
+
+      <div class="note">
+        <strong>Why this matters:</strong> A user who signs up and does nothing costs you an invite code and gives you zero feedback. Your goal is 20 people who are genuinely using the system — not 20 email addresses in a database.
+      </div>
+
+      <div class="grid-3" style="margin-top: 24px;">
+        <div class="stat-card">
+          <div class="stat-num">20</div>
+          <div class="stat-label">Target active users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">30</div>
+          <div class="stat-label">Days to get there</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">4</div>
+          <div class="stat-label">Phases of execution</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02 -->
+    <div class="chapter">
+      <span class="section-num">02</span>
+      <div class="chapter-tag">Foundation</div>
+      <h2>Pre-launch <em>status</em></h2>
+      <p class="chapter-desc">Everything required to receive real users is already done and verified.</p>
+
+      <ul class="checklist">
+        <li>
+          <div class="check-box check-done">✓</div>
+          <div class="check-text">
+            <strong>App live at app.royalicon.net</strong>
+            <div class="check-sub">Deployed on Cloudflare Pages. All routes redirecting correctly.</div>
+          </div>
+        </li>
+        <li>
+          <div class="check-box check-done">✓</div>
+          <div class="check-text">
+            <strong>Invite code system working</strong>
+            <div class="check-sub">Generate codes in Settings → Access. Each code is single-use.</div>
+          </div>
+        </li>
+        <li>
+          <div class="check-box check-done">✓</div>
+          <div class="check-text">
+            <strong>Telegram notifications active</strong>
+            <div class="check-sub">You receive an instant ping for every new signup.</div>
+          </div>
+        </li>
+        <li>
+          <div class="check-box check-done">✓</div>
+          <div class="check-text">
+            <strong>19 audit bugs fixed and deployed</strong>
+            <div class="check-sub">Currency symbols, stage descriptions, locale, logic bugs all resolved.</div>
+          </div>
+        </li>
+        <li>
+          <div class="check-box check-done">✓</div>
+          <div class="check-text">
+            <strong>Full onboarding flow tested</strong>
+            <div class="check-sub">Invite code → signup → 10 steps → dashboard — confirmed working.</div>
+          </div>
+        </li>
+        <li>
+          <div class="check-box check-done">✓</div>
+          <div class="check-text">
+            <strong>Supabase auth redirect URLs updated</strong>
+            <div class="check-sub">app.royalicon.net added to allowed redirect URLs.</div>
+          </div>
+        </li>
+        <li>
+          <div class="check-box check-done">✓</div>
+          <div class="check-text">
+            <strong>Database backup taken (v0.2-beta)</strong>
+            <div class="check-sub">Git tag and Supabase backup both completed.</div>
+          </div>
+        </li>
+        <li>
+          <div class="check-box check-done">✓</div>
+          <div class="check-text">
+            <strong>User guide created</strong>
+            <div class="check-sub">Royal-Icon-Ledger-User-Guide.html — send as PDF with each invite.</div>
+          </div>
+        </li>
+        <li>
+          <div class="check-box check-done">✓</div>
+          <div class="check-text">
+            <strong>Early access list growing</strong>
+            <div class="check-sub">Applicants from royalicon.net/early-access stored in Supabase.</div>
+          </div>
+        </li>
+      </ul>
+
+      <div class="card-green" style="margin-top: 24px;">
+        <div class="card-title green">Status</div>
+        <p style="margin: 0; color: var(--green); font-weight: 600;">You are fully ready to receive real users. Begin Phase 1 immediately.</p>
+      </div>
+    </div>
+
+    <!-- 03 -->
+    <div class="chapter page-break">
+      <span class="section-num">03</span>
+      <div class="chapter-tag">Week 1 · Users 1–8</div>
+      <h2>Phase 1 — <em>Early access</em> list</h2>
+      <p class="chapter-desc">These are your warmest leads. They already applied. They already want in. This is the easiest and fastest path to your first 8 users.</p>
+
+      <h3>Why start here</h3>
+      <p>People who filled out your early access form did something most people won't — they took action on a problem they have. They are pre-qualified. They understand variable income. They are already bought in. Your conversion rate from this list will be 3–5× higher than any cold channel.</p>
+
+      <h3>Step-by-step execution</h3>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-day">Day 1 — Morning</div>
+          <div class="timeline-title">Pull your early access list</div>
+          <div class="timeline-desc">Go to Supabase Dashboard → Table Editor → early_access_leads. Sort by created_at ascending (oldest first — these waited longest). Review the income_type and interest columns to pick the best fits for your product.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-day">Day 1 — Afternoon</div>
+          <div class="timeline-title">Select your first 8 invitees</div>
+          <div class="timeline-desc">Prioritise: (1) freelancers and traders, (2) people who wrote something genuine in the interest field, (3) people from your target markets (ZA, NG, UK, US). Avoid anyone whose income_type is unclear or who left the interest field blank.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-day">Day 1 — Afternoon</div>
+          <div class="timeline-title">Generate 8 unique invite codes</div>
+          <div class="timeline-desc">Open app.royalicon.net → Settings → Access → generate one code per person. Label each code with the person's name in your notes so you can track who used which.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-day">Day 1 — Evening</div>
+          <div class="timeline-title">Send personal invite emails</div>
+          <div class="timeline-desc">Send one at a time from your personal Gmail. Do not BCC or bulk send. Each email should feel 1-on-1. Use the template in Section 10. Attach the User Guide PDF. Send between 5pm–8pm — higher open rates in evening hours.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-day">Day 4</div>
+          <div class="timeline-title">First follow-up</div>
+          <div class="timeline-desc">For anyone who hasn't clicked their code: send the Day-3 follow-up email (Section 11). Keep it short — just check the code worked. Do not resend the full email.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-day">Day 7</div>
+          <div class="timeline-title">Review and send second wave</div>
+          <div class="timeline-desc">Check your Supabase invite_codes table — see who has used_at populated. If fewer than 6 of 8 have signed up, send 4 more invites to the next people on the list. If all 8 signed up, move straight to Phase 2.</div>
+        </div>
+      </div>
+
+      <h3>What to track</h3>
+      <table>
+        <thead><tr><th>Metric</th><th>Where to check</th><th>Target</th></tr></thead>
+        <tbody>
+          <tr><td>Invite codes redeemed</td><td>Supabase → invite_codes → used_at</td><td>6 of 8 minimum</td></tr>
+          <tr><td>Onboarding completed</td><td>Telegram ping + Supabase → user data</td><td>5 of 8 minimum</td></tr>
+          <tr><td>Email open rate</td><td>Gmail sent folder — check if replies come</td><td>70%+ expected</td></tr>
+          <tr><td>Time to first action</td><td>When did they complete onboarding?</td><td>Within 48h of invite</td></tr>
+        </tbody>
+      </table>
+
+      <div class="quote">
+        <p>"The best time to send an invite is when the person is already thinking about the problem your product solves. Your applicants are thinking about it right now — they applied."</p>
+      </div>
+    </div>
+
+    <!-- 04 -->
+    <div class="chapter page-break">
+      <span class="section-num">04</span>
+      <div class="chapter-tag">Week 2–3 · Users 9–15</div>
+      <h2>Phase 2 — <em>Community</em> seeding</h2>
+      <p class="chapter-desc">Go where your exact user already lives. Contribute genuine value first. Mention the app only when it's natural and relevant. Never pitch cold.</p>
+
+      <div class="card-warm">
+        <div class="card-title">The golden rule of community seeding</div>
+        <p>Post like a person sharing something that worked for them — not like a founder promoting their product. The moment a post reads like marketing, it dies. Write like you're talking to a friend in the comments.</p>
+      </div>
+
+      <h3>Platform strategy</h3>
+
+      <h4>Reddit — Highest ROI for this product</h4>
+      <p>Reddit users are sceptical, intelligent, and fiercely anti-marketing. They are also exactly your target user. The trick: post value-first content that earns the right to mention the app. Full scripts are in Section 7.</p>
+
+      <table>
+        <thead><tr><th>Subreddit</th><th>Size</th><th>Why it fits</th><th>Best post type</th></tr></thead>
+        <tbody>
+          <tr><td><strong>r/freelance</strong></td><td>450k</td><td>Irregular income, project-based earnings</td><td>System walkthrough post</td></tr>
+          <tr><td><strong>r/personalfinance</strong></td><td>18M</td><td>Broad financial audience, loves systems</td><td>"Here's my variable income system" post</td></tr>
+          <tr><td><strong>r/Entrepreneur</strong></td><td>3M</td><td>Variable business income</td><td>Buffer concept post</td></tr>
+          <tr><td><strong>r/digitalnomad</strong></td><td>1.2M</td><td>Unpredictable location-independent income</td><td>Freedom through buffer post</td></tr>
+          <tr><td><strong>r/Daytrading</strong></td><td>350k</td><td>P&L-based income, needs allocation system</td><td>Profit allocation post</td></tr>
+          <tr><td><strong>r/Forex</strong></td><td>120k</td><td>Variable trading income</td><td>Trading income management post</td></tr>
+          <tr><td><strong>r/southafrica</strong></td><td>280k</td><td>Home market, authentic local story</td><td>Personal story + system</td></tr>
+          <tr><td><strong>r/financialindependence</strong></td><td>2M</td><td>Stage-based wealth building resonates</td><td>Stage system post</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <strong>Timing:</strong> Post on Tuesday–Thursday between 7am–9am EST. These are peak Reddit hours for your target subreddits. Avoid Friday afternoons and weekends for serious finance content.
+      </div>
+
+      <h4>Twitter / X — Thread strategy</h4>
+      <p>Twitter rewards specificity and story. A thread about your personal journey managing variable income will out-perform any product announcement. Post the thread, engage every reply within the first 2 hours, and end with a soft CTA. Full thread script in Section 8.</p>
+
+      <p><strong>Account setup tips before posting:</strong></p>
+      <ul>
+        <li>Make sure your bio clearly states what you do and who you help</li>
+        <li>Pin a tweet that explains what Royal-Icon Ledger is in one sentence</li>
+        <li>Follow 20–30 accounts in the freelance/trading/fintech space before posting — algorithmic signal</li>
+        <li>Engage with 5–10 posts in your niche the morning before you publish your thread</li>
+      </ul>
+
+      <h4>LinkedIn — Professional reach</h4>
+      <p>LinkedIn organic reach for niche content is significantly undervalued. A genuine post about managing variable income from a founder perspective will reach consultants, contractors, and business owners — exactly your target. Full script in Section 9.</p>
+
+      <p><strong>LinkedIn works best when:</strong></p>
+      <ul>
+        <li>Your post starts with a hook that makes people click "see more"</li>
+        <li>You use line breaks every 1–2 sentences (LinkedIn rewards skimmable content)</li>
+        <li>You respond to every comment within the first 3 hours (boosts algorithmic reach)</li>
+        <li>You don't include a link in the post itself — put it in the first comment</li>
+      </ul>
+
+      <h4>Facebook Groups — Highest per-post conversion</h4>
+      <p>Facebook groups feel more intimate than public platforms. A genuine contribution from a real person converts better than any Reddit post. The barrier is you must join and contribute before you can mention your product.</p>
+
+      <p><strong>Target groups to join now:</strong></p>
+      <ul>
+        <li>Search: "South African Freelancers" — join the top 2 groups</li>
+        <li>Search: "Forex Traders South Africa" — join the top group</li>
+        <li>Search: "Digital Nomads [your city or country]"</li>
+        <li>Search: "Small Business Owners South Africa"</li>
+        <li>Search: "Nigerian Forex Traders" or "Nigerian Freelancers" (for NG market)</li>
+      </ul>
+
+      <p><strong>Protocol:</strong> Join → comment genuinely on 3–5 posts over 2 days → then post your value-first content with a soft mention of the app.</p>
+
+      <h4>Telegram & WhatsApp Groups</h4>
+      <p>If you are in any trading, freelance, or entrepreneur group chats — this is your highest-trust channel. A personal message from someone the group knows is worth 10 Reddit posts. Keep it simple:</p>
+      <div class="post-block">"Hey everyone — I've been building a finance app specifically for people like us with variable income. It's in private beta, invite only. If anyone wants early access, let me know and I'll send you a code."</div>
+
+      <h3>Community posting schedule</h3>
+      <table>
+        <thead><tr><th>Day</th><th>Platform</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>Day 8</td><td>Reddit</td><td>Post in r/freelance (full script — Section 7)</td></tr>
+          <tr><td>Day 9</td><td>Twitter/X</td><td>Post thread (full script — Section 8)</td></tr>
+          <tr><td>Day 10</td><td>LinkedIn</td><td>Post article (full script — Section 9)</td></tr>
+          <tr><td>Day 11</td><td>Facebook Groups</td><td>Post in 2–3 groups you joined earlier</td></tr>
+          <tr><td>Day 12</td><td>Reddit</td><td>Post in r/personalfinance (second script — Section 7)</td></tr>
+          <tr><td>Day 14</td><td>Telegram/WhatsApp</td><td>Personal message in 2–3 groups</td></tr>
+          <tr><td>Day 16</td><td>Reddit</td><td>Post in r/Daytrading or r/Forex (third script — Section 7)</td></tr>
+          <tr><td>Day 18</td><td>Twitter/X</td><td>Post progress update thread</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 05 -->
+    <div class="chapter page-break">
+      <span class="section-num">05</span>
+      <div class="chapter-tag">Week 3–4 · Users 16–20</div>
+      <h2>Phase 3 — <em>Social proof</em> loop</h2>
+      <p class="chapter-desc">By week 3 you have 10–15 active users. Use them to get the next 5. Warm referrals from a trusted person convert 5× better than any cold channel.</p>
+
+      <h3>The referral ask</h3>
+      <p>At day 10 after each user's signup, send them this message:</p>
+      <div class="post-block">"Hey [name] — hope the app's been useful so far. One favour: if you know one person who might benefit from this (freelancer, trader, anyone with variable income) — I'd love to give them access. Here's a code just for them: [CODE]. No pressure at all, just thought you might know someone."</div>
+
+      <p>This works because:</p>
+      <ul>
+        <li>It's personal, not a mass referral campaign</li>
+        <li>You're giving them something to give — people like being the one who gives access</li>
+        <li>The code is labelled "for them" — creates urgency and specificity</li>
+        <li>It's framed as a favour, not a growth hack</li>
+      </ul>
+
+      <h3>Collecting and posting social proof</h3>
+      <p>At day 14 after signup, ask your most engaged users for a reaction:</p>
+      <div class="post-block">"Hey [name] — you've been using Royal-Icon Ledger for 2 weeks now. Has it changed how you think about your money at all? Even a sentence or two — I'd genuinely love to know."</div>
+
+      <p>When they respond (most will), ask: <em>"Would you mind if I shared this publicly? I won't use your full name if you'd prefer."</em></p>
+
+      <p>Then post on Twitter/X and LinkedIn:</p>
+      <div class="post-block">"2 weeks since launching Royal-Icon Ledger to a small group. Here's what they said:
+
+[Testimonial 1]
+[Testimonial 2]
+
+Still in private beta. 8 spots left. Reply if you want in."</div>
+
+      <h3>Personal network outreach</h3>
+      <p>Message 5 people you know personally who fit the profile. Not a broadcast — individual messages. Be direct:</p>
+      <div class="post-block">"Hey [name] — I've been building a finance app for the past few months. It's specifically for people with variable income (freelancers, traders, business owners). I know you're in that boat. Would you want to try it? I'll send you a code — takes 5 minutes to set up."</div>
+
+      <p>People who already know you will convert at 80%+. You only need 5 to get your last 5 users.</p>
+    </div>
+
+    <!-- 06 -->
+    <div class="chapter">
+      <span class="section-num">06</span>
+      <div class="chapter-tag">Ongoing · From Day 1</div>
+      <h2>Phase 4 — <em>Feedback</em> system</h2>
+      <p class="chapter-desc">Every user you invite is also a product informant. Structured check-ins turn their experience into your roadmap.</p>
+
+      <h3>The 3-message sequence</h3>
+      <p>Send these to every user at the exact intervals specified. Add them to your calendar when you send the invite.</p>
+
+      <div class="card">
+        <div class="card-title">Message 1 — Day 3 after signup</div>
+        <p style="margin: 0;">Subject: Quick check-in</p>
+        <div class="post-block" style="margin-top: 12px;">"Hey [name] — just checking the setup went smoothly. Did you get through the onboarding okay? Anything that felt confusing or unclear? I read everything and I'm making changes based on what people tell me."</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Message 2 — Day 10 after signup</div>
+        <p style="margin: 0;">Subject: How's it going?</p>
+        <div class="post-block" style="margin-top: 12px;">"Hey [name] — you've had the app for 10 days now. Have you been able to enter your real numbers? If you have, what's the one thing you wish worked differently? And if you haven't — what got in the way? No wrong answers."</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Message 3 — Day 21 after signup</div>
+        <p style="margin: 0;">Subject: 3 weeks in</p>
+        <div class="post-block" style="margin-top: 12px;">"Hey [name] — 3 weeks in. Two questions:
+
+1. Would you recommend Royal-Icon Ledger to someone with similar income to you? (Yes / No / Maybe)
+2. What would need to change for the answer to be Yes?
+
+If your answer is already Yes — here's a code for someone you know: [CODE]"</div>
+      </div>
+
+      <h3>What to do with feedback</h3>
+      <table>
+        <thead><tr><th>Feedback type</th><th>Action</th><th>Timeline</th></tr></thead>
+        <tbody>
+          <tr><td>Bug or broken feature</td><td>Fix immediately, reply to user with what you fixed</td><td>Same day</td></tr>
+          <tr><td>Confusing UX or label</td><td>Log it, fix in next batch update</td><td>Within 1 week</td></tr>
+          <tr><td>Missing feature request</td><td>Note it, validate with 2+ other users before building</td><td>Next sprint</td></tr>
+          <tr><td>Positive reaction</td><td>Ask permission to share publicly, request referral</td><td>Same day</td></tr>
+          <tr><td>No response to Day 3</td><td>Check if they completed onboarding — if not, offer a call</td><td>Day 4</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 07 -->
+    <div class="chapter page-break">
+      <span class="section-num">07</span>
+      <div class="chapter-tag">Content · Reddit</div>
+      <h2><em>Reddit</em> post scripts</h2>
+      <p class="chapter-desc">Three complete posts for three different subreddits. Copy, personalise with your numbers, and post exactly as written. Do not add a product link in the post body — only in comments when people ask.</p>
+
+      <h3>Post 1 — r/freelance and r/personalfinance</h3>
+      <p><span class="tag tag-blue">Title</span></p>
+      <div class="post-block">I used to have no idea how much money I had. Here's the system I built that fixed it (for variable income earners)</div>
+
+      <p><span class="tag tag-orange">Body</span></p>
+      <div class="post-block">For 3 years I earned inconsistently — some months great, some months terrifying.
+
+The problem wasn't that I didn't earn enough. The problem was I had no system. Money came in, I spent some, invested some randomly, and had no idea if I was ahead or behind until the end of the month. Sometimes the end of the quarter.
+
+Here's what I actually changed:
+
+<strong>1. I stopped thinking about income and started thinking about salary</strong>
+I built up a buffer (cash reserve) equal to 6 months of my total monthly needs. From that buffer, I pay myself a fixed monthly "salary" — the same amount every month, regardless of what I actually earned that month. Good month? Buffer goes up. Bad month? Buffer absorbs the hit. My lifestyle never changes.
+
+<strong>2. Every rand/dollar of profit gets allocated before I can spend it</strong>
+I have 4 stages. Stage 1: 100% of profit goes to the buffer until it's full. Stage 1.5: I start investing in long-term assets. Stage 2: I diversify further. Stage 3: Full split between investing, trading capital, lifestyle, and goals. I don't decide in the moment — the rules are set in advance.
+
+<strong>3. I have a spending gate</strong>
+Before any discretionary purchase above a threshold, I have to answer 3 questions and wait. Sounds annoying — genuinely changed my relationship with money.
+
+This took me years to figure out through trial and error. Happy to answer any questions about how any piece of it works.
+
+Has anyone else built a similar system? Would love to hear what works for other freelancers.</div>
+
+      <p><span class="tag tag-green">Comment when people ask for the tool</span></p>
+      <div class="post-block">A few people have asked — I actually built this into an app called Royal-Icon Ledger (app.royalicon.net). It's in private beta right now, invite only. If you want a code, DM me — happy to send one.</div>
+
+      <hr class="divider" />
+
+      <h3>Post 2 — r/Daytrading and r/Forex</h3>
+      <p><span class="tag tag-blue">Title</span></p>
+      <div class="post-block">Trading P&L is not income — treating it like income almost destroyed me financially</div>
+
+      <p><span class="tag tag-orange">Body</span></p>
+      <div class="post-block">This took me an embarrassingly long time to understand.
+
+When you have a good month trading, it feels like income. You start lifestyle-creeping based on it. Then you have a bad month — or a drawdown — and suddenly your "income" has disappeared and your expenses haven't changed.
+
+Here's what I do now:
+
+<strong>Separate your trading account from your life account completely</strong>
+Your trading account is a business. Profits from that business get allocated — not spent. Some goes to taxes. Some goes to buffer. Some goes back into trading capital. Some eventually goes to long-term investments. None of it is "spending money" until it's been allocated and cleared the buffer stage.
+
+<strong>Pay yourself a fixed salary from a buffer</strong>
+I built up a cash buffer equal to X months of my living expenses + salary. From that buffer I pay myself the same amount every month. My lifestyle is stable even when trading is choppy.
+
+<strong>The drawdown protocol</strong>
+If my trading capital drops below a set threshold, I have specific rules: reduce position size, stop discretionary spending above a threshold, no new long-term investments until capital is rebuilt. These rules are decided in advance — not in the heat of a drawdown.
+
+This completely changed how I think about trading as income. Trading is how I build wealth. Salary is how I live. They're different things.
+
+Anyone else have a system like this? Curious what other traders do.</div>
+
+      <p><span class="tag tag-green">Comment when people ask</span></p>
+      <div class="post-block">A few people DMed asking — I built this into an app (Royal-Icon Ledger, app.royalicon.net). Private beta, invite only. DM me if you want early access — I'll send a code.</div>
+
+      <hr class="divider" />
+
+      <h3>Post 3 — r/Entrepreneur and r/financialindependence</h3>
+      <p><span class="tag tag-blue">Title</span></p>
+      <div class="post-block">The "stage system" for building wealth with variable income — here's how it works</div>
+
+      <p><span class="tag tag-orange">Body</span></p>
+      <div class="post-block">Most financial advice assumes you earn the same amount every month. If you're an entrepreneur, freelancer, or trader — you don't. So most financial advice is useless for you.
+
+Here's the system I actually use:
+
+<strong>Stage 1 — Build the floor</strong>
+100% of every profit or surplus goes into a cash buffer. Nothing else. No investing. No lifestyle upgrades. Just building the buffer until it equals 6 months of your full salary. This is your crisis floor. Once it's built, you never touch it unless something goes seriously wrong.
+
+<strong>Stage 1.5 — Grow the cushion</strong>
+Now you start splitting. A portion still goes to buffer (growing it to 12 months). The rest starts going into long-term investments. You're still building security but now also building wealth.
+
+<strong>Stage 2 — Reach fortified</strong>
+Buffer target is your full number (18–24 months for a sole earner with dependents). Most of the split is still going to buffer and long-term investments. You're not spending on lifestyle yet from profits.
+
+<strong>Stage 3 — Full waterfall</strong>
+Now you have a real allocation: some to long-term, some to trading capital, some to future goals, some to lifestyle. This is when money starts to feel like freedom rather than anxiety.
+
+The key insight: you don't decide which stage you're in based on how you feel. You decide based on where your buffer is. The system runs itself.
+
+What stage are you at? I'm curious where other entrepreneurs land.</div>
+    </div>
+
+    <!-- 08 -->
+    <div class="chapter page-break">
+      <span class="section-num">08</span>
+      <div class="chapter-tag">Content · Twitter / X</div>
+      <h2>Twitter / X <em>thread</em></h2>
+      <p class="chapter-desc">One complete thread. Post all tweets in a single thread within 5 minutes. Engage every reply within the first 2 hours — this is critical for algorithmic reach.</p>
+
+      <div class="card-warm">
+        <div class="card-title">Thread — "Variable income almost broke me. Here's what fixed it."</div>
+      </div>
+
+      <h4>Tweet 1 (hook)</h4>
+      <div class="post-block">Variable income almost broke me financially.
+
+Not because I wasn't earning.
+
+Because I had no system for when the money arrived.
+
+Here's what I figured out (took 3 years): 🧵</div>
+
+      <h4>Tweet 2</h4>
+      <div class="post-block">The core problem with variable income isn't the variability.
+
+It's that your expenses are fixed and your income isn't.
+
+Rent is the same whether you earned $3k or $30k this month.
+
+Most people try to solve this with willpower. That doesn't work.</div>
+
+      <h4>Tweet 3</h4>
+      <div class="post-block">The fix: stop living on income. Start living on salary.
+
+Build a cash buffer. Pay yourself the same amount from that buffer every month — regardless of what you actually earned.
+
+Good month → buffer grows.
+Bad month → buffer absorbs it.
+Your lifestyle never changes.</div>
+
+      <h4>Tweet 4</h4>
+      <div class="post-block">The buffer isn't an emergency fund.
+
+Emergency funds are for surprises.
+
+A buffer is your operating system. It's how you turn chaotic income into stable living.
+
+Mine is 18 months of salary. Getting there took 2 years. Worth every month.</div>
+
+      <h4>Tweet 5</h4>
+      <div class="post-block">Once the buffer exists, you need rules for profit allocation.
+
+I use a stage system:
+
+Stage 1 → 100% to buffer (build the floor)
+Stage 1.5 → Split: buffer + long-term investing
+Stage 2 → Buffer priority + diversifying
+Stage 3 → Full waterfall: investing, trading, lifestyle, goals
+
+You don't decide which stage you're in. Your buffer balance decides.</div>
+
+      <h4>Tweet 6</h4>
+      <div class="post-block">The third piece is the spending gate.
+
+Before any purchase above a threshold, I run it through 3 questions:
+- Do I need it or do I want it?
+- How many hours of work is this?
+- What would this be worth in 30 years if invested instead?
+
+Most purchases don't survive the gate. That's the point.</div>
+
+      <h4>Tweet 7</h4>
+      <div class="post-block">The result after 2 years of running this system:
+
+→ I know exactly where every profit goes before it arrives
+→ I've stopped making financial decisions based on how a month felt
+→ My buffer is full and I'm in Stage 2
+→ I sleep better
+
+None of this required earning more. Just a better system.</div>
+
+      <h4>Tweet 8 (CTA)</h4>
+      <div class="post-block">I built this into an app called Royal-Icon Ledger.
+
+It's for freelancers, traders, and anyone with variable or unpredictable income.
+
+Currently in private beta — invite only.
+
+If you want early access, reply or DM me. I'll send a code.
+
+→ app.royalicon.net</div>
+
+      <div class="note" style="margin-top: 24px;">
+        <strong>After posting:</strong> Reply to every comment within 2 hours. For people who DM asking for access, generate a code in Settings → Access and send it with a short personal message. Track how many codes you send from this thread.
+      </div>
+
+      <h3>Progress update thread (post at Day 17)</h3>
+      <div class="post-block">2 weeks since I opened Royal-Icon Ledger to a small group.
+
+Here's what happened 👇
+
+— X people signed up in the first 48 hours
+— [Anonymised quote from user 1]
+— [Anonymised quote from user 2]
+
+The most common feedback: [one genuine insight from your users]
+
+Still private beta. A few spots left.
+
+DM me if you want in. → app.royalicon.net</div>
+    </div>
+
+    <!-- 09 -->
+    <div class="chapter page-break">
+      <span class="section-num">09</span>
+      <div class="chapter-tag">Content · LinkedIn</div>
+      <h2><em>LinkedIn</em> post</h2>
+      <p class="chapter-desc">LinkedIn rewards story, specificity, and line breaks. Post without a link in the body — put the link in the first comment after posting.</p>
+
+      <div class="post-block">I spent 3 years earning well and still feeling financially anxious.
+
+Not because I wasn't making money.
+
+Because I had no system for irregular income.
+
+——
+
+Here's what I figured out:
+
+Most financial systems are designed for people who earn the same amount every month.
+
+If you're a freelancer, trader, or business owner — you don't.
+
+So most financial advice is built for someone else.
+
+——
+
+The fix I found has three parts:
+
+<strong>1. Salary, not income</strong>
+Build a cash buffer. Pay yourself the same amount from it every month — regardless of what you actually earned. Your lifestyle becomes stable. The buffer absorbs the variability.
+
+<strong>2. Allocation rules set in advance</strong>
+Every profit gets split before you can spend it. Buffer first. Then investments. Then lifestyle. The rules are decided when you're calm, not when you're looking at a fat balance.
+
+<strong>3. A spending gate</strong>
+Before any discretionary purchase above a threshold, you pause. Answer three questions. Wait. Most purchases don't survive the wait.
+
+——
+
+I built this system into an app called Royal-Icon Ledger.
+
+It's specifically for people with variable or irregular income — freelancers, traders, commissions-based workers, business owners.
+
+Currently in private beta.
+
+If you or someone you know fits that profile and wants early access — comment below or send me a message.
+
+——
+
+What does your system for managing irregular income look like?
+
+I'm genuinely curious — still learning from how others handle this.</div>
+
+      <div class="note">
+        <strong>First comment (post immediately after):</strong> "For those asking — early access is at app.royalicon.net. It's invite only for now. DM me and I'll send a code."
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="chapter page-break">
+      <span class="section-num">10</span>
+      <div class="chapter-tag">Content · Email</div>
+      <h2>Personal <em>invite email</em></h2>
+      <p class="chapter-desc">Send from your personal Gmail. One at a time. Attach the User Guide PDF. This should feel like a message from a person, not a product launch.</p>
+
+      <div class="card">
+        <div class="card-title">Subject line</div>
+        <div class="post-block" style="margin-top: 12px;">Your Royal-Icon Ledger access is ready</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Email body</div>
+        <div class="post-block" style="margin-top: 12px;">Hi [Name],
+
+You applied for early access to Royal-Icon Ledger a while back — thank you for that. I've been heads down building and I'm finally ready to let a small group of people in.
+
+You're one of them.
+
+Here's your invite code: <strong>[INVITE-CODE]</strong>
+
+To get started:
+1. Go to app.royalicon.net
+2. Create your account
+3. Enter the code when prompted
+
+The onboarding takes about 5 minutes. It'll ask for your real numbers — expenses, income type, buffer target. The more honest you are with it, the more useful it becomes.
+
+<strong>What it does:</strong> Royal-Icon Ledger is a financial operating system built for people with variable or unpredictable income. It gives you a salary you can live on, a buffer that protects you in bad months, and clear rules for where every profit goes before you can spend it.
+
+<strong>What I need from you:</strong> Use it for at least 2–3 weeks with your real numbers, then tell me honestly what's confusing, what's missing, and what actually helped. A voice note, a message, an email — anything works.
+
+I've attached the user guide — it walks through every feature with examples. Worth reading before you start.
+
+If you run into anything at all, reply to this email directly. I read everything.
+
+Welcome aboard.
+
+[Your name]
+Royal-Icon Ledger
+hello@royalicon.net</div>
+      </div>
+
+      <div class="note">
+        <strong>Attach:</strong> Royal-Icon-Ledger-User-Guide.pdf (export from the HTML guide using Save as PDF)
+        <br /><br />
+        <strong>Send timing:</strong> Tuesday–Thursday, 5pm–8pm in recipient's timezone.
+        <br /><br />
+        <strong>Do not BCC.</strong> Send each email individually so it appears as a personal message.
+      </div>
+    </div>
+
+    <!-- 11 -->
+    <div class="chapter page-break">
+      <span class="section-num">11</span>
+      <div class="chapter-tag">Content · Follow-up Sequence</div>
+      <h2>Follow-up <em>sequence</em></h2>
+      <p class="chapter-desc">Three emails sent at specific intervals after signup. Add these to your calendar when you send the invite. Do not skip them — follow-up is where most feedback comes from.</p>
+
+      <div class="card">
+        <div class="card-title">Follow-up 1 — Day 3 after invite sent</div>
+        <p><em>Send to: anyone who hasn't confirmed the code worked</em></p>
+        <div class="post-block" style="margin-top: 12px;">Subject: Quick check — did the code work?
+
+Hey [name],
+
+Just checking the invite code reached you okay. Sometimes these end up in spam.
+
+Code: <strong>[INVITE-CODE]</strong>
+Link: app.royalicon.net
+
+If anything went wrong or you hit a snag getting in, just reply and I'll sort it out.
+
+[Your name]</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Follow-up 2 — Day 10 after signup confirmed</div>
+        <p><em>Send to: all users who completed onboarding</em></p>
+        <div class="post-block" style="margin-top: 12px;">Subject: How's it going?
+
+Hey [name],
+
+You've had Royal-Icon Ledger for 10 days now. Hope it's been useful.
+
+Two quick questions:
+1. Have you been able to enter your real numbers into it?
+2. What's the one thing you wish worked differently?
+
+No wrong answers — I'm making changes based exactly on what people tell me.
+
+[Your name]</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Follow-up 3 — Day 21 after signup confirmed</div>
+        <p><em>Send to: all active users</em></p>
+        <div class="post-block" style="margin-top: 12px;">Subject: 3 weeks in
+
+Hey [name],
+
+Three weeks since you joined. I have two questions:
+
+1. Would you recommend Royal-Icon Ledger to someone with a similar income setup to yours? (Yes / No / Maybe — honest answer only)
+2. What would need to change for the answer to be a confident Yes?
+
+If your answer is already Yes — here's a code for someone you know who might benefit: <strong>[NEW-CODE]</strong>
+
+Reply whenever suits you. I read everything.
+
+[Your name]</div>
+      </div>
+
+      <div class="note">
+        <strong>Referral code:</strong> Generate a fresh code per user from Settings → Access. Label it with their name so you know who gave it out.
+      </div>
+    </div>
+
+    <!-- 12 -->
+    <div class="chapter page-break">
+      <span class="section-num">12</span>
+      <div class="chapter-tag">Execution</div>
+      <h2>30-day <em>calendar</em></h2>
+      <p class="chapter-desc">A complete day-by-day execution plan. Follow this exactly for the highest probability of reaching 20 active users in 30 days.</p>
+
+      <table>
+        <thead><tr><th>Day</th><th>Action</th><th>Time needed</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1</strong></td><td>Pull early access list from Supabase. Select top 8. Generate 8 invite codes. Send personal invite emails (5pm–8pm). Attach User Guide PDF.</td><td>2 hours</td></tr>
+          <tr><td><strong>2</strong></td><td>Join 3–4 Facebook groups (do not post yet). Follow 20 accounts on Twitter/X in freelance/trading/fintech space. Check Telegram for first signups.</td><td>45 min</td></tr>
+          <tr><td><strong>3</strong></td><td>Check invite_codes table — who has signed up? Reply to any user messages or questions. Engage on Twitter (like, comment) to warm up algorithm.</td><td>30 min</td></tr>
+          <tr><td><strong>4</strong></td><td>Send Follow-up 1 to anyone who hasn't opened their code. Check onboarding completion — DM anyone who signed up but didn't complete onboarding.</td><td>30 min</td></tr>
+          <tr><td><strong>5</strong></td><td>Comment genuinely on 3–5 posts in your Facebook groups. Do not mention the app yet.</td><td>30 min</td></tr>
+          <tr><td><strong>6</strong></td><td>Write your Reddit post for r/freelance (Section 7, Post 1). Schedule for tomorrow morning. Review and personalise with your real numbers.</td><td>1 hour</td></tr>
+          <tr><td><strong>7</strong></td><td>Rest / review. Check: how many of Wave 1 are active? Read any replies from invite emails.</td><td>15 min</td></tr>
+          <tr><td><strong>8</strong></td><td>Post to r/freelance at 7am–9am EST. Monitor for 4 hours. Reply to every comment. DM anyone who asks for access — send a code.</td><td>3 hours</td></tr>
+          <tr><td><strong>9</strong></td><td>Post Twitter/X thread (Section 8) at 8am EST. Engage every reply for 2 hours straight. Monitor DMs — send codes to anyone who asks.</td><td>3 hours</td></tr>
+          <tr><td><strong>10</strong></td><td>Send Follow-up 2 to all users who completed onboarding 10 days ago. Post LinkedIn article (Section 9). Put link in first comment.</td><td>2 hours</td></tr>
+          <tr><td><strong>11</strong></td><td>Post in 2–3 Facebook groups (value-first, soft mention of app). Send personal message in Telegram/WhatsApp groups you're in.</td><td>1 hour</td></tr>
+          <tr><td><strong>12</strong></td><td>Post to r/personalfinance at 7am EST. Monitor and engage for 3 hours. Send codes to anyone who DMs.</td><td>3 hours</td></tr>
+          <tr><td><strong>13</strong></td><td>Mid-point check: count active users. How many completed onboarding? Where is the drop-off? Fix any UX issue reported in feedback.</td><td>1 hour</td></tr>
+          <tr><td><strong>14</strong></td><td>Send personal message in 2–3 more Telegram/WhatsApp groups. Post to r/southafrica (adapt Post 1 for local context).</td><td>1.5 hours</td></tr>
+          <tr><td><strong>15</strong></td><td>Review all feedback received so far. Write a list of the top 3 issues mentioned. Decide what to fix this week.</td><td>1 hour</td></tr>
+          <tr><td><strong>16</strong></td><td>Post to r/Daytrading (Post 2 — trading version). Monitor and engage. Send Wave 2 invites (4–6 more people from early access list).</td><td>3 hours</td></tr>
+          <tr><td><strong>17</strong></td><td>Post Twitter/X progress update thread (template in Section 8). Include anonymised testimonials with permission.</td><td>1.5 hours</td></tr>
+          <tr><td><strong>18</strong></td><td>Post to r/Entrepreneur (Post 3 — stage system). Send referral ask to your 5 most engaged users (template in Section 5).</td><td>2 hours</td></tr>
+          <tr><td><strong>19</strong></td><td>Personal outreach: message 5 people in your network who fit the profile. One message each, not a broadcast.</td><td>1 hour</td></tr>
+          <tr><td><strong>20</strong></td><td>Send Follow-up 2 to second wave users. Check in with anyone who signed up but went quiet.</td><td>45 min</td></tr>
+          <tr><td><strong>21</strong></td><td>Send Follow-up 3 (with referral code) to all users who have been active for 21 days. Ask for testimonials.</td><td>1 hour</td></tr>
+          <tr><td><strong>22</strong></td><td>Post to r/financialindependence (Post 3 — stage system, adapted for FI audience).</td><td>2 hours</td></tr>
+          <tr><td><strong>23</strong></td><td>Collect testimonials received. Draft social proof post for Twitter/X and LinkedIn.</td><td>1 hour</td></tr>
+          <tr><td><strong>24</strong></td><td>Post social proof content on Twitter/X and LinkedIn with testimonials (with permission).</td><td>1 hour</td></tr>
+          <tr><td><strong>25</strong></td><td>Final personal outreach push — message 5 more people in your network. Check referral codes from existing users.</td><td>1 hour</td></tr>
+          <tr><td><strong>26</strong></td><td>Send Follow-up 3 to second wave. Review all feedback — categorise by feature area.</td><td>1 hour</td></tr>
+          <tr><td><strong>27</strong></td><td>Post in Facebook groups again — share one specific insight from your first month of beta feedback.</td><td>45 min</td></tr>
+          <tr><td><strong>28</strong></td><td>Count active users. If below 20, identify the gap and execute one targeted push (personal outreach or specific community).</td><td>2 hours</td></tr>
+          <tr><td><strong>29</strong></td><td>Send referral codes to all active users — final ask. Write summary of month 1 learnings.</td><td>1 hour</td></tr>
+          <tr><td><strong>30</strong></td><td>Count final active users. Document top 10 feedback items. Plan Wave 2 based on what you learned. Celebrate what you shipped.</td><td>2 hours</td></tr>
+        </tbody>
+      </table>
+
+      <div class="card-warm" style="margin-top: 24px;">
+        <div class="card-title">Total time investment</div>
+        <p>Approximately <strong>40–45 hours</strong> over 30 days. Roughly 1.5 hours per day. Front-loaded in weeks 1–2 when community posts require monitoring and engagement.</p>
+      </div>
+    </div>
+
+    <!-- 13 -->
+    <div class="chapter page-break">
+      <span class="section-num">13</span>
+      <div class="chapter-tag">Metrics</div>
+      <h2>What <em>success</em> looks like</h2>
+      <p class="chapter-desc">Track these numbers weekly. The most important metric is active users — not signups, not page views, not social impressions.</p>
+
+      <h3>Primary metrics</h3>
+      <table>
+        <thead><tr><th>Metric</th><th>Week 1 target</th><th>Week 2 target</th><th>Week 4 target</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Invite codes sent</strong></td><td>8</td><td>16</td><td>25–30</td></tr>
+          <tr><td><strong>Codes redeemed</strong></td><td>6</td><td>12</td><td>20+</td></tr>
+          <tr><td><strong>Onboarding completed</strong></td><td>5</td><td>10</td><td>18</td></tr>
+          <tr><td><strong>Active users (full definition)</strong></td><td>3</td><td>8</td><td>20</td></tr>
+          <tr><td><strong>Day-3 feedback responses</strong></td><td>3</td><td>6</td><td>12</td></tr>
+          <tr><td><strong>Referrals from existing users</strong></td><td>0</td><td>2</td><td>5</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Secondary metrics (channel performance)</h3>
+      <table>
+        <thead><tr><th>Channel</th><th>Metric to track</th><th>Good benchmark</th></tr></thead>
+        <tbody>
+          <tr><td>Reddit posts</td><td>Upvotes + comments + DMs received</td><td>50+ upvotes, 10+ comments</td></tr>
+          <tr><td>Twitter/X thread</td><td>Impressions + DMs asking for access</td><td>5+ DMs per thread</td></tr>
+          <tr><td>LinkedIn post</td><td>Reactions + comments + connection requests</td><td>20+ reactions</td></tr>
+          <tr><td>Personal emails</td><td>Reply rate</td><td>70%+ reply or code used</td></tr>
+          <tr><td>Referrals</td><td>Codes given by users that were redeemed</td><td>1 in 3 referrals converts</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Warning signs to watch for</h3>
+      <div class="card" style="border-color: #3A1E14;">
+        <div class="card-title" style="color: var(--orange2);">Drop-off points to monitor</div>
+        <ul>
+          <li><strong>Invite sent but code not redeemed after 4 days</strong> — send Follow-up 1 immediately</li>
+          <li><strong>Code redeemed but onboarding not completed</strong> — DM the user and offer to walk through it together</li>
+          <li><strong>Onboarding completed but no data entered after 7 days</strong> — send a personal check-in, ask what got in the way</li>
+          <li><strong>User went quiet after Day-3 follow-up</strong> — this user may have churned; ask directly if the app wasn't useful</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 14 -->
+    <div class="chapter">
+      <span class="section-num">14</span>
+      <div class="chapter-tag">Next Steps</div>
+      <h2>After <em>20 users</em></h2>
+      <p class="chapter-desc">Twenty active users is not a destination — it's the foundation. Here's what comes next.</p>
+
+      <h3>What 20 users gives you</h3>
+      <ul>
+        <li><strong>A real product-market fit signal</strong> — if 15+ are still active at day 30, you have something real</li>
+        <li><strong>A prioritised feature backlog</strong> — built from real user feedback, not assumptions</li>
+        <li><strong>3–5 testimonials</strong> you can use publicly to open Wave 2</li>
+        <li><strong>A conversion funnel</strong> — you know your signup→active rate and where the drop-offs are</li>
+        <li><strong>Confidence</strong> to talk about the product publicly without hedging</li>
+      </ul>
+
+      <h3>Wave 2 targets (users 21–100)</h3>
+      <div class="grid-2" style="margin-top: 16px;">
+        <div class="card-green">
+          <div class="card-title green">Owned channels</div>
+          <ul style="margin: 0;">
+            <li>Open early access waitlist publicly</li>
+            <li>Add referral system inside the app</li>
+            <li>Build email newsletter from users + subscribers</li>
+            <li>Create a "share your stage" social feature</li>
+          </ul>
+        </div>
+        <div class="card-blue">
+          <div class="card-title blue">External channels</div>
+          <ul style="margin: 0;">
+            <li>Product Hunt launch (requires 50+ upvotes to trend)</li>
+            <li>Indie Hackers post (founder journey story)</li>
+            <li>Podcast outreach (freelance/trading podcasts)</li>
+            <li>Newsletter sponsorships (freelance newsletters)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>The most important thing</h3>
+      <div class="quote">
+        <p>"Do not launch Wave 2 until you understand why Wave 1 users stayed or left. The answers are in your Day-21 follow-up emails. Read them all before you try to scale."</p>
+      </div>
+
+      <p>The fastest path to 100 users is making sure your first 20 are genuinely successful with the product. Happy users refer. Struggling users churn silently and tell no one — except other potential users, who they warn away.</p>
+
+      <p>Build the feedback loop before you build the funnel.</p>
+
+      <hr class="divider" />
+
+      <div class="card-warm" style="text-align: center; padding: 40px;">
+        <div class="card-title" style="text-align: center; margin-bottom: 16px;">Royal-Icon Ledger</div>
+        <p style="font-family: 'Fraunces', Georgia, serif; font-size: 22px; font-weight: 300; color: var(--bright); margin-bottom: 8px;">
+          Built for people who earn <em>differently.</em>
+        </p>
+        <p style="color: var(--subtle); font-size: 13px; margin: 0;">app.royalicon.net · hello@royalicon.net</p>
+        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+          <span class="tag tag-orange">Private Beta v0.2</span>
+          <span class="tag tag-green">20 users · 30 days</span>
+          <span class="tag">May 2026</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /wrap -->
+
+</body>
+</html>
