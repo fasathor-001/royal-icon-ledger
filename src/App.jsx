@@ -882,7 +882,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           Salary {fmt(stats.salary)}/month · Target {data.bufferTargetMonths} months ({fmt(stats.bufferTarget)})
         </p>
         <div className="space-y-3">
-          <StageRow label="Stage 1" target={`$0 → ${fmt(stats.stage1End)}`} subtitle="Crisis floor — 6 months · 100% to buffer" done={data.buffer >= stats.stage1End} active={stats.stage === 1} />
+          <StageRow label="Stage 1" target={`${fmt(0)} → ${fmt(stats.stage1End)}`} subtitle="Crisis floor — 6 months · 100% to buffer" done={data.buffer >= stats.stage1End} active={stats.stage === 1} />
           <StageRow label="Stage 1.5" target={`${fmt(stats.stage1End)} → ${fmt(stats.stage15End)}`} subtitle="Comfort zone — 12 months · 70/30 split" done={data.buffer >= stats.stage15End} active={stats.stage === 1.5} />
           <StageRow label="Stage 2" target={`${fmt(stats.stage15End)} → ${fmt(stats.bufferTarget)}`} subtitle={`Fortified — ${data.bufferTargetMonths} months · 80/20 split`} done={data.buffer >= stats.bufferTarget} active={stats.stage === 2} />
           <StageRow label="Stage 3" target="Full waterfall" subtitle="50% long-term · 30% trading · 20% lifestyle" done={false} active={stats.stage === 3} />
@@ -1337,7 +1337,7 @@ function ProfitAllocator({ data, stats, setData }) {
 
           <AllocationBlock label="Tax Reserve" amount={allocation.taxReserve} color="#8B8478" icon={Lock} note={`${data.taxReservePct}% set aside. Move to a separate savings account for quarterly estimated taxes.`} isReserve currency={data.currency} />
           {allocation.toBuffer > 0 && <AllocationBlock label="To Family Buffer" amount={allocation.toBuffer} color="#D97757" icon={Shield} note="Protects family from trading volatility." currency={data.currency} />}
-          {allocation.toLongTerm > 0 && <AllocationBlock label="Long-term Investing" amount={allocation.toLongTerm} color="#7FA068" icon={PiggyBank} note="Roth IRA / index funds. Family's future independence." currency={data.currency} />}
+          {allocation.toLongTerm > 0 && <AllocationBlock label="Long-term Investing" amount={allocation.toLongTerm} color="#7FA068" icon={PiggyBank} note="Index funds / long-term investments. Family's future independence." currency={data.currency} />}
           {allocation.toTrading > 0 && data.incomeType !== 'fixed' && <AllocationBlock label="Trading Capital" amount={allocation.toTrading} color="#5B7FB8" icon={Briefcase} note="Compound your edge." currency={data.currency} />}
           {allocation.toGoals > 0 && (
             <AllocationBlock
