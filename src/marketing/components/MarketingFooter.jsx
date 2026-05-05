@@ -33,8 +33,11 @@ export default function MarketingFooter() {
           {/* Brand column */}
           <div>
             <Link to="/" style={{ textDecoration: 'none', marginBottom: '16px', display: 'inline-block' }}>
-              <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', fontWeight: 400, color: '#E8E2D5' }}>Royal </span>
-              <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', fontWeight: 400, fontStyle: 'italic', color: '#D97757' }}>Ledger</span>
+              <img
+                src="/logo-horizontal.svg"
+                alt="Royal Ledger"
+                style={{ height: '80px', width: 'auto', display: 'block' }}
+              />
             </Link>
             <p style={{ fontSize: '13px', color: '#3A3028', lineHeight: 1.7, maxWidth: '240px', marginBottom: '20px', marginTop: '4px' }}>
               A financial operating system for variable-income earners globally.
