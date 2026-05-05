@@ -441,6 +441,8 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     if (!belowFloor) drawdownSentRef.current = false;
   }, [data.buffer, stats.bufferProtectThreshold, user]);
 
+  const [snapshotFlash, setSnapshotFlash] = useState(false);
+
 	const takeSnapshot = () => {
 	  const today = new Date().toISOString().slice(0, 10);
 	  const snapshot = {
@@ -485,6 +487,8 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
 
 	  // Mark backup as done
 	  setData(d => ({ ...d, lastBackupDate: new Date().toISOString() }));
+    setSnapshotFlash(true);
+    setTimeout(() => setSnapshotFlash(false), 3000);
 	};
 
   if (loading) {
@@ -569,9 +573,9 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
                 </button>
               </div>
             )}
-            <button onClick={takeSnapshot} className="btn-secondary btn flex items-center gap-2" title="Save current state to history" style={{ padding: '7px 12px' }}>
-              <Camera size={14} />
-              <span className="hidden sm:inline">Snapshot</span>
+            <button onClick={takeSnapshot} className="btn-secondary btn flex items-center gap-2" title="Save current state to history" style={{ padding: '7px 12px', color: snapshotFlash ? '#7FA068' : undefined, borderColor: snapshotFlash ? '#2A4A2A' : undefined, transition: 'color 0.3s, border-color 0.3s' }}>
+              {snapshotFlash ? <Check size={14} /> : <Camera size={14} />}
+              <span className="hidden sm:inline">{snapshotFlash ? 'Saved!' : 'Snapshot'}</span>
             </button>
             <div className="text-right">
               <div className="label hidden sm:block" style={{ color: '#5C5648', fontSize: 9 }}>NET WORTH</div>
@@ -1759,6 +1763,7 @@ function TradingTab({ data, stats, setData }) {
 
 function DrawdownProtocol({ data, stats, setData, onResetHwm, hwmGate }) {
   const fmt = makeFmt(data.currency);
+  const [hwmFlash, setHwmFlash] = useState(false);
   const zones = [
     { id: 'normal',    range: '0–9%',   label: 'Normal',     color: '#7FA068', desc: 'Full position sizes. Trade your plan.' },
     { id: 'caution',   range: '10–19%', label: 'Caution',    color: '#B89968', desc: 'Reduce position sizes by 25%. Review your last 10 trades for pattern issues.' },
@@ -1841,10 +1846,14 @@ function DrawdownProtocol({ data, stats, setData, onResetHwm, hwmGate }) {
           />
           <button
             className="btn px-3 py-2 text-xs"
-            style={{ color: '#8B8478', border: '1px solid #26221C', borderRadius: '3px' }}
-            onClick={() => onResetHwm?.(() => setData(d => ({ ...d, tradingCapitalHighWater: d.tradingCapital })))}
+            style={{ color: hwmFlash ? '#7FA068' : '#8B8478', border: `1px solid ${hwmFlash ? '#2A4A2A' : '#26221C'}`, borderRadius: '3px', transition: 'color 0.3s, border-color 0.3s' }}
+            onClick={() => onResetHwm?.(() => {
+              setData(d => ({ ...d, tradingCapitalHighWater: d.tradingCapital }));
+              setHwmFlash(true);
+              setTimeout(() => setHwmFlash(false), 3000);
+            })}
           >
-            Reset to current
+            {hwmFlash ? '✓ Reset' : 'Reset to current'}
           </button>
         </div>
         {hwmGate}
@@ -2496,6 +2505,12 @@ function AccessControlPanel() {
   const [genEmail, setGenEmail] = useState('');
   const [copiedId, setCopiedId] = useState(null);
   const [approvedCode, setApprovedCode] = useState(null);
+  const [actionFlash, setActionFlash] = useState(null); // { msg, type: 'success'|'error' }
+
+  const flashMsg = (msg, type = 'success') => {
+    setActionFlash({ msg, type });
+    setTimeout(() => setActionFlash(null), 3000);
+  };
 
   useEffect(() => {
     Promise.all([
@@ -2510,7 +2525,8 @@ function AccessControlPanel() {
 
   const handleGenerate = async () => {
     const row = await createInviteCode(genEmail.trim() || null);
-    if (row) { setGenEmail(''); refresh(); }
+    if (row) { setGenEmail(''); refresh(); flashMsg('Invite code generated'); }
+    else flashMsg('Failed to generate code', 'error');
   };
 
   const handleCopy = (code, id) => {
@@ -2522,21 +2538,25 @@ function AccessControlPanel() {
   const handleDelete = async (id) => {
     await deleteInviteCode(id);
     refresh();
+    flashMsg('Code deleted');
   };
 
   const handleReset = async (id) => {
     await resetInviteCode(id);
     refresh();
+    flashMsg('Code reset — ready to use again');
   };
 
   const handleApprove = async (req) => {
     const code = await approveAccessRequest(req.id, req.email);
     if (code) { setApprovedCode({ email: req.email, code }); refresh(); }
+    else flashMsg('Failed to approve request', 'error');
   };
 
   const handleReject = async (id) => {
     await rejectAccessRequest(id);
     refresh();
+    flashMsg('Request rejected');
   };
 
   const pending = requests.filter(r => r.status === 'pending');
@@ -2560,6 +2580,20 @@ function AccessControlPanel() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+      {/* Action flash */}
+      {actionFlash && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '10px 14px', borderRadius: '4px', fontSize: '13px',
+          background: actionFlash.type === 'error' ? '#160E0C' : '#0F1A0E',
+          border: `1px solid ${actionFlash.type === 'error' ? '#3A1E18' : '#2A4A2A'}`,
+          color: actionFlash.type === 'error' ? '#C56B5A' : '#7FA068',
+        }}>
+          <Check size={13} style={{ flexShrink: 0 }} />
+          {actionFlash.msg}
+        </div>
+      )}
 
       {/* Approved code flash */}
       {approvedCode && (
@@ -2819,11 +2853,16 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
   const [currencyChanged, setCurrencyChanged] = useState(false);
   const [hoveredCurrency, setHoveredCurrency] = useState(null);
 
+  const [pinSaved, setPinSaved] = useState(false);
+
   const submitPinChange = () => {
     if (data.overridePin && oldPin !== data.overridePin) { setPinChangeError('Incorrect current PIN.'); return; }
     if (newPin.length > 0 && newPin.length < 4) { setPinChangeError('PIN must be 4 digits.'); return; }
+    const action = newPin ? 'updated' : 'removed';
     setData(d => ({ ...d, overridePin: newPin }));
     setChangingPin(false); setOldPin(''); setNewPin(''); setPinChangeError('');
+    setPinSaved(action);
+    setTimeout(() => setPinSaved(false), 3000);
   };
 
   const inputStyle = {
@@ -3109,7 +3148,13 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                   </div>
                 ) : (
                   <div className="flex items-center gap-3 flex-wrap">
-                    <span className="text-xs" style={{ color: '#7FA068' }}>✓ PIN set</span>
+                    {pinSaved ? (
+                      <span className="text-xs flex items-center gap-1" style={{ color: '#7FA068' }}>
+                        <Check size={12} /> PIN {pinSaved} successfully
+                      </span>
+                    ) : (
+                      <span className="text-xs" style={{ color: '#7FA068' }}>✓ PIN set</span>
+                    )}
                     <button className="btn px-3 py-1 text-xs" style={{ color: '#5B7FB8', border: '1px solid #1E2A3A', borderRadius: '3px' }}
                       onClick={() => { setChangingPin(true); setOldPin(''); setNewPin(''); setPinChangeError(''); }}>
                       Change PIN
