@@ -384,7 +384,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
   // Auto-manage buffer-protect mode
   useEffect(() => {
     if (loading || stats.salary === 0) return;
-    const shouldActivate = data.buffer < stats.bufferProtectThreshold && data.buffer >= stats.stage1End && !data.bufferProtectActive;
+    const shouldActivate = data.buffer < stats.bufferProtectThreshold && !data.bufferProtectActive;
     const shouldDeactivate = data.bufferProtectActive && data.buffer >= stats.bufferTarget;
     if (shouldActivate) setData(d => ({ ...d, bufferProtectActive: true }));
     else if (shouldDeactivate) setData(d => ({ ...d, bufferProtectActive: false }));
@@ -660,10 +660,10 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   const [balancesLocked, setBalancesLocked] = useState(!!data.overridePin);
   const { attempt: attemptUnlock, gate: unlockGate } = usePinGate(data.overridePin);
   const stageInfo = {
-    1: { name: 'Stage 1', title: 'Build the Floor', color: '#C56B5A', desc: '100% of trading profits to buffer.' },
-    1.5: { name: 'Stage 1.5', title: 'Grow the Cushion', color: '#D97757', desc: '70/30 split begins long-term investing.' },
-    2: { name: 'Stage 2', title: 'Reach Fortified', color: '#B89968', desc: '80/20 split — final push.' },
-    3: { name: 'Stage 3', title: 'Full Waterfall', color: '#7FA068', desc: '50/30/20 — your foundation is solid.' },
+    1: { name: 'Stage 1', title: 'Build the Floor', color: '#C56B5A', desc: data.incomeType === 'fixed' ? '100% of surplus to buffer.' : '100% of profits to buffer.' },
+    1.5: { name: 'Stage 1.5', title: 'Grow the Cushion', color: '#D97757', desc: 'Long-term investing begins — split by your stage rules.' },
+    2: { name: 'Stage 2', title: 'Reach Fortified', color: '#B89968', desc: 'Buffer priority — final push to target.' },
+    3: { name: 'Stage 3', title: 'Full Waterfall', color: '#7FA068', desc: 'Full waterfall unlocked — trading, lifestyle, goals.' },
     'protect': { name: 'Protect Mode', title: 'Buffer Rebuilding', color: '#C56B5A', desc: '100% to buffer until rebuilt.' },
   }[stats.stage];
 
@@ -715,10 +715,10 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           <AlertTriangle size={16} style={{ color: '#D97757', flexShrink: 0 }} />
           <div className="flex-1 text-sm">
             <span style={{ color: '#E8E2D5', fontWeight: 500 }}>Down trading day detected. Impulse risk elevated.</span>
-            <span style={{ color: '#8B8478' }}> All discretionary purchases &gt;R100 require 24h sleep.</span>
+            <span style={{ color: '#8B8478' }}> All discretionary purchases above {fmt(data.spendingGateThreshold)} require 24h sleep.</span>
           </div>
           <div className="text-xs" style={{ color: '#5C5648' }}>
-            Expires {new Date(data.tradingGuardUntil).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+            Expires {new Date(data.tradingGuardUntil).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
           </div>
         </div>
       )}
@@ -958,9 +958,9 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         </p>
         <div className="space-y-3">
           <StageRow label="Stage 1" target={`${fmt(0)} → ${fmt(stats.stage1End)}`} subtitle="Crisis floor — 6 months · 100% to buffer" done={data.buffer >= stats.stage1End} active={stats.stage === 1} />
-          <StageRow label="Stage 1.5" target={`${fmt(stats.stage1End)} → ${fmt(stats.stage15End)}`} subtitle="Comfort zone — 12 months · 70/30 split" done={data.buffer >= stats.stage15End} active={stats.stage === 1.5} />
-          <StageRow label="Stage 2" target={`${fmt(stats.stage15End)} → ${fmt(stats.bufferTarget)}`} subtitle={`Fortified — ${data.bufferTargetMonths} months · 80/20 split`} done={data.buffer >= stats.bufferTarget} active={stats.stage === 2} />
-          <StageRow label="Stage 3" target="Full waterfall" subtitle="50% long-term · 30% trading · 20% lifestyle" done={false} active={stats.stage === 3} />
+          <StageRow label="Stage 1.5" target={`${fmt(stats.stage1End)} → ${fmt(stats.stage15End)}`} subtitle="Comfort zone — long-term investing begins" done={data.buffer >= stats.stage15End} active={stats.stage === 1.5} />
+          <StageRow label="Stage 2" target={`${fmt(stats.stage15End)} → ${fmt(stats.bufferTarget)}`} subtitle={`Fortified — ${data.bufferTargetMonths} months · buffer priority`} done={data.buffer >= stats.bufferTarget} active={stats.stage === 2} />
+          <StageRow label="Stage 3" target="Full waterfall" subtitle="Trading · lifestyle · goals all active" done={false} active={stats.stage === 3} />
         </div>
       </section>
 
@@ -1399,7 +1399,7 @@ function ProfitAllocator({ data, stats, setData }) {
           { label: 'Family Buffer',     pct: liveRule.bufferPct,          amt: liveNet * (liveRule.bufferPct / 100),            color: '#D97757' },
           { label: 'Long-term',         pct: liveRule.longTermPct,        amt: liveNet * (liveRule.longTermPct / 100),          color: '#7FA068' },
           ...(data.incomeType !== 'fixed' ? [{ label: 'Trading Capital', pct: liveRule.tradingPct, amt: liveNet * (liveRule.tradingPct / 100), color: '#5B7FB8' }] : []),
-          { label: 'Goals',             pct: liveRule.goalsPct ?? 0,      amt: liveNet * ((liveRule.goalsPct ?? 0) / 100),      color: '#A06B8C' },
+          { label: 'Goals',             pct: (liveRule.goalsPct ?? 0) + (data.incomeType === 'fixed' ? (liveRule.tradingPct ?? 0) : 0), amt: liveNet * (((liveRule.goalsPct ?? 0) + (data.incomeType === 'fixed' ? (liveRule.tradingPct ?? 0) : 0)) / 100), color: '#A06B8C' },
           { label: 'Lifestyle',         pct: liveRule.lifestylePct,       amt: liveNet * (liveRule.lifestylePct / 100),         color: '#B89968' },
         ].filter(r => r.pct > 0);
 
@@ -1488,7 +1488,7 @@ function ProfitAllocator({ data, stats, setData }) {
                 <div>
                   <div className="font-medium text-sm">Gross {fmt(a.grossProfit)} → Net {fmt(a.netProfit)}</div>
                   <div className="text-xs mt-0.5" style={{ color: '#8B8478' }}>
-                    {new Date(a.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {new Date(a.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                     {a.stage !== undefined && <span className="ml-2" style={{ color: '#5C5648' }}>· Stage {a.stage}</span>}
                   </div>
                 </div>
@@ -1497,6 +1497,7 @@ function ProfitAllocator({ data, stats, setData }) {
                   {a.toBuffer > 0 && <span style={{ color: '#D97757' }}>+{fmt(a.toBuffer)} buf</span>}
                   {a.toLongTerm > 0 && <span style={{ color: '#7FA068' }}>+{fmt(a.toLongTerm)} lt</span>}
                   {a.toTrading > 0 && <span style={{ color: '#5B7FB8' }}>+{fmt(a.toTrading)} trd</span>}
+                  {a.toGoals > 0 && <span style={{ color: '#A06B8C' }}>+{fmt(a.toGoals)} goals</span>}
                   {a.toLifestyle > 0 && <span style={{ color: '#B89968' }}>+{fmt(a.toLifestyle)} life</span>}
                 </div>
               </div>
@@ -1813,8 +1814,8 @@ function ImpulseTab({ data, stats, setData, user }) {
 
   const runGate = () => {
     if (!name || !amt) return;
-    // Feature 5: force sleep on guard days for purchases > R100
-    if (guardActive && amt > 100) { setStep('gate'); return; }
+    // Feature 5: force sleep on guard days for purchases above the gate threshold
+    if (guardActive && amt >= data.spendingGateThreshold) { setStep('gate'); return; }
     if (amt >= data.spendingGateThreshold) setStep('gate');
     else { logImpulse(false, false); setDecision('logged-small'); setStep('decided'); }
   };
@@ -1985,7 +1986,7 @@ function ImpulseTab({ data, stats, setData, user }) {
               </div>
             )}
             {/* Trading guard notice */}
-            {guardActive && amt > 100 && !envelopeStatus?.wouldBeOver && (
+            {guardActive && amt >= data.spendingGateThreshold && !envelopeStatus?.wouldBeOver && (
               <div className="flex items-center gap-2 mt-3 text-sm" style={{ color: '#D97757' }}>
                 <AlertTriangle size={13} />
                 <span>Trading guard active — sleep on it is recommended.</span>
@@ -2059,7 +2060,7 @@ function ImpulseTab({ data, stats, setData, user }) {
             </div>
           )}
 
-          <div className="grid md:grid-cols-3 gap-3 pt-2">
+          <div className="grid md:grid-cols-3 gap-3 pt-2" style={{ opacity: pinStep ? 0.3 : 1, pointerEvents: pinStep ? 'none' : undefined }}>
             <button className="btn p-5 text-left card" onClick={cancel} style={{ borderColor: '#3A4A2A' }}>
               <Check size={18} style={{ color: '#7FA068' }} className="mb-2" />
               <div className="font-medium mb-1">Skip it</div>
@@ -2209,7 +2210,7 @@ function ImpulseHistory({ data, stats, setData }) {
         <div className="text-xs" style={{ color: '#5C5648' }}>
           {(CATEGORIES[i.category] || CATEGORIES.other).label}{i.trigger && ` · ${i.trigger}`}
           {i.overrideUsed && i.overrideAt && (
-            <span style={{ color: '#5C5648' }}> · overridden {new Date(i.overrideAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+            <span style={{ color: '#5C5648' }}> · overridden {new Date(i.overrideAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
           )}
         </div>
       </div>
@@ -2364,7 +2365,7 @@ function History({ data, stats, setData }) {
                 return (
                   <div key={s.date} className="flex items-center justify-between py-3 border-b last:border-0" style={{ borderColor: '#26221C' }}>
                     <div>
-                      <div className="font-medium text-sm">{new Date(s.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                      <div className="font-medium text-sm">{new Date(s.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                       <div className="text-xs mt-1" style={{ color: '#8B8478' }}>
                         Buffer {fmt(s.buffer)} · Trading {fmt(s.tradingCapital)} · LT {fmt(s.longTerm)}
                       </div>
@@ -2488,7 +2489,7 @@ function AccessControlPanel() {
                   <div>
                     <div style={{ fontSize: '13px', color: '#E8E2D5' }}>{r.email}</div>
                     {r.message && <div style={{ fontSize: '12px', color: '#8B8478', marginTop: '2px' }}>{r.message}</div>}
-                    <div style={{ fontSize: '11px', color: '#3A3028', marginTop: '2px' }}>{new Date(r.created_at).toLocaleDateString('en-US')}</div>
+                    <div style={{ fontSize: '11px', color: '#3A3028', marginTop: '2px' }}>{new Date(r.created_at).toLocaleDateString(undefined)}</div>
                   </div>
                   <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
                     <button onClick={() => handleApprove(r)} style={{ background: '#1A3020', border: '1px solid #2A4A30', color: '#7FA068', borderRadius: '3px', padding: '5px 10px', fontSize: '12px', cursor: 'pointer' }}>
@@ -2581,7 +2582,7 @@ function CloudSyncPanel({ user, data, setData, syncStatus, isOnline, lastSyncedA
     if (mins < 60) return `${mins} min ago`;
     const hrs = Math.round(mins / 60);
     if (hrs < 24)  return `${hrs} hr ago`;
-    return new Date(ts).toLocaleDateString('en-US');
+    return new Date(ts).toLocaleDateString(undefined);
   };
 
   // Build status label from syncStatus string
@@ -2789,7 +2790,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
             if (mins < 60) return `${mins} min ago`;
             const hrs = Math.round(mins / 60);
             if (hrs < 24)  return `${hrs}h ago`;
-            return new Date(lastSyncedAt).toLocaleDateString('en-US');
+            return new Date(lastSyncedAt).toLocaleDateString(undefined);
           })();
 
           return (
@@ -3174,7 +3175,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                 <div style={{ fontSize: '12px', color: '#5C5648', marginTop: '3px' }}>{user?.email}</div>
                 {user?.last_sign_in_at && (
                   <div style={{ fontSize: '11px', color: '#3A3028', marginTop: '2px' }}>
-                    Signed in {new Date(user.last_sign_in_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    Signed in {new Date(user.last_sign_in_at).toLocaleString(undefined, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </div>
                 )}
               </div>
@@ -3464,7 +3465,7 @@ function Rules({ data, stats, setData, user }) {
         <p className="text-sm mb-4" style={{ color: '#8B8478' }}>Purchases at or above this amount trigger the full sleep-on-it gate.</p>
         <div className="grid md:grid-cols-3 gap-3">
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>Threshold (R)</div>
+            <div className="label mb-2" style={{ color: '#5C5648' }}>Threshold ({getCurrency(data.currency).symbol})</div>
             <input type="number" className="input" value={data.spendingGateThreshold}
               readOnly={locked} onClick={() => locked && requestUnlock()}
               onChange={locked ? undefined : (e) => setData(d => ({ ...d, spendingGateThreshold: Number(e.target.value) || 0 }))}
@@ -3484,6 +3485,7 @@ function Rules({ data, stats, setData, user }) {
         </p>
         <div className="space-y-3 mb-4">
           {(data.goals || []).map(goal => {
+            // Progress shows the shared goals pool vs each target — not per-goal tracking
             const progress = data.futureGoals && goal.target
               ? Math.min(100, (data.futureGoals / goal.target) * 100)
               : 0;
@@ -3519,7 +3521,7 @@ function Rules({ data, stats, setData, user }) {
                       <div style={{ height: '4px', background: '#A06B8C', borderRadius: '2px', width: `${progress}%`, transition: 'width 300ms' }} />
                     </div>
                     <div className="flex justify-between text-xs" style={{ color: '#5C5648' }}>
-                      <span>{progress.toFixed(0)}% of target</span>
+                      <span>{progress.toFixed(0)}% of target <span style={{ color: '#3A3028' }}>(shared pool)</span></span>
                       <span className="mono">{fmt(data.futureGoals || 0)} / {fmt(goal.target)}</span>
                     </div>
                   </div>

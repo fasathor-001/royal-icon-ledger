@@ -41,23 +41,34 @@ export default function RolloverModal({ data, setData, onClose }) {
   const totalSwept = swept.reduce((s, e) => s + e.unspent, 0);
 
   const confirm = () => {
-    const now = new Date();
-    const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    setData(d => {
+      // Sweep unspent → buffer for 'sweep' envelopes
+      // Roll unspent → add as bonus to envelope cap for 'roll' envelopes
+      const updatedEnvelopes = (d.envelopes || []).map(env => {
+        const item = rolloverItems.find(r => r.id === env.id);
+        if (!item) return env;
+        if (env.rolloverMode === 'roll' && item.unspent > 0) {
+          return { ...env, cap: env.cap + item.unspent };
+        }
+        return env;
+      });
 
-    setData(d => ({
-      ...d,
-      buffer: d.buffer + totalSwept,
-      lastEnvelopeRollover: prevMonth.key,
-      envelopeRolloverHistory: [
-        ...(d.envelopeRolloverHistory || []),
-        {
-          month: prevMonth.key,
-          timestamp: Date.now(),
-          summary: rolloverItems,
-          totalSwept,
-        },
-      ],
-    }));
+      return {
+        ...d,
+        buffer: d.buffer + totalSwept,
+        envelopes: updatedEnvelopes,
+        lastEnvelopeRollover: prevMonth.key,
+        envelopeRolloverHistory: [
+          ...(d.envelopeRolloverHistory || []),
+          {
+            month: prevMonth.key,
+            timestamp: Date.now(),
+            summary: rolloverItems,
+            totalSwept,
+          },
+        ],
+      };
+    });
     onClose();
   };
 
@@ -110,7 +121,7 @@ export default function RolloverModal({ data, setData, onClose }) {
           <Repeat size={16} style={{ color: '#D97757', flexShrink: 0 }} />
           <p className="text-sm" style={{ color: '#E8E2D5', lineHeight: 1.6 }}>
             {totalSwept > 0 && <><strong style={{ color: '#7FA068' }}>{fmt(totalSwept)}</strong> swept from {swept.filter(e => e.unspent > 0).map(e => e.name).join(', ')} to Buffer. </>}
-            {rolled.filter(e => e.unspent > 0).length > 0 && <><strong style={{ color: '#B89968' }}>{rolled.filter(e => e.unspent > 0).map(e => e.name).join(', ')}</strong> carried forward. </>}
+            {rolled.filter(e => e.unspent > 0).length > 0 && <><strong style={{ color: '#B89968' }}>{rolled.filter(e => e.unspent > 0).map(e => e.name).join(', ')}</strong> rolled — unspent added to next month's cap. </>}
             {reset.length > 0 && <><strong style={{ color: '#8B8478' }}>{reset.map(e => e.name).join(', ')}</strong> reset.</>}
           </p>
         </div>
@@ -165,7 +176,7 @@ export default function RolloverModal({ data, setData, onClose }) {
           Confirm and continue →
         </button>
         <p className="text-xs text-center mt-3" style={{ color: '#5C5648' }}>
-          Applies envelope sweeps and marks {prevMonth.label} as rolled over.
+          Sweeps to buffer, rolls unspent caps forward, and marks {prevMonth.label} as closed.
         </p>
       </div>
     </div>

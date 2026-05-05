@@ -78,7 +78,7 @@ function suggestEnvelopes(expenses, spendingBudget) {
       isEssential: true,
     });
     suggestions.push({
-      name: 'Wife',
+      name: 'Partner',
       icon: 'wife',
       cap: Math.round(total * 0.15),
       blockMode: 'soft',
@@ -610,14 +610,14 @@ function BudgetSetup({ data, setData, stats }) {
         <Check size={32} style={{ color: '#7FA068' }} className="mx-auto mb-4" />
         <div className="display text-3xl mb-2" style={{ fontStyle: 'italic', fontWeight: 300 }}>Budget configured.</div>
         <p style={{ color: '#8B8478', maxWidth: '500px', margin: '0 auto', lineHeight: 1.6 }}>
-          From now on, when you log a purchase, you'll pick which envelope it comes from. The system will track and enforce your rules. Refresh the page to see your new Budget tab.
+          From now on, when you log a purchase, you'll pick which envelope it comes from. The system will track and enforce your rules.
         </p>
         <button
-          onClick={() => window.location.reload()}
+          onClick={() => setView('overview')}
           className="btn px-5 py-3 mt-6"
           style={{ background: '#D97757', color: '#0A0908', borderRadius: '4px', fontWeight: 600 }}
         >
-          Refresh
+          View my envelopes →
         </button>
       </div>
     );

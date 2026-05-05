@@ -100,8 +100,9 @@ function buildReviewData(data, stats, reviewMonth) {
   const savingsRate = totalIncome > 0 ? (savingsThisMonth / totalIncome) * 100 : 0;
 
   // Stage progression
-  const monthsToTarget = stats.salary > 0 && (stats.bufferTarget - bufferNow) > 0
-    ? Math.ceil((stats.bufferTarget - bufferNow) / (data.bufferReserve + Math.max(0, tradingProfit * 0.7)))
+  const _denominator = data.bufferReserve + Math.max(0, tradingProfit * 0.7);
+  const monthsToTarget = stats.salary > 0 && (stats.bufferTarget - bufferNow) > 0 && _denominator > 0
+    ? Math.ceil((stats.bufferTarget - bufferNow) / _denominator)
     : 0;
 
   return {
@@ -336,20 +337,22 @@ export default function MonthlyReview({ data, setData, stats, mode = 'tab', onCl
           </div>
 
           <div className="space-y-3">
-            {/* Action 1: Log P&L */}
-            <ActionRow
-              done={actionsCompleted.pnl}
-              icon={TrendingUp}
-              title="Log this month's trading P&L"
-              desc={actionsCompleted.pnl
-                ? `Logged: ${review.tradingProfit >= 0 ? '+' : ''}${fmt(review.tradingProfit)}`
-                : 'Without this, allocations and savings rate are incomplete'}
-              actionLabel="Go to Trading P&L"
-              onAction={() => {
-                if (mode === 'modal' && onClose) onClose();
-                window.dispatchEvent(new CustomEvent('navigate-tab', { detail: 'trading' }));
-              }}
-            />
+            {/* Action 1: Log P&L — hidden for fixed-income users */}
+            {data.incomeType !== 'fixed' && (
+              <ActionRow
+                done={actionsCompleted.pnl}
+                icon={TrendingUp}
+                title="Log this month's trading P&L"
+                desc={actionsCompleted.pnl
+                  ? `Logged: ${review.tradingProfit >= 0 ? '+' : ''}${fmt(review.tradingProfit)}`
+                  : 'Without this, allocations and savings rate are incomplete'}
+                actionLabel="Go to Trading P&L"
+                onAction={() => {
+                  if (mode === 'modal' && onClose) onClose();
+                  window.dispatchEvent(new CustomEvent('navigate-tab', { detail: 'trading' }));
+                }}
+              />
+            )}
 
             {/* Action 2: Apply rollover */}
             <ActionRow

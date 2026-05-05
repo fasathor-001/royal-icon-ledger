@@ -13,14 +13,14 @@ import { CURRENCIES, makeFmt, getCurrency } from '../lib/currency';
 import { TIMEZONES, offsetLabel, normalizeTimezone } from '../lib/timezones';
 
 const SUGGESTED_EXPENSES = [
-  { name: 'Rent / Bond',         category: 'Housing',         placeholder: '8000' },
-  { name: 'Utilities',           category: 'Utilities',       placeholder: '1500' },
-  { name: 'Groceries',           category: 'Food',            placeholder: '4000' },
-  { name: 'Transport / Fuel',    category: 'Transportation',  placeholder: '2000' },
-  { name: 'Phone / Internet',    category: 'Subscriptions',   placeholder: '800' },
-  { name: 'Insurance',           category: 'Insurance',       placeholder: '1500' },
-  { name: 'School / Childcare',  category: 'Childcare/Kids',  placeholder: '3000' },
-  { name: 'Family support',      category: 'Family support',  placeholder: '5000' },
+  { name: 'Rent / Bond',         category: 'Housing',         placeholder: '0' },
+  { name: 'Utilities',           category: 'Utilities',       placeholder: '0' },
+  { name: 'Groceries',           category: 'Food',            placeholder: '0' },
+  { name: 'Transport / Fuel',    category: 'Transportation',  placeholder: '0' },
+  { name: 'Phone / Internet',    category: 'Subscriptions',   placeholder: '0' },
+  { name: 'Insurance',           category: 'Insurance',       placeholder: '0' },
+  { name: 'School / Childcare',  category: 'Childcare/Kids',  placeholder: '0' },
+  { name: 'Family support',      category: 'Family support',  placeholder: '0' },
 ];
 
 // TIMEZONES is imported from src/lib/timezones.js (13-entry curated IANA list).
@@ -520,7 +520,7 @@ export default function Onboarding({ data, setData, onComplete }) {
                   <span className="ob-mono" style={{ fontSize: '18px', color: '#5C5648' }}>{currencySymbol}</span>
                   <input
                     type="number"
-                    placeholder="2000"
+                    placeholder="0"
                     value={spendingBudget}
                     onChange={(e) => setSpendingBudget(e.target.value)}
                     className="ob-input"
@@ -538,7 +538,7 @@ export default function Onboarding({ data, setData, onComplete }) {
                   <span className="ob-mono" style={{ fontSize: '18px', color: '#5C5648' }}>{currencySymbol}</span>
                   <input
                     type="number"
-                    placeholder="1000"
+                    placeholder="0"
                     value={bufferReserve}
                     onChange={(e) => setBufferReserve(e.target.value)}
                     className="ob-input"

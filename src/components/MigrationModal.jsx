@@ -133,7 +133,7 @@ export default function MigrationModal({ user, onMigrated, onSkip }) {
             </div>
 
             <p className="text-xs mt-3" style={{ color: '#5C5648', lineHeight: 1.5 }}>
-              "Start fresh" keeps your local data in this browser but doesn't upload it. You can always export it manually from the Rules tab.
+              "Start fresh" keeps your local data in this browser but doesn't upload it. You can always export it manually from Settings → Data &amp; Sync.
             </p>
           </>
         )}

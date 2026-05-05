@@ -107,14 +107,12 @@ export default function EarlyAccess({ navigate }) {
           setSubmitted(true);
           return;
         }
-        console.error('[EarlyAccess] Supabase error:', error);
         setSubmitError('Something went wrong. Please try again or email us at hello@royalicon.net.');
         setSubmitting(false);
         return;
       }
     } else {
       // Supabase not configured — local dev fallback
-      console.warn('[EarlyAccess] Supabase not configured. Form data:', form);
       await new Promise(r => setTimeout(r, 600));
     }
     // ─────────────────────────────────────────────────────────────
