@@ -469,6 +469,12 @@ function LoginPage() {
               </button>
             </div>
           )}
+          <a
+            href="https://royalicon.net"
+            style={{ fontSize: '11px', color: '#3A3028', textDecoration: 'none', marginTop: '4px', display: 'inline-block' }}
+          >
+            ← royalicon.net
+          </a>
         </div>
       </div>
     </div>

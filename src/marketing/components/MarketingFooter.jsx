@@ -109,7 +109,7 @@ export default function MarketingFooter() {
               </Link>
             ))}
             <a
-              href="/app"
+              href="https://app.royalicon.net"
               className="m-footer-link"
               style={{ textDecoration: 'none', display: 'block', marginTop: '4px' }}
             >
