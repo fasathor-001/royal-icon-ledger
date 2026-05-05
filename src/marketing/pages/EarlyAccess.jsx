@@ -107,7 +107,7 @@ export default function EarlyAccess({ navigate }) {
           setSubmitted(true);
           return;
         }
-        setSubmitError('Something went wrong. Please try again or email us at hello@royalicon.net.');
+        setSubmitError('Something went wrong. Please try again or email us at hello@royalledger.app.');
         setSubmitting(false);
         return;
       }

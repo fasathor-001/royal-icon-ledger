@@ -119,7 +119,7 @@ export default function Home({ navigate }) {
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#2A2420' }} />
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#2A2420' }} />
               <div style={{ marginLeft: 'auto', fontSize: '11px', color: '#3A3028', fontFamily: "'JetBrains Mono', monospace" }}>
-                app.royalicon.net
+                my.royalledger.app
               </div>
             </div>
             <img

@@ -43,7 +43,7 @@ export default function MarketingNav() {
   // Hard navigation to /app — exits the marketing React tree entirely
   const openApp = () => {
     setDrawerOpen(false);
-    window.location.href = 'https://app.royalicon.net';
+    window.location.href = 'https://my.royalledger.app';
   };
 
   return (

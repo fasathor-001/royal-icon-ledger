@@ -62,8 +62,8 @@ function AppShell() {
 
 // ── Root: BrowserRouter with top-level route split ─────────────
 function Root() {
-  // On app.royalicon.net, every path that isn't /app redirects to /app
-  const isAppSubdomain = window.location.hostname === 'app.royalicon.net';
+  // On my.royalledger.app, every path that isn't /app redirects to /app
+  const isAppSubdomain = window.location.hostname === 'my.royalledger.app';
 
   return (
     <BrowserRouter>

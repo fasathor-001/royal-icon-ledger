@@ -109,7 +109,7 @@ export default function MarketingFooter() {
               </Link>
             ))}
             <a
-              href="https://app.royalicon.net"
+              href="https://my.royalledger.app"
               className="m-footer-link"
               style={{ textDecoration: 'none', display: 'block', marginTop: '4px' }}
             >
@@ -121,18 +121,18 @@ export default function MarketingFooter() {
           <div>
             <div className="m-footer-col-title">Contact</div>
             <a
-              href="mailto:hello@royalicon.net"
+              href="mailto:hello@royalledger.app"
               className="m-footer-link"
               style={{ textDecoration: 'none', display: 'block', marginBottom: '4px' }}
             >
-              hello@royalicon.net
+              hello@royalledger.app
             </a>
             <a
-              href="mailto:investors@royalicon.net"
+              href="mailto:investors@royalledger.app"
               className="m-footer-link"
               style={{ textDecoration: 'none', display: 'block', marginBottom: '20px' }}
             >
-              investors@royalicon.net
+              investors@royalledger.app
             </a>
 
             {/* Social */}
