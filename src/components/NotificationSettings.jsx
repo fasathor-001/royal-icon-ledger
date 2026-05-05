@@ -148,14 +148,14 @@ function DeniedGuide() {
     steps = [
       <>Click the <strong style={{ color: '#E8E2D5' }}>🔒 lock icon</strong> in the Edge address bar</>,
       <>Click <strong style={{ color: '#E8E2D5' }}>Permissions for this site</strong></>,
-      <>Set <strong style={{ color: '#E8E2D5' }}>Notifications</strong> to <strong style={{ color: '#E8E2D5' }}>Ask</strong> or <strong style={{ color: '#E8E2D5' }}>Allow</strong></>,
-      <>Press <strong style={{ color: '#E8E2D5' }}>Ctrl + Shift + R</strong> to reload, then click Enable</>,
+      <>Set <strong style={{ color: '#E8E2D5' }}>Notifications</strong> to <strong style={{ color: '#E8E2D5' }}>Allow</strong> <span style={{ color: '#5C5648' }}>(not Ask — Edge blocks the prompt in Ask mode)</span></>,
+      <>Press <strong style={{ color: '#E8E2D5' }}>Ctrl + Shift + R</strong> to reload — notifications will activate automatically</>,
     ];
   } else if (isChrome) {
     steps = [
       <>Click the <strong style={{ color: '#E8E2D5' }}>🔒 lock icon</strong> in the Chrome address bar</>,
       <>Set <strong style={{ color: '#E8E2D5' }}>Notifications</strong> to <strong style={{ color: '#E8E2D5' }}>Allow</strong></>,
-      <>Reload the page (<strong style={{ color: '#E8E2D5' }}>Ctrl + Shift + R</strong>), then click Enable</>,
+      <>Reload the page (<strong style={{ color: '#E8E2D5' }}>Ctrl + Shift + R</strong>) — notifications will activate automatically</>,
     ];
   } else if (isFirefox) {
     steps = [
