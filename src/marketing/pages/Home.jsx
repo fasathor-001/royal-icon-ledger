@@ -75,7 +75,7 @@ export default function Home({ navigate }) {
           </h1>
 
           <p className="m-body m-fade-up-3" style={{ fontSize: '18px', maxWidth: '560px', marginBottom: '8px', color: '#8B8478' }}>
-            Royal-Icon Ledger gives every rand a role — before you spend it.
+            Royal-Icon Ledger gives every unit of income a role — before you spend it.
           </p>
           <p className="m-body m-fade-up-3" style={{ fontSize: '18px', maxWidth: '560px', marginBottom: '40px', color: '#5C5648' }}>
             Built for freelancers, traders, and anyone with unpredictable income.
@@ -202,7 +202,7 @@ export default function Home({ navigate }) {
           <div className="m-grid-4">
             {[
               { num: '01', title: 'Plan',     body: 'Define what your money should do before it arrives.' },
-              { num: '02', title: 'Allocate', body: 'Assign every rand to a purpose — not just categories.' },
+              { num: '02', title: 'Allocate', body: 'Assign every income unit to a purpose — not just categories.' },
               { num: '03', title: 'Execute',  body: 'Spend, save, or invest with structure already in place.' },
               { num: '04', title: 'Track',    body: 'See what\'s working — and what needs adjusting.' },
             ].map(({ num, title, body }) => (

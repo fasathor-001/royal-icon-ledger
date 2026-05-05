@@ -41,7 +41,11 @@ export default function WeeklyPulseBanner({ data, stats, forceShow, onDismiss })
   };
 
   const envelopes = data.envelopes || [];
-  const weeklyBudget = (data.spendingBudget || 0) / 4;
+  // Use actual days in the month for a more accurate weekly pace
+  const now = new Date();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const weeksInMonth = daysInMonth / 7;
+  const weeklyBudget = (data.spendingBudget || 0) / weeksInMonth;
 
   // Spending this week
   const weekImpulses = (data.impulses || []).filter(i => i.timestamp >= weekStartTs);
@@ -55,7 +59,7 @@ export default function WeeklyPulseBanner({ data, stats, forceShow, onDismiss })
     const weekEnvSpent = weekImpulses
       .filter(i => i.envelopeId === env.id)
       .reduce((s, i) => s + i.amount, 0);
-    const weekPace = (env.cap || 0) / 4;
+    const weekPace = (env.cap || 0) / weeksInMonth;
     const pct = weekPace > 0 ? (weekEnvSpent / weekPace) * 100 : 0;
     return { ...env, weekEnvSpent, weekPace, pct };
   }).filter(e => e.weekPace > 0);
