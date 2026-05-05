@@ -11,7 +11,7 @@
 
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { registerSW } from 'virtual:pwa-register';
 import AppV2 from './App_v2.jsx';
 import MarketingSite from './marketing/MarketingSite.jsx';
@@ -62,14 +62,20 @@ function AppShell() {
 
 // ── Root: BrowserRouter with top-level route split ─────────────
 function Root() {
+  // On app.royalicon.net, every path that isn't /app redirects to /app
+  const isAppSubdomain = window.location.hostname === 'app.royalicon.net';
+
   return (
     <BrowserRouter>
       <Routes>
         {/* App dashboard — auth-gated, PWA target */}
         <Route path="/app" element={<AppShell />} />
 
-        {/* Marketing site — all public routes, handled internally */}
-        <Route path="/*" element={<MarketingSite />} />
+        {/* On app subdomain: catch-all redirects to /app */}
+        {isAppSubdomain
+          ? <Route path="/*" element={<Navigate to="/app" replace />} />
+          : <Route path="/*" element={<MarketingSite />} />
+        }
       </Routes>
     </BrowserRouter>
   );
