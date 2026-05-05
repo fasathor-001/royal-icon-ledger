@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Royal-Icon Ledger — Complete User Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0A0908;
+    --bg2:      #0F0D0A;
+    --bg3:      #14110E;
+    --border:   #26221C;
+    --border2:  #1A1610;
+    --text:     #E8E2D5;
+    --muted:    #8B8478;
+    --dim:      #5C5648;
+    --faint:    #3A3028;
+    --orange:   #D97757;
+    --green:    #7FA068;
+    --blue:     #5B7FB8;
+    --purple:   #A06B8C;
+    --gold:     #B89968;
+    --red:      #C56B5A;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 0;
+  }
+
+  @media print {
+    body { background: #fff; color: #1a1a1a; }
+    .no-print { display: none !important; }
+    .page-break { page-break-before: always; }
+    :root {
+      --bg: #fff; --bg2: #f8f8f6; --bg3: #f0ede8;
+      --border: #ddd; --border2: #eee;
+      --text: #1a1a1a; --muted: #555; --dim: #777; --faint: #999;
+    }
+    .cover { background: #0A0908 !important; color: #E8E2D5 !important; }
+  }
+
+  /* ── Layout ── */
+  .cover {
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 60px;
+    border-bottom: 1px solid var(--border2);
+  }
+
+  .content { max-width: 800px; margin: 0 auto; padding: 60px 40px; }
+
+  /* ── Typography ── */
+  .display { font-family: 'Fraunces', Georgia, serif; font-weight: 300; }
+  .mono    { font-family: 'JetBrains Mono', monospace; }
+
+  h1.cover-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+
+  h2.section-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 8px;
+    padding-top: 48px;
+  }
+
+  h3.sub-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 28px 0 10px;
+    letter-spacing: -0.01em;
+  }
+
+  h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 20px 0 8px;
+  }
+
+  p { color: var(--muted); margin-bottom: 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  strong { color: var(--text); font-weight: 500; }
+  em     { color: var(--orange); font-style: italic; }
+
+  a { color: var(--orange); text-decoration: none; }
+
+  /* ── Divider ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border2);
+    margin: 40px 0;
+  }
+
+  /* ── Label ── */
+  .label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 12px;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+
+  .card-orange {
+    background: #1A1008;
+    border: 1px solid #3A2010;
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+
+  .card-green {
+    background: #0A1408;
+    border: 1px solid #1E3018;
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+
+  .card-blue {
+    background: #0A0F1A;
+    border: 1px solid #1A2540;
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+
+  /* ── Field row ── */
+  .field-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border2);
+    align-items: start;
+  }
+  .field-row:last-child { border-bottom: none; }
+
+  .field-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--orange);
+    padding-top: 2px;
+  }
+
+  .field-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .field-desc strong { color: var(--text); }
+
+  /* ── Step list ── */
+  .step-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+
+  .step-list li {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px solid var(--orange);
+    color: var(--orange);
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ── Rule list ── */
+  .rule-list { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+
+  .rule-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+  }
+
+  .rule-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+
+  /* ── Stage grid ── */
+  .stage-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 16px 0;
+  }
+
+  .stage-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px;
+  }
+
+  /* ── Warning / tip ── */
+  .tip {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 4px;
+    margin: 16px 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .tip-orange { background: #1A1008; border: 1px solid #3A2010; color: var(--muted); }
+  .tip-green  { background: #0A1408; border: 1px solid #1E3018; color: var(--muted); }
+  .tip-blue   { background: #0A0F1A; border: 1px solid #1A2540; color: var(--muted); }
+
+  .tip-icon { font-size: 16px; flex-shrink: 0; }
+
+  /* ── Table of contents ── */
+  .toc { display: flex; flex-direction: column; gap: 4px; margin: 24px 0; }
+
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border2);
+    font-size: 14px;
+  }
+
+  .toc-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--faint);
+    width: 24px;
+    flex-shrink: 0;
+  }
+
+  .toc-label { color: var(--text); }
+  .toc-desc  { color: var(--dim); font-size: 12px; margin-left: auto; }
+
+  /* ── Print button ── */
+  .print-btn {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    background: var(--orange);
+    color: #0A0908;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    z-index: 999;
+  }
+
+  @media (max-width: 640px) {
+    .cover { padding: 48px 24px; }
+    .content { padding: 40px 20px; }
+    .field-row { grid-template-columns: 1fr; gap: 4px; }
+    .stage-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">Save as PDF →</button>
+
+<!-- ══════════════════════════════════════════════════
+     COVER
+══════════════════════════════════════════════════ -->
+<div class="cover">
+  <div style="max-width:800px; margin:0 auto;">
+    <div class="label" style="color:#5C5648; margin-bottom:20px;">Royal-Icon Ledger</div>
+    <h1 class="cover-title">
+      Complete<br />
+      <em style="color:#D97757;">User Guide.</em>
+    </h1>
+    <p style="font-size:17px; color:#8B8478; max-width:520px; line-height:1.75; margin-bottom:32px;">
+      Every feature explained. What to enter, why it matters, and how the system uses it to build your financial structure.
+    </p>
+    <div style="display:flex; gap:24px; flex-wrap:wrap;">
+      <div style="font-size:12px; color:#3A3028;">Private Beta · v1.0</div>
+      <div style="font-size:12px; color:#3A3028;">royalicon.net</div>
+      <div style="font-size:12px; color:#3A3028;">May 2026</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     CONTENT
+══════════════════════════════════════════════════ -->
+<div class="content">
+
+  <!-- Philosophy -->
+  <h2 class="section-title display">The philosophy first.</h2>
+  <div class="label">Before you enter a single number</div>
+
+  <p>Royal-Icon Ledger is not a budgeting app. It is not a tracker. It is a <strong>financial operating system</strong> — a set of rules, thresholds, and automated decisions that govern how every unit of income you receive gets allocated before you spend it.</p>
+
+  <p>The system works on one core idea: <strong>give every unit a role before you spend it</strong>. Not after. Before. Income arrives → system decides where it goes → you execute. Emotion, impulse, and guesswork are removed from the equation by design.</p>
+
+  <div class="card-orange">
+    <h4 style="color:#D97757; margin:0 0 10px;">The three pillars</h4>
+    <div class="rule-list">
+      <div class="rule-item">
+        <div class="rule-dot" style="background:#D97757;"></div>
+        <div>
+          <strong>Buffer first.</strong>
+          <span style="color:#8B8478; font-size:14px;"> Your family buffer is the foundation of the entire system. Nothing else grows until the floor is built. Stage 1 exists entirely to build this.</span>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-dot" style="background:#7FA068;"></div>
+        <div>
+          <strong>System before self.</strong>
+          <span style="color:#8B8478; font-size:14px;"> The rules you set in advance are smarter than the decisions you make under pressure. The system enforces your best intentions.</span>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-dot" style="background:#5B7FB8;"></div>
+        <div>
+          <strong>Volatility stays in the business.</strong>
+          <span style="color:#8B8478; font-size:14px;"> Trading P&L, side income, and irregular earnings never touch family life directly. The waterfall controls what flows where.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table of contents -->
+  <hr class="divider" />
+  <h2 class="section-title display">Contents.</h2>
+
+  <div class="toc">
+    <div class="toc-item"><span class="toc-num">01</span><span class="toc-label">Onboarding</span><span class="toc-desc">First-time setup</span></div>
+    <div class="toc-item"><span class="toc-num">02</span><span class="toc-label">Setup & Salary</span><span class="toc-desc">Expenses, salary, buffer target</span></div>
+    <div class="toc-item"><span class="toc-num">03</span><span class="toc-label">Command Dashboard</span><span class="toc-desc">Stages, balances, snapshots</span></div>
+    <div class="toc-item"><span class="toc-num">04</span><span class="toc-label">Budget</span><span class="toc-desc">Envelopes, rules, rollover</span></div>
+    <div class="toc-item"><span class="toc-num">05</span><span class="toc-label">Profit Allocator</span><span class="toc-desc">Income waterfall, stage routing</span></div>
+    <div class="toc-item"><span class="toc-num">06</span><span class="toc-label">Trading P&L</span><span class="toc-desc">Capital, drawdown, win rate</span></div>
+    <div class="toc-item"><span class="toc-num">07</span><span class="toc-label">Impulse Control</span><span class="toc-desc">Spending gate, quick log, triggers</span></div>
+    <div class="toc-item"><span class="toc-num">08</span><span class="toc-label">History</span><span class="toc-desc">Snapshots, net worth over time</span></div>
+    <div class="toc-item"><span class="toc-num">09</span><span class="toc-label">Rules</span><span class="toc-desc">Tax reserve, stage percentages</span></div>
+    <div class="toc-item"><span class="toc-num">10</span><span class="toc-label">Settings</span><span class="toc-desc">Profile, access, data & sync</span></div>
+  </div>
+
+  <!-- ═══════════════════════════════ 01 ONBOARDING ═══════════════════════════════ -->
+  <div class="page-break"></div>
+  <hr class="divider" />
+  <div class="label" style="color:#D97757;">01</div>
+  <h2 class="section-title display">Onboarding.</h2>
+  <p>The onboarding wizard runs automatically on first login. It takes 5–10 minutes and sets up the entire system from scratch. Do not skip it — every field matters.</p>
+
+  <h3 class="sub-title">Step 1 — Choose your currency</h3>
+  <p>Select the currency you earn and spend in. This affects every number displayed in the app. You can change it later in Settings, but all existing numbers stay as-is — so get it right the first time.</p>
+  <div class="tip tip-orange">
+    <span class="tip-icon">⚠</span>
+    <span>If you earn in multiple currencies, pick your <strong>primary living currency</strong> — the one your family expenses are paid in. You can record other income in the Profit Allocator by converting it manually.</span>
+  </div>
+
+  <h3 class="sub-title">Step 2 — Income type</h3>
+  <div class="rule-list">
+    <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div><strong>Variable income</strong> — income changes each month. You never know exactly what's coming. This is the primary use case the system was designed for.</div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:#7FA068;"></div><div><strong>Trader / Investor</strong> — income primarily from trading or investment returns. Highly irregular. The Trading P&L module is central to your workflow.</div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:#5B7FB8;"></div><div><strong>Freelancer / Contractor</strong> — project or retainer-based income. May arrive in lumps. Variable by nature.</div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:#B89968;"></div><div><strong>Fixed salary</strong> — stable monthly income. Still benefits from the system — surplus allocation, envelope budgeting, and buffer building all apply.</div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:#A06B8C;"></div><div><strong>Family / Household</strong> — managing shared or household finances as the primary controller.</div></div>
+  </div>
+
+  <h3 class="sub-title">Step 3 — Monthly expenses</h3>
+  <p>Enter every fixed monthly cost you have. These are expenses that exist regardless of whether you earn money this month. The system pre-fills common categories — fill in the actual amounts.</p>
+  <div class="tip tip-green">
+    <span class="tip-icon">✓</span>
+    <span>Be honest. If rent is R 13,000 enter R 13,000. If you have a car payment, add it. The system's accuracy depends entirely on real numbers. Underestimating your expenses leads to an unrealistically low salary figure and a buffer target that won't actually cover you.</span>
+  </div>
+
+  <h3 class="sub-title">Step 4 — Spending budget</h3>
+  <p>This is the monthly amount allocated for <strong>discretionary spending</strong> — groceries, fuel, dining, personal purchases. It sits on top of your fixed expenses and feeds into your Budget envelopes.</p>
+  <p>Start with what you actually spend, not what you wish you spent. You can tighten it later once you see real data.</p>
+
+  <h3 class="sub-title">Step 5 — Buffer reserve</h3>
+  <p>An additional monthly buffer amount set aside as part of your salary structure. Think of it as the margin between your expenses and your income floor. Set this to at least 10–15% of your total expenses.</p>
+
+  <h3 class="sub-title">Step 6 — Buffer target (months)</h3>
+  <p>How many months of full salary should your family buffer hold? The default is <strong>18 months</strong>. This is not conservative — it's structural. Here's the logic:</p>
+  <div class="rule-list">
+    <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div><strong>6 months</strong> — Stage 1 end (crisis floor). Minimum protection against total income loss.</div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:#B89968;"></div><div><strong>12 months</strong> — Stage 1.5 end (comfort zone). A year's runway. Lifestyle begins to expand.</div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:#7FA068;"></div><div><strong>18 months</strong> — Stage 2 end (fortified). Full protection. Drawdown risk from business separated from family entirely.</div></div>
+  </div>
+  <p>18 months is the recommended target. You can reduce it if your income is truly stable, but most variable-income earners need every month of it.</p>
+
+  <h3 class="sub-title">Step 7 — Starting balances</h3>
+  <p>Enter what you actually have right now across your accounts:</p>
+  <div class="card">
+    <div class="field-row">
+      <div class="field-name">Family Buffer</div>
+      <div class="field-desc">Your emergency / family savings account. This is the money sitting in a savings account that is <strong>not touched for trading or investment</strong>. If you have R 50,000 in a savings account dedicated to family security, enter that.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Trading Capital</div>
+      <div class="field-desc">Capital deployed in trading, not your family savings. If you have R 20,000 in your trading account, enter that here. Do not mix this with family savings.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Long-term</div>
+      <div class="field-desc">Money in index funds, retirement accounts, or long-term investments. Separate from both buffer and trading. If zero, enter zero — it will grow through the waterfall.</div>
+    </div>
+  </div>
+
+  <h3 class="sub-title">Step 8 — Override PIN (optional)</h3>
+  <p>A 4-digit PIN that locks your system configuration. When set, editing expenses, balances, and rules requires entering the PIN. Protects against impulsive changes to your own system during high-emotion moments. Highly recommended for traders.</p>
+
+  <h3 class="sub-title">Step 9 — Notifications</h3>
+  <p>Enable push notifications to receive daily financial check-in reminders, weekly pulse reviews, and monthly review prompts. Set your preferred morning and evening notification times.</p>
+
+  <!-- ═══════════════════════════════ 02 SETUP & SALARY ═══════════════════════════════ -->
+  <div class="page-break"></div>
+  <hr class="divider" />
+  <div class="label" style="color:#D97757;">02</div>
+  <h2 class="section-title display">Setup & Salary.</h2>
+  <p>This is the foundation of the entire system. Everything else — your salary, buffer target, stage thresholds, and allocation amounts — is computed from what you enter here.</p>
+
+  <h3 class="sub-title">How salary is computed</h3>
+  <div class="card-orange">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#E8E2D5; line-height:2;">
+      Monthly Salary = Total Expenses + Spending Budget + Buffer Reserve
+    </div>
+  </div>
+  <p>You do not enter your salary directly. The system computes it from your real costs. This means your "salary" is the minimum you need to earn each month to cover everything and build the buffer.</p>
+
+  <h3 class="sub-title">Monthly expenses</h3>
+  <p>Add every recurring fixed cost. Click any amount to edit it. Use the category dropdown so the system can group and analyse your cost structure.</p>
+
+  <div class="card">
+    <h4>What counts as a monthly expense</h4>
+    <div class="rule-list">
+      <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div>Rent or bond repayment</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div>Utilities (electricity, water, internet)</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div>Insurance premiums (car, life, health)</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div>School fees or childcare</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div>Family support obligations</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div>Subscriptions (Netflix, software, gym)</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div>Car payments or transport costs</div></div>
+    </div>
+    <div class="tip tip-orange" style="margin-top:14px;">
+      <span class="tip-icon">⚠</span>
+      <span>Do <strong>not</strong> add groceries or dining here — those go into your spending budget and then into Budget envelopes. Only add costs that are the same every month regardless of what you do.</span>
+    </div>
+  </div>
+
+  <h3 class="sub-title">The three computed numbers</h3>
+  <div class="card">
+    <div class="field-row">
+      <div class="field-name">Total Expenses</div>
+      <div class="field-desc">Sum of all your fixed monthly costs. This is what leaves your account automatically every month no matter what.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Monthly Salary</div>
+      <div class="field-desc">The minimum you need to earn. <strong>This is your system's definition of income security.</strong> When the Profit Allocator says your buffer covers 5.6 months, it means 5.6 × this number.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Buffer Target</div>
+      <div class="field-desc">Monthly Salary × your target months (default 18). This is the total amount your Family Buffer needs to reach before Stage 2 is complete. It is your finish line.</div>
+    </div>
+  </div>
+
+  <div class="tip tip-blue">
+    <span class="tip-icon">ℹ</span>
+    <span>Update your expenses whenever your life changes — new rent, new insurance, new subscription. The system recalculates everything instantly. The numbers should always reflect reality, not aspirations.</span>
+  </div>
+
+  <!-- ═══════════════════════════════ 03 COMMAND DASHBOARD ═══════════════════════════════ -->
+  <div class="page-break"></div>
+  <hr class="divider" />
+  <div class="label" style="color:#D97757;">03</div>
+  <h2 class="section-title display">Command Dashboard.</h2>
+  <p>This is your daily home screen. It shows your current stage, balance positions, progression toward the buffer target, and your action queue.</p>
+
+  <h3 class="sub-title">The Stage Card</h3>
+  <p>The large card at the top tells you exactly where you are in the system. Understanding the stages is critical:</p>
+
+  <div class="stage-grid">
+    <div class="stage-card">
+      <div style="font-size:10px; color:#D97757; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px;">Stage 1</div>
+      <div style="font-size:14px; color:#E8E2D5; font-weight:500; margin-bottom:6px;">Build the Floor</div>
+      <div style="font-size:12px; color:#8B8478; line-height:1.5;">Buffer: R 0 → 6 months salary. 100% of profit goes to buffer. No lifestyle. No trading expansion. Just the floor.</div>
+    </div>
+    <div class="stage-card">
+      <div style="font-size:10px; color:#B89968; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px;">Stage 1.5</div>
+      <div style="font-size:14px; color:#E8E2D5; font-weight:500; margin-bottom:6px;">Growing Cushion</div>
+      <div style="font-size:12px; color:#8B8478; line-height:1.5;">Buffer: 6 → 12 months. 55% buffer / 30% long-term / 15% goals. Long-term investing begins. Light lifestyle unlocked.</div>
+    </div>
+    <div class="stage-card">
+      <div style="font-size:10px; color:#7FA068; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px;">Stage 2</div>
+      <div style="font-size:14px; color:#E8E2D5; font-weight:500; margin-bottom:6px;">Final Push</div>
+      <div style="font-size:12px; color:#8B8478; line-height:1.5;">Buffer: 12 → 18 months. 65% buffer / 20% long-term / 15% goals. Heavy push to completion.</div>
+    </div>
+    <div class="stage-card">
+      <div style="font-size:10px; color:#5B7FB8; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px;">Stage 3</div>
+      <div style="font-size:14px; color:#E8E2D5; font-weight:500; margin-bottom:6px;">Full Waterfall</div>
+      <div style="font-size:12px; color:#8B8478; line-height:1.5;">Buffer complete. 30% long-term / 30% trading / 20% goals / 20% lifestyle. Full wealth-building mode.</div>
+    </div>
+  </div>
+
+  <h3 class="sub-title">Current Balances</h3>
+  <p>This section shows your five financial positions. Click <strong>Unlock to edit</strong> to update them. Do this whenever a balance changes — after a profit allocation, after a transfer, after a withdrawal.</p>
+
+  <div class="card">
+    <div class="field-row">
+      <div class="field-name">Trading Capital</div>
+      <div class="field-desc">Your active trading/investment account balance. This is capital at risk. Update it after every trading period. The Trading P&L module reads from this to compute drawdown.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Family Buffer</div>
+      <div class="field-desc">Your protected family savings account. This is <strong>the most important number in the system</strong>. Update it after every profit allocation that routes money here. Never withdraw from this except for a genuine emergency.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Monthly Salary</div>
+      <div class="field-desc">Auto-computed from your Setup & Salary expenses. Read-only. This is what the system considers your monthly income requirement.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Long-term</div>
+      <div class="field-desc">Your index funds, retirement account, or passive investment balance. Update after each contribution. This grows through waterfall allocations in Stage 1.5 and beyond.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Future Goals</div>
+      <div class="field-desc">Total saved toward named goals (car, deposit, business). The individual goals are defined in Setup. This balance tracks the total pool. Update when you move money toward a goal.</div>
+    </div>
+  </div>
+
+  <h3 class="sub-title">Snapshots — your financial history</h3>
+  <p>Hit <strong>"Save snapshot"</strong> after updating your balances. A snapshot locks in today's position: buffer amount, trading capital, long-term balance, net worth, and salary at that point in time.</p>
+  <p>Take a snapshot at minimum <strong>once a month</strong> — ideally after every significant income event. Over time, your History tab will show your net worth growth and the rate at which you're building the buffer.</p>
+
+  <div class="tip tip-green">
+    <span class="tip-icon">✓</span>
+    <span>Snapshots are the memory of your financial life. They cannot be edited after saving. Take them regularly — you will want to look back at how far you've come.</span>
+  </div>
+
+  <!-- ═══════════════════════════════ 04 BUDGET ═══════════════════════════════ -->
+  <div class="page-break"></div>
+  <hr class="divider" />
+  <div class="label" style="color:#D97757;">04</div>
+  <h2 class="section-title display">Budget.</h2>
+  <p>The Budget tab uses <strong>envelope budgeting</strong> — your spending money is divided into named buckets, each with its own cap and enforcement rules. When you log a purchase through the Spending Gate, it gets assigned to an envelope and reduces its balance.</p>
+
+  <h3 class="sub-title">Setting up envelopes</h3>
+  <p>On first use, the system suggests envelopes based on your expenses and spending budget. Accept, adjust, or rebuild from scratch. Your total envelope caps should roughly match your spending budget.</p>
+
+  <div class="card">
+    <h4>Suggested envelope structure</h4>
+    <div class="rule-list">
+      <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div><strong>Survival</strong> — groceries, household basics, fuel. Largest envelope. Soft warning mode (can't block essentials).</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#B89968;"></div><div><strong>Personal</strong> — clothing, dining out, personal care. Hard block or PIN override — you want friction here.</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#5B7FB8;"></div><div><strong>Emergency</strong> — unexpected expenses within the month. Roll over mode — unspent accumulates for when you need it.</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#7FA068;"></div><div><strong>Family</strong> — kids, activities, family outings. Soft warning — family needs flexibility.</div></div>
+    </div>
+  </div>
+
+  <h3 class="sub-title">Block modes — enforcement rules</h3>
+  <div class="rule-list">
+    <div class="rule-item">
+      <div class="rule-dot" style="background:#B89968;"></div>
+      <div>
+        <strong>Soft warning</strong> — shows a warning when over budget but allows the purchase. Use for essential envelopes (groceries) where you cannot practically refuse to spend.
+      </div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-dot" style="background:#C56B5A;"></div>
+      <div>
+        <strong>Hard block</strong> — refuses purchases that would exceed the cap. The gate literally says no. Use for discretionary envelopes where you want a firm ceiling.
+      </div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-dot" style="background:#5B7FB8;"></div>
+      <div>
+        <strong>PIN override</strong> — hard block that can be bypassed with your 4-digit PIN. The highest level of friction. Use for your most dangerous spending categories. The PIN forces a conscious decision.
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub-title">Rollover modes — what happens to unspent money</h3>
+  <div class="rule-list">
+    <div class="rule-item">
+      <div class="rule-dot" style="background:#8B8478;"></div>
+      <div>
+        <strong>Reset</strong> — use it or lose it. Cap resets to full at month start. Good for dining, entertainment — prevents money accumulating in places you want to control.
+      </div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-dot" style="background:#B89968;"></div>
+      <div>
+        <strong>Roll over</strong> — unspent carries to next month. Good for emergency or irregular expense envelopes. If you spend less in January, February gets extra room.
+      </div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-dot" style="background:#7FA068;"></div>
+      <div>
+        <strong>Sweep to buffer</strong> — unspent goes directly into your Family Buffer at month end. The wealth-building option. Use this on your Personal envelope if you want to incentivise underspending.
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub-title">Reading the velocity indicator</h3>
+  <p>Each envelope shows a pace indicator based on day of month versus spend rate:</p>
+  <div class="rule-list">
+    <div class="rule-item"><div class="rule-dot" style="background:#7FA068;"></div><div><strong style="color:#7FA068;">On pace</strong> — at current spending rate, you'll end the month within budget. Green.</div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div><strong style="color:#D97757;">Over pace</strong> — projected end-of-month spend exceeds the cap. Slow down now. Orange.</div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:#C56B5A;"></div><div><strong style="color:#C56B5A;">Over budget</strong> — cap already exceeded this month. No further spending in this envelope.</div></div>
+  </div>
+
+  <!-- ═══════════════════════════════ 05 PROFIT ALLOCATOR ═══════════════════════════════ -->
+  <div class="page-break"></div>
+  <hr class="divider" />
+  <div class="label" style="color:#D97757;">05</div>
+  <h2 class="section-title display">Profit Allocator.</h2>
+  <p>This is the core wealth-building engine. Every time you receive income — a trading profit, a client payment, a salary deposit — you run it through the Profit Allocator. The system reserves taxes first, then routes the remainder based on your current stage rules.</p>
+
+  <div class="tip tip-orange">
+    <span class="tip-icon">⚠</span>
+    <span><strong>Run every income event through this.</strong> Every single one. This is not optional — it is the mechanism by which your buffer grows, your long-term investments compound, and your stage progresses. Skipping it means your system is not actually operating.</span>
+  </div>
+
+  <h3 class="sub-title">How to use it — step by step</h3>
+  <ul class="step-list">
+    <li><span class="step-num">1</span><div>Navigate to <strong>Profit Allocator</strong> tab. Confirm which stage you're in (shown at the top of the page).</div></li>
+    <li><span class="step-num">2</span><div>Enter your <strong>gross income</strong> for this event — the full amount before tax. If you received R 15,000, enter 15000.</div></li>
+    <li><span class="step-num">3</span><div>The live preview shows exactly where every unit goes based on your current stage rules and tax reserve percentage.</div></li>
+    <li><span class="step-num">4</span><div>Click <strong>Allocate →</strong> to confirm. The system records the allocation and prepares to apply the changes.</div></li>
+    <li><span class="step-num">5</span><div>Click <strong>Apply to balances</strong> to add the allocated amounts to your actual balance positions.</div></li>
+    <li><span class="step-num">6</span><div><strong>Physically transfer the money.</strong> Move the buffer portion to your savings account. Move the tax reserve to a separate account. The system tells you what to move — you execute it in your actual bank.</div></li>
+    <li><span class="step-num">7</span><div>Go to Command Dashboard → <strong>Save snapshot</strong> to record this moment in your history.</div></li>
+  </ul>
+
+  <h3 class="sub-title">The allocation waterfall — what happens to your money</h3>
+
+  <div class="card">
+    <h4>Stage 1 allocation (default)</h4>
+    <div class="rule-list">
+      <div class="rule-item"><div class="rule-dot" style="background:#8B8478;"></div><div><strong>Tax Reserve (25% of gross)</strong> — Set aside first, before anything else. Move this to a separate account for your tax obligation. Adjust the percentage in Rules to match your actual tax rate.</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div><strong>Family Buffer (100% of net)</strong> — In Stage 1, every cent of net profit goes to the buffer. No exceptions. This is how the floor gets built.</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h4>Stage 1.5 allocation (default)</h4>
+    <div class="rule-list">
+      <div class="rule-item"><div class="rule-dot" style="background:#8B8478;"></div><div><strong>Tax Reserve (25%)</strong></div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div><strong>Family Buffer (55%)</strong> — still the priority</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#7FA068;"></div><div><strong>Long-term (30%)</strong> — index funds / retirement investing begins here</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#A06B8C;"></div><div><strong>Goals (15%)</strong> — saving toward named goals</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h4>Stage 3 allocation (default — full waterfall)</h4>
+    <div class="rule-list">
+      <div class="rule-item"><div class="rule-dot" style="background:#8B8478;"></div><div><strong>Tax Reserve (25%)</strong></div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#7FA068;"></div><div><strong>Long-term (30%)</strong></div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#5B7FB8;"></div><div><strong>Trading Capital (30%)</strong></div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#A06B8C;"></div><div><strong>Goals (20%)</strong></div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#B89968;"></div><div><strong>Lifestyle (20%)</strong> — this is what you spend on yourself</div></div>
+    </div>
+  </div>
+
+  <div class="tip tip-green">
+    <span class="tip-icon">✓</span>
+    <span>All stage percentages are fully editable in the Rules tab. The defaults are designed for a trading/variable-income earner with family obligations. Adjust them to match your actual situation.</span>
+  </div>
+
+  <!-- ═══════════════════════════════ 06 TRADING P&L ═══════════════════════════════ -->
+  <div class="page-break"></div>
+  <hr class="divider" />
+  <div class="label" style="color:#D97757;">06</div>
+  <h2 class="section-title display">Trading P&L.</h2>
+  <p>This tab tracks your trading performance and enforces risk management rules. The key principle: <strong>volatility stays in the business</strong>. What happens in your trading account should never directly affect your family's life.</p>
+
+  <h3 class="sub-title">Capital field</h3>
+  <p>Update this to your current trading account balance whenever it changes. This is the base from which drawdown is calculated. Click the lock icon to unlock and edit it.</p>
+
+  <h3 class="sub-title">Logging monthly P&L</h3>
+  <p>At the end of each trading month (or whenever you want to record a result), scroll down to the <strong>Monthly P&L</strong> section and log the result — positive or negative. The system tracks your win rate, year-to-date P&L, and average win/loss over time.</p>
+
+  <h3 class="sub-title">The Drawdown Protocol</h3>
+  <p>This is your automated risk management system. It tracks how far your trading capital has dropped from its peak (high water mark) and changes your allowed behaviour based on the severity.</p>
+
+  <div class="card">
+    <div class="field-row">
+      <div class="field-name" style="color:#7FA068;">Normal (0–9%)</div>
+      <div class="field-desc"><strong>Full position sizes. Trade your plan.</strong> You are within normal variance. No changes required.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name" style="color:#B89968;">Caution (10–19%)</div>
+      <div class="field-desc"><strong>Reduce position sizes by 25%.</strong> Review your last 10 trades for pattern issues. Something may be off with the market or your execution.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name" style="color:#D97757;">Defensive (20–29%)</div>
+      <div class="field-desc"><strong>Reduce position sizes by 50%.</strong> Consider a week off. Review strategy assumptions. This is a significant drawdown — the system is protecting you from digging deeper.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name" style="color:#C56B5A;">Stop (30%+)</div>
+      <div class="field-desc"><strong>Stop trading. Full pause required.</strong> A mandatory strategy review before resuming. This is not a suggestion — it is a rule. Continuing to trade through a 30%+ drawdown is how accounts get destroyed.</div>
+    </div>
+  </div>
+
+  <div class="tip tip-orange">
+    <span class="tip-icon">⚠</span>
+    <span>The drawdown protocol only works if you update your trading capital balance regularly. If you don't keep it current, the system cannot protect you. Update it after every meaningful P&L event.</span>
+  </div>
+
+  <h3 class="sub-title">When to run income through the Profit Allocator</h3>
+  <p>When you withdraw profit from your trading account to your main account — run it through the Profit Allocator. The trading capital balance in this tab should then be reduced by the amount you withdrew. The Profit Allocator then routes it to buffer, long-term, etc. based on your stage.</p>
+
+  <!-- ═══════════════════════════════ 07 IMPULSE CONTROL ═══════════════════════════════ -->
+  <div class="page-break"></div>
+  <hr class="divider" />
+  <div class="label" style="color:#D97757;">07</div>
+  <h2 class="section-title display">Impulse Control.</h2>
+  <p>The Impulse Control module is your spending filter. Before making any discretionary purchase above your gate threshold, you run it through the gate. The system evaluates it against your rules and your current financial state, then either approves, warns, or blocks it.</p>
+
+  <h3 class="sub-title">Spending Gate</h3>
+  <p>The primary tool. Every purchase above your threshold (default: any discretionary purchase) goes through here before you spend the money.</p>
+
+  <div class="card">
+    <div class="field-row">
+      <div class="field-name">What is it?</div>
+      <div class="field-desc">Name the item you want to buy. Be specific — "New phone" not "tech thing". Specificity forces clarity of intent.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Amount</div>
+      <div class="field-desc">The full cost of the purchase including any fees, delivery, or extras.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Envelope</div>
+      <div class="field-desc">Which budget envelope does this come from? This is where the enforcement rules apply. If the envelope is hard-blocked and over budget, the gate refuses the purchase.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Category</div>
+      <div class="field-desc">The type of purchase — food, clothes, tech, family, etc. Used for tracking your impulse patterns over time.</div>
+    </div>
+  </div>
+
+  <p>After you submit, the gate checks your envelope balance, your current drawdown status, and your buffer protection status. It returns one of three outcomes: <strong style="color:#7FA068;">Approved</strong>, <strong style="color:#B89968;">Warning</strong> (soft-blocked envelope), or <strong style="color:#C56B5A;">Blocked</strong> (hard-blocked or PIN envelope).</p>
+
+  <h3 class="sub-title">Quick Log</h3>
+  <p>For purchases you've already made and need to record fast. Enter the amount, category, and envelope — it logs directly to your spending history without going through the gate approval process. Use this for cash purchases, small amounts, or anything you've already committed to.</p>
+
+  <h3 class="sub-title">History & Triggers</h3>
+  <p>Every purchase run through the gate is logged here with its outcome, category, and trigger. Over time you'll see patterns: which categories you impulse-buy most, which emotional states trigger spending, and how your gate decisions correlate with your drawdown levels.</p>
+
+  <div class="card">
+    <h4>Emotional triggers — why they matter</h4>
+    <p style="font-size:14px;">When you log a purchase, you can optionally select the trigger — what emotional state drove it. Options include: Bored, Stressed, Tired, Won a trade, Lost a trade, Family pressure, Scrolling, Saw an ad.</p>
+    <p style="font-size:14px; margin-top:8px;">This data is for you, not the system. After 2–3 months, the pattern becomes clear: most people have 1–2 dominant triggers. Knowing yours is the first step to catching it.</p>
+  </div>
+
+  <!-- ═══════════════════════════════ 08 HISTORY ═══════════════════════════════ -->
+  <hr class="divider" />
+  <div class="label" style="color:#D97757;">08</div>
+  <h2 class="section-title display">History.</h2>
+  <p>Your financial timeline. Every snapshot you've saved appears here as a data point on the net worth chart and as a row in the snapshot list.</p>
+
+  <h3 class="sub-title">Net worth over time chart</h3>
+  <p>Shows the stacked growth of your three main positions: <strong style="color:#D97757;">Buffer</strong>, <strong style="color:#5B7FB8;">Trading Capital</strong>, and <strong style="color:#7FA068;">Long-term</strong> investments. The chart is only meaningful if you take snapshots regularly — each snapshot is one data point.</p>
+
+  <h3 class="sub-title">All snapshots</h3>
+  <p>Each snapshot shows the date, the three balance positions at that moment, and the total net worth. You can delete a snapshot if it was taken in error. Snapshots cannot be edited.</p>
+
+  <div class="tip tip-blue">
+    <span class="tip-icon">ℹ</span>
+    <span>Take snapshots on a consistent schedule — the first of every month, or immediately after every income allocation. Consistency matters more than frequency. One snapshot per month for 12 months gives you a powerful picture of trajectory.</span>
+  </div>
+
+  <h3 class="sub-title">Monthly P&L chart</h3>
+  <p>A bar chart of your trading P&L by month (logged in the Trading P&L tab). Shows wins, losses, and overall YTD performance. Use this to identify seasonal patterns and strategy decay over time.</p>
+
+  <!-- ═══════════════════════════════ 09 RULES ═══════════════════════════════ -->
+  <div class="page-break"></div>
+  <hr class="divider" />
+  <div class="label" style="color:#D97757;">09</div>
+  <h2 class="section-title display">Rules.</h2>
+  <p>The Rules tab is where you configure the underlying mechanics of the allocation system. Most users set these once and leave them. Change them only if your situation materially changes — not because you're tempted by a better month.</p>
+
+  <h3 class="sub-title">Tax Reserve %</h3>
+  <p>The percentage of gross income set aside for tax before any allocation. The default is 25% — a conservative rate suitable for most self-employed earners in moderate tax jurisdictions.</p>
+  <div class="card">
+    <h4>How to set your tax reserve correctly</h4>
+    <div class="rule-list">
+      <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div>Talk to a tax advisor and get your estimated effective tax rate for the year.</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div>Add 3–5% as a buffer above that rate — tax bills are rarely lower than estimated, often higher.</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div>Set the reserve to that combined number. Example: 22% effective rate + 4% buffer = 26% reserve.</div></div>
+      <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div>Move every tax reserve amount to a dedicated account immediately after allocation. Never let it sit in your trading or spending account.</div></div>
+    </div>
+  </div>
+
+  <h3 class="sub-title">Profit allocation by stage</h3>
+  <p>Each stage has five allocation percentages. <strong>Each row must total exactly 100%.</strong> The system does not enforce this for you — if your percentages don't add up, your allocation will be incorrect.</p>
+
+  <div class="card">
+    <div class="field-row">
+      <div class="field-name">Buffer %</div>
+      <div class="field-desc">Percentage of net profit routed to your Family Buffer. Should be highest in early stages, dropping to 0% once Stage 2 is complete (buffer is full).</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Long-term %</div>
+      <div class="field-desc">Percentage going to index funds, retirement accounts, or long-term passive investments. Increases as the buffer fills.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Trading %</div>
+      <div class="field-desc">Percentage reinvested into trading capital. Only meaningful in Stage 3 — before that, trading growth should come from retained profits, not new allocations.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Goals %</div>
+      <div class="field-desc">Percentage toward named future goals (house deposit, car, business). Active from Stage 1.5 onward.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Lifestyle %</div>
+      <div class="field-desc">Percentage for personal discretionary spending beyond the base budget. This is your reward for the system working. Only meaningful in Stage 3.</div>
+    </div>
+  </div>
+
+  <div class="tip tip-orange">
+    <span class="tip-icon">⚠</span>
+    <span>Do not increase Lifestyle % before Stage 3. The system allows it mechanically, but doing so before your buffer is complete means you are spending the money your family needs. The stages exist for a reason.</span>
+  </div>
+
+  <h3 class="sub-title">Stage thresholds</h3>
+  <p>The buffer amounts at which stages change. By default:</p>
+  <div class="rule-list">
+    <div class="rule-item"><div class="rule-dot" style="background:#D97757;"></div><div><strong>Stage 1 ends</strong> at 6 months × monthly salary</div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:#B89968;"></div><div><strong>Stage 1.5 ends</strong> at 12 months × monthly salary</div></div>
+    <div class="rule-item"><div class="rule-dot" style="background:#7FA068;"></div><div><strong>Stage 2 ends</strong> at your buffer target (default 18 months × salary)</div></div>
+  </div>
+
+  <h3 class="sub-title">Buffer protect mode</h3>
+  <p>When enabled, buffer protect activates if your buffer drops below the protect threshold (default: 16 months). The system temporarily reverts to Stage 1 allocation rules — 100% of profits go back to buffer — until the threshold is recovered. This protects against erosion of a hard-built buffer.</p>
+
+  <!-- ═══════════════════════════════ 10 SETTINGS ═══════════════════════════════ -->
+  <hr class="divider" />
+  <div class="label" style="color:#D97757;">10</div>
+  <h2 class="section-title display">Settings.</h2>
+
+  <h3 class="sub-title">Account tab</h3>
+  <div class="card">
+    <div class="field-row">
+      <div class="field-name">Display Name</div>
+      <div class="field-desc">The name shown in the app header. Set it to whatever you want — your name, a title, a nickname. It does not affect any system data.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Password</div>
+      <div class="field-desc">Update your login password here. You stay signed in on the current device after changing it.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Currency</div>
+      <div class="field-desc">Change your display currency. Note: this changes how numbers are displayed, not the numbers themselves. If you switch from ZAR to USD, R 120,000 becomes $ 120,000 — the amount does not convert.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Income Type</div>
+      <div class="field-desc">Your income profile. Affects which modules are shown (e.g., Trading P&L is hidden for fixed-salary users) and how the Profit Allocator labels things.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Override PIN</div>
+      <div class="field-desc">Set or change the 4-digit PIN that locks system configuration. Leave blank to disable PIN protection.</div>
+    </div>
+  </div>
+
+  <h3 class="sub-title">Sessions tab</h3>
+  <p>View all active sessions across your devices. Sign out individual sessions remotely — useful if you've logged in on a shared device or want to revoke access from an old phone.</p>
+
+  <h3 class="sub-title">Access tab (admin only)</h3>
+  <p>Generate and manage invite codes for new users. This panel is only visible to authenticated users (you).</p>
+  <div class="card">
+    <div class="field-row">
+      <div class="field-name">Generate code</div>
+      <div class="field-desc">Creates a random 6-character invite code. Optionally tie it to a specific email address so only that person can use it. The code appears in the list immediately — copy it and send it to the invitee.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Active codes</div>
+      <div class="field-desc">All unused codes. Copy, share, or delete them from here.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Used codes</div>
+      <div class="field-desc">Codes that have been claimed. Shows which email used each code and when. You can reset a used code if someone had trouble signing up.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Access requests</div>
+      <div class="field-desc">Users who requested access from the app's login screen. Approve to auto-generate a tied code. Reject to dismiss the request.</div>
+    </div>
+  </div>
+
+  <h3 class="sub-title">Data & Sync tab</h3>
+  <div class="card">
+    <div class="field-row">
+      <div class="field-name">Cloud sync</div>
+      <div class="field-desc">Your data syncs to the cloud automatically every 2 seconds after any change. The sync status (synced / syncing / failed) is shown at the top of this tab and in the bottom-right corner of the app.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Export data</div>
+      <div class="field-desc">Downloads a full JSON export of all your financial data. Store this as a backup. Useful if you want to migrate, audit, or analyse your data outside the app.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">Import data</div>
+      <div class="field-desc">Restore from a previous export. Use this to migrate from the local-only version to the cloud version, or to recover from a corrupted session.</div>
+    </div>
+  </div>
+
+  <h3 class="sub-title">Danger zone tab</h3>
+  <p>Contains destructive actions — account deletion and data wipe. These cannot be undone. Export your data before using anything in this section.</p>
+
+  <!-- ═══════════════════════════════ QUICK REFERENCE ═══════════════════════════════ -->
+  <div class="page-break"></div>
+  <hr class="divider" />
+  <div class="label" style="color:#D97757;">Quick Reference</div>
+  <h2 class="section-title display">Monthly workflow.</h2>
+  <p>This is the recommended operating rhythm. Run through it every time income arrives.</p>
+
+  <ol class="step-list">
+    <li><span class="step-num">1</span><div><strong>Income arrives</strong> — client pays, trade profits, salary deposits.</div></li>
+    <li><span class="step-num">2</span><div><strong>Open Profit Allocator</strong> — enter the gross amount. Review the live preview. Click Allocate → Apply.</div></li>
+    <li><span class="step-num">3</span><div><strong>Transfer physically</strong> — move the buffer portion to savings. Move the tax reserve to its dedicated account. Move long-term allocation to your investment account.</div></li>
+    <li><span class="step-num">4</span><div><strong>Update balances</strong> — Command → Unlock to edit → update each balance to its new actual amount.</div></li>
+    <li><span class="step-num">5</span><div><strong>Save snapshot</strong> — lock in this moment. Your history updates.</div></li>
+    <li><span class="step-num">6</span><div><strong>Check stage</strong> — are you closer to the next threshold? What changed?</div></li>
+    <li><span class="step-num">7</span><div><strong>Continue operating</strong> — use the Spending Gate for discretionary purchases. Log trading results as they happen.</div></li>
+  </ol>
+
+  <hr class="divider" />
+
+  <div class="card-green">
+    <h4 style="color:#7FA068; margin-bottom:12px;">The single most important habit</h4>
+    <p style="font-size:15px; color:#E8E2D5; font-weight:400;">Run every income event through the Profit Allocator and transfer the money immediately. Don't let it sit in your account without a role. Money without a role gets spent. The system only works if you execute it.</p>
+  </div>
+
+  <hr class="divider" />
+
+  <div style="text-align:center; padding:40px 0;">
+    <div style="font-family:'Fraunces',Georgia,serif; font-size:24px; font-weight:300; color:#E8E2D5; margin-bottom:8px;">
+      Royal-Icon <em style="color:#D97757;">Ledger</em>
+    </div>
+    <div style="font-size:12px; color:#3A3028; letter-spacing:0.15em; text-transform:uppercase;">app.royalicon.net · hello@royalicon.net</div>
+  </div>
+
+</div>
+
+</body>
+</html>

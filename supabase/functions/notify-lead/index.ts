@@ -68,7 +68,7 @@ serve(async (req: Request) => {
         'Content-Type':  'application/json',
       },
       body: JSON.stringify({
-        from:    'Royal-Icon Ledger <noreply@royalicon.net>',
+        from:    'Royal-Icon Ledger <onboarding@resend.dev>',
         to:      [NOTIFY_EMAIL],
         subject: `New lead: ${name} (${incomeType})`,
         html,

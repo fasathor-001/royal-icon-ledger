@@ -372,14 +372,24 @@ function VelocityAlert({ spent, cap, projected, overBudget, blockMode, currency 
 
   const pct = cap > 0 ? (spent / cap) * 100 : 0;
 
-  if (pct >= 75) {
+  if (pct >= 75 || projected > cap) {
     const overspendProjected = Math.max(0, projected - cap);
+    if (overspendProjected > 0) {
+      return (
+        <span
+          className="pill"
+          style={{ background: '#2A1E0E', color: '#D97757', fontSize: '10px', padding: '2px 8px' }}
+        >
+          Over pace — projected overspend {fmt(overspendProjected)}
+        </span>
+      );
+    }
     return (
       <span
         className="pill"
         style={{ background: '#2A1E0E', color: '#D97757', fontSize: '10px', padding: '2px 8px' }}
       >
-        75%+ used — projected overspend {fmt(overspendProjected)}
+        {Math.round(pct)}% used — watch your pace
       </span>
     );
   }
