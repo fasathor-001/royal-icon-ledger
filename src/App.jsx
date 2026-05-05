@@ -2597,11 +2597,19 @@ function AccessControlPanel() {
 
       {/* Approved code flash */}
       {approvedCode && (
-        <div style={{ padding: '12px 14px', background: '#0D1A0D', border: '1px solid #2A4A2A', borderRadius: '4px' }}>
-          <div style={{ fontSize: '12px', color: '#7FA068', marginBottom: '6px' }}>Invite code generated for {approvedCode.email}. Send this to them:</div>
-          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '18px', letterSpacing: '0.3em', color: '#E8E2D5' }}>{approvedCode.code}</div>
-          <button onClick={() => { navigator.clipboard.writeText(approvedCode.code); }} style={{ marginTop: '6px', background: 'transparent', border: 'none', color: '#7FA068', cursor: 'pointer', fontSize: '11px', padding: 0 }}>Copy code</button>
-          <button onClick={() => setApprovedCode(null)} style={{ marginTop: '6px', marginLeft: '12px', background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', fontSize: '11px', padding: 0 }}>Dismiss</button>
+        <div style={{ padding: '14px 16px', background: '#0D1A0D', border: '1px solid #2A4A2A', borderRadius: '4px' }}>
+          <div style={{ fontSize: '13px', color: '#7FA068', fontWeight: 600, marginBottom: '4px' }}>✓ Invite code generated</div>
+          <div style={{ fontSize: '12px', color: '#5C8A5C', marginBottom: '10px' }}>
+            Send this code to <strong style={{ color: '#E8E2D5' }}>{approvedCode.email}</strong>
+          </div>
+          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '20px', letterSpacing: '0.3em', color: '#E8E2D5', marginBottom: '10px' }}>{approvedCode.code}</div>
+          <div style={{ fontSize: '11px', color: '#D97757', background: '#1A1008', border: '1px solid #3A2A10', borderRadius: '3px', padding: '7px 10px', marginBottom: '10px', lineHeight: 1.5 }}>
+            ⚠️ This code is locked to <strong>{approvedCode.email}</strong>. The user must register with that exact email address or the code will be rejected.
+          </div>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button onClick={() => { navigator.clipboard.writeText(approvedCode.code); }} style={{ background: 'transparent', border: '1px solid #2A4A2A', color: '#7FA068', cursor: 'pointer', fontSize: '11px', padding: '4px 10px', borderRadius: '3px' }}>Copy code</button>
+            <button onClick={() => setApprovedCode(null)} style={{ background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', fontSize: '11px', padding: '4px 6px' }}>Dismiss</button>
+          </div>
         </div>
       )}
 
