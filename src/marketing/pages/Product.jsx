@@ -194,7 +194,7 @@ export default function Product({ navigate }) {
             Royal-Icon Ledger is in private beta. Apply for early access today.
           </p>
           <button className="m-btn m-btn-primary m-btn-lg" onClick={() => navigate('/early-access')}>
-            Request Early Access
+            Get Early Access
           </button>
         </div>
       </section>

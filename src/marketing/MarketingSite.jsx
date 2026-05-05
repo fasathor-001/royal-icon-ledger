@@ -19,6 +19,8 @@ import Security    from './pages/Security';
 import Investors   from './pages/Investors';
 import EarlyAccess from './pages/EarlyAccess';
 import About       from './pages/About';
+import Privacy     from './pages/Privacy';
+import NotFound    from './pages/NotFound';
 
 // ── Scroll to top on every route change ────────────────────────
 function ScrollToTop() {
@@ -37,8 +39,9 @@ const PAGE_TITLES = {
   '/for-who':      'For Who — Royal-Icon Ledger',
   '/security':     'Security & Privacy — Royal-Icon Ledger',
   '/investors':    'Investors — Royal-Icon Ledger',
-  '/early-access': 'Request Early Access — Royal-Icon Ledger',
+  '/early-access': 'Get Early Access — Royal-Icon Ledger',
   '/about':        'About — Royal-Icon Ledger',
+  '/privacy':      'Privacy Policy — Royal-Icon Ledger',
 };
 
 function TitleSync() {
@@ -70,8 +73,9 @@ function MarketingShell() {
           <Route path="/investors"    element={<Investors   navigate={navigate} />} />
           <Route path="/early-access" element={<EarlyAccess navigate={navigate} />} />
           <Route path="/about"        element={<About       navigate={navigate} />} />
-          {/* Fallback — redirect unknown paths to home */}
-          <Route path="*"             element={<Home        navigate={navigate} />} />
+          <Route path="/privacy"      element={<Privacy     navigate={navigate} />} />
+          {/* 404 — branded not-found page */}
+          <Route path="*"             element={<NotFound    navigate={navigate} />} />
         </Routes>
       </main>
       <MarketingFooter />

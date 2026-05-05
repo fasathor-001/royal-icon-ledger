@@ -261,8 +261,28 @@ export default function EarlyAccess({ navigate }) {
             </div>
           </form>
 
+          {/* Pricing signal */}
+          <div style={{ marginTop: '40px', paddingTop: '40px', borderTop: '1px solid #1A1610' }}>
+            <div className="m-label" style={{ marginBottom: '16px' }}>What does it cost?</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+              <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '16px 18px' }}>
+                <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#5C5648', textTransform: 'uppercase', marginBottom: '8px' }}>Core — Free</div>
+                <div style={{ fontSize: '16px', fontWeight: 700, color: '#E8E2D5', marginBottom: '6px' }}>Always free</div>
+                <div style={{ fontSize: '12px', color: '#3A3028', lineHeight: 1.6 }}>Local device. All core modules. Offline-first. No sync.</div>
+              </div>
+              <div style={{ background: '#1A1008', border: '1px solid #3A2010', borderRadius: '4px', padding: '16px 18px' }}>
+                <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#D97757', textTransform: 'uppercase', marginBottom: '8px' }}>Pro — Coming soon</div>
+                <div style={{ fontSize: '16px', fontWeight: 700, color: '#E8E2D5', marginBottom: '6px' }}>Subscription</div>
+                <div style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.6 }}>Cloud sync, multi-device, push notifications. Pricing set during beta.</div>
+              </div>
+            </div>
+            <p style={{ fontSize: '12px', color: '#3A3028', lineHeight: 1.6 }}>
+              Beta access is free. No payment required at any stage of the early access programme.
+            </p>
+          </div>
+
           {/* Sidebar info */}
-          <div style={{ marginTop: '48px', paddingTop: '48px', borderTop: '1px solid #1A1610' }}>
+          <div style={{ marginTop: '40px', paddingTop: '40px', borderTop: '1px solid #1A1610' }}>
             <div className="m-label" style={{ marginBottom: '20px' }}>What to expect</div>
             {[
               { icon: '📬', text: 'We review every application personally.' },

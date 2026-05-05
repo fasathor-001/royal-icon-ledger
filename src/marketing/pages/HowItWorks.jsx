@@ -140,7 +140,7 @@ export default function HowItWorks({ navigate }) {
             <em style={{ color: '#D97757', fontStyle: 'italic' }}>Are you?</em>
           </h2>
           <button className="m-btn m-btn-primary m-btn-lg" onClick={() => navigate('/early-access')}>
-            Request Early Access
+            Get Early Access
           </button>
         </div>
       </section>

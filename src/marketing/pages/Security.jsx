@@ -65,6 +65,7 @@ const TECH_ITEMS = [
 ];
 
 export default function Security({ navigate }) {
+  // navigate prop used in closing CTA
   return (
     <div>
       <div className="m-nav-spacer" />
@@ -145,7 +146,7 @@ export default function Security({ navigate }) {
       `}</style>
 
       {/* Session control note */}
-      <section className="m-section-sm">
+      <section className="m-section-sm" style={{ borderBottom: '1px solid #1A1610' }}>
         <div className="m-wrap-md">
           <div className="m-card-warm" style={{ padding: '32px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
@@ -165,6 +166,22 @@ export default function Security({ navigate }) {
           </div>
         </div>
       </section>
+      {/* CTA */}
+      <section className="m-section-sm">
+        <div className="m-wrap-sm" style={{ textAlign: 'center' }}>
+          <h2 className="m-display" style={{ fontSize: 'clamp(26px, 3.5vw, 42px)', color: '#E8E2D5', marginBottom: '16px' }}>
+            Your data. Your rules.{' '}
+            <em style={{ color: '#D97757', fontStyle: 'italic' }}>Your system.</em>
+          </h2>
+          <p className="m-body" style={{ marginBottom: '32px' }}>
+            Royal-Icon Ledger is built around one principle: your financial records are private. Apply for early access and take control.
+          </p>
+          <button className="m-btn m-btn-primary m-btn-lg" onClick={() => navigate('/early-access')}>
+            Get Early Access
+          </button>
+        </div>
+      </section>
+
     </div>
   );
 }

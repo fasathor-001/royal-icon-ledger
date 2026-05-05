@@ -103,6 +103,40 @@ export default function About({ navigate }) {
         }
       `}</style>
 
+      {/* Founder */}
+      <section className="m-section-sm" style={{ borderTop: '1px solid #1A1610', borderBottom: '1px solid #1A1610' }}>
+        <div className="m-wrap-md">
+          <div className="m-label" style={{ marginBottom: '24px' }}>The founder</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'start' }} className="about-grid">
+            <div>
+              <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#14110E', border: '1px solid #26221C', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
+                <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', color: '#D97757', fontStyle: 'italic' }}>F</span>
+              </div>
+              <h3 className="m-display" style={{ fontSize: '24px', color: '#E8E2D5', marginBottom: '4px' }}>The Founder</h3>
+              <div style={{ fontSize: '13px', color: '#5C5648', marginBottom: '20px' }}>Builder · Royal-Icon Ledger</div>
+              <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.8, marginBottom: '16px' }}>
+                Royal-Icon Ledger started as a personal problem. Variable income, a household to protect, and every financial tool on the market telling me to track what I'd already spent.
+              </p>
+              <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.8 }}>
+                I needed something that worked before the money moved — not after. So I built it.
+              </p>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div className="m-card" style={{ padding: '20px 24px' }}>
+                <div style={{ fontSize: '12px', color: '#3A3028', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>The problem I was solving</div>
+                <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7 }}>
+                  My income changed every month. Every budget app assumed it wouldn't. I needed a system that handled both the feast months and the lean ones — automatically.
+                </p>
+              </div>
+              <div className="m-card" style={{ padding: '20px 24px' }}>
+                <div style={{ fontSize: '12px', color: '#3A3028', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>Contact</div>
+                <a href="mailto:hello@royalicon.net" style={{ fontSize: '14px', color: '#D97757', textDecoration: 'none' }}>hello@royalicon.net</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Category positioning */}
       <section className="m-section-sm" style={{ background: '#0F0D0A', borderTop: '1px solid #1A1610', borderBottom: '1px solid #1A1610' }}>
         <div className="m-wrap-sm" style={{ textAlign: 'center' }}>
@@ -148,7 +182,7 @@ export default function About({ navigate }) {
           </h2>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <button className="m-btn m-btn-primary" onClick={() => navigate('/early-access')}>
-              Request Early Access
+              Get Early Access
             </button>
             <button className="m-btn m-btn-outline" onClick={() => navigate('/investors')}>
               Investor Overview →

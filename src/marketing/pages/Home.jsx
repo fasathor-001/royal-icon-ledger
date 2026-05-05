@@ -108,6 +108,115 @@ export default function Home({ navigate }) {
       </section>
 
       {/* ════════════════════════════════════════════
+          PRODUCT PREVIEW
+      ════════════════════════════════════════════ */}
+      <section style={{ background: '#0A0908', borderBottom: '1px solid #1A1610', padding: '0 24px 64px' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          {/* Browser chrome */}
+          <div style={{ background: '#0F0D0A', border: '1px solid #26221C', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 32px 80px rgba(0,0,0,0.7)' }}>
+            <div style={{ background: '#14110E', borderBottom: '1px solid #1A1610', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#2A2420' }} />
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#2A2420' }} />
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#2A2420' }} />
+              <div style={{ marginLeft: 'auto', fontSize: '11px', color: '#3A3028', fontFamily: "'JetBrains Mono', monospace" }}>
+                Royal-Icon Ledger — Command Dashboard
+              </div>
+            </div>
+
+            {/* Dashboard body */}
+            <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr' }} className="mockup-grid">
+
+              {/* Sidebar */}
+              <div style={{ borderRight: '1px solid #1A1610', padding: '20px 12px' }}>
+                {[
+                  { icon: '⌘', label: 'Command', active: true },
+                  { icon: '📬', label: 'Budget' },
+                  { icon: '🚦', label: 'Gate' },
+                  { icon: '⚖', label: 'Allocator' },
+                  { icon: '📊', label: 'Trading' },
+                  { icon: '🛡', label: 'Buffer' },
+                ].map(({ icon, label, active }) => (
+                  <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 10px', borderRadius: '4px', background: active ? '#1A1610' : 'transparent', marginBottom: '2px' }}>
+                    <span style={{ fontSize: '13px' }}>{icon}</span>
+                    <span style={{ fontSize: '12px', color: active ? '#D97757' : '#3A3028', fontWeight: active ? 600 : 400 }}>{label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Main panel */}
+              <div style={{ padding: '20px' }}>
+                {/* Stage bar */}
+                <div style={{ marginBottom: '18px' }}>
+                  <div style={{ fontSize: '10px', color: '#3A3028', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px', fontFamily: "'JetBrains Mono', monospace" }}>Stage Progression</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                    {[
+                      { label: 'Stage 1', active: true },
+                      { label: '→', arrow: true },
+                      { label: 'Stage 1.5' },
+                      { label: '→', arrow: true },
+                      { label: 'Stage 2' },
+                      { label: '→', arrow: true },
+                      { label: 'Stage 3' },
+                    ].map((s, i) => s.arrow
+                      ? <span key={i} style={{ color: '#3A3028', fontSize: '11px' }}>→</span>
+                      : <div key={i} style={{ padding: '3px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: s.active ? 600 : 400, background: s.active ? '#D97757' : '#14110E', color: s.active ? '#0A0908' : '#3A3028', border: `1px solid ${s.active ? '#D97757' : '#26221C'}` }}>{s.label}</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Stat cards */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '14px' }} className="mockup-cards">
+                  <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '12px' }}>
+                    <div style={{ fontSize: '9px', color: '#3A3028', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Buffer Reserve</div>
+                    <div style={{ fontSize: '16px', fontWeight: 700, color: '#E8E2D5', marginBottom: '8px' }}>R 48,200</div>
+                    <div style={{ background: '#1A1610', borderRadius: '2px', height: '3px', marginBottom: '4px' }}>
+                      <div style={{ width: '80%', height: '100%', background: '#7FA068', borderRadius: '2px' }} />
+                    </div>
+                    <div style={{ fontSize: '9px', color: '#3A3028' }}>80% of R 60,000 target</div>
+                  </div>
+                  <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '12px' }}>
+                    <div style={{ fontSize: '9px', color: '#3A3028', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Spending Gate</div>
+                    <div style={{ fontSize: '16px', fontWeight: 700, color: '#D97757', marginBottom: '6px' }}>2 pending</div>
+                    <div style={{ fontSize: '10px', color: '#5C5648' }}>24h hold active</div>
+                    <div style={{ fontSize: '9px', color: '#3A3028', marginTop: '2px' }}>→ Review before approval</div>
+                  </div>
+                  <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '12px' }}>
+                    <div style={{ fontSize: '9px', color: '#3A3028', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Net Worth</div>
+                    <div style={{ fontSize: '16px', fontWeight: 700, color: '#E8E2D5', marginBottom: '6px' }}>R 94,750</div>
+                    <div style={{ fontSize: '10px', color: '#7FA068' }}>↑ +12% this quarter</div>
+                    <div style={{ fontSize: '9px', color: '#3A3028', marginTop: '2px' }}>Stage 1.5 approaching</div>
+                  </div>
+                </div>
+
+                {/* Last allocation */}
+                <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '12px' }}>
+                  <div style={{ fontSize: '9px', color: '#3A3028', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Last Allocation — Stage 1 Rule Applied</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', flexWrap: 'wrap' }}>
+                    <span style={{ color: '#7FA068' }}>✓</span>
+                    <span style={{ color: '#5C5648' }}>Income received: R 12,000</span>
+                    <span style={{ color: '#3A3028' }}>→</span>
+                    <span style={{ color: '#E8E2D5', fontWeight: 600 }}>100% allocated to Buffer Reserve</span>
+                    <span style={{ marginLeft: 'auto', color: '#3A3028', fontSize: '9px', fontFamily: "'JetBrains Mono', monospace" }}>auto</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p style={{ textAlign: 'center', fontSize: '11px', color: '#3A3028', marginTop: '14px', letterSpacing: '0.06em' }}>
+            ACTUAL PRODUCT · PRIVATE BETA · SAMPLE DATA
+          </p>
+        </div>
+      </section>
+
+      <style>{`
+        @media (max-width: 640px) {
+          .mockup-grid  { grid-template-columns: 1fr !important; }
+          .mockup-grid > div:first-child { display: none; }
+          .mockup-cards { grid-template-columns: 1fr 1fr !important; }
+        }
+      `}</style>
+
+      {/* ════════════════════════════════════════════
           POSITIONING STRIP
       ════════════════════════════════════════════ */}
       <section className="m-section-xs" style={{ borderBottom: '1px solid #1A1610' }}>
@@ -336,6 +445,51 @@ export default function Home({ navigate }) {
               <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '14px' }}>{icon}</span>
                 <span style={{ fontSize: '12px', color: '#3A3028', fontWeight: 500 }}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════
+          FAQ
+      ════════════════════════════════════════════ */}
+      <section className="m-section" style={{ borderBottom: '1px solid #1A1610' }}>
+        <div className="m-wrap-sm">
+          <Label>Common questions</Label>
+          <h2 className="m-display" style={{ fontSize: 'clamp(26px, 3.5vw, 42px)', color: '#E8E2D5', marginBottom: '40px' }}>
+            Answered <em style={{ color: '#D97757', fontStyle: 'italic' }}>honestly.</em>
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+            {[
+              {
+                q: 'How is this different from YNAB, Mint, or other budget apps?',
+                a: 'Budget apps track what already happened. Royal-Icon Ledger controls decisions before they happen. Income is allocated automatically on arrival. Spending has limits enforced by the system — not your willpower. It is not a tracker. It is an operating system.',
+              },
+              {
+                q: 'Does it work on mobile?',
+                a: 'Yes. Royal-Icon Ledger is a Progressive Web App (PWA). Install it on your iPhone or Android home screen and it works exactly like a native app — including offline. No App Store required.',
+              },
+              {
+                q: 'Do I need to connect my bank account?',
+                a: 'No. The system works without bank access. You log income and spending manually — which actually improves financial awareness. Bank feed integration is on the roadmap.',
+              },
+              {
+                q: 'What does it cost?',
+                a: 'Beta access is completely free. A free tier (local device, all core modules) and a Pro tier (cloud sync, multi-device, push notifications) are planned for public launch. Pricing will be set during the closed beta phase. No payment is required at any stage of early access.',
+              },
+              {
+                q: 'Which countries and currencies are supported?',
+                a: 'The system is currency-agnostic — it works with any currency. It has been built and tested primarily in South Africa but is designed for global use. Multi-currency display improvements are on the roadmap.',
+              },
+              {
+                q: 'Is my financial data private?',
+                a: 'Completely. Your data is never sold, shared, or used for any purpose other than running your system. Cloud sync uses Supabase with Row Level Security — only your authenticated session can access your records. Your PIN never leaves your device. See the Security page for full details.',
+              },
+            ].map(({ q, a }, i, arr) => (
+              <div key={i} style={{ padding: '24px 0', borderBottom: i < arr.length - 1 ? '1px solid #1A1610' : 'none' }}>
+                <div style={{ fontSize: '15px', fontWeight: 600, color: '#E8E2D5', marginBottom: '10px', lineHeight: 1.4 }}>{q}</div>
+                <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.75 }}>{a}</p>
               </div>
             ))}
           </div>
