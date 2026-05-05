@@ -108,25 +108,6 @@ export default function About({ navigate }) {
         <div className="m-wrap-sm">
           <div className="m-label" style={{ marginBottom: '40px' }}>Founder's Note</div>
 
-          {/* Photo + identity */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '48px' }}>
-            {/* Photo placeholder — replace src with real photo */}
-            <div style={{
-              width: 72, height: 72, borderRadius: '50%',
-              background: '#14110E', border: '2px solid #26221C',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0, overflow: 'hidden',
-            }}>
-              {/* PHOTO: swap the div below for <img src="/founder.jpg" alt="Amb. Frank A." style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> */}
-              <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '26px', color: '#D97757', fontStyle: 'italic', lineHeight: 1 }}>F</span>
-            </div>
-            <div>
-              <div style={{ fontSize: '17px', fontWeight: 600, color: '#E8E2D5', letterSpacing: '-0.01em' }}>Amb. Frank A.</div>
-              <div style={{ fontSize: '13px', color: '#5C5648', marginTop: '3px' }}>Founder, Royal-Icon Ledger</div>
-              <a href="mailto:hello@royalicon.net" style={{ fontSize: '13px', color: '#D97757', textDecoration: 'none', marginTop: '4px', display: 'inline-block' }}>hello@royalicon.net</a>
-            </div>
-          </div>
-
           {/* The note */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
@@ -184,9 +165,22 @@ export default function About({ navigate }) {
             </p>
 
             {/* Signature */}
-            <div style={{ marginTop: '16px', paddingTop: '32px', borderTop: '1px solid #1A1610' }}>
-              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '20px', color: '#E8E2D5', fontStyle: 'italic', marginBottom: '4px' }}>— Amb. Frank A.</div>
-              <div style={{ fontSize: '13px', color: '#5C5648' }}>Founder, Royal-Icon Ledger</div>
+            <div style={{ marginTop: '16px', paddingTop: '32px', borderTop: '1px solid #1A1610', display: 'flex', alignItems: 'center', gap: '16px' }}>
+              {/* Initials avatar */}
+              <div style={{
+                width: 44, height: 44, borderRadius: '50%',
+                background: '#14110E', border: '1px solid #26221C',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+              }}>
+                <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '15px', color: '#D97757', fontStyle: 'italic', letterSpacing: '0.02em' }}>FA</span>
+              </div>
+              {/* Identity */}
+              <div>
+                <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '19px', color: '#E8E2D5', fontStyle: 'italic' }}>— Frank A.</div>
+                <div style={{ fontSize: '13px', color: '#5C5648', marginTop: '2px' }}>Founder, Royal-Icon Ledger</div>
+                <div style={{ fontSize: '12px', color: '#3A3028', marginTop: '3px' }}>Building financial systems for variable-income earners.</div>
+              </div>
             </div>
 
           </div>
