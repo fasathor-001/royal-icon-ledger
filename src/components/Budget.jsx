@@ -211,7 +211,7 @@ export default function Budget({ data, setData, stats }) {
           Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>budget</span>
         </h1>
         <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
-          {envelopes.length} envelopes for {fmt(data.spendingBudget)} monthly spending. Each envelope has its own rules.
+          {envelopes.length} envelopes · {fmt(totalAllocated)} total envelope caps · {fmt(data.spendingBudget)} discretionary limit. Each envelope has its own rules.
         </p>
       </div>
 

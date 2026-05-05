@@ -1049,13 +1049,30 @@ function BalanceInput({ label, icon: Icon, color, value, onChange, readOnly, not
 function StageRow({ label, target, subtitle, done, active }) {
   const color = done ? '#7FA068' : active ? '#D97757' : '#5C5648';
   return (
-    <div className="flex gap-4 pb-3 border-b last:border-0" style={{ borderColor: '#26221C' }}>
+    <div
+      className="flex gap-4 pb-3 border-b last:border-0"
+      style={{
+        borderColor: '#26221C',
+        ...(active && !done ? {
+          background: 'rgba(217, 119, 87, 0.07)',
+          borderLeft: '3px solid #D97757',
+          paddingLeft: '12px',
+          marginLeft: '-15px',
+          paddingRight: '4px',
+          borderRadius: '2px',
+        } : {}),
+      }}
+    >
       <div className="display italic text-sm" style={{ color, minWidth: '90px' }}>{label}</div>
       <div className="flex-1">
         <div className="flex items-center gap-2 mb-1">
-          <span className="font-medium text-sm">{target}</span>
+          <span className="font-medium text-sm" style={{ color: active && !done ? '#E8E2D5' : undefined }}>{target}</span>
           {done && <Check size={12} style={{ color: '#7FA068' }} />}
-          {active && !done && <span className="pill" style={{ background: '#2A1410', color: '#D97757', padding: '2px 8px', fontSize: '9px' }}>ACTIVE</span>}
+          {active && !done && (
+            <span className="pill" style={{ background: '#3A1E10', color: '#D97757', padding: '3px 10px', fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em' }}>
+              CURRENT
+            </span>
+          )}
         </div>
         <p className="text-xs" style={{ color: '#8B8478' }}>{subtitle}</p>
       </div>
