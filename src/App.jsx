@@ -1111,6 +1111,17 @@ function StageRow({ label, target, subtitle, done, active }) {
 
 function PendingRow({ item, setData, currency }) {
   const fmt = makeFmt(currency);
+  const [done, setDone] = useState(null); // 'skipped' | 'bought'
+
+  if (done) {
+    return (
+      <div className="flex items-center gap-2 p-3 border" style={{ borderColor: '#26221C', borderRadius: '3px', color: done === 'bought' ? '#C56B5A' : '#7FA068', fontSize: 13 }}>
+        <Check size={13} />
+        <span><strong>{item.name}</strong> — {done === 'bought' ? `logged as ${fmt(item.amount)} spend` : 'skipped'}</span>
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center justify-between p-3 border" style={{ borderColor: '#26221C', borderRadius: '3px' }}>
       <div>
@@ -1119,15 +1130,21 @@ function PendingRow({ item, setData, currency }) {
       </div>
       <div className="flex gap-2">
         <button className="btn px-3 py-1.5 text-xs" style={{ color: '#7FA068', border: '1px solid #2A3A1E', borderRadius: '3px' }}
-          onClick={() => setData(d => ({ ...d, pending: d.pending.map(i => i.id === item.id ? { ...i, status: 'cancelled' } : i) }))}>
+          onClick={() => {
+            setDone('skipped');
+            setTimeout(() => setData(d => ({ ...d, pending: d.pending.map(i => i.id === item.id ? { ...i, status: 'cancelled' } : i) })), 1200);
+          }}>
           Skip
         </button>
         <button className="btn px-3 py-1.5 text-xs" style={{ color: '#C56B5A', border: '1px solid #3A2620', borderRadius: '3px' }}
-          onClick={() => setData(d => ({
-            ...d,
-            pending: d.pending.map(i => i.id === item.id ? { ...i, status: 'bought' } : i),
-            impulses: [...d.impulses, { id: Date.now(), name: item.name, amount: item.amount, category: item.category, timestamp: Date.now(), wasGated: true }],
-          }))}>
+          onClick={() => {
+            setDone('bought');
+            setTimeout(() => setData(d => ({
+              ...d,
+              pending: d.pending.map(i => i.id === item.id ? { ...i, status: 'bought' } : i),
+              impulses: [...d.impulses, { id: Date.now(), name: item.name, amount: item.amount, category: item.category, timestamp: Date.now(), wasGated: true }],
+            })), 1200);
+          }}>
           Buy
         </button>
       </div>
@@ -1579,15 +1596,14 @@ function TradingTab({ data, stats, setData }) {
   const { locked, requestUnlock, gate: tradingFieldGate } = useSectionPin(data.overridePin);
   const [pnl, setPnl] = useState('');
   const [pnlMonth, setPnlMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [pnlLogged, setPnlLogged] = useState(null); // { month, value }
 
   const logPnL = () => {
     const value = Number(pnl);
     if (isNaN(value)) return;
     setData(d => {
       const guardUpdates = value < 0
-        // Negative day — activate guard for 24h
         ? { tradingGuardUntil: Date.now() + 24 * 60 * 60 * 1000 }
-        // Positive day — clear guard
         : { tradingGuardUntil: null };
       return {
         ...d,
@@ -1595,7 +1611,9 @@ function TradingTab({ data, stats, setData }) {
         ...guardUpdates,
       };
     });
+    setPnlLogged({ month: pnlMonth, value });
     setPnl('');
+    setTimeout(() => setPnlLogged(null), 3000);
   };
 
   const removePnL = (month) => setData(d => ({ ...d, tradingPnLHistory: d.tradingPnLHistory.filter(h => h.month !== month) }));
@@ -1683,6 +1701,21 @@ function TradingTab({ data, stats, setData }) {
           </div>
           <button className="btn btn-primary" onClick={locked ? requestUnlock : logPnL} disabled={!locked && pnl === ''}>Log P&L</button>
         </div>
+        {pnlLogged && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8, marginTop: 12,
+            background: pnlLogged.value >= 0 ? '#0F1A0E' : '#160E0C',
+            border: `1px solid ${pnlLogged.value >= 0 ? '#2A4A2A' : '#3A1E18'}`,
+            borderRadius: 4, padding: '10px 14px', fontSize: 13,
+            color: pnlLogged.value >= 0 ? '#7FA068' : '#C56B5A',
+          }}>
+            <Check size={14} style={{ flexShrink: 0 }} />
+            <span>
+              <strong>{pnlLogged.month}</strong> P&L logged — {pnlLogged.value >= 0 ? '+' : ''}{fmt(pnlLogged.value)}
+              {pnlLogged.value < 0 && <span style={{ color: '#8B8478', marginLeft: 8 }}>· 24h guard active</span>}
+            </span>
+          </div>
+        )}
       </section>
 
       {sortedHistory.length > 0 && (
