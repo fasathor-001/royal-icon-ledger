@@ -671,6 +671,7 @@ function AuthenticatedApp() {
         setIsNewUser(true);
       } else {
         setCloudData(remote);
+        if (remote) setLastSyncedAt(Date.now()); // data loaded from cloud — show as synced
       }
 
       setCloudLoading(false);

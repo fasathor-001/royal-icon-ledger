@@ -726,6 +726,81 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
       {/* Feature 6: Daily Checkpoints Card */}
       <RitualCard setTab={setTab} />
 
+      {/* Getting started — shown until first snapshot is taken */}
+      {stats.isSetup && data.snapshots.length === 0 && (
+        <div style={{ background: '#0F0D0A', border: '1px solid #26221C', borderRadius: '6px', padding: '24px 28px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <div>
+              <div style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#5C5648', fontWeight: 600, marginBottom: '4px' }}>Getting started</div>
+              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '20px', fontWeight: 300, color: '#E8E2D5' }}>
+                Three steps to activate your system.
+              </div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {[
+              {
+                num: '1',
+                done: data.expenses.length > 0,
+                title: 'Add your monthly expenses',
+                desc: 'Setup & Salary → add every fixed cost. Your salary and buffer target compute from this.',
+                action: 'Go to Setup & Salary',
+                tab: 'setup',
+                color: '#D97757',
+              },
+              {
+                num: '2',
+                done: data.buffer > 0 || data.tradingCapital > 0 || data.longTerm > 0,
+                title: 'Enter your current balances',
+                desc: 'Command → Current balances → Unlock to edit → enter what you actually have right now.',
+                action: null,
+                color: '#7FA068',
+              },
+              {
+                num: '3',
+                done: data.snapshots.length > 0,
+                title: 'Save your first snapshot',
+                desc: 'Hit "Save snapshot" above. This locks in today as your financial starting point — your history begins here.',
+                action: null,
+                color: '#5B7FB8',
+              },
+            ].map((step) => (
+              <div key={step.num} style={{
+                display: 'flex', alignItems: 'flex-start', gap: '14px',
+                padding: '14px 16px', borderRadius: '4px',
+                background: step.done ? '#0A0D0A' : '#14110E',
+                border: `1px solid ${step.done ? '#1E3018' : '#26221C'}`,
+                opacity: step.done ? 0.6 : 1,
+              }}>
+                <div style={{
+                  width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
+                  background: step.done ? '#7FA068' : '#1A1610',
+                  border: `1px solid ${step.done ? '#7FA068' : step.color}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '11px', color: step.done ? '#0A0908' : step.color, fontWeight: 700,
+                }}>
+                  {step.done ? '✓' : step.num}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '14px', color: step.done ? '#5C5648' : '#E8E2D5', fontWeight: 500, marginBottom: '3px', textDecoration: step.done ? 'line-through' : 'none' }}>
+                    {step.title}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.5 }}>{step.desc}</div>
+                </div>
+                {step.action && !step.done && (
+                  <button
+                    onClick={() => setTab(step.tab)}
+                    style={{ background: 'transparent', border: `1px solid ${step.color}40`, borderRadius: '3px', padding: '5px 10px', fontSize: '11px', color: step.color, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                  >
+                    {step.action} →
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Check Pulse button (shown when not Sunday) */}
       {!showWeeklyPulse && new Date().getDay() !== 0 && stats.isSetup && (
         <div className="flex justify-end">
@@ -1310,18 +1385,53 @@ function ProfitAllocator({ data, stats, setData }) {
         </p>
       </div>
 
-      {step === 'input' && (
-        <div className="card-warm p-7">
-          <div className="label mb-3" style={{ color: '#D97757' }}>{data.incomeType === 'fixed' ? 'Extra income this month' : 'Gross trading profit this month'}</div>
-          <div className="flex gap-3 items-end">
-            <div className="flex-1">
-              <input type="number" className="input" placeholder="0" value={profit} onChange={(e) => setProfit(e.target.value)} style={{ fontSize: '18px' }} />
+      {step === 'input' && (() => {
+        const liveGross = Number(profit) || 0;
+        const liveTax   = liveGross * (data.taxReservePct / 100);
+        const liveNet   = liveGross - liveTax;
+        let liveRule;
+        if (stats.stage === 1 || stats.stage === 'protect') liveRule = data.stageRules.stage1;
+        else if (stats.stage === 1.5) liveRule = data.stageRules.stage15;
+        else if (stats.stage === 2)   liveRule = data.stageRules.stage2;
+        else liveRule = data.stageRules.stage3;
+        const liveRows = [
+          { label: 'Tax reserve',       pct: data.taxReservePct,          amt: liveTax,                                        color: '#8B8478' },
+          { label: 'Family Buffer',     pct: liveRule.bufferPct,          amt: liveNet * (liveRule.bufferPct / 100),            color: '#D97757' },
+          { label: 'Long-term',         pct: liveRule.longTermPct,        amt: liveNet * (liveRule.longTermPct / 100),          color: '#7FA068' },
+          ...(data.incomeType !== 'fixed' ? [{ label: 'Trading Capital', pct: liveRule.tradingPct, amt: liveNet * (liveRule.tradingPct / 100), color: '#5B7FB8' }] : []),
+          { label: 'Goals',             pct: liveRule.goalsPct ?? 0,      amt: liveNet * ((liveRule.goalsPct ?? 0) / 100),      color: '#A06B8C' },
+          { label: 'Lifestyle',         pct: liveRule.lifestylePct,       amt: liveNet * (liveRule.lifestylePct / 100),         color: '#B89968' },
+        ].filter(r => r.pct > 0);
+
+        return (
+          <div className="card-warm p-7">
+            <div className="label mb-3" style={{ color: '#D97757' }}>{data.incomeType === 'fixed' ? 'Extra income this month' : 'Gross trading profit this month'}</div>
+            <div className="flex gap-3 items-end">
+              <div className="flex-1">
+                <input type="number" className="input" placeholder="0" value={profit} onChange={(e) => setProfit(e.target.value)} style={{ fontSize: '18px' }} />
+              </div>
+              <button className="btn btn-primary" onClick={calculate} disabled={!Number(profit)}>Allocate →</button>
             </div>
-            <button className="btn btn-primary" onClick={calculate} disabled={!Number(profit)}>Allocate →</button>
+            <p className="text-xs mt-3" style={{ color: '#5C5648' }}>Enter pre-tax profit. The system reserves {data.taxReservePct}% for taxes automatically.</p>
+
+            {liveGross > 0 && (
+              <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #26221C' }}>
+                <div className="label mb-3" style={{ color: '#5C5648' }}>Preview — where it goes</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {liveRows.map(row => (
+                    <div key={row.label} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ width: '3px', height: '28px', borderRadius: '2px', background: row.color, flexShrink: 0 }} />
+                      <div style={{ flex: 1, fontSize: '13px', color: '#8B8478' }}>{row.label}</div>
+                      <div style={{ fontSize: '11px', color: '#5C5648', fontFamily: 'JetBrains Mono, monospace' }}>{row.pct}%</div>
+                      <div style={{ fontSize: '14px', color: '#E8E2D5', fontWeight: 500, fontFamily: 'JetBrains Mono, monospace', minWidth: '90px', textAlign: 'right' }}>{fmt(row.amt)}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-          <p className="text-xs mt-3" style={{ color: '#5C5648' }}>Enter pre-tax profit. The system reserves {data.taxReservePct}% for taxes automatically.</p>
-        </div>
-      )}
+        );
+      })()}
 
       {step === 'result' && allocation && (
         <div className="space-y-4 slide-up">
@@ -1536,7 +1646,7 @@ function TradingTab({ data, stats, setData }) {
               <BarChart data={sortedHistory} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
                 <CartesianGrid stroke="#26221C" strokeDasharray="2 4" />
                 <XAxis dataKey="month" tick={{ fill: '#5C5648', fontSize: 11 }} stroke="#26221C" />
-                <YAxis tick={{ fill: '#5C5648', fontSize: 11 }} stroke="#26221C" tickFormatter={(v) => '$' + (v / 1000).toFixed(0) + 'k'} />
+                <YAxis tick={{ fill: '#5C5648', fontSize: 11 }} stroke="#26221C" tickFormatter={(v) => { const sym = getCurrency(data.currency).symbol; return sym + ' ' + (Math.abs(v) >= 1000 ? (v/1000).toFixed(0)+'k' : v); }} />
                 <Tooltip contentStyle={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '3px', fontFamily: 'JetBrains Mono', fontSize: '12px' }} formatter={(v) => fmt(v)} />
                 <ReferenceLine y={0} stroke="#5C5648" strokeWidth={1} />
                 <Bar dataKey="pnl" radius={[2, 2, 0, 0]}>
@@ -2233,7 +2343,7 @@ function History({ data, stats, setData }) {
                   </defs>
                   <CartesianGrid stroke="#26221C" strokeDasharray="2 4" />
                   <XAxis dataKey="date" tick={{ fill: '#5C5648', fontSize: 11 }} stroke="#26221C" />
-                  <YAxis tick={{ fill: '#5C5648', fontSize: 11 }} stroke="#26221C" tickFormatter={(v) => '$' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v)} />
+                  <YAxis tick={{ fill: '#5C5648', fontSize: 11 }} stroke="#26221C" tickFormatter={(v) => { const sym = getCurrency(data.currency).symbol; return sym + ' ' + (v >= 1000 ? (v/1000).toFixed(0)+'k' : v); }} />
                   <Tooltip contentStyle={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '3px', fontFamily: 'JetBrains Mono', fontSize: '12px' }} formatter={(v) => fmt(v)} />
                   <Legend wrapperStyle={{ fontSize: '12px' }} />
                   <Area type="monotone" dataKey="buffer" name="Buffer" stackId="1" stroke="#D97757" fill="url(#bufferGrad)" strokeWidth={2} />
@@ -3297,7 +3407,7 @@ function Rules({ data, stats, setData, user }) {
       {/* Tax reserve */}
       <section className="card p-6">
         <h2 className="display text-2xl mb-3">Tax reserve</h2>
-        <p className="text-sm mb-4" style={{ color: '#8B8478' }}>Percentage of gross trading profit set aside for taxes before allocation. Talk to a CPA for your real rate.</p>
+        <p className="text-sm mb-4" style={{ color: '#8B8478' }}>Percentage of gross trading profit set aside for taxes before allocation. Talk to a tax advisor for your real rate.</p>
         <div className="grid md:grid-cols-3 gap-3 items-end">
           <div>
             <div className="label mb-2" style={{ color: '#5C5648' }}>Tax reserve %</div>
