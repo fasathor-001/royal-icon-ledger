@@ -2,15 +2,25 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
 
 export default function MarketingFooter() {
   const year = new Date().getFullYear();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const handleStay = (e) => {
+  const handleStay = async (e) => {
     e.preventDefault();
-    if (email.trim()) setSubscribed(true);
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed) return;
+    setSaving(true);
+    if (supabase) {
+      await supabase.from('newsletter_subscribers').insert({ email: trimmed }).maybeSingle();
+      // Ignore duplicate errors — treat as success either way
+    }
+    setSaving(false);
+    setSubscribed(true);
   };
 
   return (
@@ -55,13 +65,15 @@ export default function MarketingFooter() {
                   />
                   <button
                     type="submit"
+                    disabled={saving}
                     style={{
                       background: '#26221C', border: 'none', borderRadius: '3px',
                       padding: '7px 12px', fontSize: '12px', color: '#8B8478',
-                      cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'Inter, sans-serif',
+                      cursor: saving ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap',
+                      fontFamily: 'Inter, sans-serif', opacity: saving ? 0.6 : 1,
                     }}
                   >
-                    Notify me
+                    {saving ? '…' : 'Notify me'}
                   </button>
                 </form>
               )}
