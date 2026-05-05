@@ -72,8 +72,10 @@ export default function About({ navigate }) {
                   Not by adding more tracking. Not by offering better reports. But by introducing structure before money moves.
                 </p>
                 <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #3A2A1E' }}>
-                  <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.75 }}>
-                    A system where every unit is assigned a role before it's used. Where decisions are made intentionally — not reactively. Where control exists regardless of how income arrives.
+                  <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.85 }}>
+                    Every unit assigned a role before it's used.<br />
+                    Decisions made intentionally — not reactively.<br />
+                    Control that exists regardless of how income arrives.
                   </p>
                 </div>
               </div>
@@ -160,7 +162,11 @@ export default function About({ navigate }) {
             </p>
 
             <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
-              Every financial tool I tried was built for a different kind of person — someone with a fixed salary, predictable cycles, and income that arrived on schedule. That assumption broke down immediately for anyone operating outside that model.
+              Every financial tool I tried was built for a different kind of person — someone with a fixed salary, predictable cycles, and income that arrived on schedule.
+            </p>
+
+            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+              That assumption breaks down for anyone operating outside that model.
             </p>
 
             <div style={{ padding: '20px 0', borderTop: '1px solid #1A1610', borderBottom: '1px solid #1A1610' }}>
@@ -173,7 +179,11 @@ export default function About({ navigate }) {
             </div>
 
             <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
-              For people like us, income doesn't arrive on a timetable — and decisions can't be made on averages. Yet every tool available still treated us like broken versions of salaried employees.
+              For people like us, income doesn't arrive on a timetable — and decisions can't be made on averages.
+            </p>
+
+            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+              Yet every tool available still treated us like broken versions of salaried employees.
             </p>
 
             <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
@@ -192,16 +202,21 @@ export default function About({ navigate }) {
             </div>
 
             <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
-              That shift — from tracking to allocation, from reaction to intention — is what the system is built around. It introduces structure before money moves, not visibility after the fact.
+              That shift — from tracking to allocation, from reaction to intention — is what the system is built around.
             </p>
 
             <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
-              This is not about managing money better.<br />
-              It is about changing how money is handled entirely.
+              It introduces structure before money moves.<br />
+              Not visibility after the fact.
+            </p>
+
+            <p style={{ fontSize: '15px', color: '#E8E2D5', lineHeight: 1.85 }}>
+              This is not about managing money better.
             </p>
 
             <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
-              The long-term vision is simple: build a financial operating system for a generation that no longer earns in predictable ways — and give them the structure to navigate that reality with clarity and control.
+              It is about introducing structure where none exists —<br />
+              and giving people control in a system that was never designed for them.
             </p>
 
             {/* Signature */}
