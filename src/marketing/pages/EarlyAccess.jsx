@@ -1,11 +1,9 @@
 // src/marketing/pages/EarlyAccess.jsx
 //
-// Early access lead capture form.
-// Placeholder handler — no Supabase call yet.
-// See SQL schema below (in comments) for the required table.
+// Early access lead capture form — wired to Supabase.
 //
 // ──────────────────────────────────────────────────────────────────
-// REQUIRED SQL (run in your Supabase SQL editor when ready):
+// REQUIRED SQL (run once in your Supabase SQL editor):
 //
 // CREATE TABLE early_access_leads (
 //   id             uuid          DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -33,6 +31,7 @@
 // ──────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
+import { supabase } from '../../lib/supabase';
 
 const INCOME_TYPES = [
   { id: 'variable',    label: 'Variable income',          sub: 'Income that changes month to month' },
@@ -67,6 +66,7 @@ export default function EarlyAccess({ navigate }) {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   const set = (key, val) => {
     setForm(f => ({ ...f, [key]: val }));
@@ -88,22 +88,37 @@ export default function EarlyAccess({ navigate }) {
     if (Object.keys(errs).length) { setErrors(errs); return; }
 
     setSubmitting(true);
+    setSubmitError(null);
 
-    // ─── Placeholder handler ───────────────────────────────────────
-    // When ready, replace this block with:
-    //
-    // const { supabase } = await import('../lib/supabase');
-    // const { error } = await supabase.from('early_access_leads').insert({
-    //   name:        form.name.trim(),
-    //   email:       form.email.trim().toLowerCase(),
-    //   country:     form.country.trim() || null,
-    //   income_type: form.incomeType,
-    //   interest:    form.interest.trim() || null,
-    // });
-    // if (error) { console.error(error); setSubmitting(false); return; }
-    // ──────────────────────────────────────────────────────────────
+    // ─── Supabase insert ──────────────────────────────────────────
+    if (supabase) {
+      const { error } = await supabase.from('early_access_leads').insert({
+        name:        form.name.trim(),
+        email:       form.email.trim().toLowerCase(),
+        country:     form.country.trim() || null,
+        income_type: form.incomeType,
+        interest:    form.interest.trim() || null,
+      });
 
-    await new Promise(r => setTimeout(r, 800)); // simulate network
+      if (error) {
+        // Duplicate email — treat as success so we don't leak who's already signed up
+        if (error.code === '23505') {
+          setSubmitting(false);
+          setSubmitted(true);
+          return;
+        }
+        console.error('[EarlyAccess] Supabase error:', error);
+        setSubmitError('Something went wrong. Please try again or email us at hello@royalicon.net.');
+        setSubmitting(false);
+        return;
+      }
+    } else {
+      // Supabase not configured — local dev fallback
+      console.warn('[EarlyAccess] Supabase not configured. Form data:', form);
+      await new Promise(r => setTimeout(r, 600));
+    }
+    // ─────────────────────────────────────────────────────────────
+
     setSubmitting(false);
     setSubmitted(true);
   };
@@ -240,6 +255,11 @@ export default function EarlyAccess({ navigate }) {
 
               {/* Submit */}
               <div style={{ paddingTop: '8px' }}>
+                {submitError && (
+                  <div style={{ background: '#1A0E0A', border: '1px solid #4A2018', borderRadius: '4px', padding: '12px 16px', marginBottom: '16px', fontSize: '13px', color: '#C56B5A', lineHeight: 1.6 }}>
+                    {submitError}
+                  </div>
+                )}
                 <button
                   type="submit"
                   className="m-btn m-btn-primary m-btn-lg"
