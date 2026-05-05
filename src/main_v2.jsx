@@ -69,11 +69,13 @@ function Root() {
     <BrowserRouter>
       <Routes>
         {/* App dashboard — auth-gated, PWA target */}
-        <Route path="/app" element={<AppShell />} />
+        <Route path="/app"   element={<AppShell />} />
+        {/* /login is an alias — AppShell shows LoginPage when no session */}
+        <Route path="/login" element={<AppShell />} />
 
-        {/* On app subdomain: catch-all redirects to /app */}
+        {/* On app subdomain: catch-all redirects to /login */}
         {isAppSubdomain
-          ? <Route path="/*" element={<Navigate to="/app" replace />} />
+          ? <Route path="/*" element={<Navigate to="/login" replace />} />
           : <Route path="/*" element={<MarketingSite />} />
         }
       </Routes>
