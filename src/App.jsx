@@ -979,13 +979,30 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               {fmt(stats.spendingLeft)} left
             </div>
           </div>
-          <div className="progress mb-2">
-            <div className="progress-fill" style={{ width: Math.min(100, (stats.thisMonthSpend / data.spendingBudget) * 100) + '%', background: (() => { const pct = data.spendingBudget > 0 ? stats.thisMonthSpend / data.spendingBudget : 0; return pct > 1 ? '#C56B5A' : pct > 0.8 ? '#D97757' : '#7FA068'; })() }} />
-          </div>
-          <div className="flex justify-between text-xs mono" style={{ color: '#8B8478' }}>
-            <span>{fmt(stats.thisMonthSpend)} spent</span>
-            <span>Limit: {fmt(data.spendingBudget)}</span>
-          </div>
+          {(() => {
+            const pct = data.spendingBudget > 0 ? stats.thisMonthSpend / data.spendingBudget : 0;
+            const barColor = pct > 1 ? '#C56B5A' : pct > 0.8 ? '#D97757' : '#7FA068';
+            const pctDisplay = Math.round(pct * 100);
+            return (
+              <>
+                <div style={{ position: 'relative', marginBottom: '6px' }}>
+                  <div className="progress">
+                    <div className="progress-fill" style={{ width: Math.min(100, pct * 100) + '%', background: barColor }} />
+                  </div>
+                  <span className="mono" style={{
+                    position: 'absolute', right: 0, top: '-18px',
+                    fontSize: '11px', fontWeight: 700, color: barColor, letterSpacing: '0.03em',
+                  }}>
+                    {pctDisplay}%
+                  </span>
+                </div>
+                <div className="flex justify-between text-xs mono" style={{ color: '#8B8478' }}>
+                  <span>{fmt(stats.thisMonthSpend)} spent</span>
+                  <span>Limit: {fmt(data.spendingBudget)}</span>
+                </div>
+              </>
+            );
+          })()}
         </section>
 
         <section className="card p-6">
