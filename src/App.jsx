@@ -340,6 +340,12 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     else if (data.buffer >= stage15End) stage = 2;
     else if (data.buffer >= stage1End) stage = 1.5;
 
+    // Buffer position in progression — independent of protect mode
+    const progressStage = data.buffer >= stage2End ? 3
+      : data.buffer >= stage15End ? 2
+      : data.buffer >= stage1End ? 1.5
+      : 1;
+
     const monthsCovered = salary > 0 ? data.buffer / salary : 0;
 
     let nextThreshold = bufferTarget;
@@ -370,7 +376,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
 
     return {
       totalExpenses, salary, bufferTarget, bufferProtectThreshold,
-      stage1End, stage15End, stage2End, stage,
+      stage1End, stage15End, stage2End, stage, progressStage,
       monthsCovered, nextThreshold, progressPct,
       thisMonthSpend, thisMonthImpulses, spendingLeft,
       totalAssets, ytdPnL,
@@ -957,10 +963,10 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           Salary {fmt(stats.salary)}/month · Target {data.bufferTargetMonths} months ({fmt(stats.bufferTarget)})
         </p>
         <div className="space-y-3">
-          <StageRow label="Stage 1" target={`${fmt(0)} → ${fmt(stats.stage1End)}`} subtitle="Crisis floor — 6 months · 100% to buffer" done={data.buffer >= stats.stage1End} active={stats.stage === 1} />
-          <StageRow label="Stage 1.5" target={`${fmt(stats.stage1End)} → ${fmt(stats.stage15End)}`} subtitle="Comfort zone — long-term investing begins" done={data.buffer >= stats.stage15End} active={stats.stage === 1.5} />
-          <StageRow label="Stage 2" target={`${fmt(stats.stage15End)} → ${fmt(stats.bufferTarget)}`} subtitle={`Fortified — ${data.bufferTargetMonths} months · buffer priority`} done={data.buffer >= stats.bufferTarget} active={stats.stage === 2} />
-          <StageRow label="Stage 3" target="Full waterfall" subtitle="Trading · lifestyle · goals all active" done={false} active={stats.stage === 3} />
+          <StageRow label="Stage 1" target={`${fmt(0)} → ${fmt(stats.stage1End)}`} subtitle="Crisis floor — 6 months · 100% to buffer" done={data.buffer >= stats.stage1End} active={stats.progressStage === 1} />
+          <StageRow label="Stage 1.5" target={`${fmt(stats.stage1End)} → ${fmt(stats.stage15End)}`} subtitle="Comfort zone — long-term investing begins" done={data.buffer >= stats.stage15End} active={stats.progressStage === 1.5} />
+          <StageRow label="Stage 2" target={`${fmt(stats.stage15End)} → ${fmt(stats.bufferTarget)}`} subtitle={`Fortified — ${data.bufferTargetMonths} months · buffer priority`} done={data.buffer >= stats.bufferTarget} active={stats.progressStage === 2} />
+          <StageRow label="Stage 3" target="Full waterfall" subtitle="Trading · lifestyle · goals all active" done={false} active={stats.progressStage === 3} />
         </div>
       </section>
 
@@ -974,7 +980,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             </div>
           </div>
           <div className="progress mb-2">
-            <div className="progress-fill" style={{ width: Math.min(100, (stats.thisMonthSpend / data.spendingBudget) * 100) + '%', background: stats.thisMonthSpend > data.spendingBudget ? '#C56B5A' : '#D97757' }} />
+            <div className="progress-fill" style={{ width: Math.min(100, (stats.thisMonthSpend / data.spendingBudget) * 100) + '%', background: (() => { const pct = data.spendingBudget > 0 ? stats.thisMonthSpend / data.spendingBudget : 0; return pct > 1 ? '#C56B5A' : pct > 0.8 ? '#D97757' : '#7FA068'; })() }} />
           </div>
           <div className="flex justify-between text-xs mono" style={{ color: '#8B8478' }}>
             <span>{fmt(stats.thisMonthSpend)} spent</span>
