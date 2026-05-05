@@ -56,13 +56,17 @@ export default function MarketingNav() {
           <NavLink
             to="/"
             className="m-nav-brand"
-            style={{ textDecoration: 'none' }}
+            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}
           >
             <img
-              src="/logo-horizontal.svg"
-              alt="Royal Ledger"
-              style={{ height: '30px', width: 'auto', display: 'block' }}
+              src="/logo.svg"
+              alt=""
+              style={{ height: '36px', width: 'auto', display: 'block' }}
             />
+            <span style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+              <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', fontWeight: 400, color: '#E8E2D5' }}>Royal</span>
+              <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', fontWeight: 400, fontStyle: 'italic', color: '#D97757' }}>Ledger</span>
+            </span>
           </NavLink>
 
           {/* Desktop nav links */}
