@@ -103,36 +103,92 @@ export default function About({ navigate }) {
         }
       `}</style>
 
-      {/* Founder */}
-      <section className="m-section-sm" style={{ borderTop: '1px solid #1A1610', borderBottom: '1px solid #1A1610' }}>
-        <div className="m-wrap-md">
-          <div className="m-label" style={{ marginBottom: '24px' }}>The founder</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'start' }} className="about-grid">
+      {/* Founder's Note */}
+      <section className="m-section" style={{ borderTop: '1px solid #1A1610', borderBottom: '1px solid #1A1610' }}>
+        <div className="m-wrap-sm">
+          <div className="m-label" style={{ marginBottom: '40px' }}>Founder's Note</div>
+
+          {/* Photo + identity */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '48px' }}>
+            {/* Photo placeholder — replace src with real photo */}
+            <div style={{
+              width: 72, height: 72, borderRadius: '50%',
+              background: '#14110E', border: '2px solid #26221C',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0, overflow: 'hidden',
+            }}>
+              {/* PHOTO: swap the div below for <img src="/founder.jpg" alt="Amb. Frank A." style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> */}
+              <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '26px', color: '#D97757', fontStyle: 'italic', lineHeight: 1 }}>F</span>
+            </div>
             <div>
-              <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#14110E', border: '1px solid #26221C', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
-                <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '22px', color: '#D97757', fontStyle: 'italic' }}>F</span>
-              </div>
-              <h3 className="m-display" style={{ fontSize: '24px', color: '#E8E2D5', marginBottom: '4px' }}>The Founder</h3>
-              <div style={{ fontSize: '13px', color: '#5C5648', marginBottom: '20px' }}>Builder · Royal-Icon Ledger</div>
-              <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.8, marginBottom: '16px' }}>
-                Royal-Icon Ledger started as a personal problem. Variable income, a household to protect, and every financial tool on the market telling me to track what I'd already spent.
-              </p>
-              <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.8 }}>
-                I needed something that worked before the money moved — not after. So I built it.
+              <div style={{ fontSize: '17px', fontWeight: 600, color: '#E8E2D5', letterSpacing: '-0.01em' }}>Amb. Frank A.</div>
+              <div style={{ fontSize: '13px', color: '#5C5648', marginTop: '3px' }}>Founder, Royal-Icon Ledger</div>
+              <a href="mailto:hello@royalicon.net" style={{ fontSize: '13px', color: '#D97757', textDecoration: 'none', marginTop: '4px', display: 'inline-block' }}>hello@royalicon.net</a>
+            </div>
+          </div>
+
+          {/* The note */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+            <p style={{ fontSize: '16px', color: '#E8E2D5', lineHeight: 1.85, fontWeight: 400 }}>
+              This started with a problem I couldn't solve with anything on the market.
+            </p>
+
+            <p style={{ fontSize: '16px', color: '#8B8478', lineHeight: 1.85 }}>
+              My income changed every month. My responsibilities didn't.
+            </p>
+
+            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+              Every financial tool I tried was built for a different kind of person — someone with a fixed salary, predictable cycles, and income that arrived on schedule. That assumption broke down immediately for anyone operating outside that model.
+            </p>
+
+            <div style={{ padding: '20px 0', borderTop: '1px solid #1A1610', borderBottom: '1px solid #1A1610' }}>
+              <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 2, margin: 0 }}>
+                Freelancers.<br />
+                Traders.<br />
+                Entrepreneurs.<br />
+                Side-income earners.
               </p>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div className="m-card" style={{ padding: '20px 24px' }}>
-                <div style={{ fontSize: '12px', color: '#3A3028', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>The problem I was solving</div>
-                <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7 }}>
-                  My income changed every month. Every budget app assumed it wouldn't. I needed a system that handled both the feast months and the lean ones — automatically.
-                </p>
-              </div>
-              <div className="m-card" style={{ padding: '20px 24px' }}>
-                <div style={{ fontSize: '12px', color: '#3A3028', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>Contact</div>
-                <a href="mailto:hello@royalicon.net" style={{ fontSize: '14px', color: '#D97757', textDecoration: 'none' }}>hello@royalicon.net</a>
-              </div>
+
+            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+              For people like us, income doesn't arrive on a timetable — and decisions can't be made on averages. Yet every tool available still treated us like broken versions of salaried employees.
+            </p>
+
+            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+              That gap is what led to Royal-Icon Ledger.
+            </p>
+
+            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+              The goal was never to build another budgeting app. Those already exist. They solve a different problem — they tell you what you already spent. What I needed was something that answered an earlier question:
+            </p>
+
+            {/* Pull quote */}
+            <div style={{ margin: '8px 0', padding: '28px 32px', background: '#0F0D0A', border: '1px solid #26221C', borderLeft: '3px solid #D97757', borderRadius: '2px' }}>
+              <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 'clamp(20px, 3vw, 26px)', color: '#E8E2D5', fontStyle: 'italic', lineHeight: 1.5, margin: 0 }}>
+                "What should this money do — before I use it?"
+              </p>
             </div>
+
+            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+              That shift — from tracking to allocation, from reaction to intention — is what the system is built around. It introduces structure before money moves, not visibility after the fact.
+            </p>
+
+            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+              This is not about managing money better.<br />
+              It is about changing how money is handled entirely.
+            </p>
+
+            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+              The long-term vision is simple: build a financial operating system for a generation that no longer earns in predictable ways — and give them the structure to navigate that reality with clarity and control.
+            </p>
+
+            {/* Signature */}
+            <div style={{ marginTop: '16px', paddingTop: '32px', borderTop: '1px solid #1A1610' }}>
+              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '20px', color: '#E8E2D5', fontStyle: 'italic', marginBottom: '4px' }}>— Amb. Frank A.</div>
+              <div style={{ fontSize: '13px', color: '#5C5648' }}>Founder, Royal-Icon Ledger</div>
+            </div>
+
           </div>
         </div>
       </section>
