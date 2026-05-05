@@ -177,7 +177,7 @@ export default function About({ navigate }) {
               </div>
               {/* Identity */}
               <div>
-                <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '19px', color: '#E8E2D5', fontStyle: 'italic' }}>— Frank A.</div>
+                <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '19px', color: '#E8E2D5', fontStyle: 'italic' }}>— Amb. Frank A.</div>
                 <div style={{ fontSize: '13px', color: '#5C5648', marginTop: '2px' }}>Founder, Royal-Icon Ledger</div>
                 <div style={{ fontSize: '12px', color: '#3A3028', marginTop: '3px' }}>Building financial systems for variable-income earners.</div>
               </div>
