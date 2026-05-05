@@ -111,7 +111,7 @@ export default function Home({ navigate }) {
           PRODUCT PREVIEW
       ════════════════════════════════════════════ */}
       <section style={{ background: '#0A0908', borderBottom: '1px solid #1A1610', padding: '0 24px 64px' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           {/* Browser chrome */}
           <div style={{ background: '#0F0D0A', border: '1px solid #26221C', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 32px 80px rgba(0,0,0,0.7)' }}>
             <div style={{ background: '#14110E', borderBottom: '1px solid #1A1610', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -119,102 +119,20 @@ export default function Home({ navigate }) {
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#2A2420' }} />
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#2A2420' }} />
               <div style={{ marginLeft: 'auto', fontSize: '11px', color: '#3A3028', fontFamily: "'JetBrains Mono', monospace" }}>
-                Royal-Icon Ledger — Command Dashboard
+                royalicon.net/app
               </div>
             </div>
-
-            {/* Dashboard body */}
-            <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr' }} className="mockup-grid">
-
-              {/* Sidebar */}
-              <div style={{ borderRight: '1px solid #1A1610', padding: '20px 12px' }}>
-                {[
-                  { icon: '⌘', label: 'Command', active: true },
-                  { icon: '📬', label: 'Budget' },
-                  { icon: '🚦', label: 'Gate' },
-                  { icon: '⚖', label: 'Allocator' },
-                  { icon: '📊', label: 'Trading' },
-                  { icon: '🛡', label: 'Buffer' },
-                ].map(({ icon, label, active }) => (
-                  <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 10px', borderRadius: '4px', background: active ? '#1A1610' : 'transparent', marginBottom: '2px' }}>
-                    <span style={{ fontSize: '13px' }}>{icon}</span>
-                    <span style={{ fontSize: '12px', color: active ? '#D97757' : '#3A3028', fontWeight: active ? 600 : 400 }}>{label}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Main panel */}
-              <div style={{ padding: '20px' }}>
-                {/* Stage bar */}
-                <div style={{ marginBottom: '18px' }}>
-                  <div style={{ fontSize: '10px', color: '#3A3028', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px', fontFamily: "'JetBrains Mono', monospace" }}>Stage Progression</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-                    {[
-                      { label: 'Stage 1', active: true },
-                      { label: '→', arrow: true },
-                      { label: 'Stage 1.5' },
-                      { label: '→', arrow: true },
-                      { label: 'Stage 2' },
-                      { label: '→', arrow: true },
-                      { label: 'Stage 3' },
-                    ].map((s, i) => s.arrow
-                      ? <span key={i} style={{ color: '#3A3028', fontSize: '11px' }}>→</span>
-                      : <div key={i} style={{ padding: '3px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: s.active ? 600 : 400, background: s.active ? '#D97757' : '#14110E', color: s.active ? '#0A0908' : '#3A3028', border: `1px solid ${s.active ? '#D97757' : '#26221C'}` }}>{s.label}</div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Stat cards */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '14px' }} className="mockup-cards">
-                  <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '12px' }}>
-                    <div style={{ fontSize: '9px', color: '#3A3028', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Buffer Reserve</div>
-                    <div style={{ fontSize: '16px', fontWeight: 700, color: '#E8E2D5', marginBottom: '8px' }}>R 48,200</div>
-                    <div style={{ background: '#1A1610', borderRadius: '2px', height: '3px', marginBottom: '4px' }}>
-                      <div style={{ width: '80%', height: '100%', background: '#7FA068', borderRadius: '2px' }} />
-                    </div>
-                    <div style={{ fontSize: '9px', color: '#3A3028' }}>80% of R 60,000 target</div>
-                  </div>
-                  <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '12px' }}>
-                    <div style={{ fontSize: '9px', color: '#3A3028', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Spending Gate</div>
-                    <div style={{ fontSize: '16px', fontWeight: 700, color: '#D97757', marginBottom: '6px' }}>2 pending</div>
-                    <div style={{ fontSize: '10px', color: '#5C5648' }}>24h hold active</div>
-                    <div style={{ fontSize: '9px', color: '#3A3028', marginTop: '2px' }}>→ Review before approval</div>
-                  </div>
-                  <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '12px' }}>
-                    <div style={{ fontSize: '9px', color: '#3A3028', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Net Worth</div>
-                    <div style={{ fontSize: '16px', fontWeight: 700, color: '#E8E2D5', marginBottom: '6px' }}>R 94,750</div>
-                    <div style={{ fontSize: '10px', color: '#7FA068' }}>↑ +12% this quarter</div>
-                    <div style={{ fontSize: '9px', color: '#3A3028', marginTop: '2px' }}>Stage 1.5 approaching</div>
-                  </div>
-                </div>
-
-                {/* Last allocation */}
-                <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '12px' }}>
-                  <div style={{ fontSize: '9px', color: '#3A3028', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Last Allocation — Stage 1 Rule Applied</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', flexWrap: 'wrap' }}>
-                    <span style={{ color: '#7FA068' }}>✓</span>
-                    <span style={{ color: '#5C5648' }}>Income received: R 12,000</span>
-                    <span style={{ color: '#3A3028' }}>→</span>
-                    <span style={{ color: '#E8E2D5', fontWeight: 600 }}>100% allocated to Buffer Reserve</span>
-                    <span style={{ marginLeft: 'auto', color: '#3A3028', fontSize: '9px', fontFamily: "'JetBrains Mono', monospace" }}>auto</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <img
+              src="/app-preview.png"
+              alt="Royal-Icon Ledger Command Dashboard"
+              style={{ width: '100%', display: 'block' }}
+            />
           </div>
           <p style={{ textAlign: 'center', fontSize: '11px', color: '#3A3028', marginTop: '14px', letterSpacing: '0.06em' }}>
-            ACTUAL PRODUCT · PRIVATE BETA · SAMPLE DATA
+            ACTUAL PRODUCT · PRIVATE BETA · LIVE DATA
           </p>
         </div>
       </section>
-
-      <style>{`
-        @media (max-width: 640px) {
-          .mockup-grid  { grid-template-columns: 1fr !important; }
-          .mockup-grid > div:first-child { display: none; }
-          .mockup-cards { grid-template-columns: 1fr 1fr !important; }
-        }
-      `}</style>
 
       {/* ════════════════════════════════════════════
           POSITIONING STRIP
