@@ -426,7 +426,7 @@ export default function Home({ navigate }) {
             {' '}today.
           </h2>
           <p className="m-body" style={{ marginBottom: '36px' }}>
-            Royal-Icon Ledger is currently in private beta. We're accepting a limited number of early users who are serious about financial discipline.
+            Private beta. Invite-based. Limited access.
           </p>
           <button
             className="m-btn m-btn-primary m-btn-lg"
@@ -434,8 +434,11 @@ export default function Home({ navigate }) {
           >
             Get Early Access
           </button>
-          <p style={{ marginTop: '16px', fontSize: '12px', color: '#3A3028' }}>
-            Invite-based access only. No credit card required.
+          <p style={{ marginTop: '16px', fontSize: '13px', color: '#5C5648', fontWeight: 500 }}>
+            No subscriptions. No noise. Just control.
+          </p>
+          <p style={{ marginTop: '8px', fontSize: '12px', color: '#3A3028' }}>
+            No credit card required at any stage.
           </p>
         </div>
       </section>
