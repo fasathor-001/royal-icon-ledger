@@ -143,7 +143,7 @@ export default function MarketingFooter() {
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               {[
                 { label: 'X / Twitter', href: 'https://x.com/royaliconledger' },
-                { label: 'LinkedIn',    href: 'https://linkedin.com/company/royal-icon-ledger' },
+                { label: 'LinkedIn',    href: 'https://www.linkedin.com/in/royalledger' },
               ].map(({ label, href }) => (
                 <a
                   key={label}
