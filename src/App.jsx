@@ -2168,14 +2168,15 @@ function QuickLog({ data, setData }) {
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [trigger, setTrigger] = useState('');
+  const [logged, setLogged] = useState(null); // { name, amount } of last entry
 
   const log = () => {
     if (!name || !amount) return;
-    setData(d => ({
-      ...d,
-      impulses: [...d.impulses, { id: Date.now(), name, amount: Number(amount), category: category || 'other', trigger, timestamp: Date.now() }],
-    }));
+    const entry = { id: Date.now(), name, amount: Number(amount), category: category || 'other', trigger, timestamp: Date.now() };
+    setData(d => ({ ...d, impulses: [...d.impulses, entry] }));
+    setLogged({ name, amount: Number(amount) });
     setName(''); setAmount(''); setCategory(''); setTrigger('');
+    setTimeout(() => setLogged(null), 3000);
   };
 
   return (
@@ -2214,6 +2215,19 @@ function QuickLog({ data, setData }) {
         </div>
       </div>
 	  
+      {logged && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          background: '#0F1A0E', border: '1px solid #2A4A2A',
+          borderRadius: 4, padding: '10px 14px',
+          fontSize: 13, color: '#7FA068',
+          animation: 'fadeIn 0.2s ease',
+        }}>
+          <Check size={14} style={{ flexShrink: 0 }} />
+          <span><strong style={{ color: '#A8D490' }}>{logged.name}</strong> — {fmt(logged.amount)} logged. No judgment.</span>
+        </div>
+      )}
+
       <button className="btn btn-primary w-full" onClick={log} disabled={!name || !amount}>Log it</button>
     </div>
   );
