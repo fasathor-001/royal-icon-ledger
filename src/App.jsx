@@ -124,7 +124,7 @@ const TRIGGERS = ['Bored', 'Stressed', 'Tired', 'Won a trade', 'Lost a trade', '
 // ── Mobile bottom navigation ──────────────────────────────────────────────────
 function MobileBottomNav({ tab, setTab, user, data }) {
   const [showMore, setShowMore] = useState(false);
-  const showTrading = data?.incomeType !== 'fixed';
+  const showTrading = data?.incomeType !== 'fixed' && data?.mode !== 'foundation';
 
   const primary = [
     { id: 'command',  label: 'Home',    Icon: Home },
@@ -593,7 +593,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
             { id: 'setup', label: 'Setup & Salary' },
             { id: 'budget', label: 'Budget' },
             { id: 'profit', label: data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' },
-            ...(data.incomeType !== 'fixed' ? [{ id: 'trading', label: 'Trading P&L' }] : []),
+            ...(data.incomeType !== 'fixed' && data.mode !== 'foundation' ? [{ id: 'trading', label: 'Trading P&L' }] : []),
             { id: 'impulse', label: 'Impulse Control' },
             { id: 'history', label: 'History' },
             { id: 'rules', label: 'Rules' },
@@ -673,6 +673,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
 /* ─────────────── COMMAND ─────────────── */
 function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, setShowWeeklyPulse }) {
   const fmt = makeFmt(data.currency);
+  const isFoundation = data?.mode === 'foundation';
   const [balancesLocked, setBalancesLocked] = useState(!!data.overridePin);
   const { attempt: attemptUnlock, gate: unlockGate } = usePinGate(data.overridePin);
   const stageInfo = {
@@ -846,7 +847,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
 		</button>
 	  </div>
 	)}
-	{stats.isSetup && data.incomeType !== 'fixed' && stats.drawdownZone !== 'normal' && data.tradingCapital > 0 && (
+	{stats.isSetup && data.incomeType !== 'fixed' && !isFoundation && stats.drawdownZone !== 'normal' && data.tradingCapital > 0 && (
 	  <div className="card-warm p-4 flex items-center gap-3" style={{ borderColor: stats.drawdownZone === 'stop' ? '#C56B5A60' : '#D9775760' }}>
 		<AlertTriangle size={16} style={{ color: stats.drawdownZone === 'stop' ? '#C56B5A' : '#D97757', flexShrink: 0 }} />
 		<div className="flex-1 text-sm">
@@ -860,32 +861,59 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
 		</button>
 	  </div>
 	)}
-      {/* Stage banner */}
-      <div className="card-warm p-7 glow-warm">
-        <div className="flex items-baseline justify-between mb-3">
-          <div className="label" style={{ color: stageInfo.color }}>{stageInfo.name} — {stageInfo.title}</div>
-          <div className="mono text-xs" style={{ color: '#8B8478' }}>{stats.monthsCovered.toFixed(1)} months stored</div>
+      {/* Stage banner — Foundation gets a simple savings card */}
+      {isFoundation ? (
+        <div className="card-warm p-7 glow-warm">
+          <div className="label mb-3" style={{ color: '#7FA068' }}>Your Savings</div>
+          <div className="display text-4xl mb-2" style={{ fontWeight: 300, color: '#7FA068' }}>
+            {fmt(data.buffer)}
+          </div>
+          <p style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.6, marginBottom: data.savingsGoal?.target > 0 ? '16px' : 0 }}>
+            {data.savingsGoal?.name
+              ? `Goal: ${data.savingsGoal.name} · ${fmt(data.savingsGoal.target)}`
+              : 'Every rand saved here counts. Keep going.'}
+          </p>
+          {data.savingsGoal?.target > 0 && (() => {
+            const pct = Math.min(100, (data.buffer / data.savingsGoal.target) * 100);
+            return (
+              <>
+                <div className="progress mb-2">
+                  <div className="progress-fill" style={{ width: pct + '%', background: '#7FA068' }} />
+                </div>
+                <div className="flex justify-between text-xs mono" style={{ color: '#8B8478' }}>
+                  <span>{fmt(data.buffer)} saved · {Math.round(pct)}%</span>
+                  <span>{fmt(data.savingsGoal.target - data.buffer)} to go</span>
+                </div>
+              </>
+            );
+          })()}
         </div>
-        <h2 className="display text-3xl mb-3" style={{ fontWeight: 300, lineHeight: 1.2 }}>
-          {stats.stage === 3
-            ? <>Foundation is <span style={{ fontStyle: 'italic', color: '#7FA068' }}>solid</span>. Family is protected.</>
-            : <>Building toward <span style={{ fontStyle: 'italic', color: '#D97757' }}>{fmt(stats.nextThreshold)}</span>.</>
-          }
-        </h2>
-        <p style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.6 }}>{stageInfo.desc}</p>
-
-        {stats.stage !== 3 && (
-          <>
-            <div className="progress mt-5 mb-2">
-              <div className="progress-fill" style={{ width: Math.min(100, stats.progressPct) + '%', background: stageInfo.color }} />
-            </div>
-            <div className="flex justify-between text-xs mono" style={{ color: '#8B8478' }}>
-              <span>{fmt(data.buffer)} / {fmt(stats.nextThreshold)}</span>
-              <span>{fmt(stats.nextThreshold - data.buffer)} to go</span>
-            </div>
-          </>
-        )}
-      </div>
+      ) : (
+        <div className="card-warm p-7 glow-warm">
+          <div className="flex items-baseline justify-between mb-3">
+            <div className="label" style={{ color: stageInfo.color }}>{stageInfo.name} — {stageInfo.title}</div>
+            <div className="mono text-xs" style={{ color: '#8B8478' }}>{stats.monthsCovered.toFixed(1)} months stored</div>
+          </div>
+          <h2 className="display text-3xl mb-3" style={{ fontWeight: 300, lineHeight: 1.2 }}>
+            {stats.stage === 3
+              ? <>Foundation is <span style={{ fontStyle: 'italic', color: '#7FA068' }}>solid</span>. Family is protected.</>
+              : <>Building toward <span style={{ fontStyle: 'italic', color: '#D97757' }}>{fmt(stats.nextThreshold)}</span>.</>
+            }
+          </h2>
+          <p style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.6 }}>{stageInfo.desc}</p>
+          {stats.stage !== 3 && (
+            <>
+              <div className="progress mt-5 mb-2">
+                <div className="progress-fill" style={{ width: Math.min(100, stats.progressPct) + '%', background: stageInfo.color }} />
+              </div>
+              <div className="flex justify-between text-xs mono" style={{ color: '#8B8478' }}>
+                <span>{fmt(data.buffer)} / {fmt(stats.nextThreshold)}</span>
+                <span>{fmt(stats.nextThreshold - data.buffer)} to go</span>
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
       {/* Editable balance inputs */}
       <section className="card p-7">
@@ -914,8 +942,8 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         <p className="text-sm mb-5" style={{ color: '#8B8478' }}>
           Update these whenever you want. Hit "Save snapshot" to record this moment in your history.
         </p>
-        <div className={`grid md:grid-cols-2 ${data.incomeType === 'fixed' ? 'lg:grid-cols-4' : 'lg:grid-cols-5'} gap-3`}>
-          {data.incomeType !== 'fixed' && (
+        <div className={`grid md:grid-cols-2 ${data.incomeType === 'fixed' || isFoundation ? 'lg:grid-cols-4' : 'lg:grid-cols-5'} gap-3`}>
+          {data.incomeType !== 'fixed' && !isFoundation && (
             <BalanceInput
               label="Trading Capital"
               icon={Briefcase}
@@ -927,9 +955,9 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             />
           )}
           <BalanceInput
-            label="Family Buffer"
+            label={isFoundation ? 'Savings' : 'Family Buffer'}
             icon={Shield}
-            color={stageInfo.color}
+            color={isFoundation ? '#7FA068' : stageInfo.color}
             value={data.buffer}
             onChange={(v) => setData(d => ({ ...d, buffer: v }))}
             readOnly={!!data.overridePin && balancesLocked}
@@ -966,8 +994,8 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         </div>
       </section>
 
-      {/* Stage progression visual */}
-      <section className="card p-7">
+      {/* Stage progression visual — hidden for Foundation */}
+      {!isFoundation && <section className="card p-7">
         <h2 className="display text-2xl mb-2">Progression</h2>
         <p className="text-sm mb-5" style={{ color: '#8B8478' }}>
           Salary {fmt(stats.salary)}/month · Target {data.bufferTargetMonths} months ({fmt(stats.bufferTarget)})
@@ -978,7 +1006,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           <StageRow label="Stage 2" target={`${fmt(stats.stage15End)} → ${fmt(stats.bufferTarget)}`} subtitle={`Fortified — ${data.bufferTargetMonths} months · buffer priority`} done={data.buffer >= stats.bufferTarget} active={stats.progressStage === 2} />
           <StageRow label="Stage 3" target="Full waterfall" subtitle="Trading · lifestyle · goals all active" done={false} active={stats.progressStage === 3} />
         </div>
-      </section>
+      </section>}
 
       {/* Spending and trading */}
       <div className="grid md:grid-cols-2 gap-3">
@@ -1015,17 +1043,26 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           })()}
         </section>
 
-        <section className="card p-6">
-          <div className="flex items-baseline justify-between mb-3">
-            <h3 className="display text-xl">Trading P&L (YTD)</h3>
-            <div className="mono text-sm" style={{ color: stats.ytdPnL >= 0 ? '#7FA068' : '#C56B5A' }}>
-              {stats.ytdPnL >= 0 ? '+' : ''}{fmt(stats.ytdPnL)}
+        {isFoundation ? (
+          <section className="card p-6">
+            <div className="label mb-3" style={{ color: '#7FA068' }}>Foundation tip</div>
+            <p className="text-sm" style={{ color: '#8B8478', lineHeight: 1.7 }}>
+              Use the <strong style={{ color: '#E8E2D5' }}>Budget</strong> tab to set spending envelopes for groceries, transport, and fun money. When you stick to them, the unspent rand sweeps into your Savings automatically at month-end.
+            </p>
+          </section>
+        ) : (
+          <section className="card p-6">
+            <div className="flex items-baseline justify-between mb-3">
+              <h3 className="display text-xl">Trading P&L (YTD)</h3>
+              <div className="mono text-sm" style={{ color: stats.ytdPnL >= 0 ? '#7FA068' : '#C56B5A' }}>
+                {stats.ytdPnL >= 0 ? '+' : ''}{fmt(stats.ytdPnL)}
+              </div>
             </div>
-          </div>
-          <p className="text-xs" style={{ color: '#8B8478' }}>
-            {data.tradingPnLHistory.length === 0 ? 'Log monthly P&L to track over time.' : `Across ${data.tradingPnLHistory.length} months.`}
-          </p>
-        </section>
+            <p className="text-xs" style={{ color: '#8B8478' }}>
+              {data.tradingPnLHistory.length === 0 ? 'Log monthly P&L to track over time.' : `Across ${data.tradingPnLHistory.length} months.`}
+            </p>
+          </section>
+        )}
       </div>
 
       {/* Pending decisions */}
