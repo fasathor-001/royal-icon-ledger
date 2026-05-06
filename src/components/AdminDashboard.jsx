@@ -352,15 +352,20 @@ function InviteModal({ lead, onClose, onSent }) {
         body: { name: lead.name, email: lead.email, message: fullMessage },
       });
       if (fnError) throw new Error(fnError.message || 'Edge Function error');
-      // Always update by email — most reliable since id may be undefined
-      const { data: updated, error: dbError } = await supabase
+      // Upsert — creates the row if it doesn't exist yet, updates if it does
+      const { data: upserted, error: dbError } = await supabase
         .from('early_access_leads')
-        .update({ status: 'invited', invited_at: new Date().toISOString(), invite_code: inviteCode })
-        .eq('email', lead.email.trim().toLowerCase())
+        .upsert({
+          email:      lead.email.trim().toLowerCase(),
+          name:       lead.name || lead.email.split('@')[0],
+          status:     'invited',
+          invited_at: new Date().toISOString(),
+          invite_code: inviteCode,
+        }, { onConflict: 'email', ignoreDuplicates: false })
         .select('id, email, invite_code');
       if (dbError) throw dbError;
-      if (!updated || updated.length === 0) {
-        throw new Error(`Invite code saved in email but DB update failed for ${lead.email}. Run admin-access-fix.sql in Supabase and try again.`);
+      if (!upserted || upserted.length === 0) {
+        throw new Error(`DB upsert returned no rows for ${lead.email} — check Supabase RLS policies.`);
       }
       onSent(lead.id ?? lead.email, inviteCode);
     } catch (err) {
@@ -429,13 +434,18 @@ function BulkInviteModal({ leads, onClose, onAllSent }) {
           body: { name: lead.name, email: lead.email, message: fullMessage },
         });
         if (fnError) throw new Error(fnError.message || 'Edge Function error');
-        const { data: updated, error: dbErr } = await supabase
+        const { data: upserted, error: dbErr } = await supabase
           .from('early_access_leads')
-          .update({ status: 'invited', invited_at: new Date().toISOString(), invite_code: inviteCode })
-          .eq('email', lead.email.trim().toLowerCase())
+          .upsert({
+            email:       lead.email.trim().toLowerCase(),
+            name:        lead.name || lead.email.split('@')[0],
+            status:      'invited',
+            invited_at:  new Date().toISOString(),
+            invite_code: inviteCode,
+          }, { onConflict: 'email', ignoreDuplicates: false })
           .select('id');
         if (dbErr) throw dbErr;
-        if (!updated || updated.length === 0) throw new Error('DB update matched 0 rows — check RLS policies');
+        if (!upserted || upserted.length === 0) throw new Error('DB upsert matched 0 rows — check RLS policies');
         sent.push({ id: lead.id, email: lead.email, name: lead.name, inviteCode, ok: true });
         setResults(prev => [...prev, { email: lead.email, ok: true }]);
       } catch (err) {
