@@ -4,7 +4,7 @@ import {
   Sparkles, Flame, Coffee, ShoppingBag, Smartphone, Package,
   Calendar, Check, X, Plus, AlertTriangle, Briefcase, PiggyBank,
   ArrowRight, Activity, Heart, Users, Home, Camera, Edit2, Save, Award, KeyRound,
-  MoreHorizontal, LayoutGrid, BookOpen, History as HistoryIcon, Settings as SettingsIcon,
+  MoreHorizontal, LayoutGrid, BookOpen, History as HistoryIcon, Settings as SettingsIcon, Info,
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
@@ -1167,20 +1167,63 @@ function Setup({ data, stats, setData }) {
     if (!newExpense.name || !newExpense.amount) return;
     setData(d => ({
       ...d,
-      expenses: [...d.expenses, { id: Date.now(), name: newExpense.name, amount: Number(newExpense.amount), category: newExpense.category }],
+      expenses: [...d.expenses, { id: Date.now(), name: newExpense.name, amount: Number(newExpense.amount), category: newExpense.category, trackInEnvelope: false }],
     }));
     setNewExpense({ name: '', amount: '', category: 'Housing' });
   };
 
   const updateExpense = (id, field, value) => {
-    setData(d => ({
-      ...d,
-      expenses: d.expenses.map(e => e.id === id ? { ...e, [field]: field === 'amount' ? Number(value) || 0 : value } : e),
-    }));
+    setData(d => {
+      const expense = d.expenses.find(e => e.id === id);
+      const parsed = field === 'amount' ? Number(value) || 0 : value;
+      // Sync linked envelope if tracking
+      const updatedEnvelopes = (d.envelopes || []).map(env =>
+        env.fromExpenseId === id
+          ? { ...env, [field === 'amount' ? 'cap' : 'name']: parsed }
+          : env
+      );
+      return {
+        ...d,
+        expenses: d.expenses.map(e => e.id === id ? { ...e, [field]: parsed } : e),
+        envelopes: updatedEnvelopes,
+      };
+    });
   };
 
   const removeExpense = (id) => {
-    setData(d => ({ ...d, expenses: d.expenses.filter(e => e.id !== id) }));
+    setData(d => ({
+      ...d,
+      expenses: d.expenses.filter(e => e.id !== id),
+      // Remove linked envelope if it exists
+      envelopes: (d.envelopes || []).filter(env => env.fromExpenseId !== id),
+    }));
+  };
+
+  const toggleEnvelopeTracking = (expense) => {
+    if (expense.trackInEnvelope) {
+      // Uncheck — remove linked envelope
+      setData(d => ({
+        ...d,
+        expenses: d.expenses.map(e => e.id === expense.id ? { ...e, trackInEnvelope: false } : e),
+        envelopes: (d.envelopes || []).filter(env => env.fromExpenseId !== expense.id),
+      }));
+    } else {
+      // Check — create linked envelope
+      const newEnv = {
+        id: `env_${expense.id}`,
+        name: expense.name,
+        cap: expense.amount,
+        blockMode: 'soft',
+        rolloverMode: 'reset',
+        icon: 'other',
+        fromExpenseId: expense.id,
+      };
+      setData(d => ({
+        ...d,
+        expenses: d.expenses.map(e => e.id === expense.id ? { ...e, trackInEnvelope: true } : e),
+        envelopes: [...(d.envelopes || []).filter(env => env.fromExpenseId !== expense.id), newEnv],
+      }));
+    }
   };
 
   // Group by category
@@ -1241,8 +1284,24 @@ function Setup({ data, stats, setData }) {
 
       {/* Expenses by category */}
       <section className="card p-7">
-        <h2 className="display text-2xl mb-2">Monthly expenses</h2>
-        <p className="text-sm mb-5" style={{ color: '#8B8478' }}>Add every fixed cost. Click any number to edit it later.</p>
+        <div className="flex items-start justify-between mb-2 flex-wrap gap-2">
+          <h2 className="display text-2xl">Monthly expenses</h2>
+          <details style={{ fontSize: 12, color: '#8B8478', maxWidth: 320, cursor: 'pointer' }}>
+            <summary style={{ color: '#D97757', fontWeight: 600, letterSpacing: '0.04em', listStyle: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Info size={13} /> How does this work?
+            </summary>
+            <div style={{ marginTop: 8, padding: '10px 12px', background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: 4, lineHeight: 1.7 }}>
+              <p style={{ marginBottom: 6 }}>
+                <strong style={{ color: '#E8E2D5' }}>Expenses</strong> tell the app your total monthly cost of living — used to calculate your buffer target and salary requirement.
+              </p>
+              <p style={{ marginBottom: 6 }}>
+                <strong style={{ color: '#E8E2D5' }}>The 🪣 envelope toggle</strong> is for variable expenses you want to actively track and control day-to-day (groceries, petrol, kids). Fixed bills like rent don't need envelopes.
+              </p>
+              <p>When you enable the envelope toggle, a Budget envelope is automatically created and kept in sync.</p>
+            </div>
+          </details>
+        </div>
+        <p className="text-sm mb-5" style={{ color: '#8B8478' }}>Add every monthly expense. Toggle <strong style={{ color: '#E8E2D5' }}>🪣 Envelope</strong> on variable ones you want to track in Budget.</p>
 
         {Object.entries(byCategory).map(([cat, items]) => {
           const catTotal = items.reduce((s, i) => s + i.amount, 0);
@@ -1254,14 +1313,14 @@ function Setup({ data, stats, setData }) {
               </div>
               <div className="space-y-2">
                 {items.map(e => (
-                  <div key={e.id} className="flex items-center gap-3 group">
+                  <div key={e.id} className="flex items-center gap-3 group flex-wrap">
                     <input
                       type="text"
                       value={e.name}
                       onChange={locked ? undefined : (ev) => updateExpense(e.id, 'name', ev.target.value)}
                       onClick={() => locked && requestUnlock()}
                       className="input-text flex-1"
-                      style={{ padding: '8px 12px', cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }}
+                      style={{ padding: '8px 12px', cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1, minWidth: 120 }}
                       readOnly={locked}
                     />
                     <input
@@ -1270,9 +1329,27 @@ function Setup({ data, stats, setData }) {
                       onChange={locked ? undefined : (ev) => updateExpense(e.id, 'amount', ev.target.value)}
                       onClick={() => locked && requestUnlock()}
                       className="input"
-                      style={{ width: '120px', padding: '8px 12px', cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }}
+                      style={{ width: '110px', padding: '8px 12px', cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }}
                       readOnly={locked}
                     />
+                    {/* Envelope toggle */}
+                    <button
+                      onClick={() => !locked && toggleEnvelopeTracking(e)}
+                      title={e.trackInEnvelope ? 'Remove from Budget envelopes' : 'Track this in Budget envelopes'}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 4,
+                        background: e.trackInEnvelope ? '#0F1A0E' : 'transparent',
+                        border: `1px solid ${e.trackInEnvelope ? '#2A4A2A' : '#26221C'}`,
+                        borderRadius: 3, padding: '5px 9px',
+                        cursor: locked ? 'not-allowed' : 'pointer',
+                        color: e.trackInEnvelope ? '#7FA068' : '#5C5648',
+                        fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap',
+                        opacity: locked ? 0.4 : 1,
+                        transition: 'all 150ms',
+                      }}
+                    >
+                      🪣 {e.trackInEnvelope ? '✓ Envelope' : 'Envelope'}
+                    </button>
                     <button onClick={() => locked ? requestUnlock() : removeExpense(e.id)} className="btn p-2" style={{ color: '#5C5648', opacity: locked ? 0.4 : 1 }}>
                       <X size={14} />
                     </button>

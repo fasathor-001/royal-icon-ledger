@@ -11,7 +11,7 @@ import { usePinGate, usePinRowGate, useSectionPin } from './PinGate';
 import {
   Wallet, Plus, X, Edit2, Check, AlertTriangle, Lock, Unlock,
   ArrowRight, Shield, Repeat, Zap, ShoppingCart, Coffee, Home,
-  Users, Heart, Sparkles, Briefcase, Settings
+  Users, Heart, Sparkles, Briefcase, Settings, Info
 } from 'lucide-react';
 import { makeFmt, getCurrency } from '../lib/currency';
 
@@ -207,9 +207,28 @@ export default function Budget({ data, setData, stats }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
-          Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>budget</span>
-        </h1>
+        <div className="flex items-start justify-between flex-wrap gap-2 mb-2">
+          <h1 className="display text-4xl" style={{ fontWeight: 300 }}>
+            Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>budget</span>
+          </h1>
+          <details style={{ fontSize: 12, color: '#8B8478', maxWidth: 340, cursor: 'pointer' }}>
+            <summary style={{ color: '#D97757', fontWeight: 600, letterSpacing: '0.04em', listStyle: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Info size={13} /> How does this work?
+            </summary>
+            <div style={{ marginTop: 8, padding: '10px 12px', background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: 4, lineHeight: 1.7, zIndex: 10, position: 'relative' }}>
+              <p style={{ marginBottom: 6 }}>
+                <strong style={{ color: '#E8E2D5' }}>Envelopes</strong> are spending buckets for your variable expenses — groceries, petrol, kids. Each one has a cap and its own rules.
+              </p>
+              <p style={{ marginBottom: 6 }}>
+                <strong style={{ color: '#E8E2D5' }}>Fixed bills</strong> (rent, insurance, phone) don't need envelopes — they're automatic payments you can't control day-to-day.
+              </p>
+              <p style={{ marginBottom: 6 }}>
+                <strong style={{ color: '#E8E2D5' }}>Tip:</strong> Go to <strong style={{ color: '#D97757' }}>Setup & Salary</strong> and toggle 🪣 on any expense to auto-create its envelope here.
+              </p>
+              <p>When you log a purchase, tag it to an envelope. The app tracks your spending and enforces your rules.</p>
+            </div>
+          </details>
+        </div>
         <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
           {envelopes.length} envelopes · {fmt(totalAllocated)} total envelope caps · {fmt(data.spendingBudget)} discretionary limit. Each envelope has its own rules.
         </p>
