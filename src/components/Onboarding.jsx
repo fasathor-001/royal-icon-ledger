@@ -178,6 +178,7 @@ export default function Onboarding({ data, setData, onComplete }) {
       bufferTargetMonths: bufferMonths || 18,
       bufferProtectMonths: Math.max(1, (bufferMonths || 18) - 2),
       setupComplete: true,
+      mode: incomeType === 'foundation' ? 'foundation' : 'standard',
       notificationPreferences: {
         dailyEnabled: true,
         weeklyEnabled: true,
@@ -455,11 +456,13 @@ export default function Onboarding({ data, setData, onComplete }) {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '40px' }}>
               {[
-                { id: 'variable', icon: Briefcase, title: 'Variable', desc: 'Trading, freelance, commissions, business ownership. Some months great, some months tough.', defaultMonths: 18 },
-                { id: 'fixed',    icon: Wallet,    title: 'Fixed',    desc: 'Salary, pension, regular employment. Same amount every month.', defaultMonths: 6 },
-                { id: 'mixed',    icon: Users,     title: 'Mixed',    desc: 'Salary plus side hustle, or one partner stable + one variable.', defaultMonths: 9 },
+                { id: 'foundation', icon: Sparkles, title: 'Foundation', desc: 'Allowance, student income, small gigs, or irregular money you\'re still learning to manage.', defaultMonths: 3,  badge: 'New to budgeting?' },
+                { id: 'variable',   icon: Briefcase, title: 'Variable',   desc: 'Trading, freelance, commissions, business ownership. Some months great, some months tough.', defaultMonths: 18 },
+                { id: 'fixed',      icon: Wallet,    title: 'Fixed',      desc: 'Salary, pension, regular employment. Same amount every month.', defaultMonths: 6 },
+                { id: 'mixed',      icon: Users,     title: 'Mixed',      desc: 'Salary plus side hustle, or one partner stable + one variable.', defaultMonths: 9 },
               ].map(opt => {
                 const Icon = opt.icon;
+                const selected = incomeType === opt.id;
                 return (
                   <div
                     key={opt.id}
@@ -467,15 +470,22 @@ export default function Onboarding({ data, setData, onComplete }) {
                       setIncomeType(opt.id);
                       if (bufferMonths === null) setBufferMonths(opt.defaultMonths);
                     }}
-                    className={`ob-card ${incomeType === opt.id ? 'ob-card-selected' : ''}`}
+                    className={`ob-card ${selected ? 'ob-card-selected' : ''}`}
                   >
                     <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                      <Icon size={20} style={{ color: incomeType === opt.id ? '#D97757' : '#8B8478', marginTop: '2px', flexShrink: 0 }} />
-                      <div>
-                        <div style={{ fontWeight: 500, marginBottom: '4px', fontSize: '16px' }}>{opt.title}</div>
+                      <Icon size={20} style={{ color: selected ? '#D97757' : '#8B8478', marginTop: '2px', flexShrink: 0 }} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                          <span style={{ fontWeight: 500, fontSize: '16px' }}>{opt.title}</span>
+                          {opt.badge && (
+                            <span style={{ fontSize: '9px', color: '#7FA068', background: '#1A2A1E', border: '1px solid #2A4A2A', borderRadius: '999px', padding: '2px 7px', fontWeight: 600, letterSpacing: '0.06em' }}>
+                              {opt.badge}
+                            </span>
+                          )}
+                        </div>
                         <div style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.5 }}>{opt.desc}</div>
                       </div>
-                      {incomeType === opt.id && <Check size={18} style={{ color: '#D97757', marginLeft: 'auto' }} />}
+                      {selected && <Check size={18} style={{ color: '#D97757', marginLeft: 'auto', flexShrink: 0 }} />}
                     </div>
                   </div>
                 );
