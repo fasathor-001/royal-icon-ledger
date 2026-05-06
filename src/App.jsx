@@ -739,13 +739,10 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   // stabilization banner. Local state only — resets on page refresh, which is fine.
   React.useEffect(() => {
     if (prevModeRef.current === 'foundation' && data?.mode === 'standard') {
-      // Modal is the primary post-upgrade experience.
-      // Banner is only a fallback if the modal has already been shown this session
-      // (sessionStorage flag set) — e.g. user refreshes after graduating.
+      // Modal is shown before the mode switch (triggered by the graduation card button).
+      // If mode was changed without the modal (e.g. programmatically / edge case),
+      // fall back to the stabilization banner — but only if modal wasn't already shown.
       if (!sessionStorage.getItem('rl_grad_modal')) {
-        setShowGraduationModal(true);
-        sessionStorage.setItem('rl_grad_modal', '1');
-      } else {
         setShowStabilizeMessage(true);
       }
     }
@@ -1029,7 +1026,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           </div>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button
-              onClick={() => setData(d => ({ ...d, mode: 'standard' }))}
+              onClick={() => setShowGraduationModal(true)}
               style={{
                 background: '#7FA068', color: '#0A0908', border: 'none',
                 borderRadius: '3px', padding: '10px 20px',
@@ -1496,9 +1493,13 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             ))}
           </div>
 
-          {/* CTA */}
+          {/* CTA — mode switch happens here, after user reads the modal */}
           <button
-            onClick={() => setShowGraduationModal(false)}
+            onClick={() => {
+              setShowGraduationModal(false);
+              setData(d => ({ ...d, mode: 'standard' }));
+              sessionStorage.setItem('rl_grad_modal', '1');
+            }}
             style={{
               width: '100%',
               background: '#7FA068', color: '#0A0908',
