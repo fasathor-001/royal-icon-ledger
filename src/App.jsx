@@ -236,6 +236,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
   const [showRolloverModal, setShowRolloverModal] = useState(false);
   const [showWeeklyPulse, setShowWeeklyPulse] = useState(false);
   const [pinBannerDismissed, setPinBannerDismissed] = useState(false);
+  const [showGraduationModal, setShowGraduationModal] = useState(false);
   const shouldAutoShow = useShouldShowReviewModal(data);
 
   useEffect(() => {
@@ -650,7 +651,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
 
       <div className="main-scroll">
         <main className="max-w-6xl mx-auto slide-up main-content" key={tab}>
-        {tab === 'command' && <Command data={data} stats={stats} setData={setData} setTab={setTab} takeSnapshot={takeSnapshot} showWeeklyPulse={showWeeklyPulse} setShowWeeklyPulse={setShowWeeklyPulse} />}
+        {tab === 'command' && <Command data={data} stats={stats} setData={setData} setTab={setTab} takeSnapshot={takeSnapshot} showWeeklyPulse={showWeeklyPulse} setShowWeeklyPulse={setShowWeeklyPulse} onRequestGraduate={() => setShowGraduationModal(true)} />}
         {tab === 'setup' && <Setup data={data} stats={stats} setData={setData} />}
 		{tab === 'budget' && <Budget data={data} setData={setData} stats={stats} />}
         {tab === 'profit' && <ProfitAllocator data={data} stats={stats} setData={setData} />}
@@ -682,6 +683,116 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
         setData={setData}
         onClose={() => setShowRolloverModal(false)}
       />
+    )}
+
+    {/* ── Foundation graduation modal ────────────────────────────────────────
+        Rendered at the app root level — outside <main> and any scroll
+        containers — so position:fixed is always relative to the viewport.   */}
+    {showGraduationModal && (
+      <div
+        onClick={() => setShowGraduationModal(false)}
+        style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(10,9,8,0.88)',
+          zIndex: 1000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '24px',
+        }}
+      >
+        <div
+          onClick={e => e.stopPropagation()}
+          style={{
+            background: '#0F1209',
+            border: '1px solid #3A5A2A',
+            borderRadius: '8px',
+            maxWidth: '480px',
+            width: '100%',
+            padding: '32px',
+            position: 'relative',
+          }}
+        >
+          {/* Dismiss */}
+          <button
+            onClick={() => setShowGraduationModal(false)}
+            style={{
+              position: 'absolute', top: '16px', right: '16px',
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: '#5C5648', padding: '4px',
+            }}
+          >
+            <X size={16} />
+          </button>
+
+          {/* Icon + headline */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+            <Sparkles size={18} style={{ color: '#7FA068', flexShrink: 0 }} />
+            <div style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontSize: '22px', fontWeight: 300,
+              color: '#E8E2D5', lineHeight: 1.2,
+            }}>
+              You built a real foundation.
+            </div>
+          </div>
+
+          {/* Body */}
+          <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.65, marginBottom: '20px' }}>
+            You gave your money a structure before spending it — that's the discipline most people never build.
+          </p>
+
+          {/* What's unlocked */}
+          <div style={{
+            background: '#0A0D0A',
+            border: '1px solid #26221C',
+            borderRadius: '6px',
+            padding: '16px 18px',
+            marginBottom: '24px',
+          }}>
+            <div style={{
+              fontSize: '11px', color: '#5C5648',
+              fontWeight: 600, letterSpacing: '0.1em',
+              textTransform: 'uppercase', marginBottom: '12px',
+            }}>
+              You now have access to
+            </div>
+            {[
+              'Deeper income planning',
+              'Full money allocation tools',
+              'Long-term fund and future goals tracking',
+              'Complete Royal Ledger dashboard',
+            ].map(item => (
+              <div key={item} style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                fontSize: '13px', color: '#A8C49A',
+                marginBottom: '8px', lineHeight: 1.4,
+              }}>
+                <span style={{ color: '#7FA068', fontSize: '11px', flexShrink: 0 }}>✦</span>
+                {item}
+              </div>
+            ))}
+          </div>
+
+          {/* CTA — mode switch happens here, after user reads the modal */}
+          <button
+            onClick={() => {
+              setShowGraduationModal(false);
+              setData(d => ({ ...d, mode: 'standard' }));
+              sessionStorage.setItem('rl_grad_modal', '1');
+            }}
+            style={{
+              width: '100%',
+              background: '#7FA068', color: '#0A0908',
+              border: 'none', borderRadius: '4px',
+              padding: '13px 20px',
+              fontSize: '14px', fontWeight: 700,
+              cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+              letterSpacing: '0.01em',
+            }}
+          >
+            Explore Royal Ledger →
+          </button>
+        </div>
+      </div>
     )}
   </div>
   );
@@ -722,7 +833,7 @@ function getFoundationNudge({ hasLoggedExpense, hasSavingsGoal, savingsProgress 
 }
 
 /* ─────────────── COMMAND ─────────────── */
-function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, setShowWeeklyPulse }) {
+function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, setShowWeeklyPulse, onRequestGraduate }) {
   const fmt = makeFmt(data.currency);
   const isFoundation = data?.mode === 'foundation';
   const [balancesLocked, setBalancesLocked] = useState(!!data.overridePin);
@@ -731,7 +842,6 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   const [goalError, setGoalError] = useState('');
   const [upgradeDismissed, setUpgradeDismissed] = useState(false);
   const [showStabilizeMessage, setShowStabilizeMessage] = useState(false);
-  const [showGraduationModal, setShowGraduationModal] = useState(false);
   const prevModeRef = React.useRef(data?.mode);
 
   // Detect the exact moment Foundation → standard upgrade happens this session.
@@ -823,7 +933,6 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
   const guardActive = data.tradingGuardUntil && Date.now() < data.tradingGuardUntil;
 
   return (
-  <>
     <div className="space-y-6">
 
       {/* Post-upgrade stabilization banner — shown once, session only, after Foundation → standard */}
@@ -1026,7 +1135,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           </div>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button
-              onClick={() => setShowGraduationModal(true)}
+              onClick={onRequestGraduate}
               style={{
                 background: '#7FA068', color: '#0A0908', border: 'none',
                 borderRadius: '3px', padding: '10px 20px',
@@ -1406,116 +1515,6 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         </section>
       )}
     </div>
-
-    {/* ── Foundation graduation modal ─────────────────────────────────────── */}
-    {/* Fires once on Foundation → full system transition. Session-only.      */}
-    {showGraduationModal && (
-      <div
-        onClick={() => setShowGraduationModal(false)}
-        style={{
-          position: 'fixed', inset: 0,
-          background: 'rgba(10,9,8,0.88)',
-          zIndex: 1000,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '24px',
-        }}
-      >
-        <div
-          onClick={e => e.stopPropagation()}
-          style={{
-            background: '#0F1209',
-            border: '1px solid #3A5A2A',
-            borderRadius: '8px',
-            maxWidth: '480px',
-            width: '100%',
-            padding: '32px',
-            position: 'relative',
-          }}
-        >
-          {/* Dismiss */}
-          <button
-            onClick={() => setShowGraduationModal(false)}
-            style={{
-              position: 'absolute', top: '16px', right: '16px',
-              background: 'none', border: 'none', cursor: 'pointer',
-              color: '#5C5648', padding: '4px',
-            }}
-          >
-            <X size={16} />
-          </button>
-
-          {/* Icon + headline */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-            <Sparkles size={18} style={{ color: '#7FA068', flexShrink: 0 }} />
-            <div style={{
-              fontFamily: "'Fraunces', Georgia, serif",
-              fontSize: '22px', fontWeight: 300,
-              color: '#E8E2D5', lineHeight: 1.2,
-            }}>
-              You built a real foundation.
-            </div>
-          </div>
-
-          {/* Body */}
-          <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.65, marginBottom: '20px' }}>
-            You gave your money a structure before spending it — that's the discipline most people never build.
-          </p>
-
-          {/* What's unlocked */}
-          <div style={{
-            background: '#0A0D0A',
-            border: '1px solid #26221C',
-            borderRadius: '6px',
-            padding: '16px 18px',
-            marginBottom: '24px',
-          }}>
-            <div style={{
-              fontSize: '11px', color: '#5C5648',
-              fontWeight: 600, letterSpacing: '0.1em',
-              textTransform: 'uppercase', marginBottom: '12px',
-            }}>
-              You now have access to
-            </div>
-            {[
-              'Deeper income planning',
-              'Full money allocation tools',
-              'Long-term fund and future goals tracking',
-              'Complete Royal Ledger dashboard',
-            ].map(item => (
-              <div key={item} style={{
-                display: 'flex', alignItems: 'center', gap: '8px',
-                fontSize: '13px', color: '#A8C49A',
-                marginBottom: '8px', lineHeight: 1.4,
-              }}>
-                <span style={{ color: '#7FA068', fontSize: '11px', flexShrink: 0 }}>✦</span>
-                {item}
-              </div>
-            ))}
-          </div>
-
-          {/* CTA — mode switch happens here, after user reads the modal */}
-          <button
-            onClick={() => {
-              setShowGraduationModal(false);
-              setData(d => ({ ...d, mode: 'standard' }));
-              sessionStorage.setItem('rl_grad_modal', '1');
-            }}
-            style={{
-              width: '100%',
-              background: '#7FA068', color: '#0A0908',
-              border: 'none', borderRadius: '4px',
-              padding: '13px 20px',
-              fontSize: '14px', fontWeight: 700,
-              cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-              letterSpacing: '0.01em',
-            }}
-          >
-            Explore Royal Ledger →
-          </button>
-        </div>
-      </div>
-    )}
-  </>
   );
 }
 
