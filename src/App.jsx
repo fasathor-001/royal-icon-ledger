@@ -731,6 +731,7 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   const [goalError, setGoalError] = useState('');
   const [upgradeDismissed, setUpgradeDismissed] = useState(false);
   const [showStabilizeMessage, setShowStabilizeMessage] = useState(false);
+  const [showGraduationModal, setShowGraduationModal] = useState(false);
   const prevModeRef = React.useRef(data?.mode);
 
   // Detect the exact moment Foundation → standard upgrade happens this session.
@@ -738,7 +739,15 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   // stabilization banner. Local state only — resets on page refresh, which is fine.
   React.useEffect(() => {
     if (prevModeRef.current === 'foundation' && data?.mode === 'standard') {
-      setShowStabilizeMessage(true);
+      // Modal is the primary post-upgrade experience.
+      // Banner is only a fallback if the modal has already been shown this session
+      // (sessionStorage flag set) — e.g. user refreshes after graduating.
+      if (!sessionStorage.getItem('rl_grad_modal')) {
+        setShowGraduationModal(true);
+        sessionStorage.setItem('rl_grad_modal', '1');
+      } else {
+        setShowStabilizeMessage(true);
+      }
     }
     prevModeRef.current = data?.mode;
   }, [data?.mode]);
@@ -817,6 +826,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
   const guardActive = data.tradingGuardUntil && Date.now() < data.tradingGuardUntil;
 
   return (
+  <>
     <div className="space-y-6">
 
       {/* Post-upgrade stabilization banner — shown once, session only, after Foundation → standard */}
@@ -855,8 +865,8 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         onDismiss={() => setShowWeeklyPulse(false)}
       />
 
-      {/* Feature 5: Trading Day Emotional Guard */}
-      {guardActive && (
+      {/* Feature 5: Trading Day Emotional Guard — standard users only */}
+      {guardActive && !isFoundation && (
         <div
           className="card-warm p-4 flex items-center gap-3"
           style={{
@@ -1399,6 +1409,112 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         </section>
       )}
     </div>
+
+    {/* ── Foundation graduation modal ─────────────────────────────────────── */}
+    {/* Fires once on Foundation → full system transition. Session-only.      */}
+    {showGraduationModal && (
+      <div
+        onClick={() => setShowGraduationModal(false)}
+        style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(10,9,8,0.88)',
+          zIndex: 1000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '24px',
+        }}
+      >
+        <div
+          onClick={e => e.stopPropagation()}
+          style={{
+            background: '#0F1209',
+            border: '1px solid #3A5A2A',
+            borderRadius: '8px',
+            maxWidth: '480px',
+            width: '100%',
+            padding: '32px',
+            position: 'relative',
+          }}
+        >
+          {/* Dismiss */}
+          <button
+            onClick={() => setShowGraduationModal(false)}
+            style={{
+              position: 'absolute', top: '16px', right: '16px',
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: '#5C5648', padding: '4px',
+            }}
+          >
+            <X size={16} />
+          </button>
+
+          {/* Icon + headline */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+            <Sparkles size={18} style={{ color: '#7FA068', flexShrink: 0 }} />
+            <div style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontSize: '22px', fontWeight: 300,
+              color: '#E8E2D5', lineHeight: 1.2,
+            }}>
+              You built a real foundation.
+            </div>
+          </div>
+
+          {/* Body */}
+          <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.65, marginBottom: '20px' }}>
+            You gave your money a structure before spending it — that's the discipline most people never build.
+          </p>
+
+          {/* What's unlocked */}
+          <div style={{
+            background: '#0A0D0A',
+            border: '1px solid #26221C',
+            borderRadius: '6px',
+            padding: '16px 18px',
+            marginBottom: '24px',
+          }}>
+            <div style={{
+              fontSize: '11px', color: '#5C5648',
+              fontWeight: 600, letterSpacing: '0.1em',
+              textTransform: 'uppercase', marginBottom: '12px',
+            }}>
+              You now have access to
+            </div>
+            {[
+              'Deeper income planning',
+              'Full money allocation tools',
+              'Long-term fund and future goals tracking',
+              'Complete Royal Ledger dashboard',
+            ].map(item => (
+              <div key={item} style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                fontSize: '13px', color: '#A8C49A',
+                marginBottom: '8px', lineHeight: 1.4,
+              }}>
+                <span style={{ color: '#7FA068', fontSize: '11px', flexShrink: 0 }}>✦</span>
+                {item}
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <button
+            onClick={() => setShowGraduationModal(false)}
+            style={{
+              width: '100%',
+              background: '#7FA068', color: '#0A0908',
+              border: 'none', borderRadius: '4px',
+              padding: '13px 20px',
+              fontSize: '14px', fontWeight: 700,
+              cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+              letterSpacing: '0.01em',
+            }}
+          >
+            Explore Royal Ledger →
+          </button>
+        </div>
+      </div>
+    )}
+  </>
   );
 }
 
@@ -1694,7 +1810,7 @@ function Setup({ data, stats, setData }) {
           <div>
             <div className="label mb-2" style={{ color: '#D97757' }}>Buffer Target</div>
             <div className="display text-3xl" style={{ fontWeight: 300, color: '#7FA068' }}>{fmt(stats.bufferTarget)}</div>
-            <div className="text-xs mt-1" style={{ color: '#8B8478' }}>{data.bufferTargetMonths} months × salary</div>
+            <div className="text-xs mt-1" style={{ color: '#8B8478' }}>{data.bufferTargetMonths} months × {isFoundation ? 'money available' : 'salary'}</div>
           </div>
         </div>
       </div>
@@ -1705,7 +1821,7 @@ function Setup({ data, stats, setData }) {
           <h2 className="display text-2xl">Monthly expenses</h2>
           <InfoPopover label="How does this work?">
             <p style={{ marginBottom: 6 }}>
-              <strong style={{ color: '#E8E2D5' }}>Expenses</strong> tell the app your total monthly cost of living — used to calculate your buffer target and salary requirement.
+              <strong style={{ color: '#E8E2D5' }}>Expenses</strong> tell the app your total monthly cost of living — used to calculate your {isFoundation ? 'savings target and money available' : 'buffer target and salary requirement'}.
             </p>
             <p style={{ marginBottom: 6 }}>
               <strong style={{ color: '#E8E2D5' }}>The envelope toggle</strong> (✉ icon) is for variable expenses you want to actively track and control day-to-day — groceries, petrol, family support. Fixed bills like rent don't need envelopes.
@@ -1855,7 +1971,7 @@ function Setup({ data, stats, setData }) {
 
       {/* Spending and reserve */}
       <section className="card p-7">
-        <h2 className="display text-2xl mb-5">Spending & buffer reserve</h2>
+        <h2 className="display text-2xl mb-5">{isFoundation ? 'Spending & savings' : 'Spending & buffer reserve'}</h2>
         <div className="grid md:grid-cols-2 gap-5">
           <div>
             <div className="label mb-2" style={{ color: '#5C5648' }}>Monthly spending budget</div>
@@ -1866,20 +1982,28 @@ function Setup({ data, stats, setData }) {
             <p className="text-xs mt-2" style={{ color: '#5C5648' }}>Discretionary spending money for the month. Be realistic.</p>
           </div>
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>Buffer reserve from salary</div>
+            <div className="label mb-2" style={{ color: '#5C5648' }}>{isFoundation ? 'Monthly savings contribution' : 'Buffer reserve from salary'}</div>
             <input type="number" className="input" value={data.bufferReserve || ''} placeholder="0"
               readOnly={locked} onClick={() => locked && requestUnlock()}
               onChange={locked ? undefined : (e) => setData(d => ({ ...d, bufferReserve: Number(e.target.value) || 0 }))}
               style={{ cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }} />
-            <p className="text-xs mt-2" style={{ color: '#5C5648' }}>How much each month auto-feeds the buffer (in addition to trading profits).</p>
+            <p className="text-xs mt-2" style={{ color: '#5C5648' }}>
+              {isFoundation
+                ? 'How much you set aside each month to build your savings.'
+                : 'How much each month auto-feeds the buffer (in addition to trading profits).'}
+            </p>
           </div>
         </div>
       </section>
 
       {/* Buffer settings */}
       <section className="card p-7">
-        <h2 className="display text-2xl mb-2">Buffer target</h2>
-        <p className="text-sm mb-5" style={{ color: '#8B8478' }}>How many months of salary should your buffer hold? Default is 18 for sole earners with dependents.</p>
+        <h2 className="display text-2xl mb-2">{isFoundation ? 'Savings target' : 'Buffer target'}</h2>
+        <p className="text-sm mb-5" style={{ color: '#8B8478' }}>
+          {isFoundation
+            ? 'How many months of expenses should your savings cover? Start with 3–6 months.'
+            : 'How many months of salary should your buffer hold? Default is 18 for sole earners with dependents.'}
+        </p>
         <div className="grid md:grid-cols-2 gap-5">
           <div>
             <div className="label mb-2" style={{ color: '#5C5648' }}>Target months</div>
@@ -2470,6 +2594,7 @@ function DrawdownProtocol({ data, stats, setData, onResetHwm, hwmGate }) {
 function ImpulseTab({ data, stats, setData, user }) {
   const fmt = makeFmt(data.currency);
   const { symbol: currencySymbol } = getCurrency(data.currency);
+  const isFoundation = data?.mode === 'foundation';
   const [view, setView] = useState('gate');
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
@@ -2594,7 +2719,9 @@ function ImpulseTab({ data, stats, setData, user }) {
           Impulse <span style={{ fontStyle: 'italic', color: '#D97757' }}>control</span>
         </h1>
         <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
-          Same rules whether you're up or down. Your family's life shouldn't ride your trading P&L.
+          {isFoundation
+            ? 'Pause before you spend. Every unplanned purchase runs through the gate first.'
+            : "Same rules whether you're up or down. Your family's life shouldn't ride your trading P&L."}
         </p>
       </div>
 
@@ -4117,6 +4244,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
 
 function Rules({ data, stats, setData, user }) {
   const fmt = makeFmt(data.currency);
+  const isFoundation = data?.mode === 'foundation';
   const { locked, requestUnlock, gate: fieldGate } = useSectionPin(data.overridePin);
 
   const updateRule = (stage, field, value) => {
@@ -4151,8 +4279,8 @@ function Rules({ data, stats, setData, user }) {
         )}
       </div>
 
-      {/* Tax reserve */}
-      <section className="card p-6">
+      {/* Tax reserve — standard users only */}
+      {!isFoundation && <section className="card p-6">
         <h2 className="display text-2xl mb-3">Tax reserve</h2>
         <p className="text-sm mb-4" style={{ color: '#8B8478' }}>Percentage of gross trading profit set aside for taxes before allocation. Talk to a tax advisor for your real rate.</p>
         <div className="grid md:grid-cols-3 gap-3 items-end">
@@ -4164,10 +4292,10 @@ function Rules({ data, stats, setData, user }) {
               style={{ cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }} />
           </div>
         </div>
-      </section>
+      </section>}
 
-      {/* Stage rules */}
-      <section className="card p-7">
+      {/* Stage rules — standard users only */}
+      {!isFoundation && <section className="card p-7">
         <h2 className="display text-2xl mb-3">Profit allocation by stage</h2>
         <p className="text-sm mb-5" style={{ color: '#8B8478' }}>How net trading profit (after taxes) is split based on which stage you're in. Each row should add to 100%.</p>
         {[
@@ -4203,7 +4331,7 @@ function Rules({ data, stats, setData, user }) {
             </div>
           );
         })}
-      </section>
+      </section>}
 
       {/* Spending Gate */}
       <section className="card p-6">
