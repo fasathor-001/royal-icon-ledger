@@ -234,11 +234,36 @@ function MobileBottomNav({ tab, setTab, user, data }) {
 // Shown to existing users who have no pinHash (migration path) and to users
 // whose reset request was approved by an admin (forgot PIN path).
 // Collects a new PIN, hashes it, saves to data.pinHash, clears overridePin.
-function PinSetupScreen({ onSave, isForgotPin = false }) {
+function PinSetupScreen({ onSave, isForgotPin = false, userEmail = '' }) {
   const [pin, setPin]           = useState('');
   const [confirm, setConfirm]   = useState('');
   const [saving, setSaving]     = useState(false);
   const [error, setError]       = useState('');
+  const [showForgot,  setShowForgot]  = useState(false);
+  const [forgotReason, setForgotReason] = useState('');
+  const [forgotSending, setForgotSending] = useState(false);
+  const [forgotDone,  setForgotDone]  = useState(false);
+  const [forgotError, setForgotError] = useState(null);
+
+  const submitForgot = async () => {
+    if (forgotSending) return;
+    setForgotSending(true);
+    setForgotError(null);
+    try {
+      if (!supabase) throw new Error('offline');
+      const { error: err } = await supabase
+        .from('pin_reset_requests')
+        .insert({ user_email: (userEmail || '').toLowerCase(), reason: forgotReason.trim() || null });
+      if (err) throw err;
+      setForgotDone(true);
+    } catch (err) {
+      setForgotError(err.message === 'offline'
+        ? 'No connection. Email hello@royalledger.app to request a reset.'
+        : 'Failed to submit. Please try again.');
+    } finally {
+      setForgotSending(false);
+    }
+  };
 
   const pinOk      = /^\d{4,6}$/.test(pin);
   const matchOk    = pin === confirm;
@@ -316,6 +341,56 @@ function PinSetupScreen({ onSave, isForgotPin = false }) {
         <p style={{ fontSize: '11px', color: '#3A3028', marginTop: '16px', textAlign: 'center', lineHeight: 1.5 }}>
           Your PIN is hashed and stored only on this device. Royal Ledger cannot recover it — keep it somewhere safe.
         </p>
+
+        {/* ── Forgot PIN escape hatch ───────────────────────────────────── */}
+        <div style={{ marginTop: '24px', borderTop: '1px solid #1A1610', paddingTop: '16px' }}>
+          {!showForgot && !forgotDone && (
+            <div style={{ textAlign: 'center' }}>
+              <button
+                onClick={() => setShowForgot(true)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: '#5C5648', textDecoration: 'underline', textDecorationColor: '#3A3028' }}
+              >
+                Forgot your PIN?
+              </button>
+            </div>
+          )}
+          {showForgot && !forgotDone && (
+            <div style={{ background: '#110D08', border: '1px solid #3A2618', borderRadius: '4px', padding: '14px 16px' }}>
+              <div style={{ fontSize: '11px', color: '#D97757', marginBottom: '6px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+                Request PIN reset
+              </div>
+              <div style={{ fontSize: '12px', color: '#8B8478', marginBottom: '10px', lineHeight: 1.55 }}>
+                Submit a request — an admin will approve it and you'll be prompted to set a new PIN on next login.
+              </div>
+              <textarea
+                value={forgotReason}
+                onChange={e => setForgotReason(e.target.value)}
+                placeholder="Reason (optional)…"
+                rows={2}
+                style={{ width: '100%', background: '#0A0908', border: '1px solid #26221C', borderRadius: '3px', padding: '8px 10px', fontSize: '12px', color: '#E8E2D5', resize: 'none', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', marginBottom: '8px' }}
+              />
+              {forgotError && <div style={{ fontSize: '12px', color: '#C56B5A', marginBottom: '8px' }}>{forgotError}</div>}
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <button
+                  onClick={submitForgot}
+                  disabled={forgotSending}
+                  style={{ background: forgotSending ? '#26221C' : '#D97757', color: forgotSending ? '#5C5648' : '#0A0908', padding: '7px 14px', borderRadius: '3px', fontWeight: 600, fontSize: '12px', border: 'none', cursor: forgotSending ? 'default' : 'pointer', opacity: forgotSending ? 0.7 : 1 }}
+                >
+                  {forgotSending ? 'Sending…' : 'Send request'}
+                </button>
+                <button onClick={() => setShowForgot(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: '#5C5648', textDecoration: 'underline' }}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+          {forgotDone && (
+            <div style={{ background: '#0A0E08', border: '1px solid #2A4A20', borderRadius: '4px', padding: '12px 14px', textAlign: 'center' }}>
+              <div style={{ fontSize: '12px', color: '#7FA068', marginBottom: '4px', fontWeight: 600 }}>Reset request sent</div>
+              <div style={{ fontSize: '12px', color: '#5C5648' }}>Royal Ledger support will review it and get back to you.</div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -713,7 +788,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
         setPinResetApproved(false);
       }
     };
-    return <PinSetupScreen onSave={handlePinSave} isForgotPin={pinResetApproved} />;
+    return <PinSetupScreen onSave={handlePinSave} isForgotPin={pinResetApproved} userEmail={user?.email || ''} />;
   }
 
   return (

@@ -196,24 +196,6 @@ function NoteEditor({ lead, onSave }) {
   );
 }
 
-// ── Admin PIN manager (per lead) ───────────────────────────────────────────────
-
-// PIN status is user-owned — admins cannot view or set it.
-// Admin can only see whether a PIN is active (user has pinHash set in their localStorage).
-// We surface this via the pin_reset_requests table — pending requests indicate the user
-// either forgot their PIN or wants a reset.  Admin action: approve the request.
-function PinStatusIndicator({ lead }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-      <KeyRound size={11} style={{ color: '#3A3028', flexShrink: 0 }} />
-      <span style={{ fontSize: '12px', color: '#3A3028' }}>
-        PIN is user-owned — cannot be viewed or assigned by admin.
-        Reset requests appear in the PIN Resets panel below.
-      </span>
-    </div>
-  );
-}
-
 // ── Invite code manager (per lead) ─────────────────────────────────────────────
 
 function InviteCodeManager({ lead, onCodeSave }) {

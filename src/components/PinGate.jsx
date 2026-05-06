@@ -14,11 +14,21 @@
 // When no PIN exists (usePinActive() === false):
 //   All structural actions are BLOCKED.  A "PIN required" notice is shown
 //   directing the user to set up their PIN.  Actions never pass through silently.
+//
+// Brute-force protection:
+//   After 5 failed attempts the gate locks for 30 seconds.
+//   The countdown is shown and "Forgot PIN?" remains accessible during lockout.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import React, { useState, useEffect, useRef } from 'react';
-import { usePinVerify, usePinActive } from './PinContext';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { usePinVerify, usePinActive, usePinConfig } from './PinContext';
+import { supabase } from '../lib/supabase';
 
+// ── Constants ─────────────────────────────────────────────────────────────────
+const MAX_ATTEMPTS    = 5;
+const LOCK_MS         = 30_000; // 30 seconds
+
+// ── Shared styles ─────────────────────────────────────────────────────────────
 const gateStyle = {
   background: '#1A1410', border: '1px solid #3A2A1E',
   borderRadius: '4px', padding: '12px 16px', marginTop: '8px',
@@ -29,9 +39,13 @@ const inputStyle = {
   borderRadius: '3px', width: '100px', fontSize: '14px',
   letterSpacing: '0.3em', outline: 'none',
 };
+const linkStyle = {
+  background: 'transparent', border: 'none', cursor: 'pointer',
+  fontSize: '11px', color: '#5C5648', padding: '0', textDecoration: 'underline',
+  textDecorationColor: '#3A3028',
+};
 
 // ── No-PIN notice ─────────────────────────────────────────────────────────────
-// Shown when a structural action is attempted but no PIN has been set up yet.
 function NoPinNotice({ onClose }) {
   return (
     <div style={{ ...gateStyle, borderColor: '#3A2618', background: '#110D08' }}>
@@ -43,20 +57,129 @@ function NoPinNotice({ onClose }) {
       </div>
       <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '12px' }}>
         {onClose && (
-          <button
-            onClick={onClose}
-            style={{ background: 'transparent', color: '#5C5648', border: 'none', fontSize: '12px', cursor: 'pointer', padding: 0 }}
-          >
-            Dismiss
-          </button>
+          <button onClick={onClose} style={linkStyle}>Dismiss</button>
         )}
       </div>
     </div>
   );
 }
 
+// ── Forgot PIN flow ───────────────────────────────────────────────────────────
+// Inline replacement for the PIN input when the user clicks "Forgot PIN?".
+// Submits a pin_reset_requests row and shows a confirmation.
+// The pending action is NOT executed — the gate stays closed.
+function ForgotPinFlow({ email, onClose }) {
+  const [reason,     setReason]     = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [done,       setDone]       = useState(false);
+  const [error,      setError]      = useState(null);
+
+  const handleSubmit = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      if (!supabase) throw new Error('offline');
+      const { error: err } = await supabase
+        .from('pin_reset_requests')
+        .insert({ user_email: (email || '').toLowerCase(), reason: reason.trim() || null });
+      if (err) throw err;
+      setDone(true);
+    } catch (err) {
+      if (err.message === 'offline') {
+        setError('No connection. Email hello@royalledger.app to request a PIN reset.');
+      } else {
+        setError('Failed to submit. Please try again.');
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (done) {
+    return (
+      <div style={{ ...gateStyle, borderColor: '#2A4A20', background: '#0A0E08' }}>
+        <div style={{ fontSize: '11px', color: '#7FA068', marginBottom: '5px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+          Request sent
+        </div>
+        <div style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.6 }}>
+          PIN reset request sent. Royal Ledger support will review it and let you know.
+        </div>
+        <div style={{ marginTop: '10px' }}>
+          <button onClick={onClose} style={linkStyle}>Close</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ ...gateStyle, borderColor: '#3A2618', background: '#110D08' }}>
+      <div style={{ fontSize: '11px', color: '#D97757', marginBottom: '5px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+        Forgot PIN?
+      </div>
+      <div style={{ fontSize: '12px', color: '#8B8478', marginBottom: '10px', lineHeight: 1.55 }}>
+        Submit a reset request. An admin will approve it and you'll be prompted to set a new PIN.
+      </div>
+      <textarea
+        value={reason}
+        onChange={e => setReason(e.target.value)}
+        placeholder="Reason (optional)…"
+        rows={2}
+        style={{
+          width: '100%', background: '#0A0908', border: '1px solid #26221C',
+          borderRadius: '3px', padding: '8px 10px', fontSize: '12px',
+          color: '#E8E2D5', resize: 'none', fontFamily: 'inherit',
+          outline: 'none', boxSizing: 'border-box', marginBottom: '10px',
+        }}
+      />
+      {error && (
+        <div style={{ fontSize: '12px', color: '#C56B5A', marginBottom: '8px', lineHeight: 1.4 }}>
+          {error}
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <button
+          onClick={handleSubmit}
+          disabled={submitting}
+          style={{
+            background: submitting ? '#26221C' : '#D97757', color: submitting ? '#5C5648' : '#0A0908',
+            padding: '7px 14px', borderRadius: '3px', fontWeight: 600,
+            fontSize: '12px', border: 'none', cursor: submitting ? 'default' : 'pointer',
+            opacity: submitting ? 0.7 : 1,
+          }}
+        >
+          {submitting ? 'Sending…' : 'Send request'}
+        </button>
+        <button onClick={onClose} disabled={submitting} style={linkStyle}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Lockout notice ────────────────────────────────────────────────────────────
+function LockoutNotice({ seconds, onForgotPin }) {
+  return (
+    <div style={{ ...gateStyle, borderColor: '#3A2618', background: '#110D08' }}>
+      <div style={{ fontSize: '11px', color: '#C56B5A', marginBottom: '5px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+        Too many attempts
+      </div>
+      <div style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.6 }}>
+        Too many incorrect attempts. Try again in{' '}
+        <span style={{ color: '#D97757', fontFamily: 'JetBrains Mono, monospace' }}>{seconds}s</span>.
+      </div>
+      {onForgotPin && (
+        <div style={{ marginTop: '10px' }}>
+          <button onClick={onForgotPin} style={linkStyle}>Forgot PIN?</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── PIN input inline ──────────────────────────────────────────────────────────
-export function PinGateInline({ val, setVal, onConfirm, onCancel, error, loading }) {
+export function PinGateInline({ val, setVal, onConfirm, onCancel, error, loading, onForgotPin }) {
   return (
     <div style={gateStyle}>
       <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '6px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
@@ -74,9 +197,14 @@ export function PinGateInline({ val, setVal, onConfirm, onCancel, error, loading
         <button
           onClick={onConfirm}
           disabled={loading}
-          style={{ background: loading ? '#5C5648' : '#D97757', color: '#0A0908', padding: '8px 16px', borderRadius: '3px', fontWeight: 600, fontSize: '12px', border: 'none', cursor: loading ? 'default' : 'pointer', opacity: loading ? 0.7 : 1 }}
+          style={{
+            background: loading ? '#5C5648' : '#D97757', color: '#0A0908',
+            padding: '8px 16px', borderRadius: '3px', fontWeight: 600,
+            fontSize: '12px', border: 'none', cursor: loading ? 'default' : 'pointer',
+            opacity: loading ? 0.7 : 1,
+          }}
         >
-          {loading ? '…' : 'Confirm'}
+          {loading ? 'Verifying…' : 'Confirm'}
         </button>
         <button
           onClick={onCancel}
@@ -86,9 +214,63 @@ export function PinGateInline({ val, setVal, onConfirm, onCancel, error, loading
           Cancel
         </button>
       </div>
-      {error && <div style={{ color: '#C56B5A', fontSize: '12px', marginTop: '6px' }}>Incorrect PIN. Try again.</div>}
+      {error && (
+        <div style={{ color: '#C56B5A', fontSize: '12px', marginTop: '6px' }}>
+          Incorrect PIN. Try again.
+        </div>
+      )}
+      {onForgotPin && (
+        <div style={{ marginTop: '8px' }}>
+          <button onClick={onForgotPin} style={linkStyle}>Forgot PIN?</button>
+        </div>
+      )}
     </div>
   );
+}
+
+// ── Internal: lockout timer hook ──────────────────────────────────────────────
+// Returns { lockCountdown, onFailure, resetLockout }
+// onFailure() increments the counter and arms the lock at attempt #5.
+function useLockout() {
+  const [failCount,   setFailCount]   = useState(0);
+  const [lockedUntil, setLockedUntil] = useState(null); // timestamp ms
+  const [countdown,   setCountdown]   = useState(0);
+
+  useEffect(() => {
+    if (!lockedUntil) return;
+    const tick = () => {
+      const rem = Math.ceil((lockedUntil - Date.now()) / 1000);
+      if (rem <= 0) {
+        setLockedUntil(null);
+        setFailCount(0);
+        setCountdown(0);
+      } else {
+        setCountdown(rem);
+      }
+    };
+    tick();
+    const id = setInterval(tick, 500);
+    return () => clearInterval(id);
+  }, [lockedUntil]);
+
+  // Called after each wrong PIN
+  const onFailure = useCallback((currentCount) => {
+    const next = currentCount + 1;
+    setFailCount(next);
+    if (next >= MAX_ATTEMPTS) {
+      setLockedUntil(Date.now() + LOCK_MS);
+      setCountdown(Math.ceil(LOCK_MS / 1000));
+    }
+    return next;
+  }, []);
+
+  const resetLockout = useCallback(() => {
+    setFailCount(0);
+    setLockedUntil(null);
+    setCountdown(0);
+  }, []);
+
+  return { failCount, countdown, isLocked: countdown > 0, onFailure, resetLockout };
 }
 
 // ── usePinGate — gate a single action ────────────────────────────────────────
@@ -99,12 +281,15 @@ export function PinGateInline({ val, setVal, onConfirm, onCancel, error, loading
 export function usePinGate() {
   const verify  = usePinVerify();
   const hasPin  = usePinActive();
+  const { email } = usePinConfig();
 
-  const [pending,    setPending]    = useState(null);  // the action fn waiting for PIN
-  const [noPin,      setNoPin]      = useState(false); // show no-pin notice
-  const [val,        setVal]        = useState('');
-  const [error,      setError]      = useState(false);
-  const [verifying,  setVerifying]  = useState(false);
+  const [pending,   setPending]   = useState(null);   // action fn waiting for PIN
+  const [noPin,     setNoPin]     = useState(false);
+  const [forgotPin, setForgotPin] = useState(false);
+  const [val,       setVal]       = useState('');
+  const [error,     setError]     = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const { failCount, countdown, isLocked, onFailure, resetLockout } = useLockout();
 
   const attempt = (action) => {
     if (!hasPin) { setNoPin(true); return; }
@@ -113,15 +298,16 @@ export function usePinGate() {
   };
 
   const confirm = async () => {
-    if (verifying) return;
+    if (verifying || isLocked) return;
     setVerifying(true);
     try {
       const ok = await verify(val);
       if (ok) {
         const fn = pending;
-        setPending(null); setVal(''); setError(false);
+        setPending(null); setVal(''); setError(false); resetLockout();
         fn?.();
       } else {
+        onFailure(failCount);
         setError(true); setVal('');
       }
     } finally {
@@ -129,13 +315,27 @@ export function usePinGate() {
     }
   };
 
-  const cancel = () => { setPending(null); setVal(''); setError(false); };
+  const cancel = () => {
+    setPending(null); setVal(''); setError(false); setForgotPin(false);
+  };
+
+  const openForgot = () => { setForgotPin(true); };
+  const closeForgot = () => { setForgotPin(false); cancel(); };
 
   const gate = noPin ? (
     <NoPinNotice onClose={() => setNoPin(false)} />
-  ) : pending ? (
-    <PinGateInline val={val} setVal={setVal} onConfirm={confirm} onCancel={cancel} error={error} loading={verifying} />
-  ) : null;
+  ) : !pending ? null : forgotPin ? (
+    <ForgotPinFlow email={email} onClose={closeForgot} />
+  ) : isLocked ? (
+    <LockoutNotice seconds={countdown} onForgotPin={openForgot} />
+  ) : (
+    <PinGateInline
+      val={val} setVal={setVal}
+      onConfirm={confirm} onCancel={cancel}
+      error={error} loading={verifying}
+      onForgotPin={openForgot}
+    />
+  );
 
   return { attempt, gate, active: !!pending || noPin };
 }
@@ -148,18 +348,19 @@ export function usePinGate() {
 export function useSectionPin() {
   const verify  = usePinVerify();
   const hasPin  = usePinActive();
+  const { email } = usePinConfig();
 
   const [unlocked,   setUnlocked]   = useState(false);
   const [pending,    setPending]    = useState(false); // true | 'nopin'
+  const [forgotPin,  setForgotPin]  = useState(false);
   const [val,        setVal]        = useState('');
   const [error,      setError]      = useState(false);
   const [verifying,  setVerifying]  = useState(false);
   const timerRef = useRef(null);
+  const { failCount, countdown, isLocked, onFailure, resetLockout } = useLockout();
 
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
-
-  // Re-lock when PIN configuration changes (e.g. user sets up PIN)
-  useEffect(() => { setUnlocked(false); setPending(false); }, [hasPin]);
+  useEffect(() => { setUnlocked(false); setPending(false); setForgotPin(false); }, [hasPin]);
 
   const requestUnlock = () => {
     if (unlocked) return;
@@ -168,16 +369,17 @@ export function useSectionPin() {
   };
 
   const confirm = async () => {
-    if (verifying) return;
+    if (verifying || isLocked) return;
     setVerifying(true);
     try {
       const ok = await verify(val);
       if (ok) {
         setUnlocked(true);
-        setPending(false); setVal(''); setError(false);
+        setPending(false); setVal(''); setError(false); resetLockout();
         if (timerRef.current) clearTimeout(timerRef.current);
-        timerRef.current = setTimeout(() => setUnlocked(false), 60000);
+        timerRef.current = setTimeout(() => setUnlocked(false), 60_000);
       } else {
+        onFailure(failCount);
         setError(true); setVal('');
       }
     } finally {
@@ -185,16 +387,27 @@ export function useSectionPin() {
     }
   };
 
-  const cancel = () => { setPending(false); setVal(''); setError(false); };
+  const cancel = () => { setPending(false); setVal(''); setError(false); setForgotPin(false); };
+
+  const openForgot  = () => { setForgotPin(true); };
+  const closeForgot = () => { setForgotPin(false); cancel(); };
 
   const gate = pending === 'nopin' ? (
     <NoPinNotice onClose={() => setPending(false)} />
-  ) : pending ? (
-    <PinGateInline val={val} setVal={setVal} onConfirm={confirm} onCancel={cancel} error={error} loading={verifying} />
-  ) : null;
+  ) : !pending ? null : forgotPin ? (
+    <ForgotPinFlow email={email} onClose={closeForgot} />
+  ) : isLocked ? (
+    <LockoutNotice seconds={countdown} onForgotPin={openForgot} />
+  ) : (
+    <PinGateInline
+      val={val} setVal={setVal}
+      onConfirm={confirm} onCancel={cancel}
+      error={error} loading={verifying}
+      onForgotPin={openForgot}
+    />
+  );
 
   // Always locked until the user successfully enters their PIN.
-  // (Previously: locked = !!pin && !unlocked, which let no-PIN users bypass.)
   const locked = !unlocked;
 
   return { unlocked, locked, requestUnlock, gate };
@@ -208,26 +421,31 @@ export function useSectionPin() {
 export function usePinRowGate() {
   const verify  = usePinVerify();
   const hasPin  = usePinActive();
+  const { email } = usePinConfig();
 
   const [row,       setRow]       = useState(null);   // { key, action, val, error }
-  const [noPinKey,  setNoPinKey]  = useState(null);   // key of row that hit no-pin wall
+  const [noPinKey,  setNoPinKey]  = useState(null);
+  const [forgotKey, setForgotKey] = useState(null);
   const [verifying, setVerifying] = useState(false);
+  const { failCount, countdown, isLocked, onFailure, resetLockout } = useLockout();
 
   const attemptRow = (key, action) => {
     if (!hasPin) { setNoPinKey(key); return; }
     setRow({ key, action, val: '', error: false });
+    setForgotKey(null);
   };
 
   const confirm = async () => {
-    if (!row || verifying) return;
+    if (!row || verifying || isLocked) return;
     setVerifying(true);
     try {
       const ok = await verify(row.val);
       if (ok) {
         const fn = row.action;
-        setRow(null);
+        setRow(null); resetLockout();
         fn?.();
       } else {
+        onFailure(failCount);
         setRow(r => ({ ...r, val: '', error: true }));
       }
     } finally {
@@ -235,20 +453,31 @@ export function usePinRowGate() {
     }
   };
 
-  const cancel = () => setRow(null);
+  const cancel = () => { setRow(null); setForgotKey(null); };
 
   const gateFor = (key) => {
-    if (noPinKey === key) return <NoPinNotice onClose={() => setNoPinKey(null)} />;
-    if (row?.key === key) return (
-      <PinGateInline
-        val={row.val}
-        setVal={v => setRow(r => ({ ...r, val: v }))}
-        onConfirm={confirm}
-        onCancel={cancel}
-        error={row.error}
-        loading={verifying}
-      />
-    );
+    if (noPinKey === key) {
+      return <NoPinNotice onClose={() => setNoPinKey(null)} />;
+    }
+    if (row?.key === key) {
+      if (forgotKey === key) {
+        return <ForgotPinFlow email={email} onClose={() => { setForgotKey(null); cancel(); }} />;
+      }
+      if (isLocked) {
+        return <LockoutNotice seconds={countdown} onForgotPin={() => setForgotKey(key)} />;
+      }
+      return (
+        <PinGateInline
+          val={row.val}
+          setVal={v => setRow(r => ({ ...r, val: v }))}
+          onConfirm={confirm}
+          onCancel={cancel}
+          error={row.error}
+          loading={verifying}
+          onForgotPin={() => setForgotKey(key)}
+        />
+      );
+    }
     return null;
   };
 
