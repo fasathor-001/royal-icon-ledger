@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { supabase } from '../lib/supabase';
 import {
   RefreshCw, Users, Clock, CheckCircle, XCircle,
-  Mail, Lock, Search, Send, FileText, AlertTriangle, X,
+  Mail, Lock, Search, Send, FileText, AlertTriangle, X, KeyRound, Hash,
 } from 'lucide-react';
 
 const ADMIN_EMAILS = ['hello@royalledger.app', 'fasathor@gmail.com'];
@@ -195,6 +195,134 @@ function NoteEditor({ lead, onSave }) {
   );
 }
 
+// ── Admin PIN manager (per lead) ───────────────────────────────────────────────
+
+function PinManager({ lead, onPinSave }) {
+  const [editing, setEditing] = useState(false);
+  const [pin, setPin] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const save = async (valueToSave) => {
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('early_access_leads')
+        .update({ assigned_pin: valueToSave || null })
+        .eq('id', lead.id);
+      if (error) throw error;
+      onPinSave(lead.id, valueToSave || null);
+      setEditing(false);
+      setPin('');
+    } catch (err) {
+      console.error('[AdminDashboard] pinSave:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (!editing) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+        <KeyRound size={11} style={{ color: '#3A3028', flexShrink: 0 }} />
+        <span style={{ fontSize: '12px', color: lead.assigned_pin ? '#7FA068' : '#3A3028' }}>
+          {lead.assigned_pin ? `PIN assigned (${lead.assigned_pin})` : 'No PIN assigned'}
+        </span>
+        <button
+          onClick={() => { setPin(''); setEditing(true); }}
+          style={{ fontSize: '11px', color: '#5B7FB8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+        >
+          {lead.assigned_pin ? 'Change' : 'Set PIN'}
+        </button>
+        {lead.assigned_pin && (
+          <button
+            onClick={() => save(null)}
+            disabled={saving}
+            style={{ fontSize: '11px', color: '#C56B5A', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', opacity: saving ? 0.5 : 1 }}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+      <KeyRound size={11} style={{ color: '#5B7FB8', flexShrink: 0 }} />
+      <input
+        type="text"
+        inputMode="numeric"
+        maxLength={4}
+        value={pin}
+        onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+        placeholder="4 digits"
+        autoFocus
+        style={{
+          width: '80px', background: '#0A0908', border: '1px solid #26221C',
+          borderRadius: '4px', padding: '5px 8px', fontSize: '13px',
+          color: '#E8E2D5', textAlign: 'center', letterSpacing: '0.3em', outline: 'none',
+        }}
+      />
+      <button
+        onClick={() => save(pin)}
+        disabled={saving || pin.length !== 4}
+        style={{ fontSize: '12px', color: '#7FA068', background: 'none', border: '1px solid #2A4A20', borderRadius: '4px', cursor: pin.length === 4 ? 'pointer' : 'not-allowed', padding: '4px 10px', opacity: (saving || pin.length !== 4) ? 0.5 : 1 }}
+      >
+        {saving ? 'Saving…' : 'Save'}
+      </button>
+      <button
+        onClick={() => { setEditing(false); setPin(''); }}
+        style={{ fontSize: '12px', color: '#5C5648', background: 'none', border: 'none', cursor: 'pointer' }}
+      >
+        Cancel
+      </button>
+    </div>
+  );
+}
+
+// ── Invite code manager (per lead) ─────────────────────────────────────────────
+
+function InviteCodeManager({ lead, onCodeSave }) {
+  const [generating, setGenerating] = useState(false);
+
+  const generate = async () => {
+    setGenerating(true);
+    const code = generateInviteCode();
+    try {
+      const { error } = await supabase
+        .from('early_access_leads')
+        .update({ invite_code: code })
+        .eq('id', lead.id);
+      if (error) throw error;
+      onCodeSave(lead.id, code);
+    } catch (err) {
+      console.error('[AdminDashboard] generateCode:', err);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+      <Hash size={11} style={{ color: '#3A3028', flexShrink: 0 }} />
+      <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#3A3028' }}>
+        Invite Code
+      </span>
+      {lead.invite_code
+        ? <span style={{ fontSize: '12px', color: '#8B8478', fontFamily: 'monospace', letterSpacing: '0.08em' }}>{lead.invite_code}</span>
+        : <span style={{ fontSize: '12px', color: '#26221C', fontStyle: 'italic' }}>None</span>
+      }
+      <button
+        onClick={generate}
+        disabled={generating}
+        style={{ fontSize: '11px', color: '#D97757', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', opacity: generating ? 0.5 : 1 }}
+      >
+        {generating ? '…' : lead.invite_code ? 'Regenerate' : 'Generate'}
+      </button>
+    </div>
+  );
+}
+
 // ── Invite modal ───────────────────────────────────────────────────────────────
 
 function InviteModal({ lead, onClose, onSent }) {
@@ -317,7 +445,7 @@ function InviteModal({ lead, onClose, onSent }) {
 
 // ── Lead row ───────────────────────────────────────────────────────────────────
 
-function LeadRow({ lead, onUpdateStatus, onInvite, onNoteSave }) {
+function LeadRow({ lead, onUpdateStatus, onInvite, onNoteSave, onPinSave, onCodeSave }) {
   return (
     <div style={{ background: '#0F0D0A', border: '1px solid #26221C', borderRadius: '8px', padding: '20px' }}>
 
@@ -365,6 +493,12 @@ function LeadRow({ lead, onUpdateStatus, onInvite, onNoteSave }) {
       {/* Notes */}
       <div style={{ paddingBottom: '14px', borderBottom: '1px solid #1A1610', marginBottom: '14px' }}>
         <NoteEditor lead={lead} onSave={onNoteSave} />
+      </div>
+
+      {/* PIN + Invite code */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '14px', borderBottom: '1px solid #1A1610', marginBottom: '14px' }}>
+        <PinManager lead={lead} onPinSave={onPinSave} />
+        <InviteCodeManager lead={lead} onCodeSave={onCodeSave} />
       </div>
 
       {/* Actions */}
@@ -510,6 +644,14 @@ export default function AdminDashboard({ user }) {
     setLeads(prev => prev.map(l => l.id === id ? { ...l, notes } : l));
   };
 
+  const handlePinSave = (id, assigned_pin) => {
+    setLeads(prev => prev.map(l => l.id === id ? { ...l, assigned_pin } : l));
+  };
+
+  const handleCodeSave = (id, invite_code) => {
+    setLeads(prev => prev.map(l => l.id === id ? { ...l, invite_code } : l));
+  };
+
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 24px' }}>
@@ -618,6 +760,8 @@ export default function AdminDashboard({ user }) {
               onUpdateStatus={updateStatus}
               onInvite={setInviteTarget}
               onNoteSave={handleNoteSave}
+              onPinSave={handlePinSave}
+              onCodeSave={handleCodeSave}
             />
           ))}
         </div>

@@ -333,18 +333,22 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     if (noData || isNewUser) setShowOnboarding(true);
   }, [loading, data.setupComplete, data.expenses.length, isNewUser]);
 
-  // Block check — runs once when user email is known
+  // Block check + PIN sync — runs after data is loaded and user email is known
   useEffect(() => {
-    if (!user?.email || !supabase) return;
+    if (!user?.email || !supabase || loading) return;
     supabase
       .from('early_access_leads')
-      .select('status')
+      .select('status, assigned_pin')
       .eq('email', user.email.toLowerCase())
       .maybeSingle()
       .then(({ data: lead }) => {
         if (lead?.status === 'blocked') setIsBlocked(true);
+        // Sync admin-assigned PIN if user doesn't already have one set
+        if (lead?.assigned_pin) {
+          setData(d => ({ ...d, overridePin: d.overridePin || lead.assigned_pin }));
+        }
       });
-  }, [user?.email]);
+  }, [user?.email, loading]);
   
   // Auto-show monthly review modal during review window
   useEffect(() => {
@@ -686,13 +690,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
           <div className="max-w-6xl mx-auto flex items-center justify-between gap-3" style={{ padding: '8px 20px' }}>
             <div className="flex items-center gap-2 flex-wrap" style={{ minWidth: 0 }}>
               <KeyRound size={13} style={{ color: '#D97757', flexShrink: 0 }} />
-              <span className="text-xs" style={{ color: '#8B8478', whiteSpace: 'nowrap' }}>No PIN set — fields unprotected.</span>
-              <button
-                onClick={() => setTab('settings')}
-                style={{ color: '#D97757', fontSize: 12, textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer', whiteSpace: 'nowrap' }}
-              >
-                Set PIN in Settings →
-              </button>
+              <span className="text-xs" style={{ color: '#8B8478', whiteSpace: 'nowrap' }}>No PIN assigned — structural changes are unprotected. Contact support to receive your PIN.</span>
             </div>
             <button onClick={() => setPinBannerDismissed(true)} style={{ color: '#5C5648', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>
               <X size={13} />
@@ -3749,23 +3747,11 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
   const { attempt: attemptOnboarding, gate: onboardingGate } = usePinGate(data.overridePin);
   const { attempt: attemptReset, gate: resetGate } = usePinGate(data.overridePin);
 
-  // Override PIN flow
-  const [changingPin, setChangingPin] = useState(false);
-  const [oldPin, setOldPin] = useState('');
-  const [newPin, setNewPin] = useState('');
-  const [pinChangeError, setPinChangeError] = useState('');
   const [currencyChanged, setCurrencyChanged] = useState(false);
   const [hoveredCurrency, setHoveredCurrency] = useState(null);
 
-  const [pinSaved, setPinSaved] = useState(false);
-
-  const submitPinChange = () => {
-    if (data.overridePin && oldPin !== data.overridePin) { setPinChangeError('Incorrect current PIN.'); return; }
-    if (newPin.length > 0 && newPin.length < 4) { setPinChangeError('PIN must be 4 digits.'); return; }
-    const action = newPin ? 'updated' : 'removed';
-    setData(d => ({ ...d, overridePin: newPin }));
-    setChangingPin(false); setOldPin(''); setNewPin(''); setPinChangeError('');
-    setPinSaved(action);
+  // submitPinChange removed — PIN is now admin-managed only
+  const submitPinChange = () => { // kept as no-op to avoid breaking any stale refs
     setTimeout(() => setPinSaved(false), 3000);
   };
 
@@ -3997,74 +3983,21 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
             }}>Security</div>
             <div className="space-y-4">
 
-              {/* Override PIN */}
+              {/* Override PIN — read-only, managed by admin */}
               <section className="card p-6">
                 <div className="flex items-center gap-2 mb-2">
                   <KeyRound size={16} style={{ color: '#5B7FB8' }} />
                   <h2 className="display text-2xl">Override PIN</h2>
                 </div>
                 <p className="text-sm mb-4" style={{ color: '#8B8478' }}>
-                  4-digit PIN that gates all sensitive edits and overrides hard blocks in the Spending Gate. Overrides are logged with a red badge in History.
+                  Your PIN protects sensitive changes in Royal Ledger — setup edits, income changes, and account actions. It is assigned and managed by your administrator.
                 </p>
-
-                {!data.overridePin ? (
-                  <div>
-                    <div className="label mb-2" style={{ color: '#5C5648' }}>Set PIN (4 digits)</div>
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="password" inputMode="numeric" maxLength={4} className="input" placeholder="••••"
-                        value={newPin}
-                        onChange={(e) => { setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4)); setPinChangeError(''); }}
-                        style={{ letterSpacing: '0.4em', maxWidth: '100px', textAlign: 'center' }}
-                      />
-                      <button
-                        className="btn px-4 py-2 text-sm"
-                        style={{ background: '#5B7FB8', color: '#0A0908', borderRadius: '3px', fontWeight: 600, opacity: newPin.length === 4 ? 1 : 0.5 }}
-                        onClick={() => { if (newPin.length === 4) { setData(d => ({ ...d, overridePin: newPin })); setNewPin(''); } }}
-                        disabled={newPin.length !== 4}
-                      >
-                        Set PIN
-                      </button>
-                    </div>
-                    {pinChangeError && <p className="text-xs mt-2" style={{ color: '#C56B5A' }}>{pinChangeError}</p>}
-                  </div>
-                ) : changingPin ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <div>
-                        <div className="label mb-1" style={{ color: '#5C5648' }}>Current PIN</div>
-                        <input type="password" inputMode="numeric" maxLength={4} className="input" placeholder="••••"
-                          value={oldPin} onChange={(e) => { setOldPin(e.target.value.replace(/\D/g, '').slice(0, 4)); setPinChangeError(''); }}
-                          style={{ letterSpacing: '0.4em', maxWidth: '90px', textAlign: 'center' }} autoFocus />
-                      </div>
-                      <div>
-                        <div className="label mb-1" style={{ color: '#5C5648' }}>New PIN (or blank to remove)</div>
-                        <input type="password" inputMode="numeric" maxLength={4} className="input" placeholder="••••"
-                          value={newPin} onChange={(e) => { setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4)); setPinChangeError(''); }}
-                          style={{ letterSpacing: '0.4em', maxWidth: '90px', textAlign: 'center' }} />
-                      </div>
-                    </div>
-                    {pinChangeError && <p className="text-xs" style={{ color: '#C56B5A' }}>{pinChangeError}</p>}
-                    <div className="flex gap-2">
-                      <button className="btn px-4 py-2 text-sm" style={{ background: '#5B7FB8', color: '#0A0908', borderRadius: '3px', fontWeight: 600 }} onClick={submitPinChange}>Confirm</button>
-                      <button className="btn px-3 py-2 text-sm" style={{ color: '#8B8478' }} onClick={() => { setChangingPin(false); setOldPin(''); setNewPin(''); setPinChangeError(''); }}>Cancel</button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-3 flex-wrap">
-                    {pinSaved ? (
-                      <span className="text-xs flex items-center gap-1" style={{ color: '#7FA068' }}>
-                        <Check size={12} /> PIN {pinSaved} successfully
-                      </span>
-                    ) : (
-                      <span className="text-xs" style={{ color: '#7FA068' }}>✓ PIN set</span>
-                    )}
-                    <button className="btn px-3 py-1 text-xs" style={{ color: '#5B7FB8', border: '1px solid #1E2A3A', borderRadius: '3px' }}
-                      onClick={() => { setChangingPin(true); setOldPin(''); setNewPin(''); setPinChangeError(''); }}>
-                      Change PIN
-                    </button>
-                  </div>
-                )}
+                <div className="flex items-center gap-2">
+                  {data.overridePin
+                    ? <span className="text-xs flex items-center gap-1" style={{ color: '#7FA068' }}><Check size={12} /> PIN active</span>
+                    : <span className="text-xs" style={{ color: '#5C5648' }}>No PIN assigned yet. Contact support if needed.</span>
+                  }
+                </div>
               </section>
             </div>
           </div>
