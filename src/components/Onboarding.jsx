@@ -7,20 +7,20 @@
 import React, { useState } from 'react';
 import {
   Heart, ArrowRight, Check, X, Plus, Wallet, Shield,
-  Briefcase, Sparkles, Users, Bell, Lock, TrendingUp, Landmark, Info,
+  Briefcase, Sparkles, Users, Bell, Lock, TrendingUp, Landmark, Info, Mail,
 } from 'lucide-react';
 import { CURRENCIES, makeFmt, getCurrency } from '../lib/currency';
 import { TIMEZONES, offsetLabel, normalizeTimezone } from '../lib/timezones';
 
 const SUGGESTED_EXPENSES = [
-  { name: 'Rent / Bond',         category: 'Housing',         placeholder: '0' },
-  { name: 'Utilities',           category: 'Utilities',       placeholder: '0' },
-  { name: 'Groceries',           category: 'Food',            placeholder: '0' },
-  { name: 'Transport / Fuel',    category: 'Transportation',  placeholder: '0' },
-  { name: 'Phone / Internet',    category: 'Subscriptions',   placeholder: '0' },
-  { name: 'Insurance',           category: 'Insurance',       placeholder: '0' },
-  { name: 'School / Childcare',  category: 'Childcare/Kids',  placeholder: '0' },
-  { name: 'Family support',      category: 'Family support',  placeholder: '0' },
+  { name: 'Rent / Bond',         category: 'Housing',         placeholder: '0', fixed: true  },
+  { name: 'Utilities',           category: 'Utilities',       placeholder: '0'               },
+  { name: 'Groceries',           category: 'Food',            placeholder: '0', variable: true },
+  { name: 'Transport / Fuel',    category: 'Transportation',  placeholder: '0', variable: true },
+  { name: 'Phone / Internet',    category: 'Subscriptions',   placeholder: '0'               },
+  { name: 'Insurance',           category: 'Insurance',       placeholder: '0'               },
+  { name: 'School / Childcare',  category: 'Childcare/Kids',  placeholder: '0'               },
+  { name: 'Family support',      category: 'Family support',  placeholder: '0', variable: true },
 ];
 
 // TIMEZONES is imported from src/lib/timezones.js (13-entry curated IANA list).
@@ -56,6 +56,8 @@ export default function Onboarding({ data, setData, onComplete }) {
   const [envelopeTracking, setEnvelopeTracking] = useState({});
   // keyed by suggested expense name; value: 'reset' | 'rollover' | 'sweep'
   const [envelopeMode, setEnvelopeMode] = useState({});
+  // Gate shown when user tries to advance past Step 5 with untracked variable costs
+  const [showEnvelopeGate, setShowEnvelopeGate] = useState(false);
 
   // ── Notification permission state (Step 10: Summary) ────────────────────
   const [notifStatus, setNotifStatus] = useState('idle'); // 'idle' | 'granted' | 'denied'
@@ -73,6 +75,20 @@ export default function Onboarding({ data, setData, onComplete }) {
 
   const next = () => setStep(s => Math.min(s + 1, totalSteps));
   const back = () => setStep(s => Math.max(s - 1, 1));
+
+  // ── Step 5 → 6 gate: remind user to set envelopes for variable costs ────
+  const handleStep5Next = () => {
+    const untrackedVariable = SUGGESTED_EXPENSES.filter(s =>
+      s.variable &&
+      (Number(expenseValues[s.name]) || 0) > 0 &&
+      !envelopeTracking[s.name]
+    );
+    if (untrackedVariable.length > 0) {
+      setShowEnvelopeGate(true);
+    } else {
+      next();
+    }
+  };
 
   // ── finish() — writes all collected data in one setData call ─────────────
   const finish = () => {
@@ -493,12 +509,17 @@ export default function Onboarding({ data, setData, onComplete }) {
                 const hasValue = (Number(expenseValues[item.name]) || 0) > 0;
                 const tracked = !!envelopeTracking[item.name];
                 const mode = envelopeMode[item.name] || 'reset';
+                const isFixed = !!item.fixed;
                 return (
                   <div key={item.name} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {/* Main row */}
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '14px', fontWeight: 500 }}>{item.name}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ fontSize: '14px', fontWeight: 500 }}>{item.name}</span>
+                          {item.variable && <span style={{ fontSize: '9px', color: '#D97757', background: '#2A1A0E', border: '1px solid #3A2A1E', borderRadius: '999px', padding: '1px 6px', letterSpacing: '0.08em', fontWeight: 600 }}>VARIABLE</span>}
+                          {isFixed && <span style={{ fontSize: '9px', color: '#5C5648', background: '#14110E', border: '1px solid #26221C', borderRadius: '999px', padding: '1px 6px', letterSpacing: '0.08em', fontWeight: 600 }}>FIXED</span>}
+                        </div>
                         <div style={{ fontSize: '11px', color: '#5C5648' }}>{item.category}</div>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -512,29 +533,42 @@ export default function Onboarding({ data, setData, onComplete }) {
                           style={{ width: '110px', textAlign: 'right' }}
                         />
                       </div>
-                      {/* Envelope toggle */}
-                      <button
-                        onClick={() => setEnvelopeTracking(t => ({ ...t, [item.name]: !t[item.name] }))}
-                        disabled={!hasValue}
-                        title={tracked ? 'Remove Budget envelope' : 'Track in Budget envelope'}
-                        style={{
-                          background: tracked ? '#1A2A1E' : 'transparent',
-                          border: `1px solid ${tracked ? '#7FA068' : '#26221C'}`,
-                          borderRadius: '3px',
-                          padding: '5px 8px',
-                          cursor: hasValue ? 'pointer' : 'not-allowed',
-                          fontSize: '14px',
-                          lineHeight: 1,
-                          opacity: hasValue ? 1 : 0.3,
-                          transition: 'all 150ms',
-                          flexShrink: 0,
-                        }}
-                      >
-                        🪣
-                      </button>
+                      {/* Envelope toggle — locked for fixed expenses */}
+                      {isFixed ? (
+                        <div
+                          title="Fixed expense — amount is predictable, no envelope needed"
+                          style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            width: '34px', height: '32px',
+                            border: '1px solid #26221C', borderRadius: '3px',
+                            opacity: 0.25, cursor: 'not-allowed', flexShrink: 0,
+                          }}
+                        >
+                          <Mail size={14} color="#5C5648" />
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setEnvelopeTracking(t => ({ ...t, [item.name]: !t[item.name] }))}
+                          disabled={!hasValue}
+                          title={tracked ? 'Remove Budget envelope' : 'Track in Budget envelope'}
+                          style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            width: '34px', height: '32px',
+                            background: tracked ? '#1A2A1E' : 'transparent',
+                            border: `1px solid ${tracked ? '#7FA068' : hasValue ? '#3A3028' : '#26221C'}`,
+                            borderRadius: '3px',
+                            cursor: hasValue ? 'pointer' : 'not-allowed',
+                            opacity: hasValue ? 1 : 0.3,
+                            transition: 'all 150ms',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <Mail size={14} color={tracked ? '#7FA068' : '#5C5648'} />
+                        </button>
+                      )}
                     </div>
                     {/* Month-end mode pills — shown only when envelope is active */}
-                    {tracked && (
+                    {tracked && !isFixed && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', paddingLeft: '4px', paddingBottom: '4px' }}>
                         <span style={{ fontSize: '10px', color: '#3A3028', marginRight: '2px', letterSpacing: '0.05em' }}>Month-end:</span>
                         {[
@@ -611,19 +645,18 @@ export default function Onboarding({ data, setData, onComplete }) {
                         disabled={!hasValue}
                         title={c.trackInEnvelope ? 'Remove Budget envelope' : 'Track in Budget envelope'}
                         style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          width: '34px', height: '32px',
                           background: c.trackInEnvelope ? '#1A2A1E' : 'transparent',
-                          border: `1px solid ${c.trackInEnvelope ? '#7FA068' : '#26221C'}`,
+                          border: `1px solid ${c.trackInEnvelope ? '#7FA068' : hasValue ? '#3A3028' : '#26221C'}`,
                           borderRadius: '3px',
-                          padding: '5px 8px',
                           cursor: hasValue ? 'pointer' : 'not-allowed',
-                          fontSize: '14px',
-                          lineHeight: 1,
                           opacity: hasValue ? 1 : 0.3,
                           transition: 'all 150ms',
                           flexShrink: 0,
                         }}
                       >
-                        🪣
+                        <Mail size={14} color={c.trackInEnvelope ? '#7FA068' : '#5C5648'} />
                       </button>
                       <button
                         onClick={() => setCustomExpenses(customExpenses.filter((_, j) => j !== i))}
@@ -682,7 +715,7 @@ export default function Onboarding({ data, setData, onComplete }) {
             {/* Envelope summary */}
             {Object.values(envelopeTracking).some(Boolean) || customExpenses.some(c => c.trackInEnvelope) ? (
               <div style={{ background: '#141F14', border: '1px solid #2A3E2A', borderRadius: '4px', padding: '12px 16px', marginBottom: '20px', fontSize: '12px', color: '#7FA068', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span>🪣</span>
+                <Mail size={13} color="#7FA068" />
                 <span>
                   {[
                     ...SUGGESTED_EXPENSES.filter(s => envelopeTracking[s.name]),
@@ -695,7 +728,77 @@ export default function Onboarding({ data, setData, onComplete }) {
               </div>
             ) : null}
 
-            <NavRow back={back} next={next} canAdvance={canAdvance()} hint={!canAdvance() ? 'Add at least one expense to continue' : null} />
+            <NavRow back={back} next={handleStep5Next} canAdvance={canAdvance()} hint={!canAdvance() ? 'Add at least one expense to continue' : null} />
+
+            {/* ── Envelope gate modal ── */}
+            {showEnvelopeGate && (() => {
+              const untracked = SUGGESTED_EXPENSES.filter(s =>
+                s.variable &&
+                (Number(expenseValues[s.name]) || 0) > 0 &&
+                !envelopeTracking[s.name]
+              );
+              return (
+                <div style={{
+                  position: 'fixed', inset: 0, zIndex: 2000,
+                  background: 'rgba(10,9,8,0.85)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  padding: '24px',
+                }}>
+                  <div style={{
+                    background: '#14110E', border: '1px solid #3A2A1E',
+                    borderRadius: '8px', padding: '28px 28px 24px',
+                    maxWidth: '420px', width: '100%',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                      <Mail size={20} color="#D97757" />
+                      <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 600, color: '#E8E2D5' }}>
+                        Track variable costs?
+                      </h3>
+                    </div>
+                    <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.6, marginBottom: '16px' }}>
+                      These variable expenses have no envelope set. Without one, unspent money has nowhere to go — it just disappears at month-end with no record.
+                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '20px' }}>
+                      {untracked.map(s => (
+                        <div key={s.name} style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          background: '#1A1410', border: '1px solid #26221C',
+                          borderRadius: '4px', padding: '10px 14px',
+                        }}>
+                          <span style={{ fontSize: '14px', color: '#E8E2D5' }}>{s.name}</span>
+                          <span className="ob-mono" style={{ fontSize: '13px', color: '#8B8478' }}>
+                            {currencySymbol} {Number(expenseValues[s.name]).toLocaleString()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button
+                        onClick={() => setShowEnvelopeGate(false)}
+                        style={{
+                          flex: 1, background: '#D97757', color: '#0A0908',
+                          border: 'none', borderRadius: '4px', padding: '12px',
+                          fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                        }}
+                      >
+                        <Mail size={14} /> Set envelopes
+                      </button>
+                      <button
+                        onClick={() => { setShowEnvelopeGate(false); next(); }}
+                        style={{
+                          flex: 1, background: 'transparent', color: '#5C5648',
+                          border: '1px solid #26221C', borderRadius: '4px', padding: '12px',
+                          fontSize: '13px', cursor: 'pointer',
+                        }}
+                      >
+                        Skip for now →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         )}
 
