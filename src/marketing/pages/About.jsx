@@ -7,41 +7,36 @@ export default function About({ navigate }) {
     <div>
       <div className="m-nav-spacer" />
 
-      {/* Header */}
+      {/* ── Header ── */}
       <section className="m-section-sm" style={{ borderBottom: '1px solid #1A1610' }}>
         <div className="m-wrap-md">
           <div className="m-label" style={{ marginBottom: '16px' }}>About</div>
           <h1 className="m-display" style={{ fontSize: 'clamp(36px, 5vw, 60px)', color: '#E8E2D5', marginBottom: '24px' }}>
-            Financial tools were built for a world that no longer exists.
+            Built for people the system left out.
           </h1>
           <div style={{ fontSize: '15px', color: '#B0A898', maxWidth: '520px', lineHeight: 1.95 }}>
             <p style={{ margin: '0 0 16px' }}>
-              They assume predictable income.<br />
-              Fixed cycles.<br />
-              Stable patterns.
+              Most financial tools were built on the same assumption.
             </p>
             <p style={{ margin: '0 0 16px' }}>
-              But millions of people don't operate that way.
+              That people are already disciplined.
             </p>
             <p style={{ margin: '0 0 16px', color: '#8B8478' }}>
-              Freelancers.<br />
-              Traders.<br />
-              Entrepreneurs.<br />
-              Side-income earners.
+              That income is predictable.<br />
+              That habits are consistent.<br />
+              That planning is straightforward.
             </p>
             <p style={{ margin: '0 0 16px' }}>
-              Their income is irregular.<br />
-              Their decisions are constant.<br />
-              And the margin for error is smaller.
+              For most people, none of that is true.
             </p>
             <p style={{ margin: 0, color: '#8B8478' }}>
-              Yet the systems they rely on haven't changed.
+              And when the system fails, people blame themselves.
             </p>
           </div>
         </div>
       </section>
 
-      {/* The Problem / The Shift */}
+      {/* ── Problem / Insight ── */}
       <section className="m-section">
         <div className="m-wrap-md">
 
@@ -49,46 +44,53 @@ export default function About({ navigate }) {
             <div>
               <div className="m-label" style={{ marginBottom: '20px' }}>The Problem</div>
               <div className="m-display" style={{ fontSize: 'clamp(22px, 3vw, 32px)', color: '#E8E2D5', lineHeight: 1.3, marginBottom: '24px' }}>
-                Most people don't have a money problem. They have a structure problem.
+                The system doesn't match reality.
               </div>
               <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85, marginBottom: '14px' }}>
-                Income comes in. Spending happens. Decisions are made in the moment.
+                Most apps assume you earn the same amount every month.
+                That you plan everything in advance.
+                That you already have consistent habits.
               </p>
               <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85, marginBottom: '14px' }}>
-                By the time money is tracked, it's already gone.
+                Income changes. Expenses shift. Plans break.
               </p>
               <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85 }}>
-                This isn't a behaviour issue.{' '}
-                <span style={{ color: '#E8E2D5', fontStyle: 'italic' }}>It's the wrong system.</span>
+                And when the system fails,{' '}
+                <span style={{ color: '#E8E2D5', fontStyle: 'italic' }}>people blame themselves.</span>
               </p>
             </div>
             <div>
-              <div className="m-label" style={{ marginBottom: '20px' }}>The Shift</div>
+              <div className="m-label" style={{ marginBottom: '20px' }}>The Insight</div>
               <div className="m-card-warm" style={{ padding: '28px' }}>
                 <p className="m-display" style={{ fontSize: '21px', color: '#E8E2D5', lineHeight: 1.45, marginBottom: '20px', fontStyle: 'italic' }}>
-                  "Structure before money is spent — not visibility after."
+                  "The problem isn't the user. It's the system."
                 </p>
                 <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.75 }}>
-                  Not by adding more tracking. Not by offering better reports. But by introducing structure before money moves.
+                  If a system only works when everything is perfect, it doesn't work.
+                  People don't need another tool that records what already happened.
                 </p>
                 <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #3A2A1E' }}>
                   <p style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.85 }}>
-                    Every unit assigned a role before it's used.<br />
-                    Decisions made intentionally — not reactively.<br />
-                    Control that exists regardless of how income arrives.
+                    They need a system that helps them make better decisions before it happens.<br />
+                    One that holds the structure they don't have yet.<br />
+                    One that builds discipline — rather than assuming it.
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* What It Is */}
+          {/* ── The Approach ── */}
           <div style={{ marginBottom: '72px' }}>
-            <div className="m-label" style={{ marginBottom: '24px' }}>What it is</div>
+            <div className="m-label" style={{ marginBottom: '24px' }}>The Approach</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }} className="about-grid">
               <div className="m-card" style={{ padding: '24px' }}>
                 <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>Not</div>
-                {['A budgeting app', 'An expense tracker'].map(item => (
+                {[
+                  'Reminders to stay disciplined',
+                  'Tracking what already happened',
+                  'A tool built for perfect planners',
+                ].map(item => (
                   <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                     <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#5C5648', flexShrink: 0 }} />
                     <span style={{ fontSize: '14px', color: '#8B8478' }}>{item}</span>
@@ -97,7 +99,11 @@ export default function About({ navigate }) {
               </div>
               <div className="m-card" style={{ padding: '24px', borderColor: '#2A3A1E' }}>
                 <div style={{ fontSize: '11px', color: '#D97757', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>But</div>
-                {['A planning system', 'An allocation framework', 'A control layer'].map(item => (
+                {[
+                  'Structure that holds decisions in place',
+                  'A system that adapts to your stage',
+                  'Discipline built in — not assumed',
+                ].map(item => (
                   <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                     <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#7FA068', flexShrink: 0 }} />
                     <span style={{ fontSize: '14px', color: '#B0A898' }}>{item}</span>
@@ -110,11 +116,11 @@ export default function About({ navigate }) {
             </p>
           </div>
 
-          {/* What We Believe */}
+          {/* ── What We Believe ── */}
           <div>
             <div className="m-label" style={{ marginBottom: '28px' }}>What we believe</div>
             {[
-              'Money should be structured before it is spent.',
+              'Structure creates discipline — not the other way around.',
               'Income should not determine control.',
               'Clarity should not depend on consistency.',
             ].map((line, i, arr) => (
@@ -146,7 +152,7 @@ export default function About({ navigate }) {
         }
       `}</style>
 
-      {/* Founder's Note */}
+      {/* ── Founder's Note ── */}
       <section className="m-section" style={{ borderTop: '1px solid #1A1610', borderBottom: '1px solid #1A1610' }}>
         <div className="m-wrap-sm">
           <div className="m-label" style={{ marginBottom: '40px' }}>Founder's Note</div>
@@ -171,10 +177,12 @@ export default function About({ navigate }) {
 
             <div style={{ padding: '20px 0', borderTop: '1px solid #1A1610', borderBottom: '1px solid #1A1610' }}>
               <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 2, margin: 0 }}>
+                Students.<br />
+                Early-stage earners.<br />
                 Freelancers.<br />
                 Traders.<br />
                 Entrepreneurs.<br />
-                Side-income earners.
+                Anyone building from scratch.
               </p>
             </div>
 
@@ -202,12 +210,12 @@ export default function About({ navigate }) {
             </div>
 
             <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85 }}>
-              That shift — from tracking to allocation, from reaction to intention — is what the system is built around.
+              That shift — from tracking to structure, from reaction to intention — is what the system is built around.
             </p>
 
             <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85 }}>
-              It introduces structure before money moves.<br />
-              Not visibility after the fact.
+              It doesn't matter whether you're managing a first allowance or a complex income structure.
+              The system starts where you are and builds from there.
             </p>
 
             <p style={{ fontSize: '15px', color: '#E8E2D5', lineHeight: 1.85 }}>
@@ -232,7 +240,7 @@ export default function About({ navigate }) {
               <div>
                 <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '19px', color: '#E8E2D5', fontStyle: 'italic' }}>— Amb. Frank A.</div>
                 <div style={{ fontSize: '13px', color: '#8B8478', marginTop: '2px' }}>Founder, Royal Ledger</div>
-                <div style={{ fontSize: '12px', color: '#5C5648', marginTop: '3px' }}>Building financial systems for variable-income earners.</div>
+                <div style={{ fontSize: '12px', color: '#5C5648', marginTop: '3px' }}>Building financial systems for people the market left out.</div>
               </div>
             </div>
 
@@ -240,32 +248,44 @@ export default function About({ navigate }) {
         </div>
       </section>
 
-      {/* Category positioning */}
+      {/* ── Who It's For + Closing (merged Sections 5 & 6) ── */}
       <section className="m-section-sm" style={{ background: '#0F0D0A', borderTop: '1px solid #1A1610', borderBottom: '1px solid #1A1610' }}>
         <div className="m-wrap-sm" style={{ textAlign: 'center' }}>
-          <div className="m-label" style={{ marginBottom: '20px' }}>The category</div>
+          <div className="m-label" style={{ marginBottom: '20px' }}>Who It's For</div>
           <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 48px)', color: '#E8E2D5', marginBottom: '20px' }}>
-            A{' '}
-            <em style={{ color: '#D97757', fontStyle: 'italic' }}>financial operating system</em>
-            <br />
-            for variable-income earners.
+            For people who want{' '}
+            <em style={{ color: '#D97757', fontStyle: 'italic' }}>control</em>
+            {' '}— not just clarity.
           </h2>
-          <p className="m-body" style={{ marginBottom: '0' }}>
-            Not a budgeting app. Not a tracker. Not a spreadsheet replacement.
+
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '32px', flexWrap: 'wrap', margin: '28px 0', padding: '28px 0', borderTop: '1px solid #1A1610', borderBottom: '1px solid #1A1610' }}>
+            {['Students', 'Allowance earners', 'Irregular income', 'Early-stage earners'].map((label, i, arr) => (
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '14px', color: '#B0A898', fontWeight: 300 }}>{label}</span>
+                {i < arr.length - 1 && <span style={{ color: '#26221C', fontSize: '12px' }}>·</span>}
+              </div>
+            ))}
+          </div>
+
+          <p className="m-body" style={{ marginBottom: '12px' }}>
+            And anyone who feels traditional financial tools don't fit how their money actually works.
+          </p>
+          <p style={{ fontSize: '16px', fontWeight: 500, color: '#E8E2D5', lineHeight: 1.6, marginBottom: 0 }}>
+            It doesn't assume discipline.
             <br />
-            A system that runs, allocates, enforces, and compounds — in the background of your life.
+            <em style={{ color: '#D97757', fontStyle: 'italic' }}>It builds it.</em>
           </p>
         </div>
       </section>
 
-      {/* Company info */}
+      {/* ── Company info ── */}
       <section className="m-section-sm">
         <div className="m-wrap-md">
           <div className="m-grid-3">
             {[
-              { label: 'Stage',      value: 'Private beta',          sub: 'Working product, invite-based access' },
-              { label: 'Category',   value: 'Financial OS',           sub: 'Variable-income earners globally' },
-              { label: 'Philosophy', value: 'Structure over willpower', sub: 'Systems beat motivation, always' },
+              { label: 'Stage',      value: 'Private beta',            sub: 'Working product, invite-based access' },
+              { label: 'Category',   value: 'Financial system',         sub: 'Built for variable and irregular income' },
+              { label: 'Philosophy', value: 'Discipline is a system',   sub: 'Structure creates the habit — not the other way around' },
             ].map(({ label, value, sub }) => (
               <div key={label} className="m-card" style={{ padding: '28px 24px' }}>
                 <div className="m-label" style={{ marginBottom: '12px' }}>{label}</div>
@@ -277,18 +297,18 @@ export default function About({ navigate }) {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* ── CTA ── */}
       <section className="m-section-sm" style={{ borderTop: '1px solid #1A1610' }}>
         <div className="m-wrap-sm" style={{ textAlign: 'center' }}>
           <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#E8E2D5', marginBottom: '12px' }}>
-            Get early access.
+            Start building your system.
           </h2>
           <p className="m-body" style={{ marginBottom: '28px' }}>
-            Be part of the first rollout.
+            Apply for early access. Private beta. Invite-only.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <button className="m-btn m-btn-primary" onClick={() => navigate('/early-access')}>
-              Get Early Access →
+              Apply for Early Access
             </button>
             <button className="m-btn m-btn-outline" onClick={() => navigate('/investors')}>
               Investor Overview →
