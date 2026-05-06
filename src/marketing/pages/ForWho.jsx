@@ -7,14 +7,14 @@ const SEGMENTS = [
     emoji: '💼',
     title: 'Freelancers',
     tagline: 'Feast and famine — managed.',
-    pain: 'A R30,000 month followed by R6,000. A client who pays late. A dry quarter. Freelance income isn\'t unpredictable — it just requires different financial architecture.',
+    pain: 'A $30,000 month followed by $6,000. A client who pays late. A dry quarter. Freelance income isn\'t unpredictable — it just requires different financial architecture.',
     outcomes: [
       'Salary is computed from expenses, not guessed from last month\'s invoice',
       'Buffer absorbs lean months without lifestyle disruption',
       'Allocator ensures every large payment is distributed, not spent',
       'Spending Gate prevents feast-month lifestyle inflation',
     ],
-    quote: 'The buffer is what makes a R6,000 month feel like a R18,000 month.',
+    quote: 'The buffer is what makes a $6,000 month feel like a $18,000 month.',
   },
   {
     emoji: '📈',
@@ -54,7 +54,7 @@ const SEGMENTS = [
       'Spending Gate prevents small-payment spending sprees',
       'System handles daily, weekly, and monthly income variability',
     ],
-    quote: 'The system doesn\'t care if you earned R500 or R5,000. It allocates both correctly.',
+    quote: 'The system doesn\'t care if you earned $500 or $5,000. It allocates both correctly.',
   },
   {
     emoji: '🏠',
