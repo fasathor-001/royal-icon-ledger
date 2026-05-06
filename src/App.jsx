@@ -152,7 +152,7 @@ function MobileBottomNav({ tab, setTab, user, data }) {
 
   const secondary = [
     { id: 'setup',   label: data?.mode === 'foundation' ? foundationCopy.setupAndSalary : 'Setup & Salary' },
-    { id: 'profit',  label: data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' },
+    ...(data?.mode !== 'foundation' ? [{ id: 'profit', label: data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' }] : []),
     { id: 'history', label: 'History' },
     { id: 'rules',   label: 'Rules' },
     ...(user ? [{ id: 'settings', label: 'Settings' }] : []),
@@ -609,7 +609,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
             { id: 'command', label: 'Command' },
             { id: 'setup', label: data.mode === 'foundation' ? foundationCopy.setupAndSalary : 'Setup & Salary' },
             { id: 'budget', label: 'Budget' },
-            { id: 'profit', label: data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' },
+            ...(data.mode !== 'foundation' ? [{ id: 'profit', label: data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' }] : []),
             ...(data.incomeType !== 'fixed' && data.mode !== 'foundation' ? [{ id: 'trading', label: 'Trading P&L' }] : []),
             { id: 'impulse', label: 'Impulse Control' },
             { id: 'history', label: 'History' },
