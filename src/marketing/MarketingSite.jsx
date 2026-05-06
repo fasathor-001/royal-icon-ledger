@@ -31,23 +31,78 @@ function ScrollToTop() {
   return null;
 }
 
-// ── Page titles per route ───────────────────────────────────────
-const PAGE_TITLES = {
-  '/':             'Royal Ledger — Financial OS for Variable-Income Earners',
-  '/product':      'Product — Royal Ledger',
-  '/how-it-works': 'How It Works — Royal Ledger',
-  '/for-who':      'For Who — Royal Ledger',
-  '/security':     'Security & Privacy — Royal Ledger',
-  '/investors':    'Investors — Royal Ledger',
-  '/early-access': 'Get Early Access — Royal Ledger',
-  '/about':        'About — Royal Ledger',
-  '/privacy':      'Privacy Policy — Royal Ledger',
+// ── Per-route meta ─────────────────────────────────────────────
+const BASE_URL = 'https://royalledger.app';
+const OG_IMAGE = `${BASE_URL}/og-image.png`;
+
+const PAGE_META = {
+  '/': {
+    title:       'Royal Ledger — Financial OS for Variable-Income Earners',
+    description: 'Give every unit a role — before you spend it. Built for freelancers, traders, and anyone with unpredictable income.',
+  },
+  '/product': {
+    title:       'Product — Royal Ledger',
+    description: 'Envelopes, buffers, trading P&L, PIN gate, cloud sync — every module built for variable income.',
+  },
+  '/how-it-works': {
+    title:       'How It Works — Royal Ledger',
+    description: 'Income arrives. You allocate. You spend from envelopes. Month closes. Repeat — with full visibility at every step.',
+  },
+  '/for-who': {
+    title:       'Who Royal Ledger Is For',
+    description: 'Freelancers, traders, gig workers, business owners — Royal Ledger is built for people whose income never looks the same twice.',
+  },
+  '/security': {
+    title:       'Security & Privacy — Royal Ledger',
+    description: 'Your data stays yours. Row-level security, offline-first storage, no ads, no tracking, full export.',
+  },
+  '/investors': {
+    title:       'Investors — Royal Ledger',
+    description: '1.57B freelancers. 500M traders. No financial OS built for them. Royal Ledger is the category.',
+  },
+  '/early-access': {
+    title:       'Get Early Access — Royal Ledger',
+    description: 'Apply for early access to Royal Ledger — the financial OS built for variable-income earners.',
+  },
+  '/about': {
+    title:       'About — Royal Ledger',
+    description: 'Why Royal Ledger exists, who built it, and the belief that drove it: the money was always there.',
+  },
+  '/privacy': {
+    title:       'Privacy Policy — Royal Ledger',
+    description: 'How Royal Ledger handles your data.',
+  },
 };
 
-function TitleSync() {
+function setMeta(name, content) {
+  let el = document.querySelector(`meta[name="${name}"]`) ||
+           document.querySelector(`meta[property="${name}"]`);
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute(name.startsWith('og:') || name.startsWith('twitter:') ? 'property' : 'name', name);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', content);
+}
+
+function HeadSync() {
   const { pathname } = useLocation();
   useEffect(() => {
-    document.title = PAGE_TITLES[pathname] ?? PAGE_TITLES['/'];
+    const meta = PAGE_META[pathname] ?? PAGE_META['/'];
+    const url  = `${BASE_URL}${pathname}`;
+    document.title = meta.title;
+    setMeta('description',         meta.description);
+    setMeta('og:title',            meta.title);
+    setMeta('og:description',      meta.description);
+    setMeta('og:url',              url);
+    setMeta('og:image',            OG_IMAGE);
+    setMeta('twitter:title',       meta.title);
+    setMeta('twitter:description', meta.description);
+    setMeta('twitter:image',       OG_IMAGE);
+    // Canonical link
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
+    canonical.href = url;
   }, [pathname]);
   return null;
 }
@@ -61,7 +116,7 @@ function MarketingShell() {
   return (
     <div className="m-root" style={{ background: '#0A0908', minHeight: '100vh', color: '#E8E2D5' }}>
       <ScrollToTop />
-      <TitleSync />
+      <HeadSync />
       <MarketingNav />
       <main>
         <Routes>

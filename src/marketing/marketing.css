@@ -148,7 +148,7 @@
 /* ── Footer ─────────────────────────────────── */
 .m-footer { border-top: 1px solid #1A1610; padding: 72px 0 40px; }
 .m-footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 56px; }
-.m-footer-col-title { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #3A3028; margin-bottom: 20px; }
+.m-footer-col-title { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #5C5648; margin-bottom: 20px; }
 .m-footer-link { display: block; font-size: 14px; color: #5C5648; cursor: pointer; background: none; border: none; text-align: left; padding: 4px 0; transition: color 150ms; font-family: 'Inter', system-ui, sans-serif; width: 100%; }
 .m-footer-link:hover { color: #8B8478; }
 @media (max-width: 768px) { .m-footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }

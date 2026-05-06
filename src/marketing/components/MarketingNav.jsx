@@ -145,7 +145,7 @@ export default function MarketingNav() {
             style={{ textDecoration: 'none', justifyContent: 'center', width: '100%' }}
             onClick={() => setDrawerOpen(false)}
           >
-            Request Early Access
+            Request Access
           </NavLink>
           <button
             className="m-nav-open-app"

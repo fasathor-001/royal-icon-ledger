@@ -254,11 +254,24 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
   const handleEnableNotifications = async () => {
     if (!('Notification' in window)) {
       setNotifStatus('denied');
+      setData(d => ({ ...d, notificationPreferences: { ...d.notificationPreferences, permissionGranted: false, dailyEnabled: false, weeklyEnabled: false } }));
       return;
     }
     try {
       const result = await Notification.requestPermission();
-      setNotifStatus(result === 'granted' ? 'granted' : 'denied');
+      const granted = result === 'granted';
+      setNotifStatus(granted ? 'granted' : 'denied');
+      // Persist the actual permission result so the app respects it after onboarding
+      setData(d => ({
+        ...d,
+        notificationPreferences: {
+          ...d.notificationPreferences,
+          permissionGranted: granted,
+          dailyEnabled:   granted,
+          weeklyEnabled:  granted,
+          monthlyEnabled: granted,
+        },
+      }));
     } catch {
       setNotifStatus('denied');
     }

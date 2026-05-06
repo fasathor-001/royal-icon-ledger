@@ -15,7 +15,7 @@ export default defineConfig({
         id: '/',
         name: 'Royal Ledger',
         short_name: 'Royal Ledger',
-        description: 'Personal finance for the disciplined trader and their family.',
+        description: 'Give every unit of income a role — before you spend it. Built for freelancers, traders, and variable-income earners.',
         theme_color: '#0A0908',
         background_color: '#0A0908',
         display: 'standalone',
