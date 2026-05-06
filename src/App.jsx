@@ -4178,7 +4178,6 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
         {[
           { id: 'account',  label: 'Account' },
           { id: 'sessions', label: 'Sessions' },
-          ...(user ? [{ id: 'access', label: 'Access' }] : []),
           { id: 'setup',    label: 'Data & Sync' },
           { id: 'danger',   label: 'Danger zone' },
         ].map(t => (
@@ -4508,16 +4507,6 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
           )}
 
           <p className="text-xs" style={{ color: '#3A3028' }}>Sessions expire automatically after 7 days of inactivity.</p>
-        </div>
-      )}
-
-      {/* ── Access sub-tab ── */}
-      {sTab === 'access' && user && (
-        <div className="space-y-5">
-          <p className="text-sm" style={{ color: '#8B8478' }}>
-            Generate invite codes to share with people you want to give access, or approve requests from people who applied.
-          </p>
-          <AccessControlPanel />
         </div>
       )}
 
