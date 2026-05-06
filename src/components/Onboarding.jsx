@@ -2,7 +2,7 @@
 //
 // 10-step welcome flow shown on first launch.
 // Sets up currency, timezone, income type, expenses, spending budget,
-// buffer target, starting balances, PIN, and notifications.
+// buffer target, starting balances, PIN (mandatory, hashed), and notifications.
 
 import React, { useState, useRef } from 'react';
 import {
@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { CURRENCIES, makeFmt, getCurrency } from '../lib/currency';
 import { TIMEZONES, offsetLabel, normalizeTimezone } from '../lib/timezones';
+import { hashPin } from '../lib/pinHash';
 
 const SUGGESTED_EXPENSES = [
   { name: 'Rent / Bond',         category: 'Housing',         placeholder: '0', fixed: true  },
@@ -74,7 +75,7 @@ function InfoPopover({ label, children }) {
   );
 }
 
-export default function Onboarding({ data, setData, onComplete }) {
+export default function Onboarding({ data, setData, onComplete, userEmail = '' }) {
   const [step, setStep] = useState(1);
 
   // ── Existing step state ──────────────────────────────────────────────────
@@ -99,6 +100,7 @@ export default function Onboarding({ data, setData, onComplete }) {
   const [startingTradingCapital, setStartingTradingCapital] = useState(data.tradingCapital ?? 0);
   const [startingLongTerm, setStartingLongTerm] = useState(data.longTerm ?? 0);
   const [pinValue, setPinValue] = useState('');
+  const [pinConfirm, setPinConfirm] = useState('');
 
   // ── Envelope tracking (Step 5) ───────────────────────────────────────────
   // keyed by suggested expense name; value: true/false
@@ -147,7 +149,7 @@ export default function Onboarding({ data, setData, onComplete }) {
   };
 
   // ── finish() — writes all collected data in one setData call ─────────────
-  const finish = () => {
+  const finish = async () => {
     // Convert expense values to expense records, and build linked envelopes
     const expenses = [];
     const newEnvelopes = [];
@@ -203,6 +205,9 @@ export default function Onboarding({ data, setData, onComplete }) {
       }
     });
 
+    // Hash PIN before calling setData (await cannot be inside the updater callback)
+    const newPinHash = await hashPin(pinValue.trim(), userEmail);
+
     setData(d => ({
       ...d,
       // ── Onboarding timestamp — written once, never overwritten ──
@@ -232,8 +237,9 @@ export default function Onboarding({ data, setData, onComplete }) {
       buffer: Number(startingBuffer) || 0,
       tradingCapital: Number(startingTradingCapital) || 0,
       longTerm: Number(startingLongTerm) || 0,
-      // ── New fields (Step 9: PIN — only write if non-empty) ──
-      ...(pinValue.trim() !== '' ? { overridePin: pinValue.trim() } : {}),
+      // ── New fields (Step 9: PIN — hashed, user-owned) ──
+      pinHash: newPinHash,
+      overridePin: '', // clear any legacy plain-text PIN
     }));
     onComplete();
   };
@@ -259,7 +265,7 @@ export default function Onboarding({ data, setData, onComplete }) {
   };
 
   // ── Validation per step ───────────────────────────────────────────────────
-  const pinIsValid = pinValue.trim() === '' || /^\d{4}$/.test(pinValue.trim());
+  const pinIsValid = /^\d{4,6}$/.test(pinValue.trim()) && pinValue.trim() === pinConfirm.trim();
 
   const canAdvance = () => {
     if (step === 1)  return true;
@@ -270,7 +276,7 @@ export default function Onboarding({ data, setData, onComplete }) {
     if (step === 6)  return Number(spendingBudget) > 0;
     if (step === 7)  return bufferMonths !== null;
     if (step === 8)  return true;                          // starting balances — always ok
-    if (step === 9)  return pinIsValid;                    // empty or exactly 4 digits
+    if (step === 9)  return pinIsValid;                    // mandatory: 4–6 digits, must match confirm
     if (step === 10) return true;                          // summary
     return true;
   };
@@ -1101,60 +1107,71 @@ export default function Onboarding({ data, setData, onComplete }) {
           </div>
         )}
 
-        {/* ── STEP 9: PIN SETUP (NEW) ───────────────────────────────────────── */}
+        {/* ── STEP 9: PIN SETUP — mandatory ─────────────────────────────────── */}
         {step === 9 && (
           <div>
             <div className="ob-label" style={{ color: '#D97757', marginBottom: '12px' }}>Step {step} of {totalSteps}</div>
             <Lock size={28} style={{ color: '#D97757', marginBottom: '16px' }} />
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
-              Set a <span style={{ fontStyle: 'italic', color: '#D97757' }}>PIN</span> (optional).
+              Set your security <span style={{ fontStyle: 'italic', color: '#D97757' }}>PIN</span>.
             </h1>
             <p style={{ color: '#8B8478', marginBottom: '8px', fontSize: '15px' }}>
-              Protect sensitive actions like resets, deletes, and spending overrides.
+              Royal Ledger uses your PIN to protect important structural changes.
             </p>
             <p style={{ color: '#5C5648', marginBottom: '32px', fontSize: '13px' }}>
-              Leave empty to skip — you can add a PIN later in Settings.
+              Choose 4–6 digits. Your PIN is hashed on this device — it cannot be recovered without a support reset.
             </p>
 
-            <div style={{ maxWidth: '260px', marginBottom: '12px' }}>
-              <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>4-digit PIN</div>
-              <input
-                type="password"
-                inputMode="numeric"
-                maxLength={4}
-                placeholder="••••"
-                value={pinValue}
-                onChange={e => {
-                  const val = e.target.value.replace(/\D/g, '').slice(0, 4);
-                  setPinValue(val);
-                }}
-                className="ob-input"
-                style={{ fontSize: '24px', letterSpacing: '0.4em', textAlign: 'center' }}
-              />
+            <div style={{ maxWidth: '280px' }}>
+              <div style={{ marginBottom: '16px' }}>
+                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>PIN (4–6 digits)</div>
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  maxLength={6}
+                  placeholder="••••"
+                  value={pinValue}
+                  onChange={e => setPinValue(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  className="ob-input"
+                  style={{ fontSize: '24px', letterSpacing: '0.4em', textAlign: 'center' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Confirm PIN</div>
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  maxLength={6}
+                  placeholder="••••"
+                  value={pinConfirm}
+                  onChange={e => setPinConfirm(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  className="ob-input"
+                  style={{ fontSize: '24px', letterSpacing: '0.4em', textAlign: 'center', borderColor: pinConfirm && pinValue !== pinConfirm ? '#C56B5A' : undefined }}
+                />
+              </div>
             </div>
 
-            {/* Inline validation message */}
+            {/* Inline validation */}
             {pinValue.length > 0 && pinValue.length < 4 && (
-              <p style={{ color: '#5C5648', fontSize: '12px', marginBottom: '24px' }}>
-                Enter all 4 digits to set a PIN, or clear the field to skip.
+              <p style={{ color: '#5C5648', fontSize: '12px', marginBottom: '12px' }}>Enter 4–6 digits.</p>
+            )}
+            {pinConfirm.length > 0 && pinValue !== pinConfirm && (
+              <p style={{ color: '#C56B5A', fontSize: '12px', marginBottom: '12px' }}>PINs don't match.</p>
+            )}
+            {pinIsValid && (
+              <p style={{ color: '#7FA068', fontSize: '12px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Check size={12} /> PIN set — keep it somewhere safe.
               </p>
             )}
-            {pinValue.length === 4 && (
-              <p style={{ color: '#7FA068', fontSize: '12px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Check size={12} /> PIN ready — you can change it anytime in Settings.
-              </p>
-            )}
-            {pinValue.length === 0 && (
-              <p style={{ color: '#3A3028', fontSize: '12px', marginBottom: '24px' }}>
-                No PIN — all protected actions will be unlocked without confirmation.
-              </p>
-            )}
+
+            <div style={{ marginBottom: '24px' }} />
 
             <NavRow
               back={back}
               next={next}
               canAdvance={canAdvance()}
-              hint={!canAdvance() ? 'PIN must be exactly 4 digits, or leave empty to skip' : null}
+              hint={!canAdvance() ? 'Enter matching PINs of 4–6 digits to continue' : null}
             />
           </div>
         )}
@@ -1248,7 +1265,7 @@ export default function Onboarding({ data, setData, onComplete }) {
               </ol>
             </div>
 
-            <button onClick={finish} className="ob-btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+            <button onClick={() => finish()} className="ob-btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
               Open the dashboard <ArrowRight size={16} />
             </button>
           </div>

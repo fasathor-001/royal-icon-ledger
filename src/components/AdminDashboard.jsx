@@ -197,85 +197,18 @@ function NoteEditor({ lead, onSave }) {
 
 // ── Admin PIN manager (per lead) ───────────────────────────────────────────────
 
-function PinManager({ lead, onPinSave }) {
-  const [editing, setEditing] = useState(false);
-  const [pin, setPin] = useState('');
-  const [saving, setSaving] = useState(false);
-
-  const save = async (valueToSave) => {
-    setSaving(true);
-    try {
-      const { error } = await supabase
-        .from('early_access_leads')
-        .update({ assigned_pin: valueToSave || null })
-        .eq('id', lead.id);
-      if (error) throw error;
-      onPinSave(lead.id, valueToSave || null);
-      setEditing(false);
-      setPin('');
-    } catch (err) {
-      console.error('[AdminDashboard] pinSave:', err);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  if (!editing) {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-        <KeyRound size={11} style={{ color: '#3A3028', flexShrink: 0 }} />
-        <span style={{ fontSize: '12px', color: lead.assigned_pin ? '#7FA068' : '#3A3028' }}>
-          {lead.assigned_pin ? `PIN assigned (${lead.assigned_pin})` : 'No PIN assigned'}
-        </span>
-        <button
-          onClick={() => { setPin(''); setEditing(true); }}
-          style={{ fontSize: '11px', color: '#5B7FB8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
-        >
-          {lead.assigned_pin ? 'Change' : 'Set PIN'}
-        </button>
-        {lead.assigned_pin && (
-          <button
-            onClick={() => save(null)}
-            disabled={saving}
-            style={{ fontSize: '11px', color: '#C56B5A', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', opacity: saving ? 0.5 : 1 }}
-          >
-            Clear
-          </button>
-        )}
-      </div>
-    );
-  }
-
+// PIN status is user-owned — admins cannot view or set it.
+// Admin can only see whether a PIN is active (user has pinHash set in their localStorage).
+// We surface this via the pin_reset_requests table — pending requests indicate the user
+// either forgot their PIN or wants a reset.  Admin action: approve the request.
+function PinStatusIndicator({ lead }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-      <KeyRound size={11} style={{ color: '#5B7FB8', flexShrink: 0 }} />
-      <input
-        type="text"
-        inputMode="numeric"
-        maxLength={4}
-        value={pin}
-        onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-        placeholder="4 digits"
-        autoFocus
-        style={{
-          width: '80px', background: '#0A0908', border: '1px solid #26221C',
-          borderRadius: '4px', padding: '5px 8px', fontSize: '13px',
-          color: '#E8E2D5', textAlign: 'center', letterSpacing: '0.3em', outline: 'none',
-        }}
-      />
-      <button
-        onClick={() => save(pin)}
-        disabled={saving || pin.length !== 4}
-        style={{ fontSize: '12px', color: '#7FA068', background: 'none', border: '1px solid #2A4A20', borderRadius: '4px', cursor: pin.length === 4 ? 'pointer' : 'not-allowed', padding: '4px 10px', opacity: (saving || pin.length !== 4) ? 0.5 : 1 }}
-      >
-        {saving ? 'Saving…' : 'Save'}
-      </button>
-      <button
-        onClick={() => { setEditing(false); setPin(''); }}
-        style={{ fontSize: '12px', color: '#5C5648', background: 'none', border: 'none', cursor: 'pointer' }}
-      >
-        Cancel
-      </button>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <KeyRound size={11} style={{ color: '#3A3028', flexShrink: 0 }} />
+      <span style={{ fontSize: '12px', color: '#3A3028' }}>
+        PIN is user-owned — cannot be viewed or assigned by admin.
+        Reset requests appear in the PIN Resets panel below.
+      </span>
     </div>
   );
 }
@@ -445,7 +378,7 @@ function InviteModal({ lead, onClose, onSent }) {
 
 // ── Lead row ───────────────────────────────────────────────────────────────────
 
-function LeadRow({ lead, onUpdateStatus, onInvite, onNoteSave, onPinSave, onCodeSave }) {
+function LeadRow({ lead, onUpdateStatus, onInvite, onNoteSave, onCodeSave }) {
   return (
     <div style={{ background: '#0F0D0A', border: '1px solid #26221C', borderRadius: '8px', padding: '20px' }}>
 
@@ -495,9 +428,8 @@ function LeadRow({ lead, onUpdateStatus, onInvite, onNoteSave, onPinSave, onCode
         <NoteEditor lead={lead} onSave={onNoteSave} />
       </div>
 
-      {/* PIN + Invite code */}
+      {/* Invite code */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '14px', borderBottom: '1px solid #1A1610', marginBottom: '14px' }}>
-        <PinManager lead={lead} onPinSave={onPinSave} />
         <InviteCodeManager lead={lead} onCodeSave={onCodeSave} />
       </div>
 
@@ -554,6 +486,8 @@ export default function AdminDashboard({ user }) {
   const [activeFilter, setActiveFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [inviteTarget, setInviteTarget] = useState(null);
+  const [pinResets, setPinResets] = useState([]);
+  const [pinResetsLoading, setPinResetsLoading] = useState(false);
 
   const isAdmin = !!(user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase()));
 
@@ -576,8 +510,48 @@ export default function AdminDashboard({ user }) {
     }
   }, [isAdmin]);
 
+  const fetchPinResets = useCallback(async () => {
+    if (!isAdmin || !supabase) return;
+    setPinResetsLoading(true);
+    try {
+      const { data, error: err } = await supabase
+        .from('pin_reset_requests')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!err) setPinResets(data || []);
+    } catch {} finally {
+      setPinResetsLoading(false);
+    }
+  }, [isAdmin]);
+
+  const approvePinReset = async (id) => {
+    if (!supabase) return;
+    try {
+      await supabase
+        .from('pin_reset_requests')
+        .update({ status: 'approved', reviewed_at: new Date().toISOString(), reviewed_by: user?.email })
+        .eq('id', id);
+      setPinResets(prev => prev.map(r => r.id === id ? { ...r, status: 'approved' } : r));
+    } catch (err) {
+      console.error('[AdminDashboard] approvePinReset:', err);
+    }
+  };
+
+  const dismissPinReset = async (id) => {
+    if (!supabase) return;
+    try {
+      await supabase
+        .from('pin_reset_requests')
+        .update({ status: 'dismissed', reviewed_at: new Date().toISOString(), reviewed_by: user?.email })
+        .eq('id', id);
+      setPinResets(prev => prev.map(r => r.id === id ? { ...r, status: 'dismissed' } : r));
+    } catch (err) {
+      console.error('[AdminDashboard] dismissPinReset:', err);
+    }
+  };
+
   useEffect(() => {
-    if (isAdmin && supabase) fetchLeads();
+    if (isAdmin && supabase) { fetchLeads(); fetchPinResets(); }
     else setLoading(false);
   }, [isAdmin, fetchLeads]);
 
@@ -642,10 +616,6 @@ export default function AdminDashboard({ user }) {
 
   const handleNoteSave = (id, notes) => {
     setLeads(prev => prev.map(l => l.id === id ? { ...l, notes } : l));
-  };
-
-  const handlePinSave = (id, assigned_pin) => {
-    setLeads(prev => prev.map(l => l.id === id ? { ...l, assigned_pin } : l));
   };
 
   const handleCodeSave = (id, invite_code) => {
@@ -760,7 +730,6 @@ export default function AdminDashboard({ user }) {
               onUpdateStatus={updateStatus}
               onInvite={setInviteTarget}
               onNoteSave={handleNoteSave}
-              onPinSave={handlePinSave}
               onCodeSave={handleCodeSave}
             />
           ))}
@@ -774,6 +743,80 @@ export default function AdminDashboard({ user }) {
           onSent={handleInviteSent}
         />
       )}
+
+      {/* ── PIN Reset Requests ─────────────────────────────────────────────── */}
+      <div style={{ marginTop: '48px', borderTop: '1px solid #1A1610', paddingTop: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', gap: '12px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '4px' }}>
+              <KeyRound size={15} color="#D97757" />
+              <h2 style={{ fontSize: '18px', fontWeight: 400, color: '#E8E2D5', fontFamily: 'Georgia, serif' }}>PIN Reset Requests</h2>
+            </div>
+            <p style={{ fontSize: '12px', color: '#5C5648' }}>Users submit these when they've forgotten their PIN. Approve to force re-setup on their next login.</p>
+          </div>
+          <button onClick={fetchPinResets} disabled={pinResetsLoading} style={{ fontSize: '12px', color: '#5C5648', background: 'transparent', border: '1px solid #26221C', borderRadius: '5px', padding: '6px 12px', cursor: 'pointer' }}>
+            <RefreshCw size={11} style={{ display: 'inline', marginRight: '5px', animation: pinResetsLoading ? 'spin 1s linear infinite' : 'none' }} />
+            Refresh
+          </button>
+        </div>
+
+        {pinResets.length === 0 ? (
+          <p style={{ fontSize: '13px', color: '#3A3028', padding: '16px 0' }}>No PIN reset requests.</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {pinResets.map(req => {
+              const isPending  = req.status === 'pending';
+              const isApproved = req.status === 'approved';
+              return (
+                <div key={req.id} style={{ background: '#0F0D0A', border: `1px solid ${isPending ? '#3A2A1E' : '#1A1A1A'}`, borderRadius: '7px', padding: '16px 18px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                    <div>
+                      <div style={{ fontSize: '13px', color: '#E8E2D5', fontWeight: 500, marginBottom: '3px' }}>{req.user_email}</div>
+                      <div style={{ fontSize: '11px', color: '#3A3028' }}>Submitted: {fmt(req.created_at)}</div>
+                      {req.reason && (
+                        <div style={{ fontSize: '12px', color: '#8B8478', marginTop: '6px', lineHeight: 1.5 }}>
+                          Reason: {req.reason}
+                        </div>
+                      )}
+                      {req.reviewed_at && (
+                        <div style={{ fontSize: '11px', color: '#3A3028', marginTop: '4px' }}>
+                          Reviewed {fmt(req.reviewed_at)} by {req.reviewed_by}
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                      <span style={{
+                        fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
+                        padding: '3px 10px', borderRadius: '999px',
+                        background: isPending ? 'rgba(217,119,87,0.12)' : isApproved ? 'rgba(127,160,104,0.12)' : 'rgba(92,86,72,0.18)',
+                        color: isPending ? '#D97757' : isApproved ? '#7FA068' : '#5C5648',
+                      }}>
+                        {req.status}
+                      </span>
+                      {isPending && (
+                        <>
+                          <button
+                            onClick={() => approvePinReset(req.id)}
+                            style={{ fontSize: '12px', color: '#7FA068', background: 'none', border: '1px solid #2A4A20', borderRadius: '4px', padding: '4px 12px', cursor: 'pointer', fontWeight: 600 }}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => dismissPinReset(req.id)}
+                            style={{ fontSize: '12px', color: '#5C5648', background: 'none', border: 'none', cursor: 'pointer' }}
+                          >
+                            Dismiss
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>

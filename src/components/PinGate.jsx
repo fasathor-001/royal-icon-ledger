@@ -1,4 +1,23 @@
+// src/components/PinGate.jsx
+//
+// PIN gate UI components and hooks.
+//
+// All hooks read PIN configuration from PinContext — no arguments needed
+// at callsites.  The app wraps its main content in:
+//   <PinContext.Provider value={{ pin, pinHash, email }}>
+//
+// Hooks:
+//   usePinGate()      — gate a single action (button, confirm, etc.)
+//   useSectionPin()   — gate a whole editable section (unlocks for 60s)
+//   usePinRowGate()   — gate individual rows in a list
+//
+// When no PIN exists (usePinActive() === false):
+//   All structural actions are BLOCKED.  A "PIN required" notice is shown
+//   directing the user to set up their PIN.  Actions never pass through silently.
+// ─────────────────────────────────────────────────────────────────────────────
+
 import React, { useState, useEffect, useRef } from 'react';
+import { usePinVerify, usePinActive } from './PinContext';
 
 const gateStyle = {
   background: '#1A1410', border: '1px solid #3A2A1E',
@@ -11,7 +30,8 @@ const inputStyle = {
   letterSpacing: '0.3em', outline: 'none',
 };
 
-// Shown when a structural action is attempted but no PIN has been assigned yet
+// ── No-PIN notice ─────────────────────────────────────────────────────────────
+// Shown when a structural action is attempted but no PIN has been set up yet.
 function NoPinNotice({ onClose }) {
   return (
     <div style={{ ...gateStyle, borderColor: '#3A2618', background: '#110D08' }}>
@@ -19,16 +39,9 @@ function NoPinNotice({ onClose }) {
         PIN required
       </div>
       <div style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.6 }}>
-        This action requires a PIN. No PIN has been assigned to your account yet.
-        Contact your administrator to receive one.
+        This action requires a PIN. Set up your PIN in Account Settings to continue.
       </div>
       <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <a
-          href="mailto:hello@royalledger.app"
-          style={{ fontSize: '12px', color: '#D97757', textDecoration: 'none' }}
-        >
-          hello@royalledger.app
-        </a>
         {onClose && (
           <button
             onClick={onClose}
@@ -42,7 +55,8 @@ function NoPinNotice({ onClose }) {
   );
 }
 
-export function PinGateInline({ val, setVal, onConfirm, onCancel, error }) {
+// ── PIN input inline ──────────────────────────────────────────────────────────
+export function PinGateInline({ val, setVal, onConfirm, onCancel, error, loading }) {
   return (
     <div style={gateStyle}>
       <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '6px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
@@ -50,54 +64,68 @@ export function PinGateInline({ val, setVal, onConfirm, onCancel, error }) {
       </div>
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
         <input
-          type="password" maxLength={4} value={val} autoFocus
-          onChange={e => setVal(e.target.value.replace(/\D/g, '').slice(0, 4))}
-          onKeyDown={e => e.key === 'Enter' && onConfirm()}
+          type="password" maxLength={6} value={val} autoFocus
+          onChange={e => setVal(e.target.value.replace(/\D/g, '').slice(0, 6))}
+          onKeyDown={e => e.key === 'Enter' && !loading && onConfirm()}
           placeholder="••••"
           style={inputStyle}
+          disabled={loading}
         />
         <button
           onClick={onConfirm}
-          style={{ background: '#D97757', color: '#0A0908', padding: '8px 16px', borderRadius: '3px', fontWeight: 600, fontSize: '12px', border: 'none', cursor: 'pointer' }}
+          disabled={loading}
+          style={{ background: loading ? '#5C5648' : '#D97757', color: '#0A0908', padding: '8px 16px', borderRadius: '3px', fontWeight: 600, fontSize: '12px', border: 'none', cursor: loading ? 'default' : 'pointer', opacity: loading ? 0.7 : 1 }}
         >
-          Confirm
+          {loading ? '…' : 'Confirm'}
         </button>
         <button
           onClick={onCancel}
+          disabled={loading}
           style={{ background: 'transparent', color: '#8B8478', padding: '8px 12px', fontSize: '12px', border: 'none', cursor: 'pointer' }}
         >
           Cancel
         </button>
       </div>
-      {error && <div style={{ color: '#C56B5A', fontSize: '12px', marginTop: '6px' }}>Incorrect PIN</div>}
+      {error && <div style={{ color: '#C56B5A', fontSize: '12px', marginTop: '6px' }}>Incorrect PIN. Try again.</div>}
     </div>
   );
 }
 
-// For single actions (reset, apply, unlock)
-// No PIN → blocks the action and shows contact-admin notice (never silently passes through)
-export function usePinGate(pin) {
-  const [pending, setPending] = useState(null);
-  const [noPin, setNoPin] = useState(false);
-  const [val, setVal] = useState('');
-  const [error, setError] = useState(false);
+// ── usePinGate — gate a single action ────────────────────────────────────────
+// Usage:
+//   const { attempt, gate, active } = usePinGate();
+//   <button onClick={() => attempt(() => doThing())}>Do thing</button>
+//   {gate}
+export function usePinGate() {
+  const verify  = usePinVerify();
+  const hasPin  = usePinActive();
+
+  const [pending,    setPending]    = useState(null);  // the action fn waiting for PIN
+  const [noPin,      setNoPin]      = useState(false); // show no-pin notice
+  const [val,        setVal]        = useState('');
+  const [error,      setError]      = useState(false);
+  const [verifying,  setVerifying]  = useState(false);
 
   const attempt = (action) => {
-    if (!pin) {
-      setNoPin(true);   // block + show notice
-      return;
-    }
+    if (!hasPin) { setNoPin(true); return; }
     setPending(() => action);
     setVal(''); setError(false);
   };
 
-  const confirm = () => {
-    if (val === pin) {
-      const fn = pending;
-      setPending(null); setVal(''); setError(false);
-      fn?.();
-    } else {
-      setError(true); setVal('');
+  const confirm = async () => {
+    if (verifying) return;
+    setVerifying(true);
+    try {
+      const ok = await verify(val);
+      if (ok) {
+        const fn = pending;
+        setPending(null); setVal(''); setError(false);
+        fn?.();
+      } else {
+        setError(true); setVal('');
+      }
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -106,50 +134,54 @@ export function usePinGate(pin) {
   const gate = noPin ? (
     <NoPinNotice onClose={() => setNoPin(false)} />
   ) : pending ? (
-    <PinGateInline val={val} setVal={setVal} onConfirm={confirm} onCancel={cancel} error={error} />
+    <PinGateInline val={val} setVal={setVal} onConfirm={confirm} onCancel={cancel} error={error} loading={verifying} />
   ) : null;
 
   return { attempt, gate, active: !!pending || noPin };
 }
 
-// For section-level editing — unlocks all fields in a section for 60s after PIN
-// No PIN → section stays locked, shows contact-admin notice on unlock attempt
-export function useSectionPin(pin) {
-  const [unlocked, setUnlocked] = useState(false);
-  const [pending, setPending] = useState(false); // true = PIN input open, 'nopin' = no-pin notice
-  const [val, setVal] = useState('');
-  const [error, setError] = useState(false);
+// ── useSectionPin — gate an entire editable section ──────────────────────────
+// Usage:
+//   const { locked, requestUnlock, gate, unlocked } = useSectionPin();
+//   Renders a lock button when locked; shows PIN inline when unlocking.
+//   Automatically re-locks after 60 seconds.
+export function useSectionPin() {
+  const verify  = usePinVerify();
+  const hasPin  = usePinActive();
+
+  const [unlocked,   setUnlocked]   = useState(false);
+  const [pending,    setPending]    = useState(false); // true | 'nopin'
+  const [val,        setVal]        = useState('');
+  const [error,      setError]      = useState(false);
+  const [verifying,  setVerifying]  = useState(false);
   const timerRef = useRef(null);
 
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
 
-  // When pin changes (admin assigns or clears it), reset unlock state
-  useEffect(() => { setUnlocked(false); setPending(false); }, [pin]);
+  // Re-lock when PIN configuration changes (e.g. user sets up PIN)
+  useEffect(() => { setUnlocked(false); setPending(false); }, [hasPin]);
 
   const requestUnlock = () => {
     if (unlocked) return;
-    if (!pin) {
-      setPending('nopin');
-      setVal('');
-      setError(false);
-      return;
-    }
-    setPending(true);
-    setVal('');
-    setError(false);
+    if (!hasPin) { setPending('nopin'); setVal(''); setError(false); return; }
+    setPending(true); setVal(''); setError(false);
   };
 
-  const confirm = () => {
-    if (val === pin) {
-      setUnlocked(true);
-      setPending(false);
-      setVal('');
-      setError(false);
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => setUnlocked(false), 60000);
-    } else {
-      setError(true);
-      setVal('');
+  const confirm = async () => {
+    if (verifying) return;
+    setVerifying(true);
+    try {
+      const ok = await verify(val);
+      if (ok) {
+        setUnlocked(true);
+        setPending(false); setVal(''); setError(false);
+        if (timerRef.current) clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(() => setUnlocked(false), 60000);
+      } else {
+        setError(true); setVal('');
+      }
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -158,37 +190,48 @@ export function useSectionPin(pin) {
   const gate = pending === 'nopin' ? (
     <NoPinNotice onClose={() => setPending(false)} />
   ) : pending ? (
-    <PinGateInline val={val} setVal={setVal} onConfirm={confirm} onCancel={cancel} error={error} />
+    <PinGateInline val={val} setVal={setVal} onConfirm={confirm} onCancel={cancel} error={error} loading={verifying} />
   ) : null;
 
-  // locked = not yet unlocked (regardless of whether a PIN exists)
-  // Without this change, !pin would make locked=false, bypassing all protection
+  // Always locked until the user successfully enters their PIN.
+  // (Previously: locked = !!pin && !unlocked, which let no-PIN users bypass.)
   const locked = !unlocked;
 
   return { unlocked, locked, requestUnlock, gate };
 }
 
-// For list rows — tracks which row's gate is open by key
-// No PIN → blocks the action and shows contact-admin notice in that row
-export function usePinRowGate(pin) {
-  const [row, setRow] = useState(null);   // { key, action, val, error } — PIN input open
-  const [noPinKey, setNoPinKey] = useState(null); // key of row that hit no-pin wall
+// ── usePinRowGate — gate individual rows in a list ───────────────────────────
+// Usage:
+//   const { attemptRow, gateFor } = usePinRowGate();
+//   <button onClick={() => attemptRow(item.id, () => deleteItem(item.id))}>Delete</button>
+//   {gateFor(item.id)}
+export function usePinRowGate() {
+  const verify  = usePinVerify();
+  const hasPin  = usePinActive();
+
+  const [row,       setRow]       = useState(null);   // { key, action, val, error }
+  const [noPinKey,  setNoPinKey]  = useState(null);   // key of row that hit no-pin wall
+  const [verifying, setVerifying] = useState(false);
 
   const attemptRow = (key, action) => {
-    if (!pin) {
-      setNoPinKey(key);   // block + show notice in that row
-      return;
-    }
+    if (!hasPin) { setNoPinKey(key); return; }
     setRow({ key, action, val: '', error: false });
   };
 
-  const confirm = () => {
-    if (row.val === pin) {
-      const fn = row.action;
-      setRow(null);
-      fn?.();
-    } else {
-      setRow(r => ({ ...r, val: '', error: true }));
+  const confirm = async () => {
+    if (!row || verifying) return;
+    setVerifying(true);
+    try {
+      const ok = await verify(row.val);
+      if (ok) {
+        const fn = row.action;
+        setRow(null);
+        fn?.();
+      } else {
+        setRow(r => ({ ...r, val: '', error: true }));
+      }
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -203,6 +246,7 @@ export function usePinRowGate(pin) {
         onConfirm={confirm}
         onCancel={cancel}
         error={row.error}
+        loading={verifying}
       />
     );
     return null;

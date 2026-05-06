@@ -21,6 +21,9 @@ import RitualCard from './components/RitualCard';
 import WeeklyPulseBanner from './components/WeeklyPulseBanner';
 import AdminDashboard from './components/AdminDashboard';
 import { usePinGate, usePinRowGate, useSectionPin } from './components/PinGate';
+import { PinContext, usePinVerify, usePinActive } from './components/PinContext';
+import { hashPin, verifyPin } from './lib/pinHash';
+import { supabase as supabaseClient } from './lib/supabase';
 import { CURRENCIES, getCurrency, makeFmt } from './lib/currency';
 import { getInviteCodes, createInviteCode, deleteInviteCode, resetInviteCode, getAccessRequests, approveAccessRequest, rejectAccessRequest, queueNotification, loadData, importLocalToCloud } from './lib/dataLayer';
 
@@ -84,8 +87,9 @@ const defaultData = {
   // Profile
   displayName: '',
 
-  // Feature 4: PIN override for pin-mode blocks
-  overridePin: '',
+  // Feature 4: PIN protection
+  overridePin: '',   // legacy plain-text PIN (kept for migration; prefer pinHash)
+  pinHash: '',       // SHA-256 hash of user-set PIN (user-owned, never admin-visible)
 
   // Feature 5: Trading day emotional guard
   tradingGuardUntil: null,
@@ -226,6 +230,97 @@ function MobileBottomNav({ tab, setTab, user, data }) {
   );
 }
 
+// ── PinSetupScreen ────────────────────────────────────────────────────────────
+// Shown to existing users who have no pinHash (migration path) and to users
+// whose reset request was approved by an admin (forgot PIN path).
+// Collects a new PIN, hashes it, saves to data.pinHash, clears overridePin.
+function PinSetupScreen({ onSave, isForgotPin = false }) {
+  const [pin, setPin]           = useState('');
+  const [confirm, setConfirm]   = useState('');
+  const [saving, setSaving]     = useState(false);
+  const [error, setError]       = useState('');
+
+  const pinOk      = /^\d{4,6}$/.test(pin);
+  const matchOk    = pin === confirm;
+  const canSubmit  = pinOk && matchOk && !saving;
+
+  const handleSave = async () => {
+    if (!canSubmit) return;
+    setSaving(true);
+    try {
+      await onSave(pin);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#0A0908', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+      <div style={{ maxWidth: '400px', width: '100%' }}>
+        <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#14100A', border: '1px solid #3A2A1E', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '28px' }}>
+          <Lock size={22} style={{ color: '#D97757' }} />
+        </div>
+        <h1 style={{ fontSize: '28px', fontWeight: 300, color: '#E8E2D5', fontFamily: 'Fraunces, Georgia, serif', marginBottom: '10px', lineHeight: 1.2 }}>
+          {isForgotPin ? 'Set a new PIN' : 'Set your security PIN'}
+        </h1>
+        <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, marginBottom: '32px' }}>
+          {isForgotPin
+            ? 'Your PIN reset was approved. Set a new PIN to continue.'
+            : 'Royal Ledger uses your PIN to protect important structural changes. You must set one to continue.'}
+        </p>
+
+        <div style={{ marginBottom: '16px' }}>
+          <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '8px', fontWeight: 600 }}>
+            New PIN (4–6 digits)
+          </div>
+          <input
+            type="password" inputMode="numeric" maxLength={6}
+            placeholder="••••" value={pin}
+            onChange={e => { setPin(e.target.value.replace(/\D/g, '').slice(0, 6)); setError(''); }}
+            style={{ background: '#0A0908', border: '1px solid #26221C', padding: '12px 14px', color: '#E8E2D5', borderRadius: '3px', width: '100%', fontSize: '22px', letterSpacing: '0.4em', textAlign: 'center', outline: 'none', fontFamily: 'JetBrains Mono, monospace', boxSizing: 'border-box' }}
+          />
+        </div>
+
+        <div style={{ marginBottom: '24px' }}>
+          <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '8px', fontWeight: 600 }}>
+            Confirm PIN
+          </div>
+          <input
+            type="password" inputMode="numeric" maxLength={6}
+            placeholder="••••" value={confirm}
+            onChange={e => { setConfirm(e.target.value.replace(/\D/g, '').slice(0, 6)); setError(''); }}
+            onKeyDown={e => e.key === 'Enter' && handleSave()}
+            style={{ background: '#0A0908', border: `1px solid ${confirm && !matchOk ? '#C56B5A' : '#26221C'}`, padding: '12px 14px', color: '#E8E2D5', borderRadius: '3px', width: '100%', fontSize: '22px', letterSpacing: '0.4em', textAlign: 'center', outline: 'none', fontFamily: 'JetBrains Mono, monospace', boxSizing: 'border-box' }}
+          />
+          {confirm.length > 0 && !matchOk && (
+            <div style={{ fontSize: '12px', color: '#C56B5A', marginTop: '6px' }}>PINs don't match.</div>
+          )}
+          {confirm.length > 0 && matchOk && pinOk && (
+            <div style={{ fontSize: '12px', color: '#7FA068', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <Check size={12} /> PINs match
+            </div>
+          )}
+        </div>
+
+        {error && <div style={{ fontSize: '13px', color: '#C56B5A', marginBottom: '16px' }}>{error}</div>}
+
+        <button
+          onClick={handleSave}
+          disabled={!canSubmit}
+          style={{ width: '100%', background: canSubmit ? '#D97757' : '#26221C', color: canSubmit ? '#0A0908' : '#5C5648', padding: '14px', borderRadius: '4px', fontWeight: 700, fontSize: '14px', border: 'none', cursor: canSubmit ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+        >
+          {saving ? 'Saving…' : 'Set PIN & continue'}
+          {!saving && <ArrowRight size={16} />}
+        </button>
+
+        <p style={{ fontSize: '11px', color: '#3A3028', marginTop: '16px', textAlign: 'center', lineHeight: 1.5 }}>
+          Your PIN is hashed and stored only on this device. Royal Ledger cannot recover it — keep it somewhere safe.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function BlockedScreen({ onLogout }) {
   return (
     <div style={{ minHeight: '100vh', background: '#0A0908', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
@@ -272,10 +367,13 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showRolloverModal, setShowRolloverModal] = useState(false);
   const [showWeeklyPulse, setShowWeeklyPulse] = useState(false);
-  const [pinBannerDismissed, setPinBannerDismissed] = useState(false);
   const [showGraduationModal, setShowGraduationModal] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
+  const [pinResetApproved, setPinResetApproved] = useState(false); // admin approved a reset request
   const shouldAutoShow = useShouldShowReviewModal(data);
+
+  // Derived: does this user have any PIN protection active?
+  const hasPinProtection = !!(data.pinHash || data.overridePin);
 
   useEffect(() => {
     const init = async () => {
@@ -333,19 +431,33 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     if (noData || isNewUser) setShowOnboarding(true);
   }, [loading, data.setupComplete, data.expenses.length, isNewUser]);
 
-  // Block check + PIN sync — runs after data is loaded and user email is known
+  // Block check + reset request check — runs after data is loaded and user email is known
   useEffect(() => {
     if (!user?.email || !supabase || loading) return;
+
+    // 1. Check if user is blocked
     supabase
       .from('early_access_leads')
-      .select('status, assigned_pin')
+      .select('status')
       .eq('email', user.email.toLowerCase())
       .maybeSingle()
       .then(({ data: lead }) => {
         if (lead?.status === 'blocked') setIsBlocked(true);
-        // Sync admin-assigned PIN if user doesn't already have one set
-        if (lead?.assigned_pin) {
-          setData(d => ({ ...d, overridePin: d.overridePin || lead.assigned_pin }));
+      });
+
+    // 2. Check for an approved PIN reset request
+    supabase
+      .from('pin_reset_requests')
+      .select('id, status')
+      .eq('user_email', user.email.toLowerCase())
+      .eq('status', 'approved')
+      .maybeSingle()
+      .then(({ data: req }) => {
+        if (req) {
+          // Admin approved a reset — force user to set a new PIN
+          setPinResetApproved(true);
+          // Clear existing pinHash so PinSetupScreen is shown
+          setData(d => ({ ...d, pinHash: '', overridePin: '' }));
         }
       });
   }, [user?.email, loading]);
@@ -577,10 +689,35 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
   }
 
   if (showOnboarding) {
-    return <Onboarding data={data} setData={setData} onComplete={() => { setShowOnboarding(false); setTab('command'); }} />;
+    return <Onboarding
+      data={data}
+      setData={setData}
+      userEmail={user?.email || ''}
+      onComplete={() => { setShowOnboarding(false); setTab('command'); }}
+    />;
+  }
+
+  // PIN setup required — either migration (existing user, no PIN) or approved reset
+  const needsPinSetup = data.setupComplete && !hasPinProtection;
+  if (needsPinSetup || pinResetApproved) {
+    const handlePinSave = async (rawPin) => {
+      const newHash = await hashPin(rawPin, user?.email || '');
+      setData(d => ({ ...d, pinHash: newHash, overridePin: '' }));
+      // If this was an approved reset, clean up the request record
+      if (pinResetApproved && supabase && user?.email) {
+        await supabase
+          .from('pin_reset_requests')
+          .delete()
+          .eq('user_email', user.email.toLowerCase())
+          .eq('status', 'approved');
+        setPinResetApproved(false);
+      }
+    };
+    return <PinSetupScreen onSave={handlePinSave} isForgotPin={pinResetApproved} />;
   }
 
   return (
+    <PinContext.Provider value={{ pin: data.overridePin, pinHash: data.pinHash, email: user?.email || '' }}>
     <div className="app-shell" style={{ background: '#0A0908', color: '#E8E2D5', fontFamily: 'Inter, system-ui, sans-serif' }}>
       <InstallPrompt />
 	  <style>{`
@@ -683,21 +820,6 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
           ))}
         </div>
       </nav>
-
-      {/* PIN protection nudge */}
-      {!data.overridePin && !pinBannerDismissed && (
-        <div style={{ background: '#1A1610', borderBottom: '1px solid #3A2A1E', flexShrink: 0 }}>
-          <div className="max-w-6xl mx-auto flex items-center justify-between gap-3" style={{ padding: '8px 20px' }}>
-            <div className="flex items-center gap-2 flex-wrap" style={{ minWidth: 0 }}>
-              <KeyRound size={13} style={{ color: '#D97757', flexShrink: 0 }} />
-              <span className="text-xs" style={{ color: '#8B8478', whiteSpace: 'nowrap' }}>No PIN assigned — structural changes are unprotected. Contact support to receive your PIN.</span>
-            </div>
-            <button onClick={() => setPinBannerDismissed(true)} style={{ color: '#5C5648', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>
-              <X size={13} />
-            </button>
-          </div>
-        </div>
-      )}
 
       <div style={{ flexShrink: 0 }}>
         <PushPromptBanner user={user} data={data} setData={setData} />
@@ -854,6 +976,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
       document.body
     )}
   </div>
+  </PinContext.Provider>
   );
 }
 
@@ -895,7 +1018,8 @@ function getFoundationNudge({ hasLoggedExpense, hasSavingsGoal, savingsProgress 
 function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, setShowWeeklyPulse, onRequestGraduate }) {
   const fmt = makeFmt(data.currency);
   const isFoundation = data?.mode === 'foundation';
-  const [balancesLocked, setBalancesLocked] = useState(!!data.overridePin);
+  const hasPinProtection = !!(data.pinHash || data.overridePin);
+  const [balancesLocked, setBalancesLocked] = useState(hasPinProtection);
   const [goalEditing, setGoalEditing] = useState(false);
   const [goalDraft, setGoalDraft] = useState({ name: '', target: '' });
   const [goalError, setGoalError] = useState('');
@@ -943,7 +1067,7 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
     setGoalEditing(false);
     setGoalError('');
   };
-  const { attempt: attemptUnlock, gate: unlockGate } = usePinGate(data.overridePin);
+  const { attempt: attemptUnlock, gate: unlockGate } = usePinGate();
 
   // ── Foundation nudge state (behavioural — no date fields available) ──────────
   const hasLoggedExpense =
@@ -1523,19 +1647,17 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         <div className="flex items-baseline justify-between mb-5">
           <h2 className="display text-2xl">Current balances</h2>
           <div className="flex items-center gap-3">
-            {data.overridePin && (
-              <button
-                onClick={() => {
-                  if (balancesLocked) attemptUnlock(() => setBalancesLocked(false));
-                  else setBalancesLocked(true);
-                }}
-                className="btn flex items-center gap-1 text-xs"
-                style={{ color: balancesLocked ? '#5C5648' : '#7FA068', border: '1px solid #26221C', borderRadius: '3px', padding: '4px 10px' }}
-              >
-                <Lock size={11} />
-                {balancesLocked ? 'Unlock to edit' : 'Lock'}
-              </button>
-            )}
+            <button
+              onClick={() => {
+                if (balancesLocked) attemptUnlock(() => setBalancesLocked(false));
+                else setBalancesLocked(true);
+              }}
+              className="btn flex items-center gap-1 text-xs"
+              style={{ color: balancesLocked ? '#5C5648' : '#7FA068', border: '1px solid #26221C', borderRadius: '3px', padding: '4px 10px' }}
+            >
+              <Lock size={11} />
+              {balancesLocked ? 'Unlock to edit' : 'Lock'}
+            </button>
             <button onClick={takeSnapshot} className="btn-secondary btn flex items-center gap-2 text-xs">
               <Camera size={12} /> Save snapshot
             </button>
@@ -1553,7 +1675,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               color="#5B7FB8"
               value={data.tradingCapital}
               onChange={(v) => setData(d => ({ ...d, tradingCapital: v }))}
-              readOnly={!!data.overridePin && balancesLocked}
+              readOnly={hasPinProtection && balancesLocked}
               currency={data.currency}
             />
           )}
@@ -1563,7 +1685,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             color={isFoundation ? '#7FA068' : stageInfo.color}
             value={data.buffer}
             onChange={(v) => setData(d => ({ ...d, buffer: v }))}
-            readOnly={!!data.overridePin && balancesLocked}
+            readOnly={hasPinProtection && balancesLocked}
             currency={data.currency}
           />
           <BalanceInput
@@ -1581,7 +1703,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             color="#7FA068"
             value={data.longTerm}
             onChange={(v) => setData(d => ({ ...d, longTerm: v }))}
-            readOnly={!!data.overridePin && balancesLocked}
+            readOnly={hasPinProtection && balancesLocked}
             currency={data.currency}
           />
           <BalanceInput
@@ -1590,7 +1712,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             color="#A06B8C"
             value={data.futureGoals || 0}
             onChange={(v) => setData(d => ({ ...d, futureGoals: v }))}
-            readOnly={!!data.overridePin && balancesLocked}
+            readOnly={hasPinProtection && balancesLocked}
             note={(data.goals || []).length > 0 ? `${(data.goals || []).length} goal${(data.goals || []).length === 1 ? '' : 's'}` : 'Add goals in Setup'}
             currency={data.currency}
           />
@@ -1844,7 +1966,7 @@ function Setup({ data, stats, setData }) {
   const { symbol: currencySymbol } = getCurrency(data.currency);
   const isFoundation = data?.mode === 'foundation';
   const [newExpense, setNewExpense] = useState({ name: '', amount: '', category: 'Housing' });
-  const { locked, requestUnlock, gate } = useSectionPin(data.overridePin);
+  const { locked, requestUnlock, gate } = useSectionPin();
 
   const addExpense = () => {
     if (!newExpense.name || !newExpense.amount) return;
@@ -1945,20 +2067,18 @@ function Setup({ data, stats, setData }) {
             💡 {foundationCopy.incomeHelper}
           </p>
         )}
-        {data.overridePin && (
-          <div className="flex items-center gap-2 mt-3">
-            {locked ? (
-              <button onClick={requestUnlock} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#5B7FB8', background: 'transparent', border: '1px solid #1E2A3A', borderRadius: '3px', padding: '3px 9px', cursor: 'pointer', letterSpacing: '0.05em' }}>
-                <Lock size={11} /> Locked · click to edit
-              </button>
-            ) : (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#7FA068', letterSpacing: '0.05em' }}>
-                <Unlock size={11} /> Unlocked for 60s
-              </span>
-            )}
-            {gate}
-          </div>
-        )}
+        <div className="flex items-center gap-2 mt-3">
+          {locked ? (
+            <button onClick={requestUnlock} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#5B7FB8', background: 'transparent', border: '1px solid #1E2A3A', borderRadius: '3px', padding: '3px 9px', cursor: 'pointer', letterSpacing: '0.05em' }}>
+              <Lock size={11} /> Locked · click to edit
+            </button>
+          ) : (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#7FA068', letterSpacing: '0.05em' }}>
+              <Unlock size={11} /> Unlocked for 60s
+            </span>
+          )}
+          {gate}
+        </div>
       </div>
 
       {/* Live calculation card */}
@@ -2201,7 +2321,7 @@ function ProfitAllocator({ data, stats, setData }) {
   const [profit, setProfit] = useState('');
   const [step, setStep] = useState('input');
   const [allocation, setAllocation] = useState(null);
-  const { attempt: attemptApply, gate: applyGate } = usePinGate(data.overridePin);
+  const { attempt: attemptApply, gate: applyGate } = usePinGate();
 
   const calculate = () => {
     const grossProfit = Number(profit) || 0;
@@ -2486,9 +2606,9 @@ function AllocationBlock({ label, amount, color, icon: Icon, note, isReserve, cu
 /* ─────────────── TRADING ─────────────── */
 function TradingTab({ data, stats, setData }) {
   const fmt = makeFmt(data.currency);
-  const { attemptRow: attemptPnlRow, gateFor: pnlGateFor } = usePinRowGate(data.overridePin);
-  const { attempt: attemptHwm, gate: hwmGate } = usePinGate(data.overridePin);
-  const { locked, requestUnlock, gate: tradingFieldGate } = useSectionPin(data.overridePin);
+  const { attemptRow: attemptPnlRow, gateFor: pnlGateFor } = usePinRowGate();
+  const { attempt: attemptHwm, gate: hwmGate } = usePinGate();
+  const { locked, requestUnlock, gate: tradingFieldGate } = useSectionPin();
   const [pnl, setPnl] = useState('');
   const [pnlMonth, setPnlMonth] = useState(new Date().toISOString().slice(0, 7));
   const [pnlLogged, setPnlLogged] = useState(null); // { month, value }
@@ -2529,20 +2649,18 @@ function TradingTab({ data, stats, setData }) {
         <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
           The business, kept separate. Volatility lives here so it doesn't reach your family's daily life.
         </p>
-        {data.overridePin && (
-          <div className="flex items-center gap-2 mt-3">
-            {locked ? (
-              <button onClick={requestUnlock} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#5B7FB8', background: 'transparent', border: '1px solid #1E2A3A', borderRadius: '3px', padding: '3px 9px', cursor: 'pointer', letterSpacing: '0.05em' }}>
-                <Lock size={11} /> Locked · click to edit
-              </button>
-            ) : (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#7FA068', letterSpacing: '0.05em' }}>
-                <Unlock size={11} /> Unlocked for 60s
-              </span>
-            )}
-            {tradingFieldGate}
-          </div>
-        )}
+        <div className="flex items-center gap-2 mt-3">
+          {locked ? (
+            <button onClick={requestUnlock} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#5B7FB8', background: 'transparent', border: '1px solid #1E2A3A', borderRadius: '3px', padding: '3px 9px', cursor: 'pointer', letterSpacing: '0.05em' }}>
+              <Lock size={11} /> Locked · click to edit
+            </button>
+          ) : (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#7FA068', letterSpacing: '0.05em' }}>
+              <Unlock size={11} /> Unlocked for 60s
+            </span>
+          )}
+          {tradingFieldGate}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -2762,6 +2880,8 @@ function ImpulseTab({ data, stats, setData, user }) {
   const fmt = makeFmt(data.currency);
   const { symbol: currencySymbol } = getCurrency(data.currency);
   const isFoundation = data?.mode === 'foundation';
+  const verifyEnvPin = usePinVerify();   // async (entered) => boolean
+  const hasPinProtection = usePinActive();
   const [view, setView] = useState('gate');
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
@@ -2770,11 +2890,12 @@ function ImpulseTab({ data, stats, setData, user }) {
   const [envelopeId, setEnvelopeId] = useState('');
   const [step, setStep] = useState('input');
   const [decision, setDecision] = useState(null);
-  // Feature 4: PIN override state
+  // Feature 4: PIN override state for envelope hard-block bypass
   const [blockedEnv, setBlockedEnv] = useState(null);
   const [pinEntry, setPinEntry] = useState('');
   const [pinError, setPinError] = useState(false);
   const [pinStep, setPinStep] = useState(false); // show PIN input
+  const [pinVerifying, setPinVerifying] = useState(false);
   const [overrideUsed, setOverrideUsed] = useState(false);
 
   const amt = Number(amount) || 0;
@@ -2860,7 +2981,7 @@ function ImpulseTab({ data, stats, setData, user }) {
         return;
       }
       if (env.blockMode === 'pin') {
-        if (!data.overridePin) {
+        if (!hasPinProtection) {
           setBlockedEnv(env);
           setDecision('blocked');
           setStep('decided');
@@ -2962,7 +3083,7 @@ function ImpulseTab({ data, stats, setData, user }) {
                 <Lock size={13} />
                 <span>
                   <strong>{envelopeStatus.env.name}</strong> envelope is over budget.
-                  {envelopeStatus.env.blockMode === 'pin' && (data.overridePin ? ' PIN required to buy.' : ' No override PIN set — purchase will be blocked.')}
+                  {envelopeStatus.env.blockMode === 'pin' && (hasPinProtection ? ' PIN required to buy.' : ' No PIN set — purchase will be blocked.')}
                   {envelopeStatus.env.blockMode === 'hard' && ' Hard block — purchase will be refused.'}
                 </span>
               </div>
@@ -2997,39 +3118,47 @@ function ImpulseTab({ data, stats, setData, user }) {
           {/* PIN override entry */}
           {pinStep && (
             <div className="card p-5 space-y-3">
-              <div className="label" style={{ color: '#5B7FB8' }}>Enter override PIN</div>
+              <div className="label" style={{ color: '#5B7FB8' }}>Enter PIN to override envelope limit</div>
               <input
                 type="password"
                 inputMode="numeric"
-                maxLength={4}
+                maxLength={6}
                 value={pinEntry}
-                onChange={e => { setPinEntry(e.target.value.replace(/\D/g, '').slice(0, 4)); setPinError(false); }}
+                onChange={e => { setPinEntry(e.target.value.replace(/\D/g, '').slice(0, 6)); setPinError(false); }}
                 className="input"
                 placeholder="• • • •"
                 style={{ letterSpacing: '0.4em', maxWidth: '120px', textAlign: 'center' }}
                 autoFocus
+                disabled={pinVerifying}
               />
-              {pinError && <div className="text-sm" style={{ color: '#C56B5A' }}>Incorrect. Purchase blocked.</div>}
+              {pinError && <div className="text-sm" style={{ color: '#C56B5A' }}>Incorrect PIN. Purchase blocked.</div>}
               <div className="flex gap-2">
                 <button
                   className="btn px-4 py-2"
-                  style={{ background: '#5B7FB8', color: '#0A0908', borderRadius: '3px', fontWeight: 600, fontSize: '13px' }}
-                  onClick={() => {
-                    if (pinEntry === data.overridePin) {
-                      setOverrideUsed(true);
-                      setPinStep(false);
-                      setBlockedEnv(null);
-                      // Allow buy
-                      logImpulse(true, true);
-                      setDecision('bought');
-                      setStep('decided');
-                    } else {
-                      setPinError(true);
-                      setPinEntry('');
+                  disabled={pinVerifying}
+                  style={{ background: pinVerifying ? '#26221C' : '#5B7FB8', color: '#0A0908', borderRadius: '3px', fontWeight: 600, fontSize: '13px', cursor: pinVerifying ? 'default' : 'pointer' }}
+                  onClick={async () => {
+                    if (pinVerifying) return;
+                    setPinVerifying(true);
+                    try {
+                      const ok = await verifyEnvPin(pinEntry);
+                      if (ok) {
+                        setOverrideUsed(true);
+                        setPinStep(false);
+                        setBlockedEnv(null);
+                        logImpulse(true, true);
+                        setDecision('bought');
+                        setStep('decided');
+                      } else {
+                        setPinError(true);
+                        setPinEntry('');
+                      }
+                    } finally {
+                      setPinVerifying(false);
                     }
                   }}
                 >
-                  Confirm
+                  {pinVerifying ? '…' : 'Confirm'}
                 </button>
                 <button
                   className="btn px-3 py-2"
@@ -3172,7 +3301,7 @@ function QuickLog({ data, setData }) {
 function ImpulseHistory({ data, stats, setData }) {
   const fmt = makeFmt(data.currency);
   const [overrideOnly, setOverrideOnly] = useState(false);
-  const { attemptRow: attemptImpulseRow, gateFor: impulseGateFor } = usePinRowGate(data.overridePin);
+  const { attemptRow: attemptImpulseRow, gateFor: impulseGateFor } = usePinRowGate();
 
   const removeImpulse = (id) => {
     setData(d => ({ ...d, impulses: d.impulses.filter(i => i.id !== id) }));
@@ -3291,7 +3420,7 @@ function ImpulseHistory({ data, stats, setData }) {
 function History({ data, stats, setData }) {
   const fmt = makeFmt(data.currency);
   const sortedSnapshots = [...data.snapshots].sort((a, b) => a.date.localeCompare(b.date));
-  const { attemptRow: attemptSnapshotRow, gateFor: snapshotGateFor } = usePinRowGate(data.overridePin);
+  const { attemptRow: attemptSnapshotRow, gateFor: snapshotGateFor } = usePinRowGate();
 
   const removeSnapshot = (date) => {
     setData(d => ({ ...d, snapshots: d.snapshots.filter(s => s.date !== date) }));
@@ -3732,6 +3861,183 @@ function CloudSyncPanel({ user, data, setData, syncStatus, isOnline, lastSyncedA
   );
 }
 
+/* ─────────────── PIN CARD (inside Account Settings) ─────────────── */
+// Lets users change their PIN or submit a "forgot PIN" reset request.
+// Reads PIN config from PinContext; writes changes via setData + hashPin.
+function PinCard({ user, data, setData }) {
+  const verifyCurrentPin = usePinVerify();
+  const hasPinProtection = usePinActive();
+
+  const [mode, setMode]           = useState('idle'); // 'idle' | 'change' | 'forgot'
+  const [curPin, setCurPin]       = useState('');
+  const [newPin, setNewPin]       = useState('');
+  const [confirmPin, setConfirmPin] = useState('');
+  const [reason, setReason]       = useState('');
+  const [status, setStatus]       = useState(null); // null | 'saving' | 'ok' | 'err' | string
+  const [curError, setCurError]   = useState(false);
+
+  const newPinOk    = /^\d{4,6}$/.test(newPin);
+  const matchOk     = newPin === confirmPin;
+  const canChange   = curPin.length >= 4 && newPinOk && matchOk && status !== 'saving';
+  const canForgot   = status !== 'saving';
+
+  const reset = () => {
+    setMode('idle'); setCurPin(''); setNewPin(''); setConfirmPin('');
+    setReason(''); setStatus(null); setCurError(false);
+  };
+
+  const handleChange = async () => {
+    if (!canChange) return;
+    setStatus('saving');
+    try {
+      const ok = await verifyCurrentPin(curPin);
+      if (!ok) { setCurError(true); setStatus(null); return; }
+      const newHash = await hashPin(newPin, user?.email || '');
+      setData(d => ({ ...d, pinHash: newHash, overridePin: '' }));
+      setStatus('ok');
+      setTimeout(reset, 2000);
+    } catch {
+      setStatus('err');
+    }
+  };
+
+  const handleForgot = async () => {
+    if (!canForgot || !supabaseClient || !user?.email) return;
+    setStatus('saving');
+    try {
+      await supabaseClient.from('pin_reset_requests').insert({
+        user_email: user.email.toLowerCase(),
+        reason: reason.trim() || null,
+        status: 'pending',
+      });
+      setStatus('sent');
+    } catch {
+      setStatus('err');
+    }
+  };
+
+  return (
+    <section className="card p-6">
+      <div className="flex items-center gap-2 mb-2">
+        <KeyRound size={16} style={{ color: '#5B7FB8' }} />
+        <h2 className="display text-2xl">Security PIN</h2>
+      </div>
+      <p className="text-sm mb-4" style={{ color: '#8B8478' }}>
+        Your PIN protects important structural changes — setup edits, income targets, account actions.
+        It is owned and managed by you.
+      </p>
+
+      {/* Current status */}
+      <div className="flex items-center gap-3 mb-4">
+        {hasPinProtection
+          ? <span className="text-xs flex items-center gap-1" style={{ color: '#7FA068' }}><Check size={12} /> PIN active</span>
+          : <span className="text-xs" style={{ color: '#C56B5A' }}>No PIN set — structural changes are unprotected.</span>
+        }
+      </div>
+
+      {/* Action buttons */}
+      {mode === 'idle' && (
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => setMode('change')}
+            style={{ fontSize: '12px', color: '#5B7FB8', background: 'transparent', border: '1px solid #1E2A3A', borderRadius: '3px', padding: '6px 14px', cursor: 'pointer' }}
+          >
+            {hasPinProtection ? 'Change PIN' : 'Set PIN'}
+          </button>
+          {hasPinProtection && (
+            <button
+              onClick={() => setMode('forgot')}
+              style={{ fontSize: '12px', color: '#5C5648', background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px 4px' }}
+            >
+              Forgot PIN?
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Change PIN form */}
+      {mode === 'change' && (
+        <div style={{ maxWidth: '320px' }}>
+          {hasPinProtection && (
+            <div style={{ marginBottom: '14px' }}>
+              <div style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '6px', fontWeight: 600 }}>Current PIN</div>
+              <input
+                type="password" inputMode="numeric" maxLength={6} value={curPin}
+                onChange={e => { setCurPin(e.target.value.replace(/\D/g, '').slice(0, 6)); setCurError(false); }}
+                style={{ background: '#0A0908', border: `1px solid ${curError ? '#C56B5A' : '#26221C'}`, padding: '10px 12px', color: '#E8E2D5', borderRadius: '3px', width: '100%', fontSize: '18px', letterSpacing: '0.4em', textAlign: 'center', outline: 'none', fontFamily: 'JetBrains Mono, monospace', boxSizing: 'border-box' }}
+                placeholder="••••"
+              />
+              {curError && <div style={{ fontSize: '12px', color: '#C56B5A', marginTop: '5px' }}>Incorrect PIN.</div>}
+            </div>
+          )}
+          <div style={{ marginBottom: '14px' }}>
+            <div style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '6px', fontWeight: 600 }}>New PIN (4–6 digits)</div>
+            <input
+              type="password" inputMode="numeric" maxLength={6} value={newPin}
+              onChange={e => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              style={{ background: '#0A0908', border: '1px solid #26221C', padding: '10px 12px', color: '#E8E2D5', borderRadius: '3px', width: '100%', fontSize: '18px', letterSpacing: '0.4em', textAlign: 'center', outline: 'none', fontFamily: 'JetBrains Mono, monospace', boxSizing: 'border-box' }}
+              placeholder="••••"
+            />
+          </div>
+          <div style={{ marginBottom: '18px' }}>
+            <div style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '6px', fontWeight: 600 }}>Confirm new PIN</div>
+            <input
+              type="password" inputMode="numeric" maxLength={6} value={confirmPin}
+              onChange={e => setConfirmPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              onKeyDown={e => e.key === 'Enter' && handleChange()}
+              style={{ background: '#0A0908', border: `1px solid ${confirmPin && !matchOk ? '#C56B5A' : '#26221C'}`, padding: '10px 12px', color: '#E8E2D5', borderRadius: '3px', width: '100%', fontSize: '18px', letterSpacing: '0.4em', textAlign: 'center', outline: 'none', fontFamily: 'JetBrains Mono, monospace', boxSizing: 'border-box' }}
+              placeholder="••••"
+            />
+            {confirmPin.length > 0 && !matchOk && <div style={{ fontSize: '12px', color: '#C56B5A', marginTop: '5px' }}>PINs don't match.</div>}
+          </div>
+          {status === 'ok'  && <div style={{ fontSize: '12px', color: '#7FA068', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}><Check size={12} /> PIN updated.</div>}
+          {status === 'err' && <div style={{ fontSize: '12px', color: '#C56B5A', marginBottom: '10px' }}>Something went wrong. Try again.</div>}
+          <div className="flex gap-2">
+            <button onClick={handleChange} disabled={!canChange} style={{ background: canChange ? '#D97757' : '#26221C', color: canChange ? '#0A0908' : '#5C5648', padding: '8px 18px', borderRadius: '3px', fontWeight: 600, fontSize: '12px', border: 'none', cursor: canChange ? 'pointer' : 'default' }}>
+              {status === 'saving' ? 'Saving…' : 'Save PIN'}
+            </button>
+            <button onClick={reset} style={{ background: 'transparent', color: '#5C5648', padding: '8px 12px', fontSize: '12px', border: 'none', cursor: 'pointer' }}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {/* Forgot PIN form */}
+      {mode === 'forgot' && (
+        <div style={{ maxWidth: '360px' }}>
+          {status === 'sent' ? (
+            <div style={{ fontSize: '13px', color: '#7FA068', lineHeight: 1.6 }}>
+              <Check size={14} style={{ display: 'inline', marginRight: '6px' }} />
+              Reset request sent. Support will review it and approve if everything checks out. You'll be prompted to set a new PIN on your next login.
+              <button onClick={reset} style={{ display: 'block', marginTop: '12px', fontSize: '12px', color: '#5C5648', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Close</button>
+            </div>
+          ) : (
+            <>
+              <p style={{ fontSize: '13px', color: '#8B8478', marginBottom: '14px', lineHeight: 1.6 }}>
+                We'll send a reset request to Royal Ledger support. After approval, you'll be prompted to set a new PIN on your next login.
+              </p>
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '6px', fontWeight: 600 }}>Reason (optional)</div>
+                <input
+                  type="text" value={reason} onChange={e => setReason(e.target.value)}
+                  placeholder="e.g. Forgot PIN after device reset"
+                  style={{ background: '#0A0908', border: '1px solid #26221C', padding: '10px 12px', color: '#E8E2D5', borderRadius: '3px', width: '100%', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+              {status === 'err' && <div style={{ fontSize: '12px', color: '#C56B5A', marginBottom: '10px' }}>Failed to submit. Check your connection and try again.</div>}
+              <div className="flex gap-2">
+                <button onClick={handleForgot} disabled={!canForgot} style={{ background: '#D97757', color: '#0A0908', padding: '8px 18px', borderRadius: '3px', fontWeight: 600, fontSize: '12px', border: 'none', cursor: 'pointer' }}>
+                  {status === 'saving' ? 'Sending…' : 'Send reset request'}
+                </button>
+                <button onClick={reset} style={{ background: 'transparent', color: '#5C5648', padding: '8px 12px', fontSize: '12px', border: 'none', cursor: 'pointer' }}>Cancel</button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
 /* ─────────────── ACCOUNT SETTINGS ─────────────── */
 const APP_VERSION = '1.0.0';
 
@@ -3744,16 +4050,12 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
   const [displayName, setDisplayName] = useState(data.displayName || '');
   const [nameSaved, setNameSaved] = useState(false);
   const [signOutOthersStatus, setSignOutOthersStatus] = useState(null);
-  const { attempt: attemptOnboarding, gate: onboardingGate } = usePinGate(data.overridePin);
-  const { attempt: attemptReset, gate: resetGate } = usePinGate(data.overridePin);
+  const { attempt: attemptOnboarding, gate: onboardingGate } = usePinGate();
+  const { attempt: attemptReset, gate: resetGate } = usePinGate();
 
   const [currencyChanged, setCurrencyChanged] = useState(false);
   const [hoveredCurrency, setHoveredCurrency] = useState(null);
 
-  // submitPinChange removed — PIN is now admin-managed only
-  const submitPinChange = () => { // kept as no-op to avoid breaking any stale refs
-    setTimeout(() => setPinSaved(false), 3000);
-  };
 
   const inputStyle = {
     background: '#0A0908', border: '1px solid #26221C', padding: '10px 13px',
@@ -3983,22 +4285,8 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
             }}>Security</div>
             <div className="space-y-4">
 
-              {/* Override PIN — read-only, managed by admin */}
-              <section className="card p-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <KeyRound size={16} style={{ color: '#5B7FB8' }} />
-                  <h2 className="display text-2xl">Override PIN</h2>
-                </div>
-                <p className="text-sm mb-4" style={{ color: '#8B8478' }}>
-                  Your PIN protects sensitive changes in Royal Ledger — setup edits, income changes, and account actions. It is assigned and managed by your administrator.
-                </p>
-                <div className="flex items-center gap-2">
-                  {data.overridePin
-                    ? <span className="text-xs flex items-center gap-1" style={{ color: '#7FA068' }}><Check size={12} /> PIN active</span>
-                    : <span className="text-xs" style={{ color: '#5C5648' }}>No PIN assigned yet. Contact support if needed.</span>
-                  }
-                </div>
-              </section>
+              {/* Security PIN — user-owned */}
+              <PinCard user={user} data={data} setData={setData} />
             </div>
           </div>
 
@@ -4358,7 +4646,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
 function Rules({ data, stats, setData, user }) {
   const fmt = makeFmt(data.currency);
   const isFoundation = data?.mode === 'foundation';
-  const { locked, requestUnlock, gate: fieldGate } = useSectionPin(data.overridePin);
+  const { locked, requestUnlock, gate: fieldGate } = useSectionPin();
 
   const updateRule = (stage, field, value) => {
     setData(d => ({
@@ -4376,20 +4664,18 @@ function Rules({ data, stats, setData, user }) {
         <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
           Every threshold and percentage in the system. Adjust them to match your situation.
         </p>
-        {data.overridePin && (
-          <div className="flex items-center gap-2 mt-3">
-            {locked ? (
-              <button onClick={requestUnlock} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#5B7FB8', background: 'transparent', border: '1px solid #1E2A3A', borderRadius: '3px', padding: '3px 9px', cursor: 'pointer', letterSpacing: '0.05em' }}>
-                <Lock size={11} /> Locked · click to edit
-              </button>
-            ) : (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#7FA068', letterSpacing: '0.05em' }}>
-                <Unlock size={11} /> Unlocked for 60s
-              </span>
-            )}
-            {fieldGate}
-          </div>
-        )}
+        <div className="flex items-center gap-2 mt-3">
+          {locked ? (
+            <button onClick={requestUnlock} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#5B7FB8', background: 'transparent', border: '1px solid #1E2A3A', borderRadius: '3px', padding: '3px 9px', cursor: 'pointer', letterSpacing: '0.05em' }}>
+              <Lock size={11} /> Locked · click to edit
+            </button>
+          ) : (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#7FA068', letterSpacing: '0.05em' }}>
+              <Unlock size={11} /> Unlocked for 60s
+            </span>
+          )}
+          {fieldGate}
+        </div>
       </div>
 
       {/* Tax reserve — standard users only */}
