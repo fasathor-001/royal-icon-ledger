@@ -102,7 +102,7 @@ export default function WeeklyPulseBanner({ data, stats, forceShow, onDismiss })
           >
             {verdict}
           </div>
-          <button onClick={dismiss} style={{ background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', padding: '2px' }}>
+          <button onClick={dismiss} style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', padding: '2px' }}>
             <X size={14} />
           </button>
         </div>
@@ -111,15 +111,15 @@ export default function WeeklyPulseBanner({ data, stats, forceShow, onDismiss })
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div>
-          <div className="label mb-1" style={{ color: '#5C5648' }}>Spent this week</div>
+          <div className="label mb-1" style={{ color: '#8B8478' }}>Spent this week</div>
           <div className="display text-xl" style={{ fontWeight: 300, color: overallPct >= 100 ? '#C56B5A' : '#E8E2D5' }}>{fmt(weekSpent)}</div>
         </div>
         <div>
-          <div className="label mb-1" style={{ color: '#5C5648' }}>Weekly pace</div>
+          <div className="label mb-1" style={{ color: '#8B8478' }}>Weekly pace</div>
           <div className="display text-xl" style={{ fontWeight: 300 }}>{fmt(weeklyBudget)}</div>
         </div>
         <div>
-          <div className="label mb-1" style={{ color: '#5C5648' }}>Remaining</div>
+          <div className="label mb-1" style={{ color: '#8B8478' }}>Remaining</div>
           <div className="display text-xl" style={{ fontWeight: 300, color: weeklyBudget - weekSpent < 0 ? '#C56B5A' : '#7FA068' }}>
             {fmt(Math.max(0, weeklyBudget - weekSpent))}
           </div>

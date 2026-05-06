@@ -112,7 +112,7 @@ export default function Security({ navigate }) {
                       </span>
                     )}
                   </div>
-                  <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.7 }}>{item.body}</p>
+                  <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7 }}>{item.body}</p>
                 </div>
               </div>
             ))}
@@ -133,7 +133,7 @@ export default function Security({ navigate }) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }} className="security-grid">
             {TECH_ITEMS.map(({ label, value }, i) => (
               <div key={i} className="m-card" style={{ padding: '20px 24px' }}>
-                <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#3A3028', marginBottom: '8px' }}>{label}</div>
+                <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '8px' }}>{label}</div>
                 <div style={{ fontSize: '14px', color: '#E8E2D5', lineHeight: 1.5 }}>{value}</div>
               </div>
             ))}
@@ -155,10 +155,10 @@ export default function Security({ navigate }) {
                 <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#E8E2D5', marginBottom: '10px' }}>
                   You control your sessions
                 </h3>
-                <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, marginBottom: '16px' }}>
+                <p style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.7, marginBottom: '16px' }}>
                   Royal Ledger provides a Sessions view in Account Settings. You can see every active device session and sign out of any or all of them remotely. If you ever lose access to a device, you can revoke it immediately.
                 </p>
-                <p style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.6 }}>
+                <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.6 }}>
                   Your PIN is never stored on any server. It lives only on your device, and is never sent over the network.
                 </p>
               </div>

@@ -96,7 +96,7 @@ function SegmentCard({ segment, navigate }) {
           <h2 className="m-display" style={{ fontSize: 'clamp(28px, 3.5vw, 42px)', color: '#E8E2D5', marginBottom: '20px' }}>
             {segment.title}
           </h2>
-          <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.75, marginBottom: '28px' }}>
+          <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.75, marginBottom: '28px' }}>
             {segment.pain}
           </p>
           <div className="m-card" style={{ padding: '20px 24px' }}>

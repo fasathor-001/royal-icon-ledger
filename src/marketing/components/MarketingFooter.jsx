@@ -39,14 +39,14 @@ export default function MarketingFooter() {
                 style={{ height: '80px', width: 'auto', display: 'block' }}
               />
             </Link>
-            <p style={{ fontSize: '13px', color: '#3A3028', lineHeight: 1.7, maxWidth: '240px', marginBottom: '20px', marginTop: '4px' }}>
+            <p style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.7, maxWidth: '240px', marginBottom: '20px', marginTop: '4px' }}>
               A financial operating system for variable-income earners globally.
             </p>
             <div className="m-badge m-badge-orange" style={{ marginBottom: '20px' }}>Private Beta</div>
 
             {/* Stay updated */}
             <div style={{ marginTop: '4px' }}>
-              <div style={{ fontSize: '11px', color: '#3A3028', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>
+              <div style={{ fontSize: '11px', color: '#5C5648', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>
                 Stay updated
               </div>
               {subscribed ? (
@@ -71,7 +71,7 @@ export default function MarketingFooter() {
                     disabled={saving}
                     style={{
                       background: '#26221C', border: 'none', borderRadius: '3px',
-                      padding: '7px 12px', fontSize: '12px', color: '#8B8478',
+                      padding: '7px 12px', fontSize: '12px', color: '#B0A898',
                       cursor: saving ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap',
                       fontFamily: 'Inter, sans-serif', opacity: saving ? 0.6 : 1,
                     }}
@@ -159,7 +159,7 @@ export default function MarketingFooter() {
             </div>
 
             <div style={{ marginTop: '20px' }}>
-              <p style={{ fontSize: '12px', color: '#3A3028', lineHeight: 1.65 }}>
+              <p style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.65 }}>
                 Royal Ledger does not provide financial advice. This is a personal financial management tool.
               </p>
             </div>
@@ -170,12 +170,12 @@ export default function MarketingFooter() {
         {/* Bottom bar */}
         <hr className="m-divider" style={{ marginBottom: '28px' }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-          <span style={{ fontSize: '12px', color: '#3A3028' }}>
+          <span style={{ fontSize: '12px', color: '#5C5648' }}>
             © {year} Royal Ledger. All rights reserved.
           </span>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <Link to="/privacy" style={{ fontSize: '12px', color: '#3A3028', textDecoration: 'none' }}>Privacy Policy</Link>
-            <span style={{ fontSize: '12px', color: '#3A3028' }}>Built for people who earn differently.</span>
+            <Link to="/privacy" style={{ fontSize: '12px', color: '#5C5648', textDecoration: 'none' }}>Privacy Policy</Link>
+            <span style={{ fontSize: '12px', color: '#5C5648' }}>Built for people who earn differently.</span>
           </div>
         </div>
 

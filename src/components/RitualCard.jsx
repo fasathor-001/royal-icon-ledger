@@ -58,7 +58,7 @@ const RITUALS = [
     label: 'After purchase',
     sub: 'Quick Log',
     icon: Clock,
-    color: '#8B8478',
+    color: '#B0A898',
     resetPer: 'day',
   },
   {
@@ -152,16 +152,16 @@ export default function RitualCard({ setTab }) {
           </div>
           <div>
             <div className="font-medium text-sm">Daily Checkpoints</div>
-            <div className="text-xs" style={{ color: '#5C5648' }}>
+            <div className="text-xs" style={{ color: '#8B8478' }}>
               {doneCount === RITUALS.length ? 'All done today' : `${RITUALS.length - doneCount} remaining`}
             </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {collapsed ? <ChevronDown size={14} style={{ color: '#5C5648' }} /> : <ChevronUp size={14} style={{ color: '#5C5648' }} />}
+          {collapsed ? <ChevronDown size={14} style={{ color: '#8B8478' }} /> : <ChevronUp size={14} style={{ color: '#8B8478' }} />}
           <button
             onClick={(e) => { e.stopPropagation(); setDismissed(true); }}
-            style={{ background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', padding: '4px', lineHeight: 1 }}
+            style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', padding: '4px', lineHeight: 1 }}
             title="Dismiss for this session"
           >
             <X size={14} />
@@ -185,7 +185,7 @@ export default function RitualCard({ setTab }) {
                   onClick={() => toggle(r)}
                   style={{
                     width: '22px', height: '22px', borderRadius: '4px', flexShrink: 0,
-                    border: `1.5px solid ${done ? r.color : '#3A3028'}`,
+                    border: `1.5px solid ${done ? r.color : '#5C5648'}`,
                     background: done ? r.color + '20' : 'transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer',
@@ -193,14 +193,14 @@ export default function RitualCard({ setTab }) {
                 >
                   {done && <Check size={12} style={{ color: r.color }} />}
                 </button>
-                <Icon size={13} style={{ color: done ? r.color : '#5C5648', flexShrink: 0 }} />
+                <Icon size={13} style={{ color: done ? r.color : '#8B8478', flexShrink: 0 }} />
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium" style={{ color: done ? '#5C5648' : '#E8E2D5', textDecoration: done ? 'line-through' : 'none' }}>
+                  <div className="text-sm font-medium" style={{ color: done ? '#8B8478' : '#E8E2D5', textDecoration: done ? 'line-through' : 'none' }}>
                     {r.label}
                   </div>
-                  <div className="text-xs" style={{ color: '#5C5648' }}>{r.sub}</div>
+                  <div className="text-xs" style={{ color: '#8B8478' }}>{r.sub}</div>
                 </div>
-                <span className="label text-right" style={{ color: '#3A3028', fontSize: '9px' }}>
+                <span className="label text-right" style={{ color: '#5C5648', fontSize: '9px' }}>
                   {r.resetPer === 'day' ? 'DAILY' : r.resetPer === 'week' ? 'WEEKLY' : 'MONTHLY'}
                 </span>
               </div>

@@ -5,7 +5,7 @@ import React from 'react';
 /* ── Reusable section label ── */
 function Label({ children, color }) {
   return (
-    <div className="m-label" style={{ marginBottom: '16px', color: color || '#5C5648' }}>
+    <div className="m-label" style={{ marginBottom: '16px', color: color || '#8B8478' }}>
       {children}
     </div>
   );
@@ -22,7 +22,7 @@ function FeatureCard({ icon, title, what, why }) {
       <p style={{ fontSize: '14px', color: '#E8E2D5', lineHeight: 1.6, marginBottom: '10px' }}>
         {what}
       </p>
-      <p style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.6 }}>
+      <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.6 }}>
         {why}
       </p>
     </div>
@@ -37,10 +37,10 @@ function WhoCard({ emoji, title, pain, outcome }) {
       <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#E8E2D5', marginBottom: '10px', letterSpacing: '-0.01em' }}>
         {title}
       </h3>
-      <p style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.65, marginBottom: '10px' }}>
+      <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.65, marginBottom: '10px' }}>
         {pain}
       </p>
-      <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.65 }}>
+      <p style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.65 }}>
         {outcome}
       </p>
     </div>
@@ -74,10 +74,10 @@ export default function Home({ navigate }) {
             {' '}wasn't.
           </h1>
 
-          <p className="m-body m-fade-up-3" style={{ fontSize: '18px', maxWidth: '560px', marginBottom: '8px', color: '#8B8478' }}>
+          <p className="m-body m-fade-up-3" style={{ fontSize: '18px', maxWidth: '560px', marginBottom: '8px', color: '#B0A898' }}>
             Royal Ledger gives every unit of income a role — before you spend it.
           </p>
-          <p className="m-body m-fade-up-3" style={{ fontSize: '18px', maxWidth: '560px', marginBottom: '40px', color: '#5C5648' }}>
+          <p className="m-body m-fade-up-3" style={{ fontSize: '18px', maxWidth: '560px', marginBottom: '40px', color: '#8B8478' }}>
             Built for freelancers, traders, and anyone with unpredictable income.
           </p>
 
@@ -98,7 +98,7 @@ export default function Home({ navigate }) {
 
           <div style={{ marginTop: '36px', display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
             {['Working product', 'Private beta', 'Invite-based access', 'No credit card'].map((t, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '12px', color: '#3A3028' }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '12px', color: '#5C5648' }}>
                 <span style={{ color: '#7FA068' }}>✓</span>
                 {t}
               </div>
@@ -118,7 +118,7 @@ export default function Home({ navigate }) {
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#2A2420' }} />
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#2A2420' }} />
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#2A2420' }} />
-              <div style={{ marginLeft: 'auto', fontSize: '11px', color: '#3A3028', fontFamily: "'JetBrains Mono', monospace" }}>
+              <div style={{ marginLeft: 'auto', fontSize: '11px', color: '#5C5648', fontFamily: "'JetBrains Mono', monospace" }}>
                 my.royalledger.app
               </div>
             </div>
@@ -128,7 +128,7 @@ export default function Home({ navigate }) {
               style={{ width: '100%', display: 'block' }}
             />
           </div>
-          <p style={{ textAlign: 'center', fontSize: '11px', color: '#3A3028', marginTop: '14px', letterSpacing: '0.06em' }}>
+          <p style={{ textAlign: 'center', fontSize: '11px', color: '#5C5648', marginTop: '14px', letterSpacing: '0.06em' }}>
             ACTUAL PRODUCT · PRIVATE BETA · LIVE DATA
           </p>
         </div>
@@ -145,7 +145,7 @@ export default function Home({ navigate }) {
               'Designed for control, not just tracking.',
               'Built for real-world income patterns.',
             ].map(t => (
-              <div key={t} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#5C5648' }}>
+              <div key={t} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#8B8478' }}>
                 <span style={{ color: '#D97757', fontSize: '10px' }}>◆</span>
                 {t}
               </div>
@@ -175,7 +175,7 @@ export default function Home({ navigate }) {
             ].map((line, i) => (
               <p key={i} style={{
                 fontSize: '17px',
-                color: line.muted ? '#5C5648' : '#E8E2D5',
+                color: line.muted ? '#8B8478' : '#E8E2D5',
                 lineHeight: 1.7,
                 padding: '14px 0',
                 borderBottom: i < 3 ? '1px solid #1A1610' : 'none',
@@ -207,9 +207,9 @@ export default function Home({ navigate }) {
               { num: '04', title: 'Track',    body: 'See what\'s working — and what needs adjusting.' },
             ].map(({ num, title, body }) => (
               <div key={num} className="m-card" style={{ padding: '32px 24px' }}>
-                <div className="m-mono" style={{ fontSize: '11px', color: '#3A3028', marginBottom: '16px', letterSpacing: '0.1em' }}>{num}</div>
+                <div className="m-mono" style={{ fontSize: '11px', color: '#5C5648', marginBottom: '16px', letterSpacing: '0.1em' }}>{num}</div>
                 <h3 className="m-display" style={{ fontSize: '22px', color: '#E8E2D5', marginBottom: '12px' }}>{title}</h3>
-                <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.65 }}>{body}</p>
+                <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.65 }}>{body}</p>
               </div>
             ))}
           </div>
@@ -285,11 +285,11 @@ export default function Home({ navigate }) {
               { label: 'Royal Ledger', accent: true, items: ['Control decisions before they happen', 'Built for variable income', 'Automatic allocation by stage', 'Spending Gate + 24h hold', 'Stage-based progression system'] },
             ].map(({ label, items, accent }) => (
               <div key={label} className={accent ? 'm-card-warm' : 'm-card-flat'} style={{ padding: '28px 24px' }}>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: accent ? '#D97757' : '#3A3028', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '20px' }}>{label}</div>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: accent ? '#D97757' : '#5C5648', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '20px' }}>{label}</div>
                 {items.map((item, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0', borderBottom: i < items.length - 1 ? '1px solid #1A1610' : 'none' }}>
-                    <span style={{ color: accent ? '#7FA068' : '#3A3028', fontSize: '13px', flexShrink: 0 }}>{accent ? '✓' : '—'}</span>
-                    <span style={{ fontSize: '13px', color: accent ? '#E8E2D5' : '#5C5648', lineHeight: 1.5 }}>{item}</span>
+                    <span style={{ color: accent ? '#7FA068' : '#5C5648', fontSize: '13px', flexShrink: 0 }}>{accent ? '✓' : '—'}</span>
+                    <span style={{ fontSize: '13px', color: accent ? '#E8E2D5' : '#8B8478', lineHeight: 1.5 }}>{item}</span>
                   </div>
                 ))}
               </div>
@@ -362,7 +362,7 @@ export default function Home({ navigate }) {
             ].map(({ icon, label }) => (
               <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '14px' }}>{icon}</span>
-                <span style={{ fontSize: '12px', color: '#3A3028', fontWeight: 500 }}>{label}</span>
+                <span style={{ fontSize: '12px', color: '#5C5648', fontWeight: 500 }}>{label}</span>
               </div>
             ))}
           </div>
@@ -407,7 +407,7 @@ export default function Home({ navigate }) {
             ].map(({ q, a }, i, arr) => (
               <div key={i} style={{ padding: '24px 0', borderBottom: i < arr.length - 1 ? '1px solid #1A1610' : 'none' }}>
                 <div style={{ fontSize: '15px', fontWeight: 600, color: '#E8E2D5', marginBottom: '10px', lineHeight: 1.4 }}>{q}</div>
-                <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.75 }}>{a}</p>
+                <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.75 }}>{a}</p>
               </div>
             ))}
           </div>
@@ -434,10 +434,10 @@ export default function Home({ navigate }) {
           >
             Get Early Access
           </button>
-          <p style={{ marginTop: '16px', fontSize: '13px', color: '#5C5648', fontWeight: 500 }}>
+          <p style={{ marginTop: '16px', fontSize: '13px', color: '#8B8478', fontWeight: 500 }}>
             No subscriptions. No noise. Just control.
           </p>
-          <p style={{ marginTop: '8px', fontSize: '12px', color: '#3A3028' }}>
+          <p style={{ marginTop: '8px', fontSize: '12px', color: '#5C5648' }}>
             No credit card required at any stage.
           </p>
         </div>

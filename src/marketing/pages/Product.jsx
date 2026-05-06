@@ -144,10 +144,10 @@ export default function Product({ navigate }) {
                     </div>
                     <div>
                       <div style={{ fontSize: '16px', fontWeight: 600, color: '#E8E2D5', letterSpacing: '-0.01em' }}>{mod.title}</div>
-                      <div style={{ fontSize: '13px', color: '#5C5648', marginTop: '2px' }}>{mod.subtitle}</div>
+                      <div style={{ fontSize: '13px', color: '#8B8478', marginTop: '2px' }}>{mod.subtitle}</div>
                     </div>
                   </div>
-                  <div style={{ color: activeId === mod.id ? '#D97757' : '#3A3028', fontSize: '18px', flexShrink: 0, transform: activeId === mod.id ? 'rotate(45deg)' : 'none', transition: 'all 200ms' }}>+</div>
+                  <div style={{ color: activeId === mod.id ? '#D97757' : '#5C5648', fontSize: '18px', flexShrink: 0, transform: activeId === mod.id ? 'rotate(45deg)' : 'none', transition: 'all 200ms' }}>+</div>
                 </div>
 
                 {/* Expanded panel */}
@@ -155,17 +155,17 @@ export default function Product({ navigate }) {
                   <div style={{ paddingBottom: '32px' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }} className="product-expand-grid">
                       <div>
-                        <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '12px' }}>What It Does</div>
+                        <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8B8478', marginBottom: '12px' }}>What It Does</div>
                         <p style={{ fontSize: '15px', color: '#E8E2D5', lineHeight: 1.7, marginBottom: '20px' }}>{mod.what}</p>
-                        <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '12px' }}>Why It Matters</div>
-                        <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7 }}>{mod.why}</p>
+                        <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8B8478', marginBottom: '12px' }}>Why It Matters</div>
+                        <p style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.7 }}>{mod.why}</p>
                       </div>
                       <div>
-                        <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '12px' }}>Capabilities</div>
+                        <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8B8478', marginBottom: '12px' }}>Capabilities</div>
                         {mod.points.map((pt, j) => (
                           <div key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '8px 0', borderBottom: j < mod.points.length - 1 ? '1px solid #1A1610' : 'none' }}>
                             <span style={{ color: '#D97757', flexShrink: 0, fontSize: '13px', marginTop: '1px' }}>→</span>
-                            <span style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.5 }}>{pt}</span>
+                            <span style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.5 }}>{pt}</span>
                           </div>
                         ))}
                       </div>

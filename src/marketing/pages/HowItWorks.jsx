@@ -68,7 +68,7 @@ export default function HowItWorks({ navigate }) {
           <div className="m-flow" style={{ justifyContent: 'center', gap: '8px' }}>
             {['Enter income', '→', 'System allocates', '→', 'Spend within limits', '→', 'Gate impulses', '→', 'Wealth compounds'].map((item, i) =>
               item === '→'
-                ? <span key={i} className="m-flow-arrow" style={{ color: '#3A3028', fontSize: '16px' }}>→</span>
+                ? <span key={i} className="m-flow-arrow" style={{ color: '#5C5648', fontSize: '16px' }}>→</span>
                 : <div key={i} className="m-flow-node" style={{ padding: '10px 20px' }}>{item}</div>
             )}
           </div>
@@ -92,14 +92,14 @@ export default function HowItWorks({ navigate }) {
                     <h2 className="m-display" style={{ fontSize: 'clamp(24px, 3vw, 36px)', color: '#E8E2D5', marginBottom: '14px' }}>
                       {step.title}
                     </h2>
-                    <p style={{ fontSize: '16px', color: '#8B8478', lineHeight: 1.7 }}>
+                    <p style={{ fontSize: '16px', color: '#B0A898', lineHeight: 1.7 }}>
                       {step.body}
                     </p>
                   </div>
 
                   {/* Right: detail card */}
                   <div className={step.accent ? 'm-card-warm' : 'm-card'} style={{ padding: '24px', marginTop: '4px' }}>
-                    <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.75 }}>
+                    <p style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.75 }}>
                       {step.detail}
                     </p>
                   </div>
@@ -126,7 +126,7 @@ export default function HowItWorks({ navigate }) {
             They are failing because they are{' '}
             <em style={{ color: '#D97757', fontStyle: 'italic' }}>unstructured</em>."
           </h2>
-          <p style={{ fontSize: '13px', color: '#3A3028', letterSpacing: '0.06em' }}>
+          <p style={{ fontSize: '13px', color: '#5C5648', letterSpacing: '0.06em' }}>
             — The belief behind Royal Ledger
           </p>
         </div>

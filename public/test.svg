@@ -1,0 +1,63 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#0D0B09"/>
+      <stop offset="100%" stop-color="#0A0908"/>
+    </linearGradient>
+    <linearGradient id="accent-line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#D97757" stop-opacity="0"/>
+      <stop offset="40%"  stop-color="#D97757" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#D97757" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- Subtle corner border lines -->
+  <line x1="60" y1="60"  x2="140" y2="60"  stroke="#26221C" stroke-width="1"/>
+  <line x1="60" y1="60"  x2="60"  y2="140" stroke="#26221C" stroke-width="1"/>
+  <line x1="1140" y1="60"  x2="1060" y2="60"  stroke="#26221C" stroke-width="1"/>
+  <line x1="1140" y1="60"  x2="1140" y2="140" stroke="#26221C" stroke-width="1"/>
+  <line x1="60"   y1="570" x2="140"  y2="570" stroke="#26221C" stroke-width="1"/>
+  <line x1="60"   y1="570" x2="60"   y2="490" stroke="#26221C" stroke-width="1"/>
+  <line x1="1140" y1="570" x2="1060" y2="570" stroke="#26221C" stroke-width="1"/>
+  <line x1="1140" y1="570" x2="1140" y2="490" stroke="#26221C" stroke-width="1"/>
+  <!-- RL monogram badge -->
+  <rect x="560" y="96" width="80" height="80" rx="6" fill="#0F0D0A" stroke="#2A221A" stroke-width="1"/>
+  <text x="600" y="152" font-family="Georgia, serif" font-size="32" font-weight="700"
+        fill="#D97757" text-anchor="middle" letter-spacing="1">RL</text>
+  <!-- Brand name -->
+  <text x="600" y="252" font-family="Georgia, 'Times New Roman', serif"
+        font-size="72" font-weight="400" fill="#E8E2D5"
+        text-anchor="middle" letter-spacing="-1">Royal Ledger</text>
+  <!-- Accent rule -->
+  <rect x="300" y="278" width="600" height="1" fill="url(#accent-line)"/>
+  <!-- Tagline -->
+  <text x="600" y="340" font-family="Georgia, 'Times New Roman', serif"
+        font-size="28" font-weight="400" font-style="italic" fill="#D97757"
+        text-anchor="middle" letter-spacing="0.5">
+    Give every unit a role — before you spend it.
+  </text>
+  <!-- Sub-tagline -->
+  <text x="600" y="394" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif"
+        font-size="20" font-weight="400" fill="#5C5648"
+        text-anchor="middle" letter-spacing="0.5">
+    A financial operating system for variable-income earners.
+  </text>
+  <!-- Feature pills -->
+  <rect x="218" y="444" width="200" height="36" rx="18" fill="#14110E" stroke="#26221C" stroke-width="1"/>
+  <text x="318" y="467" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif"
+        font-size="13" fill="#8B8478" text-anchor="middle" letter-spacing="0.3">Profit Allocator</text>
+  <rect x="436" y="444" width="180" height="36" rx="18" fill="#14110E" stroke="#26221C" stroke-width="1"/>
+  <text x="526" y="467" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif"
+        font-size="13" fill="#8B8478" text-anchor="middle" letter-spacing="0.3">Impulse Gate</text>
+  <rect x="634" y="444" width="180" height="36" rx="18" fill="#14110E" stroke="#26221C" stroke-width="1"/>
+  <text x="724" y="467" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif"
+        font-size="13" fill="#8B8478" text-anchor="middle" letter-spacing="0.3">Buffer System</text>
+  <rect x="832" y="444" width="150" height="36" rx="18" fill="#14110E" stroke="#26221C" stroke-width="1"/>
+  <text x="907" y="467" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif"
+        font-size="13" fill="#8B8478" text-anchor="middle" letter-spacing="0.3">Offline-first</text>
+  <!-- Domain -->
+  <text x="600" y="554" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif"
+        font-size="16" font-weight="500" fill="#3A3028"
+        text-anchor="middle" letter-spacing="1">royalledger.app</text>
+</svg>

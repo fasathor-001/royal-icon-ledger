@@ -183,7 +183,7 @@ export default function MonthlyReview({ data, setData, stats, mode = 'tab', onCl
       {mode === 'modal' && (
         <div className="flex justify-between items-baseline mb-4">
           <div className="label" style={{ color: '#D97757' }}>Monthly Review</div>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#B0A898', cursor: 'pointer' }}>
             <X size={18} />
           </button>
         </div>
@@ -193,7 +193,7 @@ export default function MonthlyReview({ data, setData, stats, mode = 'tab', onCl
         <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
           {reviewMonth.label} <span style={{ fontStyle: 'italic', color: '#D97757' }}>review</span>
         </h1>
-        <p style={{ color: '#8B8478', fontSize: '15px' }}>
+        <p style={{ color: '#B0A898', fontSize: '15px' }}>
           {alreadyReviewed
             ? "You've already reviewed this month. Here's the summary."
             : "Take 5 minutes. Look at what happened. Set up next month."}
@@ -237,11 +237,11 @@ export default function MonthlyReview({ data, setData, stats, mode = 'tab', onCl
         <section className="card p-7">
           <div className="flex items-baseline justify-between mb-4">
             <h2 className="display text-2xl">Envelope performance</h2>
-            <div className="text-sm" style={{ color: '#8B8478' }}>
+            <div className="text-sm" style={{ color: '#B0A898' }}>
               <span style={{ color: '#7FA068' }}>{review.envelopesOnTarget} on target</span>
               {review.envelopesOver > 0 && (
                 <>
-                  <span style={{ color: '#5C5648' }}> · </span>
+                  <span style={{ color: '#8B8478' }}> · </span>
                   <span style={{ color: '#C56B5A' }}>{review.envelopesOver} over</span>
                 </>
               )}
@@ -262,7 +262,7 @@ export default function MonthlyReview({ data, setData, stats, mode = 'tab', onCl
                         <AlertTriangle size={12} style={{ color: '#C56B5A' }} />
                       )}
                     </div>
-                    <div className="text-xs mono" style={{ color: env.onTarget ? '#8B8478' : '#C56B5A' }}>
+                    <div className="text-xs mono" style={{ color: env.onTarget ? '#B0A898' : '#C56B5A' }}>
                       {fmt(env.spent)} / {fmt(env.cap)}
                       {env.unspent > 0 && env.rolloverMode === 'sweep' && (
                         <span style={{ color: '#7FA068' }}> · {fmt(env.unspent)} → buffer</span>
@@ -301,18 +301,18 @@ export default function MonthlyReview({ data, setData, stats, mode = 'tab', onCl
         <h2 className="display text-2xl mb-4">Stage progress</h2>
         <div className="grid md:grid-cols-2 gap-5">
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>Current buffer</div>
+            <div className="label mb-2" style={{ color: '#8B8478' }}>Current buffer</div>
             <div className="display text-3xl" style={{ fontWeight: 300, color: '#D97757' }}>{fmt(review.bufferNow)}</div>
-            <div className="text-xs mt-1" style={{ color: '#8B8478' }}>
+            <div className="text-xs mt-1" style={{ color: '#B0A898' }}>
               {review.stats.monthsCovered.toFixed(1)} months covered · Stage {review.stage}
             </div>
           </div>
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>Pace to fortified</div>
+            <div className="label mb-2" style={{ color: '#8B8478' }}>Pace to fortified</div>
             <div className="display text-3xl" style={{ fontWeight: 300 }}>
               {review.monthsToTarget > 0 ? `~${review.monthsToTarget} mo` : 'Achieved'}
             </div>
-            <div className="text-xs mt-1" style={{ color: '#8B8478' }}>
+            <div className="text-xs mt-1" style={{ color: '#B0A898' }}>
               At current monthly contribution rate
             </div>
           </div>
@@ -321,7 +321,7 @@ export default function MonthlyReview({ data, setData, stats, mode = 'tab', onCl
           <div className="mt-4 pt-4 border-t flex items-center justify-between" style={{ borderColor: '#26221C' }}>
             <div className="flex items-center gap-2">
               <Award size={14} style={{ color: '#A06B8C' }} />
-              <span className="text-sm" style={{ color: '#8B8478' }}>Future goals saved</span>
+              <span className="text-sm" style={{ color: '#B0A898' }}>Future goals saved</span>
             </div>
             <span className="mono text-sm" style={{ color: '#A06B8C' }}>{fmt(data.futureGoals)}</span>
           </div>
@@ -407,7 +407,7 @@ export default function MonthlyReview({ data, setData, stats, mode = 'tab', onCl
             >
               <Check size={14} className="inline mr-2" /> Mark month as reviewed
             </button>
-            <p className="text-xs text-center mt-2" style={{ color: '#5C5648' }}>
+            <p className="text-xs text-center mt-2" style={{ color: '#8B8478' }}>
               Records that you've completed this month's review. Won't show this prompt again until next month.
             </p>
           </div>
@@ -435,10 +435,10 @@ function MetricCard({ icon: Icon, label, value, color, subtitle }) {
     <div className="card p-5">
       <div className="flex items-center gap-2 mb-3">
         <Icon size={14} style={{ color }} />
-        <span className="label" style={{ color: '#5C5648' }}>{label}</span>
+        <span className="label" style={{ color: '#8B8478' }}>{label}</span>
       </div>
       <div className="display text-2xl mb-1" style={{ color, fontWeight: 300 }}>{value}</div>
-      <div className="text-xs" style={{ color: '#5C5648' }}>{subtitle}</div>
+      <div className="text-xs" style={{ color: '#8B8478' }}>{subtitle}</div>
     </div>
   );
 }
@@ -468,7 +468,7 @@ function ActionRow({ done, icon: Icon, title, desc, actionLabel, onAction }) {
       </div>
       <div style={{ flex: 1 }}>
         <div className="font-medium text-sm mb-0.5">{title}</div>
-        <div className="text-xs" style={{ color: '#8B8478' }}>{desc}</div>
+        <div className="text-xs" style={{ color: '#B0A898' }}>{desc}</div>
       </div>
       {!done && (
         <button

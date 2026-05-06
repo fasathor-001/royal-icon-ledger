@@ -87,7 +87,7 @@ export default function Privacy({ navigate }) {
           </p>
           <div style={{ marginTop: '20px', display: 'inline-flex', gap: '8px', alignItems: 'center', padding: '10px 16px', background: '#14110E', border: '1px solid #26221C', borderRadius: '4px' }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#7FA068' }} />
-            <span style={{ fontSize: '13px', color: '#8B8478' }}>Last updated: May 2025</span>
+            <span style={{ fontSize: '13px', color: '#B0A898' }}>Last updated: May 2025</span>
           </div>
         </div>
       </section>
@@ -103,7 +103,7 @@ export default function Privacy({ navigate }) {
               'No profiling',
               'Export anytime',
             ].map(t => (
-              <div key={t} style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '12px', color: '#5C5648' }}>
+              <div key={t} style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '12px', color: '#8B8478' }}>
                 <span style={{ color: '#7FA068' }}>✓</span>
                 {t}
               </div>
@@ -122,7 +122,7 @@ export default function Privacy({ navigate }) {
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {body.map((para, j) => (
-                  <p key={j} style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.8 }}>
+                  <p key={j} style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.8 }}>
                     {para}
                   </p>
                 ))}
@@ -135,7 +135,7 @@ export default function Privacy({ navigate }) {
             <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#E8E2D5', marginBottom: '16px' }}>
               {SECTIONS.length + 1}. Questions
             </h2>
-            <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.8, marginBottom: '16px' }}>
+            <p style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.8, marginBottom: '16px' }}>
               If you have any questions about this policy or how your data is handled, contact us directly:
             </p>
             <a href="mailto:hello@royalledger.app" style={{ fontSize: '14px', color: '#D97757', textDecoration: 'none' }}>

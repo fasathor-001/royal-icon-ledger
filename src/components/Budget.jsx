@@ -45,7 +45,7 @@ function InfoPopover({ label, children, align = 'right' }) {
           top: 'calc(100% + 8px)',
           zIndex: 200, width: 320,
           background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: 4,
-          padding: '12px 14px', lineHeight: 1.7, fontSize: 12, color: '#8B8478',
+          padding: '12px 14px', lineHeight: 1.7, fontSize: 12, color: '#B0A898',
           boxShadow: '0 8px 32px rgba(0,0,0,0.55)',
         }}>
           {children}
@@ -75,7 +75,7 @@ const BLOCK_MODES = {
 };
 
 const ROLLOVER_MODES = {
-  reset: { label: 'Reset', desc: 'Use it or lose it — fresh budget each month', color: '#8B8478' },
+  reset: { label: 'Reset', desc: 'Use it or lose it — fresh budget each month', color: '#B0A898' },
   roll: { label: 'Roll over', desc: 'Unspent amount carries to next month', color: '#B89968' },
   sweep: { label: 'Sweep to buffer', desc: 'Unspent goes to your savings buffer', color: '#7FA068' },
 };
@@ -264,7 +264,7 @@ export default function Budget({ data, setData, stats }) {
             <p>When you log a purchase, tag it to an envelope. The app tracks your spending and enforces your rules.</p>
           </InfoPopover>
         </div>
-        <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
+        <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
           {envelopes.length} envelopes · {fmt(totalAllocated)} total envelope caps · {fmt(data.spendingBudget)} discretionary limit. Each envelope has its own rules.
         </p>
       </div>
@@ -272,15 +272,15 @@ export default function Budget({ data, setData, stats }) {
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-3">
         <div className="card p-5">
-          <div className="label mb-2" style={{ color: '#5C5648' }}>Allocated</div>
+          <div className="label mb-2" style={{ color: '#8B8478' }}>Allocated</div>
           <div className="display text-2xl" style={{ fontWeight: 300 }}>{fmt(totalAllocated)}</div>
         </div>
         <div className="card p-5">
-          <div className="label mb-2" style={{ color: '#5C5648' }}>Spent</div>
+          <div className="label mb-2" style={{ color: '#8B8478' }}>Spent</div>
           <div className="display text-2xl" style={{ fontWeight: 300, color: '#D97757' }}>{fmt(totalSpent)}</div>
         </div>
         <div className="card p-5">
-          <div className="label mb-2" style={{ color: '#5C5648' }}>Remaining</div>
+          <div className="label mb-2" style={{ color: '#8B8478' }}>Remaining</div>
           <div className="display text-2xl" style={{ fontWeight: 300, color: totalRemaining < 0 ? '#C56B5A' : '#7FA068' }}>
             {fmt(totalRemaining)}
           </div>
@@ -294,7 +294,7 @@ export default function Budget({ data, setData, stats }) {
           <button
             onClick={() => setView('setup')}
             className="btn px-3 py-1.5 text-xs"
-            style={{ background: '#14110E', color: '#8B8478', border: '1px solid #26221C', borderRadius: '3px' }}
+            style={{ background: '#14110E', color: '#B0A898', border: '1px solid #26221C', borderRadius: '3px' }}
           >
             <Settings size={12} className="inline mr-1" /> Manage
           </button>
@@ -371,7 +371,7 @@ function EnvelopeRow({ envelope, spent, dayOfMonth, daysInMonth, onEdit, currenc
         <Icon size={16} style={{ color: barColor }} />
         <div className="flex-1">
           <div className="font-medium text-sm">{envelope.name}</div>
-          <div className="text-xs flex gap-3 mt-0.5" style={{ color: '#5C5648' }}>
+          <div className="text-xs flex gap-3 mt-0.5" style={{ color: '#8B8478' }}>
             <span>{blockMode.label}</span>
             <span>·</span>
             <span>{rolloverMode.label}</span>
@@ -381,7 +381,7 @@ function EnvelopeRow({ envelope, spent, dayOfMonth, daysInMonth, onEdit, currenc
           <div className="mono text-sm" style={{ color: overBudget ? '#C56B5A' : '#E8E2D5' }}>
             {fmt(spent)} / {fmt(cap)}
           </div>
-          <div className="text-xs mt-0.5" style={{ color: '#8B8478' }}>
+          <div className="text-xs mt-0.5" style={{ color: '#B0A898' }}>
             {overBudget ? `${fmt(spent - cap)} over` : `${fmt(remaining)} left`}
           </div>
         </div>
@@ -391,7 +391,7 @@ function EnvelopeRow({ envelope, spent, dayOfMonth, daysInMonth, onEdit, currenc
         <div className="progress-fill" style={{ width: pct + '%', background: barColor }} />
       </div>
 
-      <div className="flex justify-between text-xs items-center" style={{ color: '#5C5648' }}>
+      <div className="flex justify-between text-xs items-center" style={{ color: '#8B8478' }}>
         <span>Day {dayOfMonth} of {daysInMonth}</span>
         <VelocityAlert spent={spent} cap={cap} projected={projected} overBudget={overBudget} blockMode={envelope.blockMode} currency={currency} />
       </div>
@@ -408,7 +408,7 @@ function VelocityAlert({ spent, cap, projected, overBudget, blockMode, currency 
       return (
         <span
           className="pill"
-          style={{ background: '#26221C', color: '#8B8478', fontSize: '10px', padding: '2px 8px' }}
+          style={{ background: '#26221C', color: '#B0A898', fontSize: '10px', padding: '2px 8px' }}
         >
           ⊘ Blocked — cap reached
         </span>
@@ -509,7 +509,7 @@ function BudgetSetup({ data, setData, stats }) {
           <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
             Set up your <span style={{ fontStyle: 'italic', color: '#D97757' }}>budget</span>
           </h1>
-          <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
+          <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
             Envelope budgeting splits your monthly spending money into named buckets. Each bucket has rules — soft warning, hard block, or PIN override when you exceed it. The system enforces what you commit to.
           </p>
         </div>
@@ -517,19 +517,19 @@ function BudgetSetup({ data, setData, stats }) {
         <div className="card-warm p-7">
           <div className="grid md:grid-cols-3 gap-4 mb-6">
             <div>
-              <div className="label mb-2" style={{ color: '#5C5648' }}>Your spending budget</div>
+              <div className="label mb-2" style={{ color: '#8B8478' }}>Your spending budget</div>
               <div className="display text-3xl" style={{ fontWeight: 300, color: '#D97757' }}>{fmt(data.spendingBudget || 0)}</div>
-              <div className="text-xs mt-1" style={{ color: '#8B8478' }}>per month</div>
+              <div className="text-xs mt-1" style={{ color: '#B0A898' }}>per month</div>
             </div>
             <div>
-              <div className="label mb-2" style={{ color: '#5C5648' }}>Will be split into</div>
+              <div className="label mb-2" style={{ color: '#8B8478' }}>Will be split into</div>
               <div className="display text-3xl" style={{ fontWeight: 300 }}>~7 envelopes</div>
-              <div className="text-xs mt-1" style={{ color: '#8B8478' }}>based on your situation</div>
+              <div className="text-xs mt-1" style={{ color: '#B0A898' }}>based on your situation</div>
             </div>
             <div>
-              <div className="label mb-2" style={{ color: '#5C5648' }}>Auto-suggested using</div>
+              <div className="label mb-2" style={{ color: '#8B8478' }}>Auto-suggested using</div>
               <div className="display text-3xl" style={{ fontWeight: 300 }}>{(data.expenses || []).length}</div>
-              <div className="text-xs mt-1" style={{ color: '#8B8478' }}>existing expense entries</div>
+              <div className="text-xs mt-1" style={{ color: '#B0A898' }}>existing expense entries</div>
             </div>
           </div>
 
@@ -544,7 +544,7 @@ function BudgetSetup({ data, setData, stats }) {
 
         <div className="card p-6">
           <h3 className="display text-xl mb-3">How envelopes work</h3>
-          <div className="space-y-3 text-sm" style={{ color: '#8B8478', lineHeight: 1.6 }}>
+          <div className="space-y-3 text-sm" style={{ color: '#B0A898', lineHeight: 1.6 }}>
             <div>
               <strong style={{ color: '#E8E2D5' }}>Each purchase gets tagged to an envelope.</strong> When you log an impulse or run the spending gate, you pick which envelope it comes from.
             </div>
@@ -559,7 +559,7 @@ function BudgetSetup({ data, setData, stats }) {
             <div>
               <strong style={{ color: '#E8E2D5' }}>At month-end, each envelope handles unspent money:</strong>
               <ul className="mt-2 space-y-1 ml-4">
-                <li>• <span style={{ color: '#8B8478' }}>Reset</span> — use it or lose it</li>
+                <li>• <span style={{ color: '#B0A898' }}>Reset</span> — use it or lose it</li>
                 <li>• <span style={{ color: '#B89968' }}>Roll over</span> — carries to next month</li>
                 <li>• <span style={{ color: '#7FA068' }}>Sweep</span> — unspent goes to your buffer (the wealth-building option)</li>
               </ul>
@@ -577,7 +577,7 @@ function BudgetSetup({ data, setData, stats }) {
           <h1 className="display text-3xl mb-2" style={{ fontWeight: 300 }}>
             Review your <span style={{ fontStyle: 'italic', color: '#D97757' }}>envelopes</span>
           </h1>
-          <p style={{ color: '#8B8478', fontSize: '15px' }}>
+          <p style={{ color: '#B0A898', fontSize: '15px' }}>
             Adjust caps, change rules, add or remove envelopes. Total should match your spending budget.
           </p>
         </div>
@@ -591,13 +591,13 @@ function BudgetSetup({ data, setData, stats }) {
         >
           <div className="flex items-baseline justify-between">
             <div>
-              <div className="label mb-1" style={{ color: '#5C5648' }}>Total allocated</div>
+              <div className="label mb-1" style={{ color: '#8B8478' }}>Total allocated</div>
               <div className="display text-3xl" style={{ fontWeight: 300, color: diff === 0 ? '#7FA068' : diff > 0 ? '#C56B5A' : '#D97757' }}>
                 {fmt(total)}
               </div>
             </div>
             <div className="text-right">
-              <div className="label mb-1" style={{ color: '#5C5648' }}>Target</div>
+              <div className="label mb-1" style={{ color: '#8B8478' }}>Target</div>
               <div className="mono">{fmt(targetBudget)}</div>
               {diff !== 0 && (
                 <div className="text-xs mt-1" style={{ color: diff > 0 ? '#C56B5A' : '#D97757' }}>
@@ -624,13 +624,13 @@ function BudgetSetup({ data, setData, stats }) {
         <button
           onClick={addCustom}
           className="btn w-full p-3"
-          style={{ background: 'transparent', border: '1px dashed #3A2A1E', color: '#8B8478', borderRadius: '4px', fontSize: '13px' }}
+          style={{ background: 'transparent', border: '1px dashed #3A2A1E', color: '#B0A898', borderRadius: '4px', fontSize: '13px' }}
         >
           <Plus size={14} className="inline mr-2" /> Add custom envelope
         </button>
 
         <div className="flex gap-3">
-          <button onClick={() => setStep('intro')} className="btn px-4 py-3" style={{ color: '#8B8478', background: 'transparent' }}>← Back</button>
+          <button onClick={() => setStep('intro')} className="btn px-4 py-3" style={{ color: '#B0A898', background: 'transparent' }}>← Back</button>
           <button
             onClick={finalize}
             disabled={envelopes.length === 0 || total === 0}
@@ -650,7 +650,7 @@ function BudgetSetup({ data, setData, stats }) {
         </div>
 
         {Math.abs(diff) > targetBudget * 0.05 && (
-          <p className="text-xs" style={{ color: '#5C5648' }}>
+          <p className="text-xs" style={{ color: '#8B8478' }}>
             Tip: Total doesn't match your {fmt(targetBudget)} budget. Adjust individual caps or your spending budget in Setup.
           </p>
         )}
@@ -663,7 +663,7 @@ function BudgetSetup({ data, setData, stats }) {
       <div className="card-warm p-8 text-center">
         <Check size={32} style={{ color: '#7FA068' }} className="mx-auto mb-4" />
         <div className="display text-3xl mb-2" style={{ fontStyle: 'italic', fontWeight: 300 }}>Budget configured.</div>
-        <p style={{ color: '#8B8478', maxWidth: '500px', margin: '0 auto', lineHeight: 1.6 }}>
+        <p style={{ color: '#B0A898', maxWidth: '500px', margin: '0 auto', lineHeight: 1.6 }}>
           From now on, when you log a purchase, you'll pick which envelope it comes from. The system will track and enforce your rules.
         </p>
         <button
@@ -697,7 +697,7 @@ function EnvelopeEditCard({ envelope, onUpdate, onRemove, locked, onClickLocked,
           />
           <div className="grid grid-cols-3 gap-2">
             <div>
-              <div className="label mb-1" style={{ color: '#5C5648' }}>Cap</div>
+              <div className="label mb-1" style={{ color: '#8B8478' }}>Cap</div>
               <input
                 type="number"
                 value={envelope.cap}
@@ -709,7 +709,7 @@ function EnvelopeEditCard({ envelope, onUpdate, onRemove, locked, onClickLocked,
               />
             </div>
             <div>
-              <div className="label mb-1" style={{ color: '#5C5648' }}>Block mode</div>
+              <div className="label mb-1" style={{ color: '#8B8478' }}>Block mode</div>
               <select
                 value={envelope.blockMode}
                 onChange={locked ? undefined : (e) => onUpdate({ blockMode: e.target.value })}
@@ -724,7 +724,7 @@ function EnvelopeEditCard({ envelope, onUpdate, onRemove, locked, onClickLocked,
               </select>
             </div>
             <div>
-              <div className="label mb-1" style={{ color: '#5C5648' }}>Rollover</div>
+              <div className="label mb-1" style={{ color: '#8B8478' }}>Rollover</div>
               <select
                 value={envelope.rolloverMode}
                 onChange={locked ? undefined : (e) => onUpdate({ rolloverMode: e.target.value })}
@@ -740,7 +740,7 @@ function EnvelopeEditCard({ envelope, onUpdate, onRemove, locked, onClickLocked,
             </div>
           </div>
         </div>
-        <button onClick={locked ? onClickLocked : onRemove} className="btn p-2" style={{ color: '#5C5648', opacity: locked ? 0.4 : 1 }}>
+        <button onClick={locked ? onClickLocked : onRemove} className="btn p-2" style={{ color: '#8B8478', opacity: locked ? 0.4 : 1 }}>
           <X size={16} />
         </button>
       </div>
@@ -783,7 +783,7 @@ function EnvelopeEditor({ envelope, data, setData, onClose }) {
       <div className="card p-6" style={{ maxWidth: '500px', width: '100%' }}>
         <div className="flex justify-between items-baseline mb-5">
           <h2 className="display text-2xl">Edit envelope</h2>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#B0A898', cursor: 'pointer' }}>
             <X size={18} />
           </button>
         </div>
@@ -802,7 +802,7 @@ function EnvelopeEditor({ envelope, data, setData, onClose }) {
             Delete
           </button>
           <div className="flex gap-2">
-            <button onClick={onClose} className="btn px-4 py-2" style={{ color: '#8B8478', fontSize: '13px' }}>Cancel</button>
+            <button onClick={onClose} className="btn px-4 py-2" style={{ color: '#B0A898', fontSize: '13px' }}>Cancel</button>
             <button onClick={locked ? requestUnlock : save} className="btn px-4 py-2" style={{ background: locked ? '#26221C' : '#D97757', color: locked ? '#5B7FB8' : '#0A0908', borderRadius: '3px', fontWeight: 600, fontSize: '13px', border: locked ? '1px solid #1E2A3A' : 'none' }}>
               {locked ? <><Lock size={12} className="inline mr-1" /> Unlock to save</> : 'Save'}
             </button>
@@ -833,13 +833,13 @@ function BudgetManager({ data, setData, onClose }) {
       <div className="card p-7" style={{ maxWidth: '700px', width: '100%', marginTop: '40px' }}>
         <div className="flex justify-between items-baseline mb-5">
           <h2 className="display text-2xl">Manage envelopes</h2>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#B0A898', cursor: 'pointer' }}>
             <X size={20} />
           </button>
         </div>
 
         <div className="flex items-center justify-between mb-5">
-          <p className="text-sm" style={{ color: '#8B8478' }}>
+          <p className="text-sm" style={{ color: '#B0A898' }}>
             Edit existing envelopes, change caps and rules, or rebuild from scratch.
           </p>
           {data.overridePin && (
@@ -890,7 +890,7 @@ function BudgetManager({ data, setData, onClose }) {
             }],
           }))}
           className="btn w-full p-3 mt-3"
-          style={{ background: 'transparent', border: '1px dashed #3A2A1E', color: '#8B8478', borderRadius: '4px', fontSize: '13px' }}
+          style={{ background: 'transparent', border: '1px dashed #3A2A1E', color: '#B0A898', borderRadius: '4px', fontSize: '13px' }}
         >
           <Plus size={14} className="inline mr-2" /> Add envelope
         </button>
@@ -974,7 +974,7 @@ function MonthEndActions({ data, setData, envelopes, envelopeSpending }) {
         </p>
       ) : (
         <>
-          <p className="text-sm mb-4" style={{ color: '#8B8478' }}>
+          <p className="text-sm mb-4" style={{ color: '#B0A898' }}>
             End of month is approaching. Apply rollover rules to wrap up this month and start fresh.
           </p>
 
@@ -982,7 +982,7 @@ function MonthEndActions({ data, setData, envelopes, envelopeSpending }) {
             <div className="card-warm p-4 mb-4">
               <div className="label mb-1" style={{ color: '#7FA068' }}>Will sweep to buffer</div>
               <div className="display text-2xl" style={{ color: '#7FA068', fontWeight: 300 }}>{fmt(totalSweep)}</div>
-              <div className="text-xs mt-1" style={{ color: '#8B8478' }}>From envelopes set to sweep mode</div>
+              <div className="text-xs mt-1" style={{ color: '#B0A898' }}>From envelopes set to sweep mode</div>
             </div>
           )}
 

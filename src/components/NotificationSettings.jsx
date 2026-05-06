@@ -40,7 +40,7 @@ function Toggle({ on, onChange }) {
       <span style={{
         position: 'absolute', top: 3, width: 16, height: 16, borderRadius: '50%',
         left: on ? 21 : 3,
-        background: on ? '#0A0908' : '#5C5648',
+        background: on ? '#0A0908' : '#8B8478',
         transition: 'left 200ms',
       }} />
     </button>
@@ -63,7 +63,7 @@ function IOSInstallGuide() {
           <div style={{ fontSize: 14, fontWeight: 600, color: '#E8E2D5' }}>
             Install the app first
           </div>
-          <div style={{ fontSize: 12, color: '#8B8478', marginTop: 2 }}>
+          <div style={{ fontSize: 12, color: '#B0A898', marginTop: 2 }}>
             iOS requires the app on your Home Screen before notifications can be enabled.
           </div>
         </div>
@@ -108,7 +108,7 @@ function IOSInstallGuide() {
             </div>
             <div style={{ paddingTop: 4 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#E8E2D5' }}>{step.label}</div>
-              <div style={{ fontSize: 12, color: '#8B8478', marginTop: 2, lineHeight: 1.5 }}>
+              <div style={{ fontSize: 12, color: '#B0A898', marginTop: 2, lineHeight: 1.5 }}>
                 {step.desc}
               </div>
             </div>
@@ -119,7 +119,7 @@ function IOSInstallGuide() {
       {/* Footer note */}
       <div style={{
         borderTop: '1px solid #26221C', padding: '10px 18px',
-        fontSize: 11, color: '#5C5648', letterSpacing: '0.03em',
+        fontSize: 11, color: '#8B8478', letterSpacing: '0.03em',
       }}>
         Requires iOS 16.4 or later · Notifications work even when the app is closed
       </div>
@@ -148,7 +148,7 @@ function DeniedGuide() {
     steps = [
       <>Click the <strong style={{ color: '#E8E2D5' }}>🔒 lock icon</strong> in the Edge address bar</>,
       <>Click <strong style={{ color: '#E8E2D5' }}>Permissions for this site</strong></>,
-      <>Set <strong style={{ color: '#E8E2D5' }}>Notifications</strong> to <strong style={{ color: '#E8E2D5' }}>Allow</strong> <span style={{ color: '#5C5648' }}>(not Ask — Edge blocks the prompt in Ask mode)</span></>,
+      <>Set <strong style={{ color: '#E8E2D5' }}>Notifications</strong> to <strong style={{ color: '#E8E2D5' }}>Allow</strong> <span style={{ color: '#8B8478' }}>(not Ask — Edge blocks the prompt in Ask mode)</span></>,
       <>Press <strong style={{ color: '#E8E2D5' }}>Ctrl + Shift + R</strong> to reload — notifications will activate automatically</>,
     ];
   } else if (isChrome) {
@@ -186,10 +186,10 @@ function DeniedGuide() {
       <div style={{ color: '#C56B5A', fontWeight: 600, marginBottom: 8, fontSize: 14 }}>
         🔕 Notifications blocked by your browser
       </div>
-      <div style={{ color: '#8B8478', lineHeight: 1.6, marginBottom: 10 }}>
+      <div style={{ color: '#B0A898', lineHeight: 1.6, marginBottom: 10 }}>
         The browser is preventing the permission prompt from appearing. To fix it:
       </div>
-      <ol style={{ color: '#8B8478', lineHeight: 2, paddingLeft: 18, fontSize: 13, margin: 0 }}>
+      <ol style={{ color: '#B0A898', lineHeight: 2, paddingLeft: 18, fontSize: 13, margin: 0 }}>
         {steps.map((step, i) => <li key={i}>{step}</li>)}
       </ol>
     </div>
@@ -337,7 +337,7 @@ export default function NotificationSettings({ user, data, setData }) {
 
   const labelStyle = {
     fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
-    fontWeight: 600, color: '#5C5648',
+    fontWeight: 600, color: '#8B8478',
   };
 
   const isReady = pushStatus !== 'needs-install' && pushStatus !== 'unsupported' && pushStatus !== 'no-vapid';
@@ -351,7 +351,7 @@ export default function NotificationSettings({ user, data, setData }) {
           Notifications
         </h2>
       </div>
-      <p style={{ color: '#8B8478', fontSize: 14, marginBottom: 20, marginTop: 4 }}>
+      <p style={{ color: '#B0A898', fontSize: 14, marginBottom: 20, marginTop: 4 }}>
         Daily, weekly, and month-end push reminders — personalized to your real numbers.
       </p>
 
@@ -359,7 +359,7 @@ export default function NotificationSettings({ user, data, setData }) {
       {pushStatus === 'needs-install' && (
         <>
           <IOSInstallGuide />
-          <p style={{ fontSize: 12, color: '#5C5648', marginTop: 14, lineHeight: 1.6 }}>
+          <p style={{ fontSize: 12, color: '#8B8478', marginTop: 14, lineHeight: 1.6 }}>
             You can configure your reminder preferences below. They'll be saved and applied once you enable notifications after installing.
           </p>
         </>
@@ -393,7 +393,7 @@ export default function NotificationSettings({ user, data, setData }) {
           <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid #1E1A16' }}>
             <div>
               <div style={{ fontSize: 14, color: '#E8E2D5' }}>{label}</div>
-              <div style={{ fontSize: 12, color: '#5C5648', marginTop: 2 }}>{desc}</div>
+              <div style={{ fontSize: 12, color: '#8B8478', marginTop: 2 }}>{desc}</div>
             </div>
             <Toggle on={prefs[key]} onChange={(v) => updatePrefs({ [key]: v })} />
           </div>
@@ -413,7 +413,7 @@ export default function NotificationSettings({ user, data, setData }) {
             <div style={{ fontSize: 13, color: '#D97757', fontWeight: 600, marginBottom: 6 }}>
               Confirm your timezone
             </div>
-            <div style={{ fontSize: 12, color: '#8B8478', marginBottom: 12, lineHeight: 1.6 }}>
+            <div style={{ fontSize: 12, color: '#B0A898', marginBottom: 12, lineHeight: 1.6 }}>
               Your offset ({offsetLabel(prefs.timezoneOffset ?? 0)}) matches more than one location.
               Pick yours so notifications arrive at the right time.
             </div>
@@ -439,7 +439,7 @@ export default function NotificationSettings({ user, data, setData }) {
                 }}
                 style={{
                   background: pendingIana ? '#D97757' : '#26221C',
-                  color: pendingIana ? '#0A0908' : '#5C5648',
+                  color: pendingIana ? '#0A0908' : '#8B8478',
                   border: 'none', borderRadius: 4, padding: '8px 16px',
                   fontSize: 13, fontWeight: 600,
                   cursor: pendingIana ? 'pointer' : 'not-allowed',
@@ -451,7 +451,7 @@ export default function NotificationSettings({ user, data, setData }) {
                 onClick={() => setIanaStatus('dismissed')}
                 style={{
                   background: 'transparent', border: '1px solid #26221C',
-                  color: '#5C5648', borderRadius: 4, padding: '8px 14px',
+                  color: '#8B8478', borderRadius: 4, padding: '8px 14px',
                   fontSize: 13, cursor: 'pointer',
                 }}
               >
@@ -495,7 +495,7 @@ export default function NotificationSettings({ user, data, setData }) {
             onChange={e => updatePrefs({ morningTime: e.target.value })}
             style={inputStyle}
           />
-          <div style={{ fontSize: 12, color: '#5C5648', marginTop: 6 }}>Daily & Sunday morning</div>
+          <div style={{ fontSize: 12, color: '#8B8478', marginTop: 6 }}>Daily & Sunday morning</div>
         </div>
         <div>
           <div style={{ ...labelStyle, marginBottom: 8 }}>Evening reminder</div>
@@ -505,7 +505,7 @@ export default function NotificationSettings({ user, data, setData }) {
             onChange={e => updatePrefs({ eveningTime: e.target.value })}
             style={inputStyle}
           />
-          <div style={{ fontSize: 12, color: '#5C5648', marginTop: 6 }}>End-of-day wrap-up</div>
+          <div style={{ fontSize: 12, color: '#8B8478', marginTop: 6 }}>End-of-day wrap-up</div>
         </div>
       </div>
 
@@ -542,7 +542,7 @@ export default function NotificationSettings({ user, data, setData }) {
           disabled={pushStatus === 'loading'}
           style={{
             background: pushStatus === 'loading' ? '#26221C' : '#D97757',
-            color: pushStatus === 'loading' ? '#5C5648' : '#0A0908',
+            color: pushStatus === 'loading' ? '#8B8478' : '#0A0908',
             border: 'none', borderRadius: 3, padding: '11px 20px',
             fontWeight: 600, fontSize: 13, cursor: pushStatus === 'loading' ? 'default' : 'pointer',
             display: 'flex', alignItems: 'center', gap: 7,
@@ -694,12 +694,12 @@ export function PushPromptBanner({ user, data, setData }) {
           borderRadius: '16px 16px 0 0', padding: '24px', width: '100%', maxWidth: 480, margin: '0 auto',
         }} onClick={e => e.stopPropagation()}>
           <div style={{ fontSize: 15, fontWeight: 600, color: '#C56B5A', marginBottom: 8 }}>Notifications blocked</div>
-          <div style={{ fontSize: 13, color: '#8B8478', lineHeight: 1.6, marginBottom: 16 }}>
+          <div style={{ fontSize: 13, color: '#B0A898', lineHeight: 1.6, marginBottom: 16 }}>
             To enable: go to <strong style={{ color: '#E8E2D5' }}>Settings → Notifications → Royal Ledger</strong> and allow notifications.
           </div>
           <button onClick={() => setStatus('hidden')} style={{
             width: '100%', padding: '13px', background: '#26221C', border: 'none',
-            borderRadius: 8, color: '#8B8478', fontSize: 14, cursor: 'pointer',
+            borderRadius: 8, color: '#B0A898', fontSize: 14, cursor: 'pointer',
           }}>Got it</button>
         </div>
       </div>
@@ -738,7 +738,7 @@ export function PushPromptBanner({ user, data, setData }) {
         <div style={{ fontSize: 22, fontWeight: 700, color: '#E8E2D5', marginBottom: 8, fontFamily: 'Fraunces, Georgia, serif' }}>
           Stay on top of your money
         </div>
-        <div style={{ fontSize: 14, color: '#8B8478', lineHeight: 1.7, marginBottom: 24 }}>
+        <div style={{ fontSize: 14, color: '#B0A898', lineHeight: 1.7, marginBottom: 24 }}>
           Royal Ledger will send you:
         </div>
 
@@ -753,7 +753,7 @@ export function PushPromptBanner({ user, data, setData }) {
               <span style={{ fontSize: 20, flexShrink: 0, lineHeight: 1.4 }}>{emoji}</span>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#E8E2D5' }}>{label}</div>
-                <div style={{ fontSize: 12, color: '#5C5648', marginTop: 1 }}>{desc}</div>
+                <div style={{ fontSize: 12, color: '#8B8478', marginTop: 1 }}>{desc}</div>
               </div>
             </div>
           ))}
@@ -766,7 +766,7 @@ export function PushPromptBanner({ user, data, setData }) {
           style={{
             width: '100%', padding: '15px', marginBottom: 12,
             background: loading ? '#3A2A1E' : '#D97757',
-            color: loading ? '#8B8478' : '#0A0908',
+            color: loading ? '#B0A898' : '#0A0908',
             border: 'none', borderRadius: 10, fontSize: 15,
             fontWeight: 700, cursor: loading ? 'default' : 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -782,7 +782,7 @@ export function PushPromptBanner({ user, data, setData }) {
           style={{
             width: '100%', padding: '13px', background: 'none',
             border: '1px solid #26221C', borderRadius: 10,
-            color: '#5C5648', fontSize: 14, cursor: loading ? 'default' : 'pointer',
+            color: '#8B8478', fontSize: 14, cursor: loading ? 'default' : 'pointer',
           }}
         >
           Maybe later

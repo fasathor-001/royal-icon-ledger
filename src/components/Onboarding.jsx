@@ -53,7 +53,7 @@ function InfoPopover({ label, children }) {
         onClick={() => setOpen(o => !o)}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
-          fontSize: '12px', color: '#8B8478', fontWeight: 600, letterSpacing: '0.05em',
+          fontSize: '12px', color: '#B0A898', fontWeight: 600, letterSpacing: '0.05em',
           background: '#14110E', border: '1px solid #26221C', borderRadius: '4px',
           padding: '8px 12px', cursor: 'pointer', fontFamily: 'Inter, sans-serif',
         }}
@@ -65,7 +65,7 @@ function InfoPopover({ label, children }) {
           position: 'absolute', left: 0, top: 'calc(100% + 6px)',
           zIndex: 200, width: 320,
           background: '#14110E', border: '1px solid #26221C', borderRadius: '4px',
-          padding: '14px 16px', fontSize: '13px', color: '#5C5648', lineHeight: 1.7,
+          padding: '14px 16px', fontSize: '13px', color: '#8B8478', lineHeight: 1.7,
           boxShadow: '0 8px 32px rgba(0,0,0,0.55)',
         }}>
           {children}
@@ -308,7 +308,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
         .ob-btn-primary { background: #D97757; color: #0A0908; padding: 14px 24px; font-weight: 600; border-radius: 4px; font-size: 14px; cursor: pointer; transition: all 150ms; border: none; display: flex; align-items: center; gap: 8px; }
         .ob-btn-primary:hover:not(:disabled) { background: #E08868; }
         .ob-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-        .ob-btn-ghost { background: transparent; color: #8B8478; padding: 14px 24px; font-size: 14px; cursor: pointer; border: none; }
+        .ob-btn-ghost { background: transparent; color: #B0A898; padding: 14px 24px; font-size: 14px; cursor: pointer; border: none; }
         .ob-btn-ghost:hover { color: #E8E2D5; }
         .ob-progress-dot { width: 8px; height: 8px; border-radius: 50%; transition: all 200ms; }
       `}</style>
@@ -340,7 +340,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                 <Wallet size={20} style={{ color: '#D97757', marginTop: '2px', flexShrink: 0 }} />
                 <div>
                   <div style={{ fontWeight: 500, marginBottom: '4px' }}>Pay yourself a salary</div>
-                  <div style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.6 }}>
+                  <div style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.6 }}>
                     Whether your income is variable or fixed, you live on a steady predictable amount each month.
                   </div>
                 </div>
@@ -349,7 +349,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                 <Shield size={20} style={{ color: '#D97757', marginTop: '2px', flexShrink: 0 }} />
                 <div>
                   <div style={{ fontWeight: 500, marginBottom: '4px' }}>Build a buffer</div>
-                  <div style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.6 }}>
+                  <div style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.6 }}>
                     A months-of-salary cushion that absorbs life's volatility — bad months, surprises, opportunities.
                   </div>
                 </div>
@@ -358,13 +358,13 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                 <Sparkles size={20} style={{ color: '#D97757', marginTop: '2px', flexShrink: 0 }} />
                 <div>
                   <div style={{ fontWeight: 500, marginBottom: '4px' }}>Protect what matters</div>
-                  <div style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.6 }}>
+                  <div style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.6 }}>
                     Spending guards, impulse tracking, and clear stages turn willpower into automation.
                   </div>
                 </div>
               </div>
             </div>
-            <p style={{ color: '#8B8478', fontSize: '13px', marginBottom: '40px' }}>
+            <p style={{ color: '#B0A898', fontSize: '13px', marginBottom: '40px' }}>
               The next few minutes will set up your real numbers. You can change anything later.
             </p>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -383,7 +383,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
               Choose your <span style={{ fontStyle: 'italic', color: '#D97757' }}>currency</span>.
             </h1>
-            <p style={{ color: '#8B8478', marginBottom: '32px', fontSize: '15px' }}>
+            <p style={{ color: '#B0A898', marginBottom: '32px', fontSize: '15px' }}>
               All amounts and symbols will use this currency. You can change it later in Settings.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px', marginBottom: '40px' }}>
@@ -405,7 +405,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                   >
                     <div style={{ fontSize: '24px', marginBottom: '6px' }}>{flag}</div>
                     <div style={{ fontSize: '16px', fontWeight: 700, color: active ? '#D97757' : '#E8E2D5', fontFamily: 'JetBrains Mono, monospace' }}>{symbol} {code}</div>
-                    <div style={{ fontSize: '11px', color: '#5C5648', marginTop: '3px' }}>{name}</div>
+                    <div style={{ fontSize: '11px', color: '#8B8478', marginTop: '3px' }}>{name}</div>
                     {active && <div style={{ marginTop: '8px' }}><Check size={13} style={{ color: '#D97757' }} /></div>}
                   </button>
                 );
@@ -423,13 +423,13 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
               When should we <span style={{ fontStyle: 'italic', color: '#D97757' }}>remind</span> you?
             </h1>
-            <p style={{ color: '#8B8478', marginBottom: '28px', fontSize: '15px' }}>
+            <p style={{ color: '#B0A898', marginBottom: '28px', fontSize: '15px' }}>
               Set your timezone and preferred times for morning and evening check-ins. You can change these later in Settings.
             </p>
 
             {/* Timezone */}
             <div style={{ marginBottom: '28px' }}>
-              <div className="ob-label" style={{ color: '#5C5648', marginBottom: '10px' }}>Your timezone</div>
+              <div className="ob-label" style={{ color: '#8B8478', marginBottom: '10px' }}>Your timezone</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px', maxHeight: '240px', overflowY: 'auto', paddingRight: '4px' }}>
                 {TIMEZONES.map(tz => {
                   const active = timezoneIana
@@ -450,7 +450,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                         <div style={{ fontWeight: 600, fontSize: '13px', color: active ? '#D97757' : '#E8E2D5' }}>{tz.label}</div>
                         {active && <Check size={11} style={{ color: '#D97757', flexShrink: 0 }} />}
                       </div>
-                      <div style={{ fontSize: '11px', color: '#5C5648', marginTop: '3px', fontFamily: 'JetBrains Mono, monospace' }}>
+                      <div style={{ fontSize: '11px', color: '#8B8478', marginTop: '3px', fontFamily: 'JetBrains Mono, monospace' }}>
                         {offsetLabel(tz.offset)}{tz.hasDst ? ' · DST' : ''}
                       </div>
                     </button>
@@ -462,7 +462,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             {/* Morning & Evening times */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '32px' }}>
               <div>
-                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Morning reminder</div>
+                <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>Morning reminder</div>
                 <input
                   type="time"
                   value={morningTime}
@@ -470,10 +470,10 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                   className="ob-input"
                   style={{ fontFamily: 'JetBrains Mono, monospace' }}
                 />
-                <div style={{ fontSize: '11px', color: '#5C5648', marginTop: '6px' }}>Daily + Sunday morning check</div>
+                <div style={{ fontSize: '11px', color: '#8B8478', marginTop: '6px' }}>Daily + Sunday morning check</div>
               </div>
               <div>
-                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Evening reminder</div>
+                <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>Evening reminder</div>
                 <input
                   type="time"
                   value={eveningTime}
@@ -481,7 +481,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                   className="ob-input"
                   style={{ fontFamily: 'JetBrains Mono, monospace' }}
                 />
-                <div style={{ fontSize: '11px', color: '#5C5648', marginTop: '6px' }}>End-of-day wrap-up</div>
+                <div style={{ fontSize: '11px', color: '#8B8478', marginTop: '6px' }}>End-of-day wrap-up</div>
               </div>
             </div>
 
@@ -496,7 +496,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
               How does <span style={{ fontStyle: 'italic', color: '#D97757' }}>income</span> reach you?
             </h1>
-            <p style={{ color: '#8B8478', marginBottom: '32px', fontSize: '15px' }}>
+            <p style={{ color: '#B0A898', marginBottom: '32px', fontSize: '15px' }}>
               This adjusts the system's defaults. Variable income needs a bigger buffer; fixed income needs less.
             </p>
 
@@ -519,7 +519,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                     className={`ob-card ${selected ? 'ob-card-selected' : ''}`}
                   >
                     <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                      <Icon size={20} style={{ color: selected ? '#D97757' : '#8B8478', marginTop: '2px', flexShrink: 0 }} />
+                      <Icon size={20} style={{ color: selected ? '#D97757' : '#B0A898', marginTop: '2px', flexShrink: 0 }} />
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                           <span style={{ fontWeight: 500, fontSize: '16px' }}>{opt.title}</span>
@@ -529,7 +529,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                             </span>
                           )}
                         </div>
-                        <div style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.5 }}>{opt.desc}</div>
+                        <div style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.5 }}>{opt.desc}</div>
                       </div>
                       {selected && <Check size={18} style={{ color: '#D97757', marginLeft: 'auto', flexShrink: 0 }} />}
                     </div>
@@ -549,7 +549,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
               Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>real</span> monthly expenses
             </h1>
-            <p style={{ color: '#8B8478', marginBottom: '16px', fontSize: '15px', lineHeight: 1.7 }}>
+            <p style={{ color: '#B0A898', marginBottom: '16px', fontSize: '15px', lineHeight: 1.7 }}>
               Add everything that costs you money.<br />
               Turn on tracking for categories you want to actively control month to month — like groceries, transport, or family spending.
             </p>
@@ -557,15 +557,15 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             {/* How does this work? — floating popover */}
             <InfoPopover label="How does envelope tracking work?">
               <p style={{ margin: '0 0 8px' }}>
-                <strong style={{ color: '#8B8478' }}>Fixed expenses</strong> (rent, insurance, phone) are predictable — no envelope needed. Just enter the amount.
+                <strong style={{ color: '#B0A898' }}>Fixed expenses</strong> (rent, insurance, phone) are predictable — no envelope needed. Just enter the amount.
               </p>
               <p style={{ margin: '0 0 8px' }}>
-                <strong style={{ color: '#8B8478' }}>Variable expenses</strong> (groceries, transport, family support) can creep over budget. Tap the envelope icon to create a Budget envelope that tracks your spending against the cap you set here.
+                <strong style={{ color: '#B0A898' }}>Variable expenses</strong> (groceries, transport, family support) can creep over budget. Tap the envelope icon to create a Budget envelope that tracks your spending against the cap you set here.
               </p>
               <p style={{ margin: '0 0 8px' }}>Once the envelope is on, pick what happens at the end of each month:</p>
-              <p style={{ margin: '0 0 4px' }}>🔄 <strong style={{ color: '#8B8478' }}>Reset</strong> — cap starts fresh at full every month.</p>
-              <p style={{ margin: '0 0 4px' }}>➕ <strong style={{ color: '#8B8478' }}>Rollover</strong> — unspent balance carries forward.</p>
-              <p style={{ margin: 0 }}>💧 <strong style={{ color: '#8B8478' }}>Sweep</strong> — unspent balance moves to your Savings automatically.</p>
+              <p style={{ margin: '0 0 4px' }}>🔄 <strong style={{ color: '#B0A898' }}>Reset</strong> — cap starts fresh at full every month.</p>
+              <p style={{ margin: '0 0 4px' }}>➕ <strong style={{ color: '#B0A898' }}>Rollover</strong> — unspent balance carries forward.</p>
+              <p style={{ margin: 0 }}>💧 <strong style={{ color: '#B0A898' }}>Sweep</strong> — unspent balance moves to your Savings automatically.</p>
             </InfoPopover>
 
             <div style={{ background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: '4px', padding: '16px', marginBottom: '24px' }}>
@@ -574,7 +574,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             </div>
 
             {/* Smart-default explanation */}
-            <p style={{ fontSize: '12px', color: '#5C5648', marginBottom: '12px', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '12px', color: '#8B8478', marginBottom: '12px', lineHeight: 1.6 }}>
               We pre-selected variable expenses that are worth tracking in envelopes. Fixed bills stay off by default.
             </p>
 
@@ -592,12 +592,12 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                           <span style={{ fontSize: '14px', fontWeight: 500 }}>{item.name}</span>
                           {item.variable && <span style={{ fontSize: '9px', color: '#D97757', background: '#2A1A0E', border: '1px solid #3A2A1E', borderRadius: '999px', padding: '1px 6px', letterSpacing: '0.08em', fontWeight: 600 }}>VARIABLE</span>}
-                          {isFixed && <span style={{ fontSize: '9px', color: '#5C5648', background: '#14110E', border: '1px solid #26221C', borderRadius: '999px', padding: '1px 6px', letterSpacing: '0.08em', fontWeight: 600 }}>FIXED</span>}
+                          {isFixed && <span style={{ fontSize: '9px', color: '#8B8478', background: '#14110E', border: '1px solid #26221C', borderRadius: '999px', padding: '1px 6px', letterSpacing: '0.08em', fontWeight: 600 }}>FIXED</span>}
                         </div>
-                        <div style={{ fontSize: '11px', color: '#5C5648' }}>{item.category}</div>
+                        <div style={{ fontSize: '11px', color: '#8B8478' }}>{item.category}</div>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span className="ob-mono" style={{ color: '#5C5648' }}>{currencySymbol}</span>
+                        <span className="ob-mono" style={{ color: '#8B8478' }}>{currencySymbol}</span>
                         <input
                           type="number"
                           placeholder={item.placeholder}
@@ -618,7 +618,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                             opacity: 0.25, cursor: 'not-allowed', flexShrink: 0,
                           }}
                         >
-                          <Mail size={14} color="#5C5648" />
+                          <Mail size={14} color="#8B8478" />
                         </div>
                       ) : (
                         <button
@@ -629,7 +629,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             width: '34px', height: '32px',
                             background: tracked ? '#1A2A1E' : 'transparent',
-                            border: `1px solid ${tracked ? '#7FA068' : hasValue ? '#3A3028' : '#26221C'}`,
+                            border: `1px solid ${tracked ? '#7FA068' : hasValue ? '#5C5648' : '#26221C'}`,
                             borderRadius: '3px',
                             cursor: hasValue ? 'pointer' : 'not-allowed',
                             opacity: hasValue ? 1 : 0.3,
@@ -637,20 +637,20 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                             flexShrink: 0,
                           }}
                         >
-                          <Mail size={14} color={tracked ? '#7FA068' : '#5C5648'} />
+                          <Mail size={14} color={tracked ? '#7FA068' : '#8B8478'} />
                         </button>
                       )}
                     </div>
                     {/* Fixed bill helper text */}
                     {isFixed && (
-                      <p style={{ fontSize: '11px', color: '#3A3028', margin: '0 0 2px 2px', lineHeight: 1.5 }}>
+                      <p style={{ fontSize: '11px', color: '#5C5648', margin: '0 0 2px 2px', lineHeight: 1.5 }}>
                         Fixed bill — counted in your salary calculation, not tracked as an envelope.
                       </p>
                     )}
                     {/* Month-end mode pills — shown only when envelope is active */}
                     {tracked && !isFixed && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', paddingLeft: '4px', paddingBottom: '4px' }}>
-                        <span style={{ fontSize: '10px', color: '#3A3028', marginRight: '2px', letterSpacing: '0.05em' }}>Month-end:</span>
+                        <span style={{ fontSize: '10px', color: '#5C5648', marginRight: '2px', letterSpacing: '0.05em' }}>Month-end:</span>
                         {[
                           { id: 'reset',    label: '🔄 Reset',    tip: 'Cap resets to full each month. Unspent balance disappears.' },
                           { id: 'roll',     label: '➕ Rollover', tip: 'Leftover carries into next month. Overspend is deducted.' },
@@ -666,7 +666,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                               borderRadius: '999px',
                               padding: '3px 10px',
                               fontSize: '11px',
-                              color: mode === m.id ? '#7FA068' : '#5C5648',
+                              color: mode === m.id ? '#7FA068' : '#8B8478',
                               cursor: 'pointer',
                               fontFamily: 'Inter, sans-serif',
                               transition: 'all 120ms',
@@ -702,7 +702,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                         style={{ flex: 1 }}
                       />
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span className="ob-mono" style={{ color: '#5C5648' }}>{currencySymbol}</span>
+                        <span className="ob-mono" style={{ color: '#8B8478' }}>{currencySymbol}</span>
                         <input
                           type="number"
                           value={c.amount}
@@ -728,7 +728,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           width: '34px', height: '32px',
                           background: c.trackInEnvelope ? '#1A2A1E' : 'transparent',
-                          border: `1px solid ${c.trackInEnvelope ? '#7FA068' : hasValue ? '#3A3028' : '#26221C'}`,
+                          border: `1px solid ${c.trackInEnvelope ? '#7FA068' : hasValue ? '#5C5648' : '#26221C'}`,
                           borderRadius: '3px',
                           cursor: hasValue ? 'pointer' : 'not-allowed',
                           opacity: hasValue ? 1 : 0.3,
@@ -736,11 +736,11 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                           flexShrink: 0,
                         }}
                       >
-                        <Mail size={14} color={c.trackInEnvelope ? '#7FA068' : '#5C5648'} />
+                        <Mail size={14} color={c.trackInEnvelope ? '#7FA068' : '#8B8478'} />
                       </button>
                       <button
                         onClick={() => setCustomExpenses(customExpenses.filter((_, j) => j !== i))}
-                        style={{ background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', padding: '4px', flexShrink: 0 }}
+                        style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', padding: '4px', flexShrink: 0 }}
                       >
                         <X size={14} />
                       </button>
@@ -748,7 +748,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                     {/* Month-end mode pills */}
                     {c.trackInEnvelope && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', paddingLeft: '4px', paddingBottom: '4px' }}>
-                        <span style={{ fontSize: '10px', color: '#3A3028', marginRight: '2px', letterSpacing: '0.05em' }}>Month-end:</span>
+                        <span style={{ fontSize: '10px', color: '#5C5648', marginRight: '2px', letterSpacing: '0.05em' }}>Month-end:</span>
                         {[
                           { id: 'reset',    label: '🔄 Reset',    tip: 'Cap resets to full each month. Unspent balance disappears.' },
                           { id: 'roll',     label: '➕ Rollover', tip: 'Leftover carries into next month. Overspend is deducted.' },
@@ -768,7 +768,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                               borderRadius: '999px',
                               padding: '3px 10px',
                               fontSize: '11px',
-                              color: cMode === m.id ? '#7FA068' : '#5C5648',
+                              color: cMode === m.id ? '#7FA068' : '#8B8478',
                               cursor: 'pointer',
                               fontFamily: 'Inter, sans-serif',
                               transition: 'all 120ms',
@@ -786,7 +786,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
 
               <button
                 onClick={() => setCustomExpenses([...customExpenses, { name: '', amount: '', category: 'Other', trackInEnvelope: false }])}
-                style={{ background: 'transparent', border: '1px dashed #3A2A1E', color: '#8B8478', padding: '10px', borderRadius: '3px', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '8px' }}
+                style={{ background: 'transparent', border: '1px dashed #3A2A1E', color: '#B0A898', padding: '10px', borderRadius: '3px', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '8px' }}
               >
                 <Plus size={14} /> Add another expense
               </button>
@@ -835,7 +835,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                         Track variable costs?
                       </h3>
                     </div>
-                    <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.6, marginBottom: '16px' }}>
+                    <p style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.6, marginBottom: '16px' }}>
                       These variable expenses have no envelope set. Without one, unspent money has nowhere to go — it just disappears at month-end with no record.
                     </p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '20px' }}>
@@ -846,7 +846,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                           borderRadius: '4px', padding: '10px 14px',
                         }}>
                           <span style={{ fontSize: '14px', color: '#E8E2D5' }}>{s.name}</span>
-                          <span className="ob-mono" style={{ fontSize: '13px', color: '#8B8478' }}>
+                          <span className="ob-mono" style={{ fontSize: '13px', color: '#B0A898' }}>
                             {currencySymbol} {Number(expenseValues[s.name]).toLocaleString()}
                           </span>
                         </div>
@@ -867,7 +867,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                       <button
                         onClick={() => { setShowEnvelopeGate(false); next(); }}
                         style={{
-                          flex: 1, background: 'transparent', color: '#5C5648',
+                          flex: 1, background: 'transparent', color: '#8B8478',
                           border: '1px solid #26221C', borderRadius: '4px', padding: '12px',
                           fontSize: '13px', cursor: 'pointer',
                         }}
@@ -889,7 +889,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
               <span style={{ fontStyle: 'italic', color: '#D97757' }}>Spending</span>{incomeType === 'foundation' ? ' & savings' : ' & buffer reserve'}
             </h1>
-            <p style={{ color: '#8B8478', marginBottom: '32px', fontSize: '15px' }}>
+            <p style={{ color: '#B0A898', marginBottom: '32px', fontSize: '15px' }}>
               {incomeType === 'foundation'
                 ? 'Set a spending limit for the month. Any amount you choose to save on top goes straight into your savings.'
                 : 'Two more numbers to complete your monthly salary. These are what you take out of trading profits each month, on top of your expenses.'}
@@ -897,12 +897,12 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '32px' }}>
               <div>
-                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Monthly spending money</div>
-                <p style={{ fontSize: '13px', color: '#8B8478', marginBottom: '12px' }}>
+                <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>Monthly spending money</div>
+                <p style={{ fontSize: '13px', color: '#B0A898', marginBottom: '12px' }}>
                   Eating out, fun, hobbies, anything discretionary. The empty-account-rule lives here — when this hits zero, spending stops for the month.
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span className="ob-mono" style={{ fontSize: '18px', color: '#5C5648' }}>{currencySymbol}</span>
+                  <span className="ob-mono" style={{ fontSize: '18px', color: '#8B8478' }}>{currencySymbol}</span>
                   <input
                     type="number"
                     placeholder="0"
@@ -915,16 +915,16 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
               </div>
 
               <div>
-                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>
+                <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>
                   {incomeType === 'foundation' ? 'Monthly savings amount' : 'Buffer reserve from salary'}
                 </div>
-                <p style={{ fontSize: '13px', color: '#8B8478', marginBottom: '12px' }}>
+                <p style={{ fontSize: '13px', color: '#B0A898', marginBottom: '12px' }}>
                   {incomeType === 'foundation'
                     ? `A small amount to put into savings each month. Even ${currencySymbol} 50/month makes a difference.`
                     : `Each month, this amount goes from your salary into the buffer (in addition to trading profits). Even ${currencySymbol} 500/month adds up.`}
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span className="ob-mono" style={{ fontSize: '18px', color: '#5C5648' }}>{currencySymbol}</span>
+                  <span className="ob-mono" style={{ fontSize: '18px', color: '#8B8478' }}>{currencySymbol}</span>
                   <input
                     type="number"
                     placeholder="0"
@@ -943,7 +943,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                   {incomeType === 'foundation' ? 'Your money available' : 'Your monthly salary'}
                 </div>
                 <div className="ob-display" style={{ fontSize: '36px', fontWeight: 300, color: '#D97757' }}>{fmt(salary)}</div>
-                <div style={{ fontSize: '13px', color: '#8B8478', marginTop: '8px' }}>
+                <div style={{ fontSize: '13px', color: '#B0A898', marginTop: '8px' }}>
                   {fmt(expenseTotal)} expenses + {fmt(Number(spendingBudget) || 0)} spending + {fmt(Number(bufferReserve) || 0)} buffer reserve
                 </div>
               </div>
@@ -962,7 +962,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                 ? <>How much do you want to <span style={{ fontStyle: 'italic', color: '#D97757' }}>save</span>?</>
                 : <>How big should your <span style={{ fontStyle: 'italic', color: '#D97757' }}>buffer</span> be?</>}
             </h1>
-            <p style={{ color: '#8B8478', marginBottom: '32px', fontSize: '15px' }}>
+            <p style={{ color: '#B0A898', marginBottom: '32px', fontSize: '15px' }}>
               {incomeType === 'foundation'
                 ? 'Pick a savings target in months. Start with something achievable — you can always grow it.'
                 : 'The buffer is months of full salary, stored in cash. More buffer means more peace of mind, less trading desperation. Bigger buffer = more protection for the people who depend on you.'}
@@ -992,14 +992,14 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                   className={`ob-card ${bufferMonths === opt.months ? 'ob-card-selected' : ''}`}
                 >
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                    <Shield size={20} style={{ color: bufferMonths === opt.months ? '#D97757' : '#8B8478', marginTop: '2px', flexShrink: 0 }} />
+                    <Shield size={20} style={{ color: bufferMonths === opt.months ? '#D97757' : '#B0A898', marginTop: '2px', flexShrink: 0 }} />
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '4px' }}>
                         <div style={{ fontWeight: 500, fontSize: '16px' }}>{opt.label}</div>
-                        <div className="ob-mono" style={{ fontSize: '13px', color: '#8B8478' }}>{fmt(opt.amount)}</div>
+                        <div className="ob-mono" style={{ fontSize: '13px', color: '#B0A898' }}>{fmt(opt.amount)}</div>
                         {opt.recommended && <span style={{ background: '#1A2A14', color: '#7FA068', padding: '2px 8px', borderRadius: '999px', fontSize: '10px', fontWeight: 600, letterSpacing: '0.05em' }}>RECOMMENDED</span>}
                       </div>
-                      <div style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.5 }}>{opt.desc}</div>
+                      <div style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.5 }}>{opt.desc}</div>
                     </div>
                     {bufferMonths === opt.months && <Check size={18} style={{ color: '#D97757' }} />}
                   </div>
@@ -1019,26 +1019,26 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
               What do you have <span style={{ fontStyle: 'italic', color: '#D97757' }}>right now</span>?
             </h1>
-            <p style={{ color: '#8B8478', marginBottom: '8px', fontSize: '15px' }}>
+            <p style={{ color: '#B0A898', marginBottom: '8px', fontSize: '15px' }}>
               Enter your current balances — not monthly income. These are the actual amounts sitting in your accounts today.
             </p>
-            <p style={{ color: '#5C5648', marginBottom: '32px', fontSize: '13px' }}>
+            <p style={{ color: '#8B8478', marginBottom: '32px', fontSize: '13px' }}>
               Leave any field at 0 if it doesn't apply yet. You can update these anytime from the Command tab.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '40px' }}>
               {/* Buffer / Savings balance */}
               <div>
-                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>
+                <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>
                   {incomeType === 'foundation' ? 'Savings account' : 'Buffer account'}
                 </div>
-                <p style={{ fontSize: '13px', color: '#8B8478', marginBottom: '12px' }}>
+                <p style={{ fontSize: '13px', color: '#B0A898', marginBottom: '12px' }}>
                   {incomeType === 'foundation'
                     ? 'Your current savings — whatever you have set aside right now. Zero is fine.'
                     : 'Your emergency / runway fund — ideally in a separate savings account.'}
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span className="ob-mono" style={{ fontSize: '18px', color: '#5C5648' }}>{currencySymbol}</span>
+                  <span className="ob-mono" style={{ fontSize: '18px', color: '#8B8478' }}>{currencySymbol}</span>
                   <input
                     type="number"
                     placeholder="0"
@@ -1053,12 +1053,12 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
               {/* Trading capital — hidden for fixed income and Foundation */}
               {incomeType !== 'fixed' && incomeType !== 'foundation' && (
                 <div>
-                  <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Trading / investment capital</div>
-                  <p style={{ fontSize: '13px', color: '#8B8478', marginBottom: '12px' }}>
+                  <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>Trading / investment capital</div>
+                  <p style={{ fontSize: '13px', color: '#B0A898', marginBottom: '12px' }}>
                     Your active trading account or investment portfolio balance.
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span className="ob-mono" style={{ fontSize: '18px', color: '#5C5648' }}>{currencySymbol}</span>
+                    <span className="ob-mono" style={{ fontSize: '18px', color: '#8B8478' }}>{currencySymbol}</span>
                     <input
                       type="number"
                       placeholder="0"
@@ -1073,12 +1073,12 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
 
               {/* Long-term balance */}
               <div>
-                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Long-term savings</div>
-                <p style={{ fontSize: '13px', color: '#8B8478', marginBottom: '12px' }}>
+                <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>Long-term savings</div>
+                <p style={{ fontSize: '13px', color: '#B0A898', marginBottom: '12px' }}>
                   Retirement annuity, unit trusts, property equity, or any long-horizon asset.
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span className="ob-mono" style={{ fontSize: '18px', color: '#5C5648' }}>{currencySymbol}</span>
+                  <span className="ob-mono" style={{ fontSize: '18px', color: '#8B8478' }}>{currencySymbol}</span>
                   <input
                     type="number"
                     placeholder="0"
@@ -1115,16 +1115,16 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
               Set your security <span style={{ fontStyle: 'italic', color: '#D97757' }}>PIN</span>.
             </h1>
-            <p style={{ color: '#8B8478', marginBottom: '8px', fontSize: '15px' }}>
+            <p style={{ color: '#B0A898', marginBottom: '8px', fontSize: '15px' }}>
               Royal Ledger uses your PIN to protect important structural changes.
             </p>
-            <p style={{ color: '#5C5648', marginBottom: '32px', fontSize: '13px' }}>
+            <p style={{ color: '#8B8478', marginBottom: '32px', fontSize: '13px' }}>
               Choose 4–6 digits. Your PIN is hashed on this device — it cannot be recovered without a support reset.
             </p>
 
             <div style={{ maxWidth: '280px' }}>
               <div style={{ marginBottom: '16px' }}>
-                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>PIN (4–6 digits)</div>
+                <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>PIN (4–6 digits)</div>
                 <input
                   type="password"
                   inputMode="numeric"
@@ -1138,7 +1138,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
               </div>
 
               <div style={{ marginBottom: '16px' }}>
-                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Confirm PIN</div>
+                <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>Confirm PIN</div>
                 <input
                   type="password"
                   inputMode="numeric"
@@ -1154,7 +1154,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
 
             {/* Inline validation */}
             {pinValue.length > 0 && pinValue.length < 4 && (
-              <p style={{ color: '#5C5648', fontSize: '12px', marginBottom: '12px' }}>Enter 4–6 digits.</p>
+              <p style={{ color: '#8B8478', fontSize: '12px', marginBottom: '12px' }}>Enter 4–6 digits.</p>
             )}
             {pinConfirm.length > 0 && pinValue !== pinConfirm && (
               <p style={{ color: '#C56B5A', fontSize: '12px', marginBottom: '12px' }}>PINs don't match.</p>
@@ -1184,31 +1184,31 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
               Your system is <span style={{ fontStyle: 'italic', color: '#7FA068' }}>set up</span>.
             </h1>
-            <p style={{ color: '#8B8478', marginBottom: '32px', fontSize: '15px' }}>
+            <p style={{ color: '#B0A898', marginBottom: '32px', fontSize: '15px' }}>
               Here's what we've configured. You can change any of these later in Setup or Rules.
             </p>
 
             {/* Summary cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '24px' }}>
               <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '20px' }}>
-                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Monthly Salary</div>
+                <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>Monthly Salary</div>
                 <div className="ob-display" style={{ fontSize: '24px', fontWeight: 300, color: '#D97757' }}>{fmt(salary)}</div>
               </div>
               <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '20px' }}>
-                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Buffer Target</div>
+                <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>Buffer Target</div>
                 <div className="ob-display" style={{ fontSize: '24px', fontWeight: 300, color: '#7FA068' }}>{fmt(bufferTarget)}</div>
               </div>
               <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '20px' }}>
-                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Total Expenses</div>
+                <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>Total Expenses</div>
                 <div className="ob-display" style={{ fontSize: '24px', fontWeight: 300 }}>{fmt(expenseTotal)}</div>
               </div>
               <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '20px' }}>
-                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Income Type</div>
+                <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>Income Type</div>
                 <div className="ob-display" style={{ fontSize: '24px', fontWeight: 300, textTransform: 'capitalize' }}>{incomeType || 'Not set'}</div>
               </div>
               {(Number(startingBuffer) || Number(startingTradingCapital) || Number(startingLongTerm)) > 0 && (
                 <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '20px', gridColumn: 'span 2' }}>
-                  <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Starting Net Worth</div>
+                  <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>Starting Net Worth</div>
                   <div className="ob-display" style={{ fontSize: '24px', fontWeight: 300, color: '#D97757' }}>
                     {fmt((Number(startingBuffer) || 0) + (Number(startingTradingCapital) || 0) + (Number(startingLongTerm) || 0))}
                   </div>
@@ -1222,7 +1222,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                 <Bell size={18} style={{ color: '#D97757', flexShrink: 0, marginTop: '2px' }} />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 500, marginBottom: '4px' }}>Enable reminders</div>
-                  <div style={{ fontSize: '13px', color: '#8B8478', marginBottom: '14px', lineHeight: 1.5 }}>
+                  <div style={{ fontSize: '13px', color: '#B0A898', marginBottom: '14px', lineHeight: 1.5 }}>
                     Get daily check-ins and monthly review reminders at the times you set.
                   </div>
 
@@ -1246,7 +1246,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                   )}
 
                   {notifStatus === 'denied' && (
-                    <div style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.5 }}>
+                    <div style={{ fontSize: '12px', color: '#8B8478', lineHeight: 1.5 }}>
                       Permission denied. You can enable this later in your browser settings.
                     </div>
                   )}
@@ -1257,7 +1257,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             {/* What happens next */}
             <div style={{ background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: '4px', padding: '20px', marginBottom: '32px' }}>
               <div style={{ fontWeight: 500, marginBottom: '8px' }}>What happens next:</div>
-              <ol style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.7, paddingLeft: '20px', margin: 0 }}>
+              <ol style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.7, paddingLeft: '20px', margin: 0 }}>
                 <li>Open a separate HYSA at a different bank for your buffer</li>
                 <li>Set up auto-transfers on payday into bills, spending, and buffer</li>
                 <li>Use the Spending Gate before any purchase over {currencySymbol} 50</li>
@@ -1278,7 +1278,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
 function NavRow({ back, next, canAdvance, hint }) {
   return (
     <div>
-      {hint && <p style={{ color: '#5C5648', fontSize: '12px', marginBottom: '12px' }}>{hint}</p>}
+      {hint && <p style={{ color: '#8B8478', fontSize: '12px', marginBottom: '12px' }}>{hint}</p>}
       <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
         <button onClick={back} className="ob-btn-ghost">← Back</button>
         <button onClick={next} disabled={!canAdvance} className="ob-btn-primary">

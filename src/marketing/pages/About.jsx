@@ -14,7 +14,7 @@ export default function About({ navigate }) {
           <h1 className="m-display" style={{ fontSize: 'clamp(36px, 5vw, 60px)', color: '#E8E2D5', marginBottom: '24px' }}>
             Financial tools were built for a world that no longer exists.
           </h1>
-          <div style={{ fontSize: '15px', color: '#8B8478', maxWidth: '520px', lineHeight: 1.95 }}>
+          <div style={{ fontSize: '15px', color: '#B0A898', maxWidth: '520px', lineHeight: 1.95 }}>
             <p style={{ margin: '0 0 16px' }}>
               They assume predictable income.<br />
               Fixed cycles.<br />
@@ -23,7 +23,7 @@ export default function About({ navigate }) {
             <p style={{ margin: '0 0 16px' }}>
               But millions of people don't operate that way.
             </p>
-            <p style={{ margin: '0 0 16px', color: '#5C5648' }}>
+            <p style={{ margin: '0 0 16px', color: '#8B8478' }}>
               Freelancers.<br />
               Traders.<br />
               Entrepreneurs.<br />
@@ -34,7 +34,7 @@ export default function About({ navigate }) {
               Their decisions are constant.<br />
               And the margin for error is smaller.
             </p>
-            <p style={{ margin: 0, color: '#5C5648' }}>
+            <p style={{ margin: 0, color: '#8B8478' }}>
               Yet the systems they rely on haven't changed.
             </p>
           </div>
@@ -51,13 +51,13 @@ export default function About({ navigate }) {
               <div className="m-display" style={{ fontSize: 'clamp(22px, 3vw, 32px)', color: '#E8E2D5', lineHeight: 1.3, marginBottom: '24px' }}>
                 Most people don't have a money problem. They have a structure problem.
               </div>
-              <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85, marginBottom: '14px' }}>
+              <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85, marginBottom: '14px' }}>
                 Income comes in. Spending happens. Decisions are made in the moment.
               </p>
-              <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85, marginBottom: '14px' }}>
+              <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85, marginBottom: '14px' }}>
                 By the time money is tracked, it's already gone.
               </p>
-              <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+              <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85 }}>
                 This isn't a behaviour issue.{' '}
                 <span style={{ color: '#E8E2D5', fontStyle: 'italic' }}>It's the wrong system.</span>
               </p>
@@ -68,11 +68,11 @@ export default function About({ navigate }) {
                 <p className="m-display" style={{ fontSize: '21px', color: '#E8E2D5', lineHeight: 1.45, marginBottom: '20px', fontStyle: 'italic' }}>
                   "Structure before money is spent — not visibility after."
                 </p>
-                <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.75 }}>
+                <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.75 }}>
                   Not by adding more tracking. Not by offering better reports. But by introducing structure before money moves.
                 </p>
                 <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #3A2A1E' }}>
-                  <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.85 }}>
+                  <p style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.85 }}>
                     Every unit assigned a role before it's used.<br />
                     Decisions made intentionally — not reactively.<br />
                     Control that exists regardless of how income arrives.
@@ -87,11 +87,11 @@ export default function About({ navigate }) {
             <div className="m-label" style={{ marginBottom: '24px' }}>What it is</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }} className="about-grid">
               <div className="m-card" style={{ padding: '24px' }}>
-                <div style={{ fontSize: '11px', color: '#3A3028', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>Not</div>
+                <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>Not</div>
                 {['A budgeting app', 'An expense tracker'].map(item => (
                   <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                    <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#3A3028', flexShrink: 0 }} />
-                    <span style={{ fontSize: '14px', color: '#5C5648' }}>{item}</span>
+                    <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#5C5648', flexShrink: 0 }} />
+                    <span style={{ fontSize: '14px', color: '#8B8478' }}>{item}</span>
                   </div>
                 ))}
               </div>
@@ -100,12 +100,12 @@ export default function About({ navigate }) {
                 {['A planning system', 'An allocation framework', 'A control layer'].map(item => (
                   <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                     <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#7FA068', flexShrink: 0 }} />
-                    <span style={{ fontSize: '14px', color: '#8B8478' }}>{item}</span>
+                    <span style={{ fontSize: '14px', color: '#B0A898' }}>{item}</span>
                   </div>
                 ))}
               </div>
             </div>
-            <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.7 }}>
+            <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7 }}>
               Royal Ledger changes how money is handled — not just how it's recorded.
             </p>
           </div>
@@ -129,10 +129,10 @@ export default function About({ navigate }) {
 
           {/* Transition */}
           <div style={{ marginTop: '64px', paddingTop: '48px', borderTop: '1px solid #1A1610', maxWidth: '400px' }}>
-            <p style={{ fontSize: '15px', color: '#5C5648', lineHeight: 1.85, margin: 0 }}>
+            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85, margin: 0 }}>
               This is the thinking behind Royal Ledger.
             </p>
-            <p style={{ fontSize: '15px', color: '#3A3028', lineHeight: 1.85, margin: '6px 0 0' }}>
+            <p style={{ fontSize: '15px', color: '#5C5648', lineHeight: 1.85, margin: '6px 0 0' }}>
               And the reason it was built.
             </p>
           </div>
@@ -157,20 +157,20 @@ export default function About({ navigate }) {
               This started with a problem I couldn't solve with anything on the market.
             </p>
 
-            <p style={{ fontSize: '16px', color: '#8B8478', lineHeight: 1.85 }}>
+            <p style={{ fontSize: '16px', color: '#B0A898', lineHeight: 1.85 }}>
               My income changed every month. My responsibilities didn't.
             </p>
 
-            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+            <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85 }}>
               Every financial tool I tried was built for a different kind of person — someone with a fixed salary, predictable cycles, and income that arrived on schedule.
             </p>
 
-            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+            <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85 }}>
               That assumption breaks down for anyone operating outside that model.
             </p>
 
             <div style={{ padding: '20px 0', borderTop: '1px solid #1A1610', borderBottom: '1px solid #1A1610' }}>
-              <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 2, margin: 0 }}>
+              <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 2, margin: 0 }}>
                 Freelancers.<br />
                 Traders.<br />
                 Entrepreneurs.<br />
@@ -178,19 +178,19 @@ export default function About({ navigate }) {
               </p>
             </div>
 
-            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+            <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85 }}>
               For people like us, income doesn't arrive on a timetable — and decisions can't be made on averages.
             </p>
 
-            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+            <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85 }}>
               Yet every tool available still treated us like broken versions of salaried employees.
             </p>
 
-            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+            <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85 }}>
               That gap is what led to Royal Ledger.
             </p>
 
-            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+            <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85 }}>
               The goal was never to build another budgeting app. Those already exist. They solve a different problem — they tell you what you already spent. What I needed was something that answered an earlier question:
             </p>
 
@@ -201,11 +201,11 @@ export default function About({ navigate }) {
               </p>
             </div>
 
-            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+            <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85 }}>
               That shift — from tracking to allocation, from reaction to intention — is what the system is built around.
             </p>
 
-            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+            <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85 }}>
               It introduces structure before money moves.<br />
               Not visibility after the fact.
             </p>
@@ -214,7 +214,7 @@ export default function About({ navigate }) {
               This is not about managing money better.
             </p>
 
-            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85 }}>
+            <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85 }}>
               It is about introducing structure where none exists —<br />
               and giving people control in a system that was never designed for them.
             </p>
@@ -231,8 +231,8 @@ export default function About({ navigate }) {
               </div>
               <div>
                 <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '19px', color: '#E8E2D5', fontStyle: 'italic' }}>— Amb. Frank A.</div>
-                <div style={{ fontSize: '13px', color: '#5C5648', marginTop: '2px' }}>Founder, Royal Ledger</div>
-                <div style={{ fontSize: '12px', color: '#3A3028', marginTop: '3px' }}>Building financial systems for variable-income earners.</div>
+                <div style={{ fontSize: '13px', color: '#8B8478', marginTop: '2px' }}>Founder, Royal Ledger</div>
+                <div style={{ fontSize: '12px', color: '#5C5648', marginTop: '3px' }}>Building financial systems for variable-income earners.</div>
               </div>
             </div>
 
@@ -270,7 +270,7 @@ export default function About({ navigate }) {
               <div key={label} className="m-card" style={{ padding: '28px 24px' }}>
                 <div className="m-label" style={{ marginBottom: '12px' }}>{label}</div>
                 <div style={{ fontSize: '20px', fontWeight: 600, color: '#E8E2D5', marginBottom: '8px', letterSpacing: '-0.01em' }}>{value}</div>
-                <div style={{ fontSize: '13px', color: '#5C5648' }}>{sub}</div>
+                <div style={{ fontSize: '13px', color: '#8B8478' }}>{sub}</div>
               </div>
             ))}
           </div>

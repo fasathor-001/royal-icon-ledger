@@ -68,7 +68,7 @@ export default function MigrationModal({ user, onMigrated, onSkip }) {
               <Check size={24} style={{ color: '#7FA068' }} />
             </div>
             <div className="display text-2xl mb-2" style={{ fontStyle: 'italic', fontWeight: 300 }}>Imported.</div>
-            <p className="text-sm" style={{ color: '#8B8478' }}>Your data is now in the cloud.</p>
+            <p className="text-sm" style={{ color: '#B0A898' }}>Your data is now in the cloud.</p>
           </div>
         ) : (
           <>
@@ -79,13 +79,13 @@ export default function MigrationModal({ user, onMigrated, onSkip }) {
             <h2 className="display text-2xl mb-2" style={{ fontWeight: 300 }}>
               Import existing data?
             </h2>
-            <p className="text-sm mb-6" style={{ color: '#8B8478', lineHeight: 1.6 }}>
+            <p className="text-sm mb-6" style={{ color: '#B0A898', lineHeight: 1.6 }}>
               We found data in this browser. Import it to your cloud account so it's available on all your devices.
             </p>
 
             {/* Summary */}
             <div className="card p-4 mb-6">
-              <div className="label mb-3" style={{ color: '#5C5648' }}>Found in this browser</div>
+              <div className="label mb-3" style={{ color: '#8B8478' }}>Found in this browser</div>
               <div className="grid grid-cols-4 gap-3 text-center">
                 {[
                   { label: 'expenses', val: summary.expenses },
@@ -95,7 +95,7 @@ export default function MigrationModal({ user, onMigrated, onSkip }) {
                 ].map(item => (
                   <div key={item.label}>
                     <div className="mono text-xl" style={{ color: '#E8E2D5' }}>{fmt(item.val)}</div>
-                    <div className="text-xs mt-0.5" style={{ color: '#5C5648' }}>{item.label}</div>
+                    <div className="text-xs mt-0.5" style={{ color: '#8B8478' }}>{item.label}</div>
                   </div>
                 ))}
               </div>
@@ -126,13 +126,13 @@ export default function MigrationModal({ user, onMigrated, onSkip }) {
                 onClick={onSkip}
                 disabled={status === 'migrating'}
                 className="btn p-3"
-                style={{ color: '#8B8478', fontSize: '13px', background: 'transparent' }}
+                style={{ color: '#B0A898', fontSize: '13px', background: 'transparent' }}
               >
                 Start fresh
               </button>
             </div>
 
-            <p className="text-xs mt-3" style={{ color: '#5C5648', lineHeight: 1.5 }}>
+            <p className="text-xs mt-3" style={{ color: '#8B8478', lineHeight: 1.5 }}>
               "Start fresh" keeps your local data in this browser but doesn't upload it. You can always export it manually from Settings → Data &amp; Sync.
             </p>
           </>

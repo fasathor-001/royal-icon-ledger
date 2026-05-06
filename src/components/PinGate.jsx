@@ -41,8 +41,8 @@ const inputStyle = {
 };
 const linkStyle = {
   background: 'transparent', border: 'none', cursor: 'pointer',
-  fontSize: '11px', color: '#5C5648', padding: '0', textDecoration: 'underline',
-  textDecorationColor: '#3A3028',
+  fontSize: '11px', color: '#8B8478', padding: '0', textDecoration: 'underline',
+  textDecorationColor: '#5C5648',
 };
 
 // ── No-PIN notice ─────────────────────────────────────────────────────────────
@@ -52,7 +52,7 @@ function NoPinNotice({ onClose }) {
       <div style={{ fontSize: '11px', color: '#C56B5A', marginBottom: '5px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
         PIN required
       </div>
-      <div style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.6 }}>
+      <div style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.6 }}>
         This action requires a PIN. Set up your PIN in Account Settings to continue.
       </div>
       <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -102,7 +102,7 @@ function ForgotPinFlow({ email, onClose }) {
         <div style={{ fontSize: '11px', color: '#7FA068', marginBottom: '5px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
           Request sent
         </div>
-        <div style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.6 }}>
+        <div style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.6 }}>
           PIN reset request sent. Royal Ledger support will review it and let you know.
         </div>
         <div style={{ marginTop: '10px' }}>
@@ -117,7 +117,7 @@ function ForgotPinFlow({ email, onClose }) {
       <div style={{ fontSize: '11px', color: '#D97757', marginBottom: '5px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
         Forgot PIN?
       </div>
-      <div style={{ fontSize: '12px', color: '#8B8478', marginBottom: '10px', lineHeight: 1.55 }}>
+      <div style={{ fontSize: '12px', color: '#B0A898', marginBottom: '10px', lineHeight: 1.55 }}>
         Submit a reset request. An admin will approve it and you'll be prompted to set a new PIN.
       </div>
       <textarea
@@ -142,7 +142,7 @@ function ForgotPinFlow({ email, onClose }) {
           onClick={handleSubmit}
           disabled={submitting}
           style={{
-            background: submitting ? '#26221C' : '#D97757', color: submitting ? '#5C5648' : '#0A0908',
+            background: submitting ? '#26221C' : '#D97757', color: submitting ? '#8B8478' : '#0A0908',
             padding: '7px 14px', borderRadius: '3px', fontWeight: 600,
             fontSize: '12px', border: 'none', cursor: submitting ? 'default' : 'pointer',
             opacity: submitting ? 0.7 : 1,
@@ -165,7 +165,7 @@ function LockoutNotice({ seconds, onForgotPin }) {
       <div style={{ fontSize: '11px', color: '#C56B5A', marginBottom: '5px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
         Too many attempts
       </div>
-      <div style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.6 }}>
+      <div style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.6 }}>
         Too many incorrect attempts. Try again in{' '}
         <span style={{ color: '#D97757', fontFamily: 'JetBrains Mono, monospace' }}>{seconds}s</span>.
       </div>
@@ -182,7 +182,7 @@ function LockoutNotice({ seconds, onForgotPin }) {
 export function PinGateInline({ val, setVal, onConfirm, onCancel, error, loading, onForgotPin }) {
   return (
     <div style={gateStyle}>
-      <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '6px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+      <div style={{ fontSize: '11px', color: '#8B8478', marginBottom: '6px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
         Enter PIN to confirm
       </div>
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -198,7 +198,7 @@ export function PinGateInline({ val, setVal, onConfirm, onCancel, error, loading
           onClick={onConfirm}
           disabled={loading}
           style={{
-            background: loading ? '#5C5648' : '#D97757', color: '#0A0908',
+            background: loading ? '#8B8478' : '#D97757', color: '#0A0908',
             padding: '8px 16px', borderRadius: '3px', fontWeight: 600,
             fontSize: '12px', border: 'none', cursor: loading ? 'default' : 'pointer',
             opacity: loading ? 0.7 : 1,
@@ -209,7 +209,7 @@ export function PinGateInline({ val, setVal, onConfirm, onCancel, error, loading
         <button
           onClick={onCancel}
           disabled={loading}
-          style={{ background: 'transparent', color: '#8B8478', padding: '8px 12px', fontSize: '12px', border: 'none', cursor: 'pointer' }}
+          style={{ background: 'transparent', color: '#B0A898', padding: '8px 12px', fontSize: '12px', border: 'none', cursor: 'pointer' }}
         >
           Cancel
         </button>

@@ -76,14 +76,14 @@ export default function RolloverModal({ data, setData, onClose }) {
     if (env.rolloverMode === 'sweep') {
       return env.unspent > 0
         ? { text: `Sweep ${fmt(env.unspent)} → buffer`, color: '#7FA068' }
-        : { text: 'Nothing to sweep', color: '#5C5648' };
+        : { text: 'Nothing to sweep', color: '#8B8478' };
     }
     if (env.rolloverMode === 'roll') {
       return env.unspent > 0
         ? { text: `Roll over ${fmt(env.unspent)}`, color: '#B89968' }
-        : { text: 'Nothing to roll', color: '#5C5648' };
+        : { text: 'Nothing to roll', color: '#8B8478' };
     }
-    return { text: 'Reset to zero', color: '#8B8478' };
+    return { text: 'Reset to zero', color: '#B0A898' };
   };
 
   return (
@@ -111,7 +111,7 @@ export default function RolloverModal({ data, setData, onClose }) {
               <span style={{ fontStyle: 'italic' }}>{prevMonth.label}</span> closed.
             </h2>
           </div>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', padding: '4px' }}>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', padding: '4px' }}>
             <X size={18} />
           </button>
         </div>
@@ -122,7 +122,7 @@ export default function RolloverModal({ data, setData, onClose }) {
           <p className="text-sm" style={{ color: '#E8E2D5', lineHeight: 1.6 }}>
             {totalSwept > 0 && <><strong style={{ color: '#7FA068' }}>{fmt(totalSwept)}</strong> swept from {swept.filter(e => e.unspent > 0).map(e => e.name).join(', ')} to Buffer. </>}
             {rolled.filter(e => e.unspent > 0).length > 0 && <><strong style={{ color: '#B89968' }}>{rolled.filter(e => e.unspent > 0).map(e => e.name).join(', ')}</strong> rolled — unspent added to next month's cap. </>}
-            {reset.length > 0 && <><strong style={{ color: '#8B8478' }}>{reset.map(e => e.name).join(', ')}</strong> reset.</>}
+            {reset.length > 0 && <><strong style={{ color: '#B0A898' }}>{reset.map(e => e.name).join(', ')}</strong> reset.</>}
           </p>
         </div>
 
@@ -141,8 +141,8 @@ export default function RolloverModal({ data, setData, onClose }) {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="mono text-xs" style={{ color: '#8B8478' }}>{fmt(env.spent)} / {fmt(env.cap)}</span>
-                    <ArrowRight size={12} style={{ color: '#5C5648' }} />
+                    <span className="mono text-xs" style={{ color: '#B0A898' }}>{fmt(env.spent)} / {fmt(env.cap)}</span>
+                    <ArrowRight size={12} style={{ color: '#8B8478' }} />
                     <span className="text-xs font-medium" style={{ color: action.color }}>{action.text}</span>
                   </div>
                 </div>
@@ -159,9 +159,9 @@ export default function RolloverModal({ data, setData, onClose }) {
           <div className="card p-4 mb-6 flex items-center gap-3" style={{ borderColor: '#2A3A1E' }}>
             <Sparkles size={14} style={{ color: '#7FA068' }} />
             <div className="flex-1 text-sm">
-              <span style={{ color: '#8B8478' }}>Buffer after sweep: </span>
+              <span style={{ color: '#B0A898' }}>Buffer after sweep: </span>
               <span className="mono" style={{ color: '#7FA068' }}>{fmt((data.buffer || 0) + totalSwept)}</span>
-              <span style={{ color: '#5C5648' }}> (+{fmt(totalSwept)})</span>
+              <span style={{ color: '#8B8478' }}> (+{fmt(totalSwept)})</span>
             </div>
           </div>
         )}
@@ -175,7 +175,7 @@ export default function RolloverModal({ data, setData, onClose }) {
           <Check size={14} className="inline mr-2" />
           Confirm and continue →
         </button>
-        <p className="text-xs text-center mt-3" style={{ color: '#5C5648' }}>
+        <p className="text-xs text-center mt-3" style={{ color: '#8B8478' }}>
           Sweeps to buffer, rolls unspent caps forward, and marks {prevMonth.label} as closed.
         </p>
       </div>

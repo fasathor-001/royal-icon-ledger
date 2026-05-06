@@ -11,7 +11,7 @@ export default function NotFound({ navigate }) {
       <section style={{ minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 24px' }}>
         <div style={{ textAlign: 'center', maxWidth: '480px' }}>
 
-          <div className="m-mono" style={{ fontSize: '11px', color: '#3A3028', letterSpacing: '0.18em', marginBottom: '24px' }}>
+          <div className="m-mono" style={{ fontSize: '11px', color: '#5C5648', letterSpacing: '0.18em', marginBottom: '24px' }}>
             404
           </div>
 
@@ -20,7 +20,7 @@ export default function NotFound({ navigate }) {
             <em style={{ color: '#D97757', fontStyle: 'italic' }}>exist.</em>
           </h1>
 
-          <p style={{ fontSize: '16px', color: '#5C5648', lineHeight: 1.75, marginBottom: '40px' }}>
+          <p style={{ fontSize: '16px', color: '#8B8478', lineHeight: 1.75, marginBottom: '40px' }}>
             But your financial structure can. You may have followed a broken link — here's where to go instead.
           </p>
 
@@ -49,9 +49,9 @@ export default function NotFound({ navigate }) {
             ))}
           </div>
 
-          <p style={{ fontSize: '12px', color: '#3A3028' }}>
+          <p style={{ fontSize: '12px', color: '#5C5648' }}>
             If you think something is broken,{' '}
-            <a href="mailto:hello@royalledger.app" style={{ color: '#5C5648', textDecoration: 'none' }}>
+            <a href="mailto:hello@royalledger.app" style={{ color: '#8B8478', textDecoration: 'none' }}>
               let us know
             </a>.
           </p>

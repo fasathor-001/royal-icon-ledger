@@ -55,7 +55,7 @@ function RadioOpt({ option, selected, onSelect }) {
       <div className="m-radio-circle" />
       <div>
         <div style={{ fontSize: '14px', color: '#E8E2D5', fontWeight: selected ? 500 : 400 }}>{option.label}</div>
-        <div style={{ fontSize: '12px', color: '#5C5648', marginTop: '2px' }}>{option.sub}</div>
+        <div style={{ fontSize: '12px', color: '#8B8478', marginTop: '2px' }}>{option.sub}</div>
       </div>
     </div>
   );
@@ -175,10 +175,10 @@ export default function EarlyAccess({ navigate }) {
             <h1 className="m-display" style={{ fontSize: 'clamp(32px, 5vw, 52px)', color: '#E8E2D5', marginBottom: '20px' }}>
               Application received.
             </h1>
-            <p style={{ fontSize: '16px', color: '#8B8478', lineHeight: 1.75, marginBottom: '8px' }}>
+            <p style={{ fontSize: '16px', color: '#B0A898', lineHeight: 1.75, marginBottom: '8px' }}>
               Thank you, {form.name.split(' ')[0]}.
             </p>
-            <p style={{ fontSize: '16px', color: '#8B8478', lineHeight: 1.75, marginBottom: '36px' }}>
+            <p style={{ fontSize: '16px', color: '#B0A898', lineHeight: 1.75, marginBottom: '36px' }}>
               We'll contact you at <strong style={{ color: '#E8E2D5' }}>{form.email}</strong> when your invite is ready.
             </p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
@@ -209,7 +209,7 @@ export default function EarlyAccess({ navigate }) {
           <p style={{ fontSize: '13px', color: '#D97757', fontWeight: 500, marginBottom: '8px' }}>
             Limited early rollout.
           </p>
-          <p style={{ fontSize: '13px', color: '#3A3028' }}>
+          <p style={{ fontSize: '13px', color: '#5C5648' }}>
             No spam. No noise. We'll only reach out when access opens.
           </p>
         </div>
@@ -253,7 +253,7 @@ export default function EarlyAccess({ navigate }) {
 
               {/* Country */}
               <div>
-                <label className="m-field-label" htmlFor="ea-country">Country <span style={{ color: '#3A3028' }}>(optional)</span></label>
+                <label className="m-field-label" htmlFor="ea-country">Country <span style={{ color: '#5C5648' }}>(optional)</span></label>
                 <input
                   id="ea-country"
                   type="text"
@@ -283,7 +283,7 @@ export default function EarlyAccess({ navigate }) {
 
               {/* Why interested */}
               <div>
-                <label className="m-field-label" htmlFor="ea-interest">Why are you interested? <span style={{ color: '#3A3028' }}>(optional)</span></label>
+                <label className="m-field-label" htmlFor="ea-interest">Why are you interested? <span style={{ color: '#5C5648' }}>(optional)</span></label>
                 <textarea
                   id="ea-interest"
                   className="m-input m-textarea"
@@ -308,10 +308,10 @@ export default function EarlyAccess({ navigate }) {
                 >
                   {submitting ? 'Submitting…' : 'Submit Application'}
                 </button>
-                <p style={{ fontSize: '14px', color: '#5C5648', marginTop: '20px', textAlign: 'center', fontWeight: 500 }}>
+                <p style={{ fontSize: '14px', color: '#8B8478', marginTop: '20px', textAlign: 'center', fontWeight: 500 }}>
                   No subscriptions. No noise. Just control.
                 </p>
-                <p style={{ fontSize: '12px', color: '#3A3028', marginTop: '8px', textAlign: 'center', lineHeight: 1.6 }}>
+                <p style={{ fontSize: '12px', color: '#5C5648', marginTop: '8px', textAlign: 'center', lineHeight: 1.6 }}>
                   No credit card required. We'll contact you when your invite is ready.
                   <br />
                   We do not sell or share your information.
@@ -326,17 +326,17 @@ export default function EarlyAccess({ navigate }) {
             <div className="m-label" style={{ marginBottom: '16px' }}>What does it cost?</div>
             <div className="ea-pricing-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
               <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '16px 18px' }}>
-                <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#5C5648', textTransform: 'uppercase', marginBottom: '8px' }}>Core — Free</div>
+                <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#8B8478', textTransform: 'uppercase', marginBottom: '8px' }}>Core — Free</div>
                 <div style={{ fontSize: '16px', fontWeight: 700, color: '#E8E2D5', marginBottom: '6px' }}>Always free</div>
-                <div style={{ fontSize: '12px', color: '#3A3028', lineHeight: 1.6 }}>Local device. All core modules. Offline-first. No sync.</div>
+                <div style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.6 }}>Local device. All core modules. Offline-first. No sync.</div>
               </div>
               <div style={{ background: '#1A1008', border: '1px solid #3A2010', borderRadius: '4px', padding: '16px 18px' }}>
                 <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: '#D97757', textTransform: 'uppercase', marginBottom: '8px' }}>Pro — Coming soon</div>
                 <div style={{ fontSize: '16px', fontWeight: 700, color: '#E8E2D5', marginBottom: '6px' }}>Subscription</div>
-                <div style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.6 }}>Cloud sync, multi-device, push notifications. Pricing set during beta.</div>
+                <div style={{ fontSize: '12px', color: '#8B8478', lineHeight: 1.6 }}>Cloud sync, multi-device, push notifications. Pricing set during beta.</div>
               </div>
             </div>
-            <p style={{ fontSize: '12px', color: '#3A3028', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.6 }}>
               Beta access is free. No payment required at any stage of the early access programme.
             </p>
           </div>
@@ -352,7 +352,7 @@ export default function EarlyAccess({ navigate }) {
             ].map(({ icon, text }) => (
               <div key={text} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px 0', borderBottom: '1px solid #1A1610' }}>
                 <span style={{ fontSize: '14px', flexShrink: 0 }}>{icon}</span>
-                <span style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.6 }}>{text}</span>
+                <span style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.6 }}>{text}</span>
               </div>
             ))}
           </div>

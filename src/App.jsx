@@ -122,7 +122,7 @@ const CATEGORIES = {
   tech: { label: 'Tech', icon: Smartphone, color: '#5B7FB8' },
   online: { label: 'Online Shopping', icon: Package, color: '#7FA068' },
   family: { label: 'Family / Kids', icon: Users, color: '#B89968' },
-  other: { label: 'Other', icon: Sparkles, color: '#8B8478' },
+  other: { label: 'Other', icon: Sparkles, color: '#B0A898' },
 };
 
 const TRIGGERS = ['Bored', 'Stressed', 'Tired', 'Won a trade', 'Lost a trade', 'Family pressure', 'Scrolling', 'Saw an ad'];
@@ -209,7 +209,7 @@ function MobileBottomNav({ tab, setTab, user, data }) {
                 display: 'block', width: '100%', textAlign: 'left',
                 padding: '13px 24px', fontSize: 15,
                 background: 'none', border: 'none', cursor: 'pointer',
-                color: tab === id ? '#D97757' : '#8B8478',
+                color: tab === id ? '#D97757' : '#B0A898',
                 borderLeft: tab === id ? '3px solid #D97757' : '3px solid transparent',
               }}
             >
@@ -240,7 +240,7 @@ function MobileBottomNav({ tab, setTab, user, data }) {
                 flex: 1, display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center', gap: 3,
                 background: 'none', border: 'none', cursor: 'pointer',
-                color: active ? '#D97757' : '#5C5648',
+                color: active ? '#D97757' : '#8B8478',
                 transition: 'color 150ms',
                 minWidth: 0,
               }}
@@ -264,7 +264,7 @@ function MobileBottomNav({ tab, setTab, user, data }) {
             flex: 1, display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center', gap: 3,
             background: 'none', border: 'none', cursor: 'pointer',
-            color: (showMore || isSecondaryActive) ? '#D97757' : '#5C5648',
+            color: (showMore || isSecondaryActive) ? '#D97757' : '#8B8478',
             transition: 'color 150ms',
             minWidth: 0,
           }}
@@ -340,14 +340,14 @@ function PinSetupScreen({ onSave, isForgotPin = false, userEmail = '' }) {
         <h1 style={{ fontSize: '28px', fontWeight: 300, color: '#E8E2D5', fontFamily: 'Fraunces, Georgia, serif', marginBottom: '10px', lineHeight: 1.2 }}>
           {isForgotPin ? 'Set a new PIN' : 'Set your security PIN'}
         </h1>
-        <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, marginBottom: '32px' }}>
+        <p style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.7, marginBottom: '32px' }}>
           {isForgotPin
             ? 'Your PIN reset was approved. Set a new PIN to continue.'
             : 'Royal Ledger uses your PIN to protect important structural changes. You must set one to continue.'}
         </p>
 
         <div style={{ marginBottom: '16px' }}>
-          <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '8px', fontWeight: 600 }}>
+          <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#8B8478', marginBottom: '8px', fontWeight: 600 }}>
             New PIN (4–6 digits)
           </div>
           <input
@@ -359,7 +359,7 @@ function PinSetupScreen({ onSave, isForgotPin = false, userEmail = '' }) {
         </div>
 
         <div style={{ marginBottom: '24px' }}>
-          <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '8px', fontWeight: 600 }}>
+          <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#8B8478', marginBottom: '8px', fontWeight: 600 }}>
             Confirm PIN
           </div>
           <input
@@ -384,13 +384,13 @@ function PinSetupScreen({ onSave, isForgotPin = false, userEmail = '' }) {
         <button
           onClick={handleSave}
           disabled={!canSubmit}
-          style={{ width: '100%', background: canSubmit ? '#D97757' : '#26221C', color: canSubmit ? '#0A0908' : '#5C5648', padding: '14px', borderRadius: '4px', fontWeight: 700, fontSize: '14px', border: 'none', cursor: canSubmit ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+          style={{ width: '100%', background: canSubmit ? '#D97757' : '#26221C', color: canSubmit ? '#0A0908' : '#8B8478', padding: '14px', borderRadius: '4px', fontWeight: 700, fontSize: '14px', border: 'none', cursor: canSubmit ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
         >
           {saving ? 'Saving…' : 'Set PIN & continue'}
           {!saving && <ArrowRight size={16} />}
         </button>
 
-        <p style={{ fontSize: '11px', color: '#3A3028', marginTop: '16px', textAlign: 'center', lineHeight: 1.5 }}>
+        <p style={{ fontSize: '11px', color: '#5C5648', marginTop: '16px', textAlign: 'center', lineHeight: 1.5 }}>
           Your PIN is hashed and stored only on this device. Royal Ledger cannot recover it — keep it somewhere safe.
         </p>
 
@@ -400,7 +400,7 @@ function PinSetupScreen({ onSave, isForgotPin = false, userEmail = '' }) {
             <div style={{ textAlign: 'center' }}>
               <button
                 onClick={() => setShowForgot(true)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: '#5C5648', textDecoration: 'underline', textDecorationColor: '#3A3028' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: '#8B8478', textDecoration: 'underline', textDecorationColor: '#5C5648' }}
               >
                 Forgot your PIN?
               </button>
@@ -411,7 +411,7 @@ function PinSetupScreen({ onSave, isForgotPin = false, userEmail = '' }) {
               <div style={{ fontSize: '11px', color: '#D97757', marginBottom: '6px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
                 Request PIN reset
               </div>
-              <div style={{ fontSize: '12px', color: '#8B8478', marginBottom: '10px', lineHeight: 1.55 }}>
+              <div style={{ fontSize: '12px', color: '#B0A898', marginBottom: '10px', lineHeight: 1.55 }}>
                 Submit a request — an admin will approve it and you'll be prompted to set a new PIN on next login.
               </div>
               <textarea
@@ -426,11 +426,11 @@ function PinSetupScreen({ onSave, isForgotPin = false, userEmail = '' }) {
                 <button
                   onClick={submitForgot}
                   disabled={forgotSending}
-                  style={{ background: forgotSending ? '#26221C' : '#D97757', color: forgotSending ? '#5C5648' : '#0A0908', padding: '7px 14px', borderRadius: '3px', fontWeight: 600, fontSize: '12px', border: 'none', cursor: forgotSending ? 'default' : 'pointer', opacity: forgotSending ? 0.7 : 1 }}
+                  style={{ background: forgotSending ? '#26221C' : '#D97757', color: forgotSending ? '#8B8478' : '#0A0908', padding: '7px 14px', borderRadius: '3px', fontWeight: 600, fontSize: '12px', border: 'none', cursor: forgotSending ? 'default' : 'pointer', opacity: forgotSending ? 0.7 : 1 }}
                 >
                   {forgotSending ? 'Sending…' : 'Send request'}
                 </button>
-                <button onClick={() => setShowForgot(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: '#5C5648', textDecoration: 'underline' }}>
+                <button onClick={() => setShowForgot(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: '#8B8478', textDecoration: 'underline' }}>
                   Cancel
                 </button>
               </div>
@@ -439,7 +439,7 @@ function PinSetupScreen({ onSave, isForgotPin = false, userEmail = '' }) {
           {forgotDone && (
             <div style={{ background: '#0A0E08', border: '1px solid #2A4A20', borderRadius: '4px', padding: '12px 14px', textAlign: 'center' }}>
               <div style={{ fontSize: '12px', color: '#7FA068', marginBottom: '4px', fontWeight: 600 }}>Reset request sent</div>
-              <div style={{ fontSize: '12px', color: '#5C5648' }}>Royal Ledger support will review it and get back to you.</div>
+              <div style={{ fontSize: '12px', color: '#8B8478' }}>Royal Ledger support will review it and get back to you.</div>
             </div>
           )}
         </div>
@@ -458,7 +458,7 @@ function BlockedScreen({ onLogout }) {
         <h1 style={{ fontSize: '26px', fontWeight: 300, color: '#E8E2D5', fontFamily: 'Georgia, serif', marginBottom: '14px', letterSpacing: '-0.01em' }}>
           Access restricted.
         </h1>
-        <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.75, marginBottom: '28px' }}>
+        <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.75, marginBottom: '28px' }}>
           Your Royal Ledger access has been restricted.<br />
           Contact support if you believe this is a mistake.
         </p>
@@ -472,7 +472,7 @@ function BlockedScreen({ onLogout }) {
           <div style={{ marginTop: '32px' }}>
             <button
               onClick={onLogout}
-              style={{ fontSize: '12px', color: '#3A3028', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+              style={{ fontSize: '12px', color: '#5C5648', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
             >
               Sign out
             </button>
@@ -817,7 +817,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#0A0908' }}>
-        <div style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', fontStyle: 'italic', color: '#8B8478' }}>Loading…</div>
+        <div style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', fontStyle: 'italic', color: '#B0A898' }}>Loading…</div>
       </div>
     );
   }
@@ -869,23 +869,23 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
         .input:focus { border-color: #D97757; }
         .input-text { background: #0A0908; border: 1px solid #26221C; padding: 11px 13px; font-family: 'Inter', sans-serif; outline: none; color: #E8E2D5; border-radius: 3px; width: 100%; font-size: 14px; }
         .input-text:focus { border-color: #D97757; }
-        .input-inline { background: transparent; border: none; border-bottom: 1px dashed #5C5648; padding: 4px 2px; font-family: 'JetBrains Mono', monospace; outline: none; color: #E8E2D5; font-size: 14px; width: 100%; }
+        .input-inline { background: transparent; border: none; border-bottom: 1px dashed #8B8478; padding: 4px 2px; font-family: 'JetBrains Mono', monospace; outline: none; color: #E8E2D5; font-size: 14px; width: 100%; }
         .input-inline:focus { border-bottom-color: #D97757; border-bottom-style: solid; }
         .btn { transition: all 150ms ease; cursor: pointer; }
         .btn-primary { background: #D97757; color: #0A0908; padding: 12px 20px; font-weight: 600; border-radius: 3px; font-size: 13px; letter-spacing: 0.04em; }
         .btn-primary:hover { background: #E08868; }
-        .btn-ghost { background: transparent; color: #8B8478; padding: 12px 20px; font-weight: 500; font-size: 13px; }
+        .btn-ghost { background: transparent; color: #B0A898; padding: 12px 20px; font-weight: 500; font-size: 13px; }
         .btn-ghost:hover { color: #E8E2D5; }
         .btn-secondary { background: #14110E; color: #E8E2D5; border: 1px solid #26221C; padding: 10px 16px; font-weight: 500; border-radius: 3px; font-size: 13px; }
         .btn-secondary:hover { border-color: #D97757; }
         .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; }
         .tab-btn { padding: 16px 0; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 200ms; border-bottom: 2px solid transparent; white-space: nowrap; }
         .tab-active { color: #D97757; border-bottom-color: #D97757; }
-        .tab-inactive { color: #5C5648; }
-        .tab-inactive:hover { color: #8B8478; }
-        .stab-btn { padding: 9px 0; font-size: 13px; font-weight: 400; cursor: pointer; transition: color 200ms, border-color 200ms; border: none; border-bottom: 2px solid transparent; white-space: nowrap; background: transparent; color: #5C5648; }
+        .tab-inactive { color: #8B8478; }
+        .tab-inactive:hover { color: #B0A898; }
+        .stab-btn { padding: 9px 0; font-size: 13px; font-weight: 400; cursor: pointer; transition: color 200ms, border-color 200ms; border: none; border-bottom: 2px solid transparent; white-space: nowrap; background: transparent; color: #8B8478; }
         .stab-active { color: #D97757; border-bottom-color: #D97757; font-weight: 600; }
-        .stab-inactive:hover { color: #8B8478; }
+        .stab-inactive:hover { color: #B0A898; }
         .stab-danger.stab-active { color: #C56B5A; border-bottom-color: #C56B5A; }
         .progress { height: 6px; background: #26221C; border-radius: 999px; overflow: hidden; }
         .progress-fill { height: 100%; transition: width 800ms cubic-bezier(0.4, 0, 0.2, 1); border-radius: 999px; }
@@ -906,13 +906,13 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
             <h1 className="display" style={{ fontSize: 22 }}>
               Royal <span style={{ fontStyle: 'italic', color: '#D97757' }}>Ledger</span>
             </h1>
-            <span className="label hidden sm:inline" style={{ color: '#5C5648' }}>Personal finance for the disciplined</span>
+            <span className="label hidden sm:inline" style={{ color: '#8B8478' }}>Personal finance for the disciplined</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             {user && (
               <div className="hidden sm:flex items-center gap-2" style={{ borderRight: '1px solid #26221C', paddingRight: '12px' }}>
-                <span className="text-xs" style={{ color: '#5C5648' }}>{data.displayName || user.email}</span>
-                <button onClick={() => setTab('settings')} className="btn px-2 py-1 text-xs" style={{ color: '#8B8478', border: '1px solid #26221C', borderRadius: '3px' }}>
+                <span className="text-xs" style={{ color: '#8B8478' }}>{data.displayName || user.email}</span>
+                <button onClick={() => setTab('settings')} className="btn px-2 py-1 text-xs" style={{ color: '#B0A898', border: '1px solid #26221C', borderRadius: '3px' }}>
                   Settings
                 </button>
                 <button
@@ -930,7 +930,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
               <span className="hidden sm:inline">{snapshotFlash ? 'Saved!' : 'Snapshot'}</span>
             </button>
             <div className="text-right">
-              <div className="label hidden sm:block" style={{ color: '#5C5648', fontSize: 9 }}>NET WORTH</div>
+              <div className="label hidden sm:block" style={{ color: '#8B8478', fontSize: 9 }}>NET WORTH</div>
               <div className="mono" style={{ fontSize: 'clamp(13px, 3.5vw, 18px)', fontWeight: 600 }}>{fmt(stats.totalAssets)}</div>
             </div>
           </div>
@@ -1040,7 +1040,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
             style={{
               position: 'absolute', top: '16px', right: '16px',
               background: 'none', border: 'none', cursor: 'pointer',
-              color: '#5C5648', padding: '4px',
+              color: '#8B8478', padding: '4px',
             }}
           >
             <X size={16} />
@@ -1059,7 +1059,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
           </div>
 
           {/* Body */}
-          <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.65, marginBottom: '20px' }}>
+          <p style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.65, marginBottom: '20px' }}>
             You've shown discipline by saving and building control. You're ready for the full Royal Ledger system.
           </p>
 
@@ -1072,7 +1072,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
             marginBottom: '24px',
           }}>
             <div style={{
-              fontSize: '11px', color: '#5C5648',
+              fontSize: '11px', color: '#8B8478',
               fontWeight: 600, letterSpacing: '0.1em',
               textTransform: 'uppercase', marginBottom: '12px',
             }}>
@@ -1254,7 +1254,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
       <div className="card-warm p-8 text-center">
         <Edit2 size={32} style={{ color: '#D97757' }} className="mx-auto mb-4" />
         <div className="display text-3xl mb-3" style={{ fontWeight: 300 }}>Let's start with your numbers.</div>
-        <p className="mb-6 max-w-md mx-auto" style={{ color: '#8B8478' }}
+        <p className="mb-6 max-w-md mx-auto" style={{ color: '#B0A898' }}
           dangerouslySetInnerHTML={{ __html: isFoundation
             ? foundationCopy.notSetupBody
             : 'Go to <strong style="color:#E8E2D5">Setup &amp; Salary</strong> and add your real monthly expenses. Everything else recalculates from there — your salary, your buffer target, your stage thresholds.'
@@ -1285,14 +1285,14 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
             <Check size={14} style={{ color: '#D97757', flexShrink: 0 }} />
-            <span style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.5 }}>
+            <span style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.5 }}>
               You now have more control over your money.{' '}
               <span style={{ color: '#E8E2D5' }}>Take it one step at a time.</span>
             </span>
           </div>
           <button
             onClick={() => setShowStabilizeMessage(false)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#5C5648', flexShrink: 0, padding: '2px' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8B8478', flexShrink: 0, padding: '2px' }}
           >
             <X size={14} />
           </button>
@@ -1325,7 +1325,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             style={{
               position: 'absolute', top: '14px', right: '14px',
               background: 'none', border: 'none', cursor: 'pointer',
-              color: '#5C5648', padding: '4px', lineHeight: 1,
+              color: '#8B8478', padding: '4px', lineHeight: 1,
             }}
             aria-label="Dismiss welcome message"
           >
@@ -1359,7 +1359,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           </h2>
 
           {/* Subline */}
-          <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, marginBottom: '20px', maxWidth: '420px' }}>
+          <p style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.7, marginBottom: '20px', maxWidth: '420px' }}>
             You built discipline before you built wealth — and that's the harder part.
             The full system is now yours. Take it one layer at a time.
           </p>
@@ -1393,7 +1393,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             >
               Start exploring →
             </button>
-            <span style={{ fontSize: '12px', color: '#3A3028' }}>
+            <span style={{ fontSize: '12px', color: '#5C5648' }}>
               Everything is ready. No setup needed.
             </span>
           </div>
@@ -1422,9 +1422,9 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           <AlertTriangle size={16} style={{ color: '#D97757', flexShrink: 0 }} />
           <div className="flex-1 text-sm">
             <span style={{ color: '#E8E2D5', fontWeight: 500 }}>Down trading day detected. Impulse risk elevated.</span>
-            <span style={{ color: '#8B8478' }}> All discretionary purchases above {fmt(data.spendingGateThreshold)} require 24h sleep.</span>
+            <span style={{ color: '#B0A898' }}> All discretionary purchases above {fmt(data.spendingGateThreshold)} require 24h sleep.</span>
           </div>
-          <div className="text-xs" style={{ color: '#5C5648' }}>
+          <div className="text-xs" style={{ color: '#8B8478' }}>
             Expires {new Date(data.tradingGuardUntil).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
           </div>
         </div>
@@ -1438,7 +1438,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         <div style={{ background: '#0F0D0A', border: '1px solid #26221C', borderRadius: '6px', padding: '24px 28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
             <div>
-              <div style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#5C5648', fontWeight: 600, marginBottom: '4px' }}>Getting started</div>
+              <div style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#8B8478', fontWeight: 600, marginBottom: '4px' }}>Getting started</div>
               <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '20px', fontWeight: 300, color: '#E8E2D5' }}>
                 Three steps to activate your system.
               </div>
@@ -1489,10 +1489,10 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                   {step.done ? '✓' : step.num}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '14px', color: step.done ? '#5C5648' : '#E8E2D5', fontWeight: 500, marginBottom: '3px', textDecoration: step.done ? 'line-through' : 'none' }}>
+                  <div style={{ fontSize: '14px', color: step.done ? '#8B8478' : '#E8E2D5', fontWeight: 500, marginBottom: '3px', textDecoration: step.done ? 'line-through' : 'none' }}>
                     {step.title}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.5 }}>{step.desc}</div>
+                  <div style={{ fontSize: '12px', color: '#8B8478', lineHeight: 1.5 }}>{step.desc}</div>
                 </div>
                 {step.action && !step.done && (
                   <button
@@ -1530,7 +1530,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
 			  ? "You haven't backed up your data yet."
 			  : `It's been ${daysSinceBackup} days since your last backup.`}
 		  </span>
-		  <span style={{ color: '#8B8478' }}> Your data lives only in this browser — back it up regularly.</span>
+		  <span style={{ color: '#B0A898' }}> Your data lives only in this browser — back it up regularly.</span>
 		</div>
 		<button onClick={() => setTab('rules')} className="btn px-3 py-1.5 text-xs" style={{ background: '#D97757', color: '#0A0908', borderRadius: '3px', fontWeight: 600 }}>
 		  Back up
@@ -1544,7 +1544,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
 		  <span style={{ color: '#E8E2D5', fontWeight: 500 }}>
 			{stats.drawdownZone === 'stop' ? 'Stop trading.' : stats.drawdownZone === 'defensive' ? 'Defensive zone.' : 'Caution zone.'}
 		  </span>
-		  <span style={{ color: '#8B8478' }}> Trading capital is {stats.drawdownPct.toFixed(1)}% below high water. {stats.drawdownZone === 'stop' ? 'Full pause and strategy review required.' : stats.drawdownZone === 'defensive' ? 'Reduce position sizes by 50%.' : 'Reduce position sizes by 25%.'}</span>
+		  <span style={{ color: '#B0A898' }}> Trading capital is {stats.drawdownPct.toFixed(1)}% below high water. {stats.drawdownZone === 'stop' ? 'Full pause and strategy review required.' : stats.drawdownZone === 'defensive' ? 'Reduce position sizes by 50%.' : 'Reduce position sizes by 25%.'}</span>
 		</div>
 		<button onClick={() => setTab('trading')} className="btn px-3 py-1.5 text-xs" style={{ background: stats.drawdownZone === 'stop' ? '#C56B5A' : '#D97757', color: '#0A0908', borderRadius: '3px', fontWeight: 600 }}>
 		  Review
@@ -1565,7 +1565,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               <div style={{ fontSize: '15px', fontWeight: 600, color: '#E8E2D5', marginBottom: '4px' }}>
                 You've built a strong foundation.
               </div>
-              <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.6, margin: 0 }}>
+              <p style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.6, margin: 0 }}>
                 Ready for more control over your money? The full system unlocks income structuring, advanced planning, and the full Royal Ledger dashboard.
               </p>
             </div>
@@ -1585,7 +1585,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             <button
               onClick={() => setUpgradeDismissed(true)}
               style={{
-                background: 'transparent', color: '#5C5648',
+                background: 'transparent', color: '#8B8478',
                 border: '1px solid #26221C', borderRadius: '3px',
                 padding: '10px 16px', fontSize: '13px', cursor: 'pointer',
                 fontFamily: 'Inter, sans-serif',
@@ -1651,7 +1651,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           {/* Goal section — inline editor */}
           {goalEditing ? (
             <div style={{ borderTop: '1px solid #2A3E2A', paddingTop: '20px', marginTop: '4px' }}>
-              <div className="label mb-3" style={{ color: '#5C5648' }}>
+              <div className="label mb-3" style={{ color: '#8B8478' }}>
                 {data.savingsGoal ? 'Edit goal' : 'Set a goal'}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '12px' }}>
@@ -1668,7 +1668,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                   autoFocus
                 />
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '16px', color: '#5C5648', fontFamily: 'JetBrains Mono, monospace' }}>
+                  <span style={{ fontSize: '16px', color: '#8B8478', fontFamily: 'JetBrains Mono, monospace' }}>
                     {getCurrency(data.currency).symbol}
                   </span>
                   <input
@@ -1700,7 +1700,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 <button
                   onClick={() => { setGoalEditing(false); setGoalError(''); }}
                   style={{
-                    background: 'transparent', color: '#5C5648', border: '1px solid #26221C',
+                    background: 'transparent', color: '#8B8478', border: '1px solid #26221C',
                     borderRadius: '3px', padding: '9px 14px', fontSize: '13px', cursor: 'pointer',
                   }}
                 >
@@ -1713,13 +1713,13 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             <div style={{ borderTop: '1px solid #2A3E2A', paddingTop: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <div>
-                  <div className="label" style={{ color: '#5C5648', marginBottom: '2px' }}>Savings Goal</div>
+                  <div className="label" style={{ color: '#8B8478', marginBottom: '2px' }}>Savings Goal</div>
                   <div style={{ fontSize: '15px', fontWeight: 500, color: '#E8E2D5' }}>{data.savingsGoal.name}</div>
                 </div>
                 <button
                   onClick={openGoalEditor}
                   style={{
-                    background: 'transparent', color: '#5C5648', border: '1px solid #26221C',
+                    background: 'transparent', color: '#8B8478', border: '1px solid #26221C',
                     borderRadius: '3px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer',
                     fontFamily: 'Inter, sans-serif',
                   }}
@@ -1734,7 +1734,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                     <div className="progress mb-2">
                       <div className="progress-fill" style={{ width: pct + '%', background: '#7FA068' }} />
                     </div>
-                    <div className="flex justify-between text-xs mono" style={{ color: '#8B8478' }}>
+                    <div className="flex justify-between text-xs mono" style={{ color: '#B0A898' }}>
                       <span>{fmt(data.buffer)} of {fmt(data.savingsGoal.target)} · {pct}%</span>
                       <span>{data.buffer >= data.savingsGoal.target ? '🎉 Goal reached!' : `${fmt(data.savingsGoal.target - data.buffer)} to go`}</span>
                     </div>
@@ -1745,7 +1745,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           ) : (
             /* No goal yet */
             <div style={{ borderTop: '1px solid #2A3E2A', paddingTop: '16px' }}>
-              <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.6, marginBottom: '12px' }}>
+              <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.6, marginBottom: '12px' }}>
                 Set a goal for your savings — a laptop, emergency fund, or anything worth working toward.
               </p>
               <button
@@ -1765,7 +1765,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         <div className="card-warm p-7 glow-warm">
           <div className="flex items-baseline justify-between mb-3">
             <div className="label" style={{ color: stageInfo.color }}>{stageInfo.name} — {stageInfo.title}</div>
-            <div className="mono text-xs" style={{ color: '#8B8478' }}>{stats.monthsCovered.toFixed(1)} months stored</div>
+            <div className="mono text-xs" style={{ color: '#B0A898' }}>{stats.monthsCovered.toFixed(1)} months stored</div>
           </div>
           <h2 className="display text-3xl mb-3" style={{ fontWeight: 300, lineHeight: 1.2 }}>
             {stats.stage === 3
@@ -1773,13 +1773,13 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               : <>Building toward <span style={{ fontStyle: 'italic', color: '#D97757' }}>{fmt(stats.nextThreshold)}</span>.</>
             }
           </h2>
-          <p style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.6 }}>{stageInfo.desc}</p>
+          <p style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.6 }}>{stageInfo.desc}</p>
           {stats.stage !== 3 && (
             <>
               <div className="progress mt-5 mb-2">
                 <div className="progress-fill" style={{ width: Math.min(100, stats.progressPct) + '%', background: stageInfo.color }} />
               </div>
-              <div className="flex justify-between text-xs mono" style={{ color: '#8B8478' }}>
+              <div className="flex justify-between text-xs mono" style={{ color: '#B0A898' }}>
                 <span>{fmt(data.buffer)} / {fmt(stats.nextThreshold)}</span>
                 <span>{fmt(stats.nextThreshold - data.buffer)} to go</span>
               </div>
@@ -1799,7 +1799,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 else setBalancesLocked(true);
               }}
               className="btn flex items-center gap-1 text-xs"
-              style={{ color: balancesLocked ? '#5C5648' : '#7FA068', border: '1px solid #26221C', borderRadius: '3px', padding: '4px 10px' }}
+              style={{ color: balancesLocked ? '#8B8478' : '#7FA068', border: '1px solid #26221C', borderRadius: '3px', padding: '4px 10px' }}
             >
               <Lock size={11} />
               {balancesLocked ? 'Unlock to edit' : 'Lock'}
@@ -1810,7 +1810,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           </div>
         </div>
         {unlockGate}
-        <p className="text-sm mb-5" style={{ color: '#8B8478' }}>
+        <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
           Update these whenever you want. Hit "Save snapshot" to record this moment in your history.
         </p>
         <div className={`grid md:grid-cols-2 ${data.incomeType === 'fixed' || isFoundation ? 'lg:grid-cols-4' : 'lg:grid-cols-5'} gap-3`}>
@@ -1868,7 +1868,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
       {/* Stage progression visual — hidden for Foundation */}
       {!isFoundation && <section className="card p-7">
         <h2 className="display text-2xl mb-2">Progression</h2>
-        <p className="text-sm mb-5" style={{ color: '#8B8478' }}>
+        <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
           Salary {fmt(stats.salary)}/month · Target {data.bufferTargetMonths} months ({fmt(stats.bufferTarget)})
         </p>
         <div className="space-y-3">
@@ -1905,7 +1905,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                     {pctDisplay}%
                   </span>
                 </div>
-                <div className="flex justify-between text-xs mono" style={{ color: '#8B8478' }}>
+                <div className="flex justify-between text-xs mono" style={{ color: '#B0A898' }}>
                   <span>{fmt(stats.thisMonthSpend)} spent</span>
                   <span>Limit: {fmt(data.spendingBudget)}</span>
                 </div>
@@ -1917,7 +1917,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         {isFoundation ? (
           <section className="card p-6">
             <div className="label mb-3" style={{ color: '#7FA068' }}>Foundation tip</div>
-            <p className="text-sm" style={{ color: '#8B8478', lineHeight: 1.7 }}>
+            <p className="text-sm" style={{ color: '#B0A898', lineHeight: 1.7 }}>
               Use the <strong style={{ color: '#E8E2D5' }}>Budget</strong> tab to set spending envelopes for groceries, transport, and fun money. When you stick to them, the unspent rand sweeps into your Savings automatically at month-end.
             </p>
           </section>
@@ -1929,7 +1929,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 {stats.ytdPnL >= 0 ? '+' : ''}{fmt(stats.ytdPnL)}
               </div>
             </div>
-            <p className="text-xs" style={{ color: '#8B8478' }}>
+            <p className="text-xs" style={{ color: '#B0A898' }}>
               {data.tradingPnLHistory.length === 0 ? 'Log monthly P&L to track over time.' : `Across ${data.tradingPnLHistory.length} months.`}
             </p>
           </section>
@@ -1943,7 +1943,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             <Clock size={16} style={{ color: '#D97757' }} />
             <h3 className="display text-xl">Time to decide</h3>
           </div>
-          <p className="text-sm mb-4" style={{ color: '#8B8478' }}>{readyToDecide.length} purchase{readyToDecide.length > 1 ? 's' : ''} cleared the 24h gate.</p>
+          <p className="text-sm mb-4" style={{ color: '#B0A898' }}>{readyToDecide.length} purchase{readyToDecide.length > 1 ? 's' : ''} cleared the 24h gate.</p>
           <div className="space-y-2">
             {readyToDecide.map(p => <PendingRow key={p.id} item={p} setData={setData} currency={data.currency} />)}
           </div>
@@ -1960,12 +1960,12 @@ function BalanceInput({ label, icon: Icon, color, value, onChange, readOnly, not
     <div className="card p-5">
       <div className="flex items-center gap-2 mb-3">
         <Icon size={14} style={{ color }} />
-        <span className="label" style={{ color: '#5C5648' }}>{label}</span>
+        <span className="label" style={{ color: '#8B8478' }}>{label}</span>
       </div>
       {readOnly ? (
         <>
           <div className="display text-2xl mb-1" style={{ color, fontWeight: 300 }}>{fmt(value)}</div>
-          {note && <div className="text-xs" style={{ color: '#5C5648' }}>{note}</div>}
+          {note && <div className="text-xs" style={{ color: '#8B8478' }}>{note}</div>}
         </>
       ) : (
         <>
@@ -1980,7 +1980,7 @@ function BalanceInput({ label, icon: Icon, color, value, onChange, readOnly, not
               style={{ color, fontFamily: 'Fraunces, serif', fontWeight: 300 }}
             />
           </div>
-          <div className="text-xs mt-1" style={{ color: '#5C5648' }}>Click to edit</div>
+          <div className="text-xs mt-1" style={{ color: '#8B8478' }}>Click to edit</div>
         </>
       )}
     </div>
@@ -1988,7 +1988,7 @@ function BalanceInput({ label, icon: Icon, color, value, onChange, readOnly, not
 }
 
 function StageRow({ label, target, subtitle, done, active }) {
-  const color = done ? '#7FA068' : active ? '#D97757' : '#5C5648';
+  const color = done ? '#7FA068' : active ? '#D97757' : '#8B8478';
   return (
     <div
       className="flex gap-4 pb-3 border-b last:border-0"
@@ -2015,7 +2015,7 @@ function StageRow({ label, target, subtitle, done, active }) {
             </span>
           )}
         </div>
-        <p className="text-xs" style={{ color: '#8B8478' }}>{subtitle}</p>
+        <p className="text-xs" style={{ color: '#B0A898' }}>{subtitle}</p>
       </div>
     </div>
   );
@@ -2038,7 +2038,7 @@ function PendingRow({ item, setData, currency }) {
     <div className="flex items-center justify-between p-3 border" style={{ borderColor: '#26221C', borderRadius: '3px' }}>
       <div>
         <div className="font-medium text-sm">{item.name}</div>
-        <div className="mono text-xs mt-0.5" style={{ color: '#8B8478' }}>{fmt(item.amount)}</div>
+        <div className="mono text-xs mt-0.5" style={{ color: '#B0A898' }}>{fmt(item.amount)}</div>
       </div>
       <div className="flex gap-2">
         <button className="btn px-3 py-1.5 text-xs" style={{ color: '#7FA068', border: '1px solid #2A3A1E', borderRadius: '3px' }}
@@ -2096,7 +2096,7 @@ function InfoPopover({ label, children, align = 'right' }) {
           top: 'calc(100% + 8px)',
           zIndex: 200, width: 320,
           background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: 4,
-          padding: '12px 14px', lineHeight: 1.7, fontSize: 12, color: '#8B8478',
+          padding: '12px 14px', lineHeight: 1.7, fontSize: 12, color: '#B0A898',
           boxShadow: '0 8px 32px rgba(0,0,0,0.55)',
         }}>
           {children}
@@ -2203,13 +2203,13 @@ function Setup({ data, stats, setData }) {
         <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
           Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>real numbers</span>
         </h1>
-        <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
+        <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
           {isFoundation
             ? foundationCopy.setupDesc
             : 'Add every monthly expense honestly. The system computes your salary and buffer target from your actual life, not assumptions.'}
         </p>
         {isFoundation && (
-          <p style={{ fontSize: '12px', color: '#5C5648', marginTop: '6px', maxWidth: '520px' }}>
+          <p style={{ fontSize: '12px', color: '#8B8478', marginTop: '6px', maxWidth: '520px' }}>
             💡 {foundationCopy.incomeHelper}
           </p>
         )}
@@ -2233,17 +2233,17 @@ function Setup({ data, stats, setData }) {
           <div>
             <div className="label mb-2" style={{ color: '#D97757' }}>Total Expenses</div>
             <div className="display text-3xl" style={{ fontWeight: 300 }}>{fmt(stats.totalExpenses)}</div>
-            <div className="text-xs mt-1" style={{ color: '#8B8478' }}>Bills auto-pay</div>
+            <div className="text-xs mt-1" style={{ color: '#B0A898' }}>Bills auto-pay</div>
           </div>
           <div>
             <div className="label mb-2" style={{ color: '#D97757' }}>{isFoundation ? foundationCopy.salaryCardLabel : 'Monthly Salary'}</div>
             <div className="display text-3xl" style={{ fontWeight: 300, color: '#D97757' }}>{fmt(stats.salary)}</div>
-            <div className="text-xs mt-1" style={{ color: '#8B8478' }}>{isFoundation ? foundationCopy.salaryCardNote : 'Expenses + spending + reserve'}</div>
+            <div className="text-xs mt-1" style={{ color: '#B0A898' }}>{isFoundation ? foundationCopy.salaryCardNote : 'Expenses + spending + reserve'}</div>
           </div>
           <div>
             <div className="label mb-2" style={{ color: '#D97757' }}>Buffer Target</div>
             <div className="display text-3xl" style={{ fontWeight: 300, color: '#7FA068' }}>{fmt(stats.bufferTarget)}</div>
-            <div className="text-xs mt-1" style={{ color: '#8B8478' }}>{data.bufferTargetMonths} months × {isFoundation ? 'money available' : 'salary'}</div>
+            <div className="text-xs mt-1" style={{ color: '#B0A898' }}>{data.bufferTargetMonths} months × {isFoundation ? 'money available' : 'salary'}</div>
           </div>
         </div>
       </div>
@@ -2263,7 +2263,7 @@ function Setup({ data, stats, setData }) {
             <p>The envelope stays in sync — edit the amount here and the cap updates automatically.</p>
           </InfoPopover>
         </div>
-        <p className="text-sm mb-5" style={{ color: '#8B8478' }}>Add every monthly expense. Click the <strong style={{ color: '#E8E2D5' }}>✉ envelope</strong> on variable ones to track them in Budget, then set the month-end rule.</p>
+        <p className="text-sm mb-5" style={{ color: '#B0A898' }}>Add every monthly expense. Click the <strong style={{ color: '#E8E2D5' }}>✉ envelope</strong> on variable ones to track them in Budget, then set the month-end rule.</p>
 
         {Object.entries(byCategory).map(([cat, items]) => {
           const catTotal = items.reduce((s, i) => s + i.amount, 0);
@@ -2271,7 +2271,7 @@ function Setup({ data, stats, setData }) {
             <div key={cat} className="mb-6 pb-5 border-b last:border-0 last:mb-0 last:pb-0" style={{ borderColor: '#26221C' }}>
               <div className="flex items-baseline justify-between mb-3">
                 <h3 className="font-medium text-sm">{cat}</h3>
-                <span className="mono text-sm" style={{ color: '#8B8478' }}>{fmt(catTotal)}</span>
+                <span className="mono text-sm" style={{ color: '#B0A898' }}>{fmt(catTotal)}</span>
               </div>
               <div className="space-y-2">
                 {items.map(e => {
@@ -2316,16 +2316,16 @@ function Setup({ data, stats, setData }) {
                             flexShrink: 0,
                           }}
                         >
-                          <Mail size={14} color={e.trackInEnvelope ? '#7FA068' : '#5C5648'} />
+                          <Mail size={14} color={e.trackInEnvelope ? '#7FA068' : '#8B8478'} />
                         </button>
-                        <button onClick={() => locked ? requestUnlock() : removeExpense(e.id)} className="btn p-2" style={{ color: '#5C5648', opacity: locked ? 0.4 : 1 }}>
+                        <button onClick={() => locked ? requestUnlock() : removeExpense(e.id)} className="btn p-2" style={{ color: '#8B8478', opacity: locked ? 0.4 : 1 }}>
                           <X size={14} />
                         </button>
                       </div>
                       {/* Month-end mode pills — shown when envelope is active */}
                       {e.trackInEnvelope && !locked && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 5, paddingLeft: 2, paddingBottom: 4 }}>
-                          <span style={{ fontSize: 10, color: '#3A3028', marginRight: 2, letterSpacing: '0.05em' }}>Month-end:</span>
+                          <span style={{ fontSize: 10, color: '#5C5648', marginRight: 2, letterSpacing: '0.05em' }}>Month-end:</span>
                           {[
                             { id: 'reset', label: '🔄 Reset',    tip: 'Cap resets to full each month. Unspent balance disappears.' },
                             { id: 'roll',  label: '➕ Rollover', tip: 'Leftover carries into next month. Overspend is deducted.' },
@@ -2341,7 +2341,7 @@ function Setup({ data, stats, setData }) {
                                 borderRadius: 999,
                                 padding: '3px 10px',
                                 fontSize: 11,
-                                color: envMode === m.id ? '#7FA068' : '#5C5648',
+                                color: envMode === m.id ? '#7FA068' : '#8B8478',
                                 cursor: 'pointer',
                                 fontFamily: 'Inter, sans-serif',
                                 transition: 'all 120ms',
@@ -2407,20 +2407,20 @@ function Setup({ data, stats, setData }) {
         <h2 className="display text-2xl mb-5">{isFoundation ? 'Spending & savings' : 'Spending & buffer reserve'}</h2>
         <div className="grid md:grid-cols-2 gap-5">
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>Monthly spending budget</div>
+            <div className="label mb-2" style={{ color: '#8B8478' }}>Monthly spending budget</div>
             <input type="number" className="input" value={data.spendingBudget || ''} placeholder="0"
               readOnly={locked} onClick={() => locked && requestUnlock()}
               onChange={locked ? undefined : (e) => setData(d => ({ ...d, spendingBudget: Number(e.target.value) || 0 }))}
               style={{ cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }} />
-            <p className="text-xs mt-2" style={{ color: '#5C5648' }}>Discretionary spending money for the month. Be realistic.</p>
+            <p className="text-xs mt-2" style={{ color: '#8B8478' }}>Discretionary spending money for the month. Be realistic.</p>
           </div>
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>{isFoundation ? 'Monthly savings contribution' : 'Buffer reserve from salary'}</div>
+            <div className="label mb-2" style={{ color: '#8B8478' }}>{isFoundation ? 'Monthly savings contribution' : 'Buffer reserve from salary'}</div>
             <input type="number" className="input" value={data.bufferReserve || ''} placeholder="0"
               readOnly={locked} onClick={() => locked && requestUnlock()}
               onChange={locked ? undefined : (e) => setData(d => ({ ...d, bufferReserve: Number(e.target.value) || 0 }))}
               style={{ cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }} />
-            <p className="text-xs mt-2" style={{ color: '#5C5648' }}>
+            <p className="text-xs mt-2" style={{ color: '#8B8478' }}>
               {isFoundation
                 ? 'How much you set aside each month to build your savings.'
                 : 'How much each month auto-feeds the buffer (in addition to trading profits).'}
@@ -2432,27 +2432,27 @@ function Setup({ data, stats, setData }) {
       {/* Buffer settings */}
       <section className="card p-7">
         <h2 className="display text-2xl mb-2">{isFoundation ? 'Savings target' : 'Buffer target'}</h2>
-        <p className="text-sm mb-5" style={{ color: '#8B8478' }}>
+        <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
           {isFoundation
             ? 'How many months of expenses should your savings cover? Start with 3–6 months.'
             : 'How many months of salary should your buffer hold? Default is 18 for sole earners with dependents.'}
         </p>
         <div className="grid md:grid-cols-2 gap-5">
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>Target months</div>
+            <div className="label mb-2" style={{ color: '#8B8478' }}>Target months</div>
             <input type="number" className="input" value={data.bufferTargetMonths}
               readOnly={locked} onClick={() => locked && requestUnlock()}
               onChange={locked ? undefined : (e) => setData(d => ({ ...d, bufferTargetMonths: Number(e.target.value) || 6 }))}
               style={{ cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }} />
-            <p className="text-xs mt-2" style={{ color: '#5C5648' }}>Target: {fmt(stats.bufferTarget)}</p>
+            <p className="text-xs mt-2" style={{ color: '#8B8478' }}>Target: {fmt(stats.bufferTarget)}</p>
           </div>
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>Protect threshold (months)</div>
+            <div className="label mb-2" style={{ color: '#8B8478' }}>Protect threshold (months)</div>
             <input type="number" className="input" value={data.bufferProtectMonths}
               readOnly={locked} onClick={() => locked && requestUnlock()}
               onChange={locked ? undefined : (e) => setData(d => ({ ...d, bufferProtectMonths: Number(e.target.value) || 16 }))}
               style={{ cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }} />
-            <p className="text-xs mt-2" style={{ color: '#5C5648' }}>Auto-rebuild triggers below: {fmt(stats.bufferProtectThreshold)}</p>
+            <p className="text-xs mt-2" style={{ color: '#8B8478' }}>Auto-rebuild triggers below: {fmt(stats.bufferProtectThreshold)}</p>
           </div>
         </div>
       </section>
@@ -2551,7 +2551,7 @@ function ProfitAllocator({ data, stats, setData }) {
             : <>{data.incomeType === 'fixed' ? 'Surplus' : 'Profit'} <span style={{ fontStyle: 'italic', color: '#D97757' }}>waterfall</span></>
           }
         </h1>
-        <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
+        <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
           {isFoundation
             ? 'Decide where extra money should go before you spend it.'
             : data.incomeType === 'fixed'
@@ -2565,7 +2565,7 @@ function ProfitAllocator({ data, stats, setData }) {
         <div className="card p-5">
           <div className="flex items-baseline justify-between mb-2">
             <div className="label" style={{ color: '#D97757' }}>Currently in Stage {stats.stage}</div>
-            <div className="text-xs mono" style={{ color: '#8B8478' }}>{stats.monthsCovered.toFixed(1)} months stored</div>
+            <div className="text-xs mono" style={{ color: '#B0A898' }}>{stats.monthsCovered.toFixed(1)} months stored</div>
           </div>
           <p className="text-sm" style={{ color: '#E8E2D5' }}>
             Tax reserve: {data.taxReservePct}% (edit in Rules tab) · Then current stage allocation applies.
@@ -2585,7 +2585,7 @@ function ProfitAllocator({ data, stats, setData }) {
         const liveRows = isFoundation ? [
           { label: 'To Savings', pct: 100, amt: liveGross, color: '#7FA068' },
         ] : [
-          { label: 'Tax reserve',       pct: data.taxReservePct,          amt: liveTax,                                        color: '#8B8478' },
+          { label: 'Tax reserve',       pct: data.taxReservePct,          amt: liveTax,                                        color: '#B0A898' },
           { label: 'Family Buffer',     pct: liveRule.bufferPct,          amt: liveNet * (liveRule.bufferPct / 100),            color: '#D97757' },
           { label: 'Long-term',         pct: liveRule.longTermPct,        amt: liveNet * (liveRule.longTermPct / 100),          color: '#7FA068' },
           ...(data.incomeType !== 'fixed' ? [{ label: 'Trading Capital', pct: liveRule.tradingPct, amt: liveNet * (liveRule.tradingPct / 100), color: '#5B7FB8' }] : []),
@@ -2607,19 +2607,19 @@ function ProfitAllocator({ data, stats, setData }) {
               </button>
             </div>
             {isFoundation
-              ? <p className="text-xs mt-3" style={{ color: '#5C5648' }}>From a gift, allowance, support payment, refund, or debt repayment. All of it goes straight to your Savings.</p>
-              : <p className="text-xs mt-3" style={{ color: '#5C5648' }}>Enter pre-tax profit. The system reserves {data.taxReservePct}% for taxes automatically.</p>
+              ? <p className="text-xs mt-3" style={{ color: '#8B8478' }}>From a gift, allowance, support payment, refund, or debt repayment. All of it goes straight to your Savings.</p>
+              : <p className="text-xs mt-3" style={{ color: '#8B8478' }}>Enter pre-tax profit. The system reserves {data.taxReservePct}% for taxes automatically.</p>
             }
 
             {liveGross > 0 && (
               <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #26221C' }}>
-                <div className="label mb-3" style={{ color: '#5C5648' }}>Preview — where it goes</div>
+                <div className="label mb-3" style={{ color: '#8B8478' }}>Preview — where it goes</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {liveRows.map(row => (
                     <div key={row.label} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <div style={{ width: '3px', height: '28px', borderRadius: '2px', background: row.color, flexShrink: 0 }} />
-                      <div style={{ flex: 1, fontSize: '13px', color: '#8B8478' }}>{row.label}</div>
-                      <div style={{ fontSize: '11px', color: '#5C5648', fontFamily: 'JetBrains Mono, monospace' }}>{row.pct}%</div>
+                      <div style={{ flex: 1, fontSize: '13px', color: '#B0A898' }}>{row.label}</div>
+                      <div style={{ fontSize: '11px', color: '#8B8478', fontFamily: 'JetBrains Mono, monospace' }}>{row.pct}%</div>
                       <div style={{ fontSize: '14px', color: '#E8E2D5', fontWeight: 500, fontFamily: 'JetBrains Mono, monospace', minWidth: '90px', textAlign: 'right' }}>{fmt(row.amt)}</div>
                     </div>
                   ))}
@@ -2638,7 +2638,7 @@ function ProfitAllocator({ data, stats, setData }) {
                 {isFoundation ? 'Where it goes' : 'Allocation breakdown'}
               </div>
               {!isFoundation && (
-                <div className="text-xs mono" style={{ color: '#8B8478' }}>Stage {allocation.stage}</div>
+                <div className="text-xs mono" style={{ color: '#B0A898' }}>Stage {allocation.stage}</div>
               )}
             </div>
             <div className="display text-2xl" style={{ fontWeight: 300, fontStyle: 'italic' }}>
@@ -2649,7 +2649,7 @@ function ProfitAllocator({ data, stats, setData }) {
             </div>
           </div>
 
-          {!isFoundation && <AllocationBlock label="Tax Reserve" amount={allocation.taxReserve} color="#8B8478" icon={Lock} note={`${data.taxReservePct}% set aside. Move to a separate savings account for quarterly estimated taxes.`} isReserve currency={data.currency} />}
+          {!isFoundation && <AllocationBlock label="Tax Reserve" amount={allocation.taxReserve} color="#B0A898" icon={Lock} note={`${data.taxReservePct}% set aside. Move to a separate savings account for quarterly estimated taxes.`} isReserve currency={data.currency} />}
           {allocation.toBuffer > 0 && <AllocationBlock label={isFoundation ? 'To Savings' : 'To Family Buffer'} amount={allocation.toBuffer} color={isFoundation ? '#7FA068' : '#D97757'} icon={Shield} note={isFoundation ? 'Goes straight into your Savings balance.' : 'Protects family from trading volatility.'} currency={data.currency} />}
           {allocation.toLongTerm > 0 && <AllocationBlock label="Long-term Investing" amount={allocation.toLongTerm} color="#7FA068" icon={PiggyBank} note="Index funds / long-term investments. Family's future independence." currency={data.currency} />}
           {allocation.toTrading > 0 && data.incomeType !== 'fixed' && !isFoundation && <AllocationBlock label="Trading Capital" amount={allocation.toTrading} color="#5B7FB8" icon={Briefcase} note="Compound your edge." currency={data.currency} />}
@@ -2679,7 +2679,7 @@ function ProfitAllocator({ data, stats, setData }) {
           <div className="display text-3xl mb-2" style={{ fontStyle: 'italic', fontWeight: 300 }}>Done.</div>
           {isFoundation ? (
             <>
-              <p style={{ color: '#8B8478', marginBottom: '8px' }}>
+              <p style={{ color: '#B0A898', marginBottom: '8px' }}>
                 Your Savings balance has been updated.
               </p>
               <p className="mono" style={{ color: '#7FA068', fontSize: '22px', fontWeight: 300 }}>
@@ -2687,7 +2687,7 @@ function ProfitAllocator({ data, stats, setData }) {
               </p>
             </>
           ) : (
-            <p style={{ color: '#8B8478' }}>
+            <p style={{ color: '#B0A898' }}>
               Don't forget to actually transfer the tax reserve to a separate account.
             </p>
           )}
@@ -2711,13 +2711,13 @@ function ProfitAllocator({ data, stats, setData }) {
                       : <>Gross {fmt(a.grossProfit)} → Net {fmt(a.netProfit)}</>
                     }
                   </div>
-                  <div className="text-xs mt-0.5" style={{ color: '#8B8478' }}>
+                  <div className="text-xs mt-0.5" style={{ color: '#B0A898' }}>
                     {new Date(a.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                    {!a.isFoundation && a.stage !== undefined && <span className="ml-2" style={{ color: '#5C5648' }}>· Stage {a.stage}</span>}
+                    {!a.isFoundation && a.stage !== undefined && <span className="ml-2" style={{ color: '#8B8478' }}>· Stage {a.stage}</span>}
                   </div>
                 </div>
                 <div className="flex gap-2 text-xs mono flex-wrap justify-end">
-                  {!a.isFoundation && <span style={{ color: '#8B8478' }}>tax {fmt(a.taxReserve)}</span>}
+                  {!a.isFoundation && <span style={{ color: '#B0A898' }}>tax {fmt(a.taxReserve)}</span>}
                   {a.toBuffer > 0 && <span style={{ color: a.isFoundation ? '#7FA068' : '#D97757' }}>+{fmt(a.toBuffer)} {a.isFoundation ? 'savings' : 'buf'}</span>}
                   {a.toLongTerm > 0 && <span style={{ color: '#7FA068' }}>+{fmt(a.toLongTerm)} lt</span>}
                   {!a.isFoundation && a.toTrading > 0 && <span style={{ color: '#5B7FB8' }}>+{fmt(a.toTrading)} trd</span>}
@@ -2740,11 +2740,11 @@ function AllocationBlock({ label, amount, color, icon: Icon, note, isReserve, cu
       <div className="flex items-baseline justify-between mb-3">
         <div className="flex items-center gap-2">
           <Icon size={16} style={{ color }} />
-          <span className="label" style={{ color: '#5C5648' }}>{label}</span>
+          <span className="label" style={{ color: '#8B8478' }}>{label}</span>
         </div>
         <div className="display text-3xl" style={{ color, fontWeight: 300 }}>{fmt(amount)}</div>
       </div>
-      <p className="text-xs" style={{ color: '#8B8478', lineHeight: 1.5 }}>{note}</p>
+      <p className="text-xs" style={{ color: '#B0A898', lineHeight: 1.5 }}>{note}</p>
     </div>
   );
 }
@@ -2792,7 +2792,7 @@ function TradingTab({ data, stats, setData }) {
         <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
           Trading <span style={{ fontStyle: 'italic', color: '#5B7FB8' }}>P&L</span>
         </h1>
-        <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
+        <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
           The business, kept separate. Volatility lives here so it doesn't reach your family's daily life.
         </p>
         <div className="flex items-center gap-2 mt-3">
@@ -2811,28 +2811,28 @@ function TradingTab({ data, stats, setData }) {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="card p-5">
-          <div className="label mb-2" style={{ color: '#5C5648' }}>Capital</div>
+          <div className="label mb-2" style={{ color: '#8B8478' }}>Capital</div>
           <input type="number" className="input mt-1" value={data.tradingCapital}
             readOnly={locked} onClick={() => locked && requestUnlock()}
             onChange={locked ? undefined : (e) => setData(d => ({ ...d, tradingCapital: Number(e.target.value) || 0 }))}
             style={{ cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }} />
         </div>
         <div className="card p-5">
-          <div className="label mb-2" style={{ color: '#5C5648' }}>YTD P&L</div>
+          <div className="label mb-2" style={{ color: '#8B8478' }}>YTD P&L</div>
           <div className="display text-2xl mt-1" style={{ color: stats.ytdPnL >= 0 ? '#7FA068' : '#C56B5A', fontWeight: 300 }}>
             {stats.ytdPnL >= 0 ? '+' : ''}{fmt(stats.ytdPnL)}
           </div>
         </div>
         <div className="card p-5">
-          <div className="label mb-2" style={{ color: '#5C5648' }}>Win Rate</div>
+          <div className="label mb-2" style={{ color: '#8B8478' }}>Win Rate</div>
           <div className="display text-2xl mt-1" style={{ fontWeight: 300 }}>{winRate.toFixed(0)}%</div>
-          <div className="text-xs mt-0.5" style={{ color: '#8B8478' }}>{winners.length}W · {losers.length}L</div>
+          <div className="text-xs mt-0.5" style={{ color: '#B0A898' }}>{winners.length}W · {losers.length}L</div>
         </div>
         <div className="card p-5">
-          <div className="label mb-2" style={{ color: '#5C5648' }}>Avg W/L</div>
+          <div className="label mb-2" style={{ color: '#8B8478' }}>Avg W/L</div>
           <div className="text-sm mono mt-1">
             <span style={{ color: '#7FA068' }}>+{fmt(avgWin)}</span>
-            <span style={{ color: '#5C5648' }}> · </span>
+            <span style={{ color: '#8B8478' }}> · </span>
             <span style={{ color: '#C56B5A' }}>{fmt(avgLoss)}</span>
           </div>
         </div>
@@ -2845,14 +2845,14 @@ function TradingTab({ data, stats, setData }) {
         <h2 className="display text-2xl mb-5">Log monthly P&L</h2>
         <div className="grid md:grid-cols-3 gap-3 items-end">
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>Month</div>
+            <div className="label mb-2" style={{ color: '#8B8478' }}>Month</div>
             <input type="month" className="input-text" value={pnlMonth}
               readOnly={locked} onClick={() => locked && requestUnlock()}
               onChange={locked ? undefined : (e) => setPnlMonth(e.target.value)}
               style={{ cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }} />
           </div>
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>Net P&L</div>
+            <div className="label mb-2" style={{ color: '#8B8478' }}>Net P&L</div>
             <input type="number" className="input" placeholder="0" value={pnl}
               readOnly={locked} onClick={() => locked && requestUnlock()}
               onChange={locked ? undefined : (e) => setPnl(e.target.value)}
@@ -2871,7 +2871,7 @@ function TradingTab({ data, stats, setData }) {
             <Check size={14} style={{ flexShrink: 0 }} />
             <span>
               <strong>{pnlLogged.month}</strong> P&L logged — {pnlLogged.value >= 0 ? '+' : ''}{fmt(pnlLogged.value)}
-              {pnlLogged.value < 0 && <span style={{ color: '#8B8478', marginLeft: 8 }}>· 24h guard active</span>}
+              {pnlLogged.value < 0 && <span style={{ color: '#B0A898', marginLeft: 8 }}>· 24h guard active</span>}
             </span>
           </div>
         )}
@@ -2884,10 +2884,10 @@ function TradingTab({ data, stats, setData }) {
             <ResponsiveContainer>
               <BarChart data={sortedHistory} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
                 <CartesianGrid stroke="#26221C" strokeDasharray="2 4" />
-                <XAxis dataKey="month" tick={{ fill: '#5C5648', fontSize: 11 }} stroke="#26221C" />
-                <YAxis tick={{ fill: '#5C5648', fontSize: 11 }} stroke="#26221C" tickFormatter={(v) => { const sym = getCurrency(data.currency).symbol; return sym + ' ' + (Math.abs(v) >= 1000 ? (v/1000).toFixed(0)+'k' : v); }} />
+                <XAxis dataKey="month" tick={{ fill: '#8B8478', fontSize: 11 }} stroke="#26221C" />
+                <YAxis tick={{ fill: '#8B8478', fontSize: 11 }} stroke="#26221C" tickFormatter={(v) => { const sym = getCurrency(data.currency).symbol; return sym + ' ' + (Math.abs(v) >= 1000 ? (v/1000).toFixed(0)+'k' : v); }} />
                 <Tooltip contentStyle={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '3px', fontFamily: 'JetBrains Mono', fontSize: '12px' }} formatter={(v) => fmt(v)} />
-                <ReferenceLine y={0} stroke="#5C5648" strokeWidth={1} />
+                <ReferenceLine y={0} stroke="#8B8478" strokeWidth={1} />
                 <Bar dataKey="pnl" radius={[2, 2, 0, 0]}>
                   {sortedHistory.map((entry, i) => <Cell key={i} fill={entry.pnl >= 0 ? '#7FA068' : '#C56B5A'} />)}
                 </Bar>
@@ -2903,7 +2903,7 @@ function TradingTab({ data, stats, setData }) {
                     <span className="mono text-sm" style={{ color: h.pnl >= 0 ? '#7FA068' : '#C56B5A' }}>
                       {h.pnl >= 0 ? '+' : ''}{fmt(h.pnl)}
                     </span>
-                    <button className="btn" style={{ color: '#5C5648' }} onClick={() => attemptPnlRow(h.month, () => removePnL(h.month))}><X size={12} /></button>
+                    <button className="btn" style={{ color: '#8B8478' }} onClick={() => attemptPnlRow(h.month, () => removePnL(h.month))}><X size={12} /></button>
                   </div>
                 </div>
                 {pnlGateFor(h.month)}
@@ -2933,9 +2933,9 @@ function DrawdownProtocol({ data, stats, setData, onResetHwm, hwmGate }) {
     <section className="card p-7 mt-6">
       <div className="flex items-baseline justify-between mb-2">
         <h2 className="display text-2xl">Drawdown Protocol</h2>
-        <span className="label" style={{ color: '#5C5648' }}>Risk Management</span>
+        <span className="label" style={{ color: '#8B8478' }}>Risk Management</span>
       </div>
-      <p className="text-sm mb-6" style={{ color: '#8B8478' }}>
+      <p className="text-sm mb-6" style={{ color: '#B0A898' }}>
         Tracks how far your trading capital has dropped from its peak. The further you fall, the harder it is to recover. Rules change behavior before emotion does.
       </p>
 
@@ -2943,21 +2943,21 @@ function DrawdownProtocol({ data, stats, setData, onResetHwm, hwmGate }) {
       <div className="card-warm p-6 mb-5" style={{ borderColor: currentZone.color + '60' }}>
         <div className="flex items-baseline justify-between mb-3">
           <div className="label" style={{ color: currentZone.color }}>{currentZone.label} Zone</div>
-          <div className="mono text-xs" style={{ color: '#8B8478' }}>{currentZone.range}</div>
+          <div className="mono text-xs" style={{ color: '#B0A898' }}>{currentZone.range}</div>
         </div>
         <div className="grid md:grid-cols-3 gap-5 mb-4">
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>High Water</div>
+            <div className="label mb-2" style={{ color: '#8B8478' }}>High Water</div>
             <div className="display text-2xl" style={{ fontWeight: 300 }}>{fmt(stats.highWater)}</div>
           </div>
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>Current Drawdown</div>
+            <div className="label mb-2" style={{ color: '#8B8478' }}>Current Drawdown</div>
             <div className="display text-2xl" style={{ fontWeight: 300, color: currentZone.color }}>
               {stats.drawdownPct.toFixed(1)}%
             </div>
           </div>
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>To Break Even</div>
+            <div className="label mb-2" style={{ color: '#8B8478' }}>To Break Even</div>
             <div className="display text-2xl" style={{ fontWeight: 300 }}>
               {recoveryNeeded > 0 ? '+' + recoveryNeeded.toFixed(1) + '%' : '0%'}
             </div>
@@ -2983,14 +2983,14 @@ function DrawdownProtocol({ data, stats, setData, onResetHwm, hwmGate }) {
             <div style={{ width: '8px', height: '32px', background: zone.color, borderRadius: '2px' }} />
             <div className="mono text-sm" style={{ color: zone.color, minWidth: '70px' }}>{zone.range}</div>
             <div className="font-medium text-sm" style={{ minWidth: '90px' }}>{zone.label}</div>
-            <div className="text-xs flex-1" style={{ color: '#8B8478' }}>{zone.desc}</div>
+            <div className="text-xs flex-1" style={{ color: '#B0A898' }}>{zone.desc}</div>
           </div>
         ))}
       </div>
 
       {/* Manual high water reset (rare cases) */}
       <div className="mt-6 pt-5 border-t" style={{ borderColor: '#26221C' }}>
-        <div className="label mb-2" style={{ color: '#5C5648' }}>Override high water mark</div>
+        <div className="label mb-2" style={{ color: '#8B8478' }}>Override high water mark</div>
         <div className="flex gap-2 items-end">
           <input
             type="number"
@@ -3001,7 +3001,7 @@ function DrawdownProtocol({ data, stats, setData, onResetHwm, hwmGate }) {
           />
           <button
             className="btn px-3 py-2 text-xs"
-            style={{ color: hwmFlash ? '#7FA068' : '#8B8478', border: `1px solid ${hwmFlash ? '#2A4A2A' : '#26221C'}`, borderRadius: '3px', transition: 'color 0.3s, border-color 0.3s' }}
+            style={{ color: hwmFlash ? '#7FA068' : '#B0A898', border: `1px solid ${hwmFlash ? '#2A4A2A' : '#26221C'}`, borderRadius: '3px', transition: 'color 0.3s, border-color 0.3s' }}
             onClick={() => onResetHwm?.(() => {
               setData(d => ({ ...d, tradingCapitalHighWater: d.tradingCapital }));
               setHwmFlash(true);
@@ -3012,7 +3012,7 @@ function DrawdownProtocol({ data, stats, setData, onResetHwm, hwmGate }) {
           </button>
         </div>
         {hwmGate}
-        <p className="text-xs mt-2" style={{ color: '#5C5648' }}>
+        <p className="text-xs mt-2" style={{ color: '#8B8478' }}>
           The high water mark auto-updates when capital reaches a new peak. Only override if you intentionally withdrew funds (the drawdown calculation should ignore that).
         </p>
       </div>
@@ -3152,7 +3152,7 @@ function ImpulseTab({ data, stats, setData, user }) {
         <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
           Impulse <span style={{ fontStyle: 'italic', color: '#D97757' }}>control</span>
         </h1>
-        <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
+        <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
           {isFoundation
             ? 'Pause before you spend. Every unplanned purchase runs through the gate first.'
             : "Same rules whether you're up or down. Your family's life shouldn't ride your trading P&L."}
@@ -3166,7 +3166,7 @@ function ImpulseTab({ data, stats, setData, user }) {
           { id: 'history', label: 'History & Triggers' },
         ].map(v => (
           <button key={v.id} onClick={() => { setView(v.id); reset(); }} className="btn px-4 py-3 text-xs font-medium"
-            style={{ color: view === v.id ? '#D97757' : '#5C5648', borderBottom: '2px solid ' + (view === v.id ? '#D97757' : 'transparent'), marginBottom: '-1px' }}>
+            style={{ color: view === v.id ? '#D97757' : '#8B8478', borderBottom: '2px solid ' + (view === v.id ? '#D97757' : 'transparent'), marginBottom: '-1px' }}>
             {v.label}
           </button>
         ))}
@@ -3175,17 +3175,17 @@ function ImpulseTab({ data, stats, setData, user }) {
       {view === 'gate' && step === 'input' && (
         <div className="card p-7 space-y-5">
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>What is it?</div>
+            <div className="label mb-2" style={{ color: '#8B8478' }}>What is it?</div>
             <input className="input-text" placeholder="e.g., Tech upgrade…" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="label mb-2" style={{ color: '#5C5648' }}>Amount</div>
+              <div className="label mb-2" style={{ color: '#8B8478' }}>Amount</div>
               <input type="number" className="input" placeholder="0" value={amount} onChange={(e) => setAmount(e.target.value)} />
             </div>
 			{(data.envelopes || []).length > 0 && (
 			  <div>
-				<div className="label mb-2" style={{ color: '#5C5648' }}>Envelope</div>
+				<div className="label mb-2" style={{ color: '#8B8478' }}>Envelope</div>
 				<select className="input-text" value={envelopeId} onChange={(e) => setEnvelopeId(e.target.value)}>
 				  <option value="">Select envelope…</option>
 				  {data.envelopes.map(env => {
@@ -3205,7 +3205,7 @@ function ImpulseTab({ data, stats, setData, user }) {
 			  </div>
 			)}
             <div>
-              <div className="label mb-2" style={{ color: '#5C5648' }}>Category</div>
+              <div className="label mb-2" style={{ color: '#8B8478' }}>Category</div>
               <select className="input-text" value={category} onChange={(e) => setCategory(e.target.value)}>
                 <option value="">Select…</option>
                 {Object.entries(CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
@@ -3221,7 +3221,7 @@ function ImpulseTab({ data, stats, setData, user }) {
           <div className="card-warm p-7 glow-warm">
             <div className="label mb-3" style={{ color: '#D97757' }}>Pause and consider</div>
             <div className="display text-3xl mb-2" style={{ fontWeight: 300 }}>
-              {fmt(amt)} <span className="text-xl" style={{ fontStyle: 'italic', color: '#8B8478' }}>for {name}</span>
+              {fmt(amt)} <span className="text-xl" style={{ fontStyle: 'italic', color: '#B0A898' }}>for {name}</span>
             </div>
             {/* Envelope over-budget notice (informational only — enforced at Buy) */}
             {envelopeStatus?.wouldBeOver && (
@@ -3247,17 +3247,17 @@ function ImpulseTab({ data, stats, setData, user }) {
             <div className="card p-5">
               <Clock size={16} style={{ color: '#D97757' }} className="mb-3" />
               <div className="display text-2xl mb-1" style={{ fontWeight: 300 }}>{hours} hrs</div>
-              <div className="text-xs" style={{ color: '#8B8478' }}>of work to earn this</div>
+              <div className="text-xs" style={{ color: '#B0A898' }}>of work to earn this</div>
             </div>
             <div className="card p-5">
               <Wallet size={16} style={{ color: '#D97757' }} className="mb-3" />
               <div className="display text-2xl mb-1" style={{ color: remaining < 0 ? '#C56B5A' : '#E8E2D5', fontWeight: 300 }}>{fmt(Math.max(0, remaining))}</div>
-              <div className="text-xs" style={{ color: '#8B8478' }}>left this month {remaining < 0 && '(over budget)'}</div>
+              <div className="text-xs" style={{ color: '#B0A898' }}>left this month {remaining < 0 && '(over budget)'}</div>
             </div>
             <div className="card p-5">
               <TrendingUp size={16} style={{ color: '#D97757' }} className="mb-3" />
               <div className="display text-2xl mb-1" style={{ color: '#7FA068', fontWeight: 300 }}>{fmt(amt * Math.pow(1.07, 30))}</div>
-              <div className="text-xs" style={{ color: '#8B8478' }}>in 30 years if invested</div>
+              <div className="text-xs" style={{ color: '#B0A898' }}>in 30 years if invested</div>
             </div>
           </div>
 
@@ -3308,7 +3308,7 @@ function ImpulseTab({ data, stats, setData, user }) {
                 </button>
                 <button
                   className="btn px-3 py-2"
-                  style={{ color: '#8B8478', fontSize: '13px' }}
+                  style={{ color: '#B0A898', fontSize: '13px' }}
                   onClick={() => { setPinStep(false); setPinEntry(''); setPinError(false); }}
                 >
                   Cancel
@@ -3321,17 +3321,17 @@ function ImpulseTab({ data, stats, setData, user }) {
             <button className="btn p-5 text-left card" onClick={cancel} style={{ borderColor: '#3A4A2A' }}>
               <Check size={18} style={{ color: '#7FA068' }} className="mb-2" />
               <div className="font-medium mb-1">Skip it</div>
-              <div className="text-xs" style={{ color: '#8B8478' }}>Don't need it.</div>
+              <div className="text-xs" style={{ color: '#B0A898' }}>Don't need it.</div>
             </button>
             <button className="btn p-5 text-left card glow-warm" onClick={sleep}>
               <Clock size={18} style={{ color: '#D97757' }} className="mb-2" />
               <div className="font-medium mb-1">Sleep on it</div>
-              <div className="text-xs" style={{ color: '#8B8478' }}>Decide tomorrow.</div>
+              <div className="text-xs" style={{ color: '#B0A898' }}>Decide tomorrow.</div>
             </button>
             <button className="btn p-5 text-left card" onClick={buyAnyway} style={{ borderColor: '#3A2620' }}>
               <Flame size={18} style={{ color: '#C56B5A' }} className="mb-2" />
               <div className="font-medium mb-1">Buy now</div>
-              <div className="text-xs" style={{ color: '#8B8478' }}>I'm sure.</div>
+              <div className="text-xs" style={{ color: '#B0A898' }}>I'm sure.</div>
             </button>
           </div>
         </div>
@@ -3342,27 +3342,27 @@ function ImpulseTab({ data, stats, setData, user }) {
 		{decision === 'sleep' && <>
 		  <Clock size={28} style={{ color: '#D97757' }} className="mx-auto mb-3" />
 		  <div className="display text-3xl mb-2" style={{ fontStyle: 'italic', fontWeight: 300 }}>Sleeping on it.</div>
-		  <p style={{ color: '#8B8478' }}>Find this in Command tomorrow.</p>
+		  <p style={{ color: '#B0A898' }}>Find this in Command tomorrow.</p>
 		</>}
 		{decision === 'cancelled' && <>
 		  <Check size={28} style={{ color: '#7FA068' }} className="mx-auto mb-3" />
 		  <div className="display text-3xl mb-2" style={{ fontStyle: 'italic', fontWeight: 300 }}>Easy save.</div>
-		  <p style={{ color: '#8B8478' }}>{fmt(amt)} stays where it belongs.</p>
+		  <p style={{ color: '#B0A898' }}>{fmt(amt)} stays where it belongs.</p>
 		</>}
 		{decision === 'bought' && <>
 		  <Flame size={28} style={{ color: '#C56B5A' }} className="mx-auto mb-3" />
 		  <div className="display text-3xl mb-2" style={{ fontStyle: 'italic', fontWeight: 300 }}>Logged.</div>
-		  <p style={{ color: '#8B8478' }}>No judgment. Patterns build clarity.</p>
+		  <p style={{ color: '#B0A898' }}>No judgment. Patterns build clarity.</p>
 		</>}
 		{decision === 'logged-small' && <>
-		  <Check size={28} style={{ color: '#8B8478' }} className="mx-auto mb-3" />
+		  <Check size={28} style={{ color: '#B0A898' }} className="mx-auto mb-3" />
 		  <div className="display text-3xl mb-2" style={{ fontStyle: 'italic', fontWeight: 300 }}>Logged.</div>
-		  <p style={{ color: '#8B8478' }}>Below gate threshold.</p>
+		  <p style={{ color: '#B0A898' }}>Below gate threshold.</p>
 		</>}
 		{decision === 'blocked' && <>
 		  <Lock size={28} style={{ color: '#C56B5A' }} className="mx-auto mb-3" />
 		  <div className="display text-3xl mb-2" style={{ fontStyle: 'italic', fontWeight: 300, color: '#C56B5A' }}>Blocked.</div>
-		  <p style={{ color: '#8B8478' }}>This envelope is over budget. Wait for next month, or move money from another envelope first.</p>
+		  <p style={{ color: '#B0A898' }}>This envelope is over budget. Wait for next month, or move money from another envelope first.</p>
 		</>}
 		<button className="btn btn-primary mt-6" onClick={reset}>Done</button>
 	  </div>
@@ -3392,18 +3392,18 @@ function QuickLog({ data, setData }) {
 
   return (
     <div className="card p-7 space-y-5">
-      <p className="text-sm" style={{ color: '#8B8478' }}>Already bought it. Log without judgment.</p>
+      <p className="text-sm" style={{ color: '#B0A898' }}>Already bought it. Log without judgment.</p>
       <div>
-        <div className="label mb-2" style={{ color: '#5C5648' }}>What did you buy?</div>
+        <div className="label mb-2" style={{ color: '#8B8478' }}>What did you buy?</div>
         <input className="input-text" value={name} onChange={(e) => setName(e.target.value)} />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <div className="label mb-2" style={{ color: '#5C5648' }}>Amount</div>
+          <div className="label mb-2" style={{ color: '#8B8478' }}>Amount</div>
           <input type="number" className="input" value={amount} onChange={(e) => setAmount(e.target.value)} />
         </div>
         <div>
-          <div className="label mb-2" style={{ color: '#5C5648' }}>Category</div>
+          <div className="label mb-2" style={{ color: '#8B8478' }}>Category</div>
           <select className="input-text" value={category} onChange={(e) => setCategory(e.target.value)}>
             <option value="">Select…</option>
             {Object.entries(CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
@@ -3411,13 +3411,13 @@ function QuickLog({ data, setData }) {
         </div>
       </div>
       <div>
-        <div className="label mb-2" style={{ color: '#5C5648' }}>Trigger</div>
+        <div className="label mb-2" style={{ color: '#8B8478' }}>Trigger</div>
         <div className="flex flex-wrap gap-2">
           {TRIGGERS.map(t => (
             <button key={t} onClick={() => setTrigger(trigger === t ? '' : t)} className="pill btn"
               style={{
                 background: trigger === t ? '#D97757' : '#0A0908',
-                color: trigger === t ? '#0A0908' : '#8B8478',
+                color: trigger === t ? '#0A0908' : '#B0A898',
                 border: '1px solid ' + (trigger === t ? '#D97757' : '#26221C'),
               }}>
               {t}
@@ -3478,10 +3478,10 @@ function ImpulseHistory({ data, stats, setData }) {
             </span>
           )}
         </div>
-        <div className="text-xs" style={{ color: '#5C5648' }}>
+        <div className="text-xs" style={{ color: '#8B8478' }}>
           {(CATEGORIES[i.category] || CATEGORIES.other).label}{i.trigger && ` · ${i.trigger}`}
           {i.overrideUsed && i.overrideAt && (
-            <span style={{ color: '#5C5648' }}> · overridden {new Date(i.overrideAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
+            <span style={{ color: '#8B8478' }}> · overridden {new Date(i.overrideAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
           )}
         </div>
       </div>
@@ -3490,7 +3490,7 @@ function ImpulseHistory({ data, stats, setData }) {
         <button
           onClick={() => attemptImpulseRow(i.id, () => removeImpulse(i.id))}
           className="btn p-1"
-          style={{ color: '#5C5648', background: 'transparent', border: 'none', cursor: 'pointer' }}
+          style={{ color: '#8B8478', background: 'transparent', border: 'none', cursor: 'pointer' }}
           title="Delete entry"
         >
           <X size={14} />
@@ -3512,7 +3512,7 @@ function ImpulseHistory({ data, stats, setData }) {
                 style={{
                   fontSize: '11px', padding: '3px 8px', borderRadius: '3px', border: 'none', cursor: 'pointer',
                   background: overrideOnly ? '#3A1C1C' : '#1A1610',
-                  color: overrideOnly ? '#C56B5A' : '#5C5648',
+                  color: overrideOnly ? '#C56B5A' : '#8B8478',
                   fontWeight: overrideOnly ? 700 : 400,
                 }}
               >
@@ -3523,7 +3523,7 @@ function ImpulseHistory({ data, stats, setData }) {
           </div>
         </div>
         {visibleImpulses.length === 0 ? (
-          <p className="text-sm" style={{ color: '#5C5648', fontStyle: 'italic' }}>
+          <p className="text-sm" style={{ color: '#8B8478', fontStyle: 'italic' }}>
             {overrideOnly ? 'No PIN overrides this month.' : 'Nothing logged this month.'}
           </p>
         ) : (
@@ -3545,7 +3545,7 @@ function ImpulseHistory({ data, stats, setData }) {
                   <div className="flex justify-between mb-1.5">
                     <div>
                       <span className="font-medium text-sm">{t}</span>
-                      <span className="text-xs ml-2" style={{ color: '#5C5648' }}>{v.count}×</span>
+                      <span className="text-xs ml-2" style={{ color: '#8B8478' }}>{v.count}×</span>
                     </div>
                     <span className="mono text-sm">{fmt(v.total)}</span>
                   </div>
@@ -3578,7 +3578,7 @@ function History({ data, stats, setData }) {
         <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
           Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>history</span>
         </h1>
-        <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
+        <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
           Snapshots show your financial position over time. Take a snapshot anytime — weekly, monthly, or whenever something significant changes.
         </p>
       </div>
@@ -3587,7 +3587,7 @@ function History({ data, stats, setData }) {
         <div className="card-warm p-8 text-center">
           <Camera size={28} style={{ color: '#D97757' }} className="mx-auto mb-3" />
           <div className="display text-2xl mb-2" style={{ fontStyle: 'italic' }}>No snapshots yet.</div>
-          <p className="text-sm max-w-md mx-auto" style={{ color: '#8B8478' }}>
+          <p className="text-sm max-w-md mx-auto" style={{ color: '#B0A898' }}>
             Hit the "Snapshot" button in the header to record your current state. Do this regularly to see your wealth grow over time.
           </p>
         </div>
@@ -3614,8 +3614,8 @@ function History({ data, stats, setData }) {
                     </linearGradient>
                   </defs>
                   <CartesianGrid stroke="#26221C" strokeDasharray="2 4" />
-                  <XAxis dataKey="date" tick={{ fill: '#5C5648', fontSize: 11 }} stroke="#26221C" />
-                  <YAxis tick={{ fill: '#5C5648', fontSize: 11 }} stroke="#26221C" tickFormatter={(v) => { const sym = getCurrency(data.currency).symbol; return sym + ' ' + (v >= 1000 ? (v/1000).toFixed(0)+'k' : v); }} />
+                  <XAxis dataKey="date" tick={{ fill: '#8B8478', fontSize: 11 }} stroke="#26221C" />
+                  <YAxis tick={{ fill: '#8B8478', fontSize: 11 }} stroke="#26221C" tickFormatter={(v) => { const sym = getCurrency(data.currency).symbol; return sym + ' ' + (v >= 1000 ? (v/1000).toFixed(0)+'k' : v); }} />
                   <Tooltip contentStyle={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '3px', fontFamily: 'JetBrains Mono', fontSize: '12px' }} formatter={(v) => fmt(v)} />
                   <Legend wrapperStyle={{ fontSize: '12px' }} />
                   <Area type="monotone" dataKey="buffer" name="Buffer" stackId="1" stroke="#D97757" fill="url(#bufferGrad)" strokeWidth={2} />
@@ -3637,7 +3637,7 @@ function History({ data, stats, setData }) {
                   <div key={s.date} className="flex items-center justify-between py-3 border-b last:border-0" style={{ borderColor: '#26221C' }}>
                     <div>
                       <div className="font-medium text-sm">{new Date(s.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</div>
-                      <div className="text-xs mt-1" style={{ color: '#8B8478' }}>
+                      <div className="text-xs mt-1" style={{ color: '#B0A898' }}>
                         Buffer {fmt(s.buffer)} · Trading {fmt(s.tradingCapital)} · LT {fmt(s.longTerm)}
                       </div>
                     </div>
@@ -3650,7 +3650,7 @@ function History({ data, stats, setData }) {
                           </div>
                         )}
                       </div>
-                      <button className="btn" style={{ color: '#5C5648' }} onClick={() => attemptSnapshotRow(s.date, () => removeSnapshot(s.date))}>
+                      <button className="btn" style={{ color: '#8B8478' }} onClick={() => attemptSnapshotRow(s.date, () => removeSnapshot(s.date))}>
                         <X size={12} />
                       </button>
                     </div>
@@ -3736,7 +3736,7 @@ function AccessControlPanel() {
     <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', background: '#0A0908', border: '1px solid #26221C', borderRadius: '3px' }}>
       <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '14px', letterSpacing: '0.2em', color: '#E8E2D5', flex: 1 }}>{code}</span>
       {extra}
-      <button onClick={() => handleCopy(code, id)} style={{ background: 'transparent', border: 'none', color: copiedId === id ? '#7FA068' : '#5C5648', cursor: 'pointer', fontSize: '11px', padding: '2px 6px' }}>
+      <button onClick={() => handleCopy(code, id)} style={{ background: 'transparent', border: 'none', color: copiedId === id ? '#7FA068' : '#8B8478', cursor: 'pointer', fontSize: '11px', padding: '2px 6px' }}>
         {copiedId === id ? 'Copied!' : 'Copy'}
       </button>
       <button onClick={() => handleDelete(id)} style={{ background: 'transparent', border: 'none', color: '#C56B5A', cursor: 'pointer', fontSize: '11px', padding: '2px 6px' }}>
@@ -3745,7 +3745,7 @@ function AccessControlPanel() {
     </div>
   );
 
-  if (loading) return <div style={{ color: '#5C5648', fontSize: '13px' }}>Loading…</div>;
+  if (loading) return <div style={{ color: '#8B8478', fontSize: '13px' }}>Loading…</div>;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -3777,7 +3777,7 @@ function AccessControlPanel() {
           </div>
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={() => { navigator.clipboard.writeText(approvedCode.code); }} style={{ background: 'transparent', border: '1px solid #2A4A2A', color: '#7FA068', cursor: 'pointer', fontSize: '11px', padding: '4px 10px', borderRadius: '3px' }}>Copy code</button>
-            <button onClick={() => setApprovedCode(null)} style={{ background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', fontSize: '11px', padding: '4px 6px' }}>Dismiss</button>
+            <button onClick={() => setApprovedCode(null)} style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '11px', padding: '4px 6px' }}>Dismiss</button>
           </div>
         </div>
       )}
@@ -3792,8 +3792,8 @@ function AccessControlPanel() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
                   <div>
                     <div style={{ fontSize: '13px', color: '#E8E2D5' }}>{r.email}</div>
-                    {r.message && <div style={{ fontSize: '12px', color: '#8B8478', marginTop: '2px' }}>{r.message}</div>}
-                    <div style={{ fontSize: '11px', color: '#3A3028', marginTop: '2px' }}>{new Date(r.created_at).toLocaleDateString(undefined)}</div>
+                    {r.message && <div style={{ fontSize: '12px', color: '#B0A898', marginTop: '2px' }}>{r.message}</div>}
+                    <div style={{ fontSize: '11px', color: '#5C5648', marginTop: '2px' }}>{new Date(r.created_at).toLocaleDateString(undefined)}</div>
                   </div>
                   <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
                     <button onClick={() => handleApprove(r)} style={{ background: '#1A3020', border: '1px solid #2A4A30', color: '#7FA068', borderRadius: '3px', padding: '5px 10px', fontSize: '12px', cursor: 'pointer' }}>
@@ -3809,11 +3809,11 @@ function AccessControlPanel() {
           </div>
         </div>
       )}
-      {pending.length === 0 && <div style={{ fontSize: '13px', color: '#3A3028' }}>No pending access requests.</div>}
+      {pending.length === 0 && <div style={{ fontSize: '13px', color: '#5C5648' }}>No pending access requests.</div>}
 
       {/* Generate code */}
       <div>
-        <div className="label mb-2" style={{ color: '#5C5648' }}>Generate invite code</div>
+        <div className="label mb-2" style={{ color: '#8B8478' }}>Generate invite code</div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <input
             type="email" value={genEmail} placeholder="Restrict to email (optional)"
@@ -3824,16 +3824,16 @@ function AccessControlPanel() {
             Generate
           </button>
         </div>
-        <div style={{ fontSize: '11px', color: '#3A3028', marginTop: '5px' }}>Leave email blank for an open code anyone can use.</div>
+        <div style={{ fontSize: '11px', color: '#5C5648', marginTop: '5px' }}>Leave email blank for an open code anyone can use.</div>
       </div>
 
       {/* Active codes */}
       {activeCodes.length > 0 && (
         <div>
-          <div className="label mb-2" style={{ color: '#5C5648' }}>Active codes ({activeCodes.length})</div>
+          <div className="label mb-2" style={{ color: '#8B8478' }}>Active codes ({activeCodes.length})</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {activeCodes.map(c => codePill(c.code, c.id, c.email ? (
-              <span style={{ fontSize: '11px', color: '#8B8478' }}>→ {c.email}</span>
+              <span style={{ fontSize: '11px', color: '#B0A898' }}>→ {c.email}</span>
             ) : null))}
           </div>
         </div>
@@ -3842,16 +3842,16 @@ function AccessControlPanel() {
       {/* Used codes */}
       {usedCodes.length > 0 && (
         <div>
-          <div className="label mb-2" style={{ color: '#3A3028' }}>Used codes</div>
-          <div style={{ fontSize: '11px', color: '#3A3028', marginBottom: '6px' }}>
+          <div className="label mb-2" style={{ color: '#5C5648' }}>Used codes</div>
+          <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '6px' }}>
             If a code was consumed by a failed signup, hit Reset to make it active again.
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {usedCodes.map(c => (
               <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', background: '#0A0908', border: '1px solid #1E1C18', borderRadius: '3px', opacity: 0.7 }}>
-                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '13px', letterSpacing: '0.2em', color: '#5C5648', flex: 1 }}>{c.code}</span>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '13px', letterSpacing: '0.2em', color: '#8B8478', flex: 1 }}>{c.code}</span>
                 {c.used_by_email && (
-                  <span style={{ fontSize: '11px', color: '#3A3028' }}>→ {c.used_by_email}</span>
+                  <span style={{ fontSize: '11px', color: '#5C5648' }}>→ {c.used_by_email}</span>
                 )}
                 <button
                   onClick={() => handleReset(c.id)}
@@ -3895,7 +3895,7 @@ function CloudSyncPanel({ user, data, setData, syncStatus, isOnline, lastSyncedA
   const isSynced  = syncStatus === 'synced';
 
   const statusLabel = (() => {
-    if (!user) return { text: 'Local only — not signed in', color: '#5C5648' };
+    if (!user) return { text: 'Local only — not signed in', color: '#8B8478' };
     if (!isOnline) return { text: 'Offline — saved locally', color: '#B89968' };
     if (isSyncing) {
       const retryPart = syncStatus?.startsWith?.('retry:') ? ` (${syncStatus.slice(6)})` : '';
@@ -3909,7 +3909,7 @@ function CloudSyncPanel({ user, data, setData, syncStatus, isOnline, lastSyncedA
         color: '#C56B5A',
       };
     }
-    return { text: lastSyncedAt ? 'Synced ✓' : 'Ready to sync', color: lastSyncedAt ? '#7FA068' : '#5C5648' };
+    return { text: lastSyncedAt ? 'Synced ✓' : 'Ready to sync', color: lastSyncedAt ? '#7FA068' : '#8B8478' };
   })();
 
   const handleUpload = async () => {
@@ -3936,7 +3936,7 @@ function CloudSyncPanel({ user, data, setData, syncStatus, isOnline, lastSyncedA
   return (
     <section className="card p-6">
       <h2 className="display text-2xl mb-1">Cloud Sync</h2>
-      <p className="text-sm mb-5" style={{ color: '#8B8478' }}>
+      <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
         Your data syncs automatically when signed in. Use the manual controls below if needed.
       </p>
 
@@ -3950,7 +3950,7 @@ function CloudSyncPanel({ user, data, setData, syncStatus, isOnline, lastSyncedA
       </div>
 
       {/* Last synced timestamp */}
-      <div className="text-xs mb-5" style={{ color: lastSyncedAt ? '#3A3028' : '#2A241E' }}>
+      <div className="text-xs mb-5" style={{ color: lastSyncedAt ? '#5C5648' : '#2A241E' }}>
         {lastSyncedAt ? `Last synced: ${fmtAge(lastSyncedAt)}` : 'Not yet synced'}
       </div>
 
@@ -3989,7 +3989,7 @@ function CloudSyncPanel({ user, data, setData, syncStatus, isOnline, lastSyncedA
             disabled={downloadStatus === 'loading' || !isOnline}
             style={{
               background: 'transparent', border: '1px solid #3A2A1E',
-              color: downloadStatus === 'error' ? '#C56B5A' : downloadStatus === 'done' ? '#7FA068' : '#8B8478',
+              color: downloadStatus === 'error' ? '#C56B5A' : downloadStatus === 'done' ? '#7FA068' : '#B0A898',
               borderRadius: '3px', padding: '8px 14px', fontSize: '13px',
               cursor: (downloadStatus === 'loading' || !isOnline) ? 'not-allowed' : 'pointer',
               opacity: !isOnline ? 0.5 : 1,
@@ -4000,7 +4000,7 @@ function CloudSyncPanel({ user, data, setData, syncStatus, isOnline, lastSyncedA
         </div>
       )}
 
-      <p className="text-xs mt-4" style={{ color: '#3A3028' }}>
+      <p className="text-xs mt-4" style={{ color: '#5C5648' }}>
         "Upload" overwrites cloud with this device's data. "Download" overwrites this device with the cloud copy.
       </p>
     </section>
@@ -4068,7 +4068,7 @@ function PinCard({ user, data, setData }) {
         <KeyRound size={16} style={{ color: '#5B7FB8' }} />
         <h2 className="display text-2xl">Security PIN</h2>
       </div>
-      <p className="text-sm mb-4" style={{ color: '#8B8478' }}>
+      <p className="text-sm mb-4" style={{ color: '#B0A898' }}>
         Your PIN protects important structural changes — setup edits, income targets, account actions.
         It is owned and managed by you.
       </p>
@@ -4093,7 +4093,7 @@ function PinCard({ user, data, setData }) {
           {hasPinProtection && (
             <button
               onClick={() => setMode('forgot')}
-              style={{ fontSize: '12px', color: '#5C5648', background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px 4px' }}
+              style={{ fontSize: '12px', color: '#8B8478', background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px 4px' }}
             >
               Forgot PIN?
             </button>
@@ -4106,7 +4106,7 @@ function PinCard({ user, data, setData }) {
         <div style={{ maxWidth: '320px' }}>
           {hasPinProtection && (
             <div style={{ marginBottom: '14px' }}>
-              <div style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '6px', fontWeight: 600 }}>Current PIN</div>
+              <div style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#8B8478', marginBottom: '6px', fontWeight: 600 }}>Current PIN</div>
               <input
                 type="password" inputMode="numeric" maxLength={6} value={curPin}
                 onChange={e => { setCurPin(e.target.value.replace(/\D/g, '').slice(0, 6)); setCurError(false); }}
@@ -4117,7 +4117,7 @@ function PinCard({ user, data, setData }) {
             </div>
           )}
           <div style={{ marginBottom: '14px' }}>
-            <div style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '6px', fontWeight: 600 }}>New PIN (4–6 digits)</div>
+            <div style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#8B8478', marginBottom: '6px', fontWeight: 600 }}>New PIN (4–6 digits)</div>
             <input
               type="password" inputMode="numeric" maxLength={6} value={newPin}
               onChange={e => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -4126,7 +4126,7 @@ function PinCard({ user, data, setData }) {
             />
           </div>
           <div style={{ marginBottom: '18px' }}>
-            <div style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '6px', fontWeight: 600 }}>Confirm new PIN</div>
+            <div style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#8B8478', marginBottom: '6px', fontWeight: 600 }}>Confirm new PIN</div>
             <input
               type="password" inputMode="numeric" maxLength={6} value={confirmPin}
               onChange={e => setConfirmPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -4139,10 +4139,10 @@ function PinCard({ user, data, setData }) {
           {status === 'ok'  && <div style={{ fontSize: '12px', color: '#7FA068', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}><Check size={12} /> PIN updated.</div>}
           {status === 'err' && <div style={{ fontSize: '12px', color: '#C56B5A', marginBottom: '10px' }}>Something went wrong. Try again.</div>}
           <div className="flex gap-2">
-            <button onClick={handleChange} disabled={!canChange} style={{ background: canChange ? '#D97757' : '#26221C', color: canChange ? '#0A0908' : '#5C5648', padding: '8px 18px', borderRadius: '3px', fontWeight: 600, fontSize: '12px', border: 'none', cursor: canChange ? 'pointer' : 'default' }}>
+            <button onClick={handleChange} disabled={!canChange} style={{ background: canChange ? '#D97757' : '#26221C', color: canChange ? '#0A0908' : '#8B8478', padding: '8px 18px', borderRadius: '3px', fontWeight: 600, fontSize: '12px', border: 'none', cursor: canChange ? 'pointer' : 'default' }}>
               {status === 'saving' ? 'Saving…' : 'Save PIN'}
             </button>
-            <button onClick={reset} style={{ background: 'transparent', color: '#5C5648', padding: '8px 12px', fontSize: '12px', border: 'none', cursor: 'pointer' }}>Cancel</button>
+            <button onClick={reset} style={{ background: 'transparent', color: '#8B8478', padding: '8px 12px', fontSize: '12px', border: 'none', cursor: 'pointer' }}>Cancel</button>
           </div>
         </div>
       )}
@@ -4154,15 +4154,15 @@ function PinCard({ user, data, setData }) {
             <div style={{ fontSize: '13px', color: '#7FA068', lineHeight: 1.6 }}>
               <Check size={14} style={{ display: 'inline', marginRight: '6px' }} />
               Reset request sent. Support will review it and approve if everything checks out. You'll be prompted to set a new PIN on your next login.
-              <button onClick={reset} style={{ display: 'block', marginTop: '12px', fontSize: '12px', color: '#5C5648', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Close</button>
+              <button onClick={reset} style={{ display: 'block', marginTop: '12px', fontSize: '12px', color: '#8B8478', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Close</button>
             </div>
           ) : (
             <>
-              <p style={{ fontSize: '13px', color: '#8B8478', marginBottom: '14px', lineHeight: 1.6 }}>
+              <p style={{ fontSize: '13px', color: '#B0A898', marginBottom: '14px', lineHeight: 1.6 }}>
                 We'll send a reset request to Royal Ledger support. After approval, you'll be prompted to set a new PIN on your next login.
               </p>
               <div style={{ marginBottom: '16px' }}>
-                <div style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '6px', fontWeight: 600 }}>Reason (optional)</div>
+                <div style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#8B8478', marginBottom: '6px', fontWeight: 600 }}>Reason (optional)</div>
                 <input
                   type="text" value={reason} onChange={e => setReason(e.target.value)}
                   placeholder="e.g. Forgot PIN after device reset"
@@ -4174,7 +4174,7 @@ function PinCard({ user, data, setData }) {
                 <button onClick={handleForgot} disabled={!canForgot} style={{ background: '#D97757', color: '#0A0908', padding: '8px 18px', borderRadius: '3px', fontWeight: 600, fontSize: '12px', border: 'none', cursor: 'pointer' }}>
                   {status === 'saving' ? 'Sending…' : 'Send reset request'}
                 </button>
-                <button onClick={reset} style={{ background: 'transparent', color: '#5C5648', padding: '8px 12px', fontSize: '12px', border: 'none', cursor: 'pointer' }}>Cancel</button>
+                <button onClick={reset} style={{ background: 'transparent', color: '#8B8478', padding: '8px 12px', fontSize: '12px', border: 'none', cursor: 'pointer' }}>Cancel</button>
               </div>
             </>
           )}
@@ -4238,7 +4238,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
           <h1 className="display text-4xl mb-1" style={{ fontWeight: 300 }}>
             Account <span style={{ fontStyle: 'italic', color: '#D97757' }}>settings</span>
           </h1>
-          {user && <p style={{ color: '#5C5648', fontSize: '13px' }}>{user.email}</p>}
+          {user && <p style={{ color: '#8B8478', fontSize: '13px' }}>{user.email}</p>}
         </div>
 
         {/* Sync status — 48px from title, contextual to Account tab only */}
@@ -4247,7 +4247,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
           const isFailed  = syncStatus === 'failed' || syncStatus?.startsWith?.('failed');
           const isSyncing = syncStatus === 'syncing' || isRetry;
           let text  = lastSyncedAt ? '✓ Synced' : 'Not yet synced';
-          let color = lastSyncedAt ? '#7FA068' : '#5C5648';
+          let color = lastSyncedAt ? '#7FA068' : '#8B8478';
           if (!isOnline)                    { text = 'Offline'; color = '#B89968'; }
           else if (isSyncing)               { text = isRetry ? `Syncing… ${syncStatus.slice(6)}` : 'Syncing…'; color = '#D97757'; }
           else if (syncStatus === 'synced') { text = '✓ Synced'; color = '#7FA068'; }
@@ -4288,7 +4288,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
 
               {/* Row 2: age label — only when relevant */}
               {ageLabel && !isFailed && (
-                <div style={{ fontSize: '11px', color: '#3A3028', lineHeight: 1 }}>
+                <div style={{ fontSize: '11px', color: '#5C5648', lineHeight: 1 }}>
                   {ageLabel}
                 </div>
               )}
@@ -4345,7 +4345,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
           <div>
             <div style={{
               fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase',
-              fontWeight: 700, color: '#3A3028', paddingBottom: '12px',
+              fontWeight: 700, color: '#5C5648', paddingBottom: '12px',
               borderBottom: '1px solid #1A1610', marginBottom: '16px',
             }}>Identity</div>
             <div className="space-y-4">
@@ -4355,7 +4355,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                 <h2 className="display text-2xl mb-4">Profile</h2>
                 <div className="space-y-4" style={{ maxWidth: '420px' }}>
                   <div>
-                    <div className="label mb-2" style={{ color: '#5C5648' }}>Display name</div>
+                    <div className="label mb-2" style={{ color: '#8B8478' }}>Display name</div>
                     <div className="flex gap-2">
                       <input type="text" value={displayName}
                         onChange={e => { setDisplayName(e.target.value); setNameSaved(false); }}
@@ -4372,12 +4372,12 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                         {nameSaved ? 'Saved ✓' : 'Save'}
                       </button>
                     </div>
-                    <div className="text-xs mt-1" style={{ color: '#5C5648' }}>Shown in the app header instead of your email.</div>
+                    <div className="text-xs mt-1" style={{ color: '#8B8478' }}>Shown in the app header instead of your email.</div>
                   </div>
                   <div>
-                    <div className="label mb-2" style={{ color: '#5C5648' }}>Email</div>
-                    <div style={{ ...inputStyle, color: '#5C5648', background: '#0D0B09', cursor: 'default' }}>{user?.email}</div>
-                    <div className="text-xs mt-1" style={{ color: '#3A3028' }}>Email cannot be changed here.</div>
+                    <div className="label mb-2" style={{ color: '#8B8478' }}>Email</div>
+                    <div style={{ ...inputStyle, color: '#8B8478', background: '#0D0B09', cursor: 'default' }}>{user?.email}</div>
+                    <div className="text-xs mt-1" style={{ color: '#5C5648' }}>Email cannot be changed here.</div>
                   </div>
                 </div>
               </section>
@@ -4385,17 +4385,17 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
               {/* Password */}
               <section className="card p-6">
                 <h2 className="display text-2xl mb-1">Password</h2>
-                <p className="text-sm mb-5" style={{ color: '#8B8478' }}>Update your login password. You'll stay signed in after changing it.</p>
+                <p className="text-sm mb-5" style={{ color: '#B0A898' }}>Update your login password. You'll stay signed in after changing it.</p>
                 <form onSubmit={handleChangePassword} style={{ maxWidth: '420px' }}>
                   <div className="space-y-4">
                     <div>
-                      <div className="label mb-2" style={{ color: '#5C5648' }}>New password <span style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400, fontSize: '11px', color: '#3A3028' }}>(min. 8 characters)</span></div>
+                      <div className="label mb-2" style={{ color: '#8B8478' }}>New password <span style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400, fontSize: '11px', color: '#5C5648' }}>(min. 8 characters)</span></div>
                       <input type="password" className="auth-input" value={newPassword}
                         onChange={e => { setNewPassword(e.target.value); setPwStatus(null); }}
                         placeholder="••••••••" required minLength={8} style={monoInput} />
                     </div>
                     <div>
-                      <div className="label mb-2" style={{ color: '#5C5648' }}>Confirm new password</div>
+                      <div className="label mb-2" style={{ color: '#8B8478' }}>Confirm new password</div>
                       <input type="password" className="auth-input" value={confirmPassword}
                         onChange={e => { setConfirmPassword(e.target.value); setPwStatus(null); }}
                         placeholder="••••••••" required minLength={8} style={monoInput} />
@@ -4425,7 +4425,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
           <div>
             <div style={{
               fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase',
-              fontWeight: 700, color: '#3A3028', paddingBottom: '12px',
+              fontWeight: 700, color: '#5C5648', paddingBottom: '12px',
               borderBottom: '1px solid #1A1610', marginBottom: '16px',
             }}>Security</div>
             <div className="space-y-4">
@@ -4439,7 +4439,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
           <div>
             <div style={{
               fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase',
-              fontWeight: 700, color: '#3A3028', paddingBottom: '12px',
+              fontWeight: 700, color: '#5C5648', paddingBottom: '12px',
               borderBottom: '1px solid #1A1610', marginBottom: '16px',
             }}>Preferences</div>
             <div className="space-y-4">
@@ -4447,7 +4447,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
               {/* Currency */}
               <section className="card p-6">
                 <h2 className="display text-2xl mb-1">Currency</h2>
-                <p className="text-sm mb-5" style={{ color: '#8B8478' }}>
+                <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
                   This only changes how amounts are displayed. It does not convert existing values.
                 </p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 8 }}>
@@ -4467,7 +4467,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                         style={{
                           position: 'relative',
                           background: active ? '#231E12' : hovered ? '#0E0C0A' : '#080706',
-                          border: `1px solid ${active ? '#D97757' : hovered ? '#2E2820' : '#1E1A16'}`,
+                          border: `1px solid ${active ? '#D97757' : hovered ? '#4A4038' : '#1E1A16'}`,
                           borderRadius: 8, padding: '14px 12px', cursor: 'pointer',
                           textAlign: 'left', transition: 'background 150ms, border-color 150ms',
                         }}
@@ -4494,7 +4494,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                         {/* Full currency name */}
                         <div style={{
                           fontSize: 10, lineHeight: 1.4,
-                          color: active ? '#5C5648' : '#2E2820',
+                          color: active ? '#8B8478' : '#4A4038',
                         }}>
                           {name}
                         </div>
@@ -4523,7 +4523,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
               {/* Income profile — display only, set during onboarding */}
               <section className="card p-6">
                 <h2 className="display text-2xl mb-1">Income profile</h2>
-                <p className="text-sm mb-5" style={{ color: '#8B8478' }}>
+                <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
                   This is your foundational account type — declared during onboarding. It shapes how the system works for you and cannot be changed without an assisted re-onboarding.
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '480px' }}>
@@ -4541,19 +4541,19 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                         borderRadius: '6px', padding: '14px 16px',
                         opacity: active ? 1 : 0.35,
                       }}>
-                        <Icon size={18} style={{ color: active ? '#D97757' : '#5C5648', marginTop: '2px', flexShrink: 0 }} />
+                        <Icon size={18} style={{ color: active ? '#D97757' : '#8B8478', marginTop: '2px', flexShrink: 0 }} />
                         <div>
-                          <div style={{ fontSize: '14px', fontWeight: 600, color: active ? '#E8E2D5' : '#8B8478', marginBottom: '3px' }}>{title}</div>
-                          <div style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.5 }}>{desc}</div>
+                          <div style={{ fontSize: '14px', fontWeight: 600, color: active ? '#E8E2D5' : '#B0A898', marginBottom: '3px' }}>{title}</div>
+                          <div style={{ fontSize: '12px', color: '#8B8478', lineHeight: 1.5 }}>{desc}</div>
                         </div>
                         {active && <Check size={16} style={{ color: '#D97757', marginLeft: 'auto', flexShrink: 0 }} />}
                       </div>
                     );
                   })}
                 </div>
-                <p style={{ fontSize: '12px', color: '#3A3028', marginTop: '14px' }}>
+                <p style={{ fontSize: '12px', color: '#5C5648', marginTop: '14px' }}>
                   To change your income profile, contact{' '}
-                  <a href="mailto:hello@royalledger.app" style={{ color: '#5C5648', textDecoration: 'none' }}>
+                  <a href="mailto:hello@royalledger.app" style={{ color: '#8B8478', textDecoration: 'none' }}>
                     hello@royalledger.app
                   </a>
                 </p>
@@ -4567,7 +4567,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
       {sTab === 'sessions' && (
         <div className="space-y-5">
           <div>
-            <div className="label mb-3" style={{ color: '#5C5648' }}>Current session</div>
+            <div className="label mb-3" style={{ color: '#8B8478' }}>Current session</div>
             <div style={{
               background: '#0A0908', border: '1px solid #26221C', borderRadius: '6px',
               padding: '16px', display: 'flex', alignItems: 'center', gap: '14px',
@@ -4588,9 +4588,9 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                     color: '#7FA068', borderRadius: '20px', fontWeight: 600, letterSpacing: '0.1em',
                   }}>ACTIVE</span>
                 </div>
-                <div style={{ fontSize: '12px', color: '#5C5648', marginTop: '3px' }}>{user?.email}</div>
+                <div style={{ fontSize: '12px', color: '#8B8478', marginTop: '3px' }}>{user?.email}</div>
                 {user?.last_sign_in_at && (
-                  <div style={{ fontSize: '11px', color: '#3A3028', marginTop: '2px' }}>
+                  <div style={{ fontSize: '11px', color: '#5C5648', marginTop: '2px' }}>
                     Signed in {new Date(user.last_sign_in_at).toLocaleString(undefined, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </div>
                 )}
@@ -4607,7 +4607,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
 
           {onSignOutOthers && (
             <div>
-              <div className="label mb-3" style={{ color: '#5C5648' }}>Other devices</div>
+              <div className="label mb-3" style={{ color: '#8B8478' }}>Other devices</div>
               <div style={{
                 background: '#0A0908', border: '1px solid #26221C', borderRadius: '6px',
                 padding: '16px', display: 'flex', alignItems: 'center', gap: '14px',
@@ -4617,11 +4617,11 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                   background: '#1A1610', border: '1px solid #2A2420',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <Users size={17} color="#8B8478" />
+                  <Users size={17} color="#B0A898" />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '13px', color: '#8B8478' }}>Any other signed-in sessions</div>
-                  <div style={{ fontSize: '12px', color: '#3A3028', marginTop: '3px' }}>
+                  <div style={{ fontSize: '13px', color: '#B0A898' }}>Any other signed-in sessions</div>
+                  <div style={{ fontSize: '12px', color: '#5C5648', marginTop: '3px' }}>
                     {signOutOthersStatus === 'done' ? 'All other sessions have been signed out.' : 'Phones, tablets, or computers where you forgot to sign out.'}
                   </div>
                 </div>
@@ -4635,7 +4635,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                     }}
                     style={{
                       background: 'transparent', border: '1px solid #3A2620',
-                      color: signOutOthersStatus === 'loading' ? '#5C5648' : '#C56B5A',
+                      color: signOutOthersStatus === 'loading' ? '#8B8478' : '#C56B5A',
                       borderRadius: '4px', padding: '8px 14px', fontSize: '13px',
                       cursor: signOutOthersStatus === 'loading' ? 'not-allowed' : 'pointer',
                       whiteSpace: 'nowrap', flexShrink: 0, fontWeight: 500,
@@ -4652,7 +4652,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
             </div>
           )}
 
-          <p className="text-xs" style={{ color: '#3A3028' }}>Sessions expire automatically after 7 days of inactivity.</p>
+          <p className="text-xs" style={{ color: '#5C5648' }}>Sessions expire automatically after 7 days of inactivity.</p>
         </div>
       )}
 
@@ -4664,7 +4664,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
           <div>
             <div style={{
               fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase',
-              fontWeight: 700, color: '#3A3028', paddingBottom: '12px',
+              fontWeight: 700, color: '#5C5648', paddingBottom: '12px',
               borderBottom: '1px solid #1A1610', marginBottom: '16px',
             }}>Cloud Sync</div>
             <CloudSyncPanel user={user} data={data} setData={setData} syncStatus={syncStatus} isOnline={isOnline} lastSyncedAt={lastSyncedAt} onRetrySync={onRetrySync} />
@@ -4674,7 +4674,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
           <div>
             <div style={{
               fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase',
-              fontWeight: 700, color: '#3A3028', paddingBottom: '12px',
+              fontWeight: 700, color: '#5C5648', paddingBottom: '12px',
               borderBottom: '1px solid #1A1610', marginBottom: '16px',
             }}>Backup</div>
             <Backup data={data} setData={setData} />
@@ -4684,12 +4684,12 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
           <div>
             <div style={{
               fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase',
-              fontWeight: 700, color: '#3A3028', paddingBottom: '12px',
+              fontWeight: 700, color: '#5C5648', paddingBottom: '12px',
               borderBottom: '1px solid #1A1610', marginBottom: '16px',
             }}>Setup</div>
             <section className="card p-6">
               <h2 className="display text-2xl mb-1">Re-run setup wizard</h2>
-              <p className="text-sm mb-4" style={{ color: '#8B8478' }}>
+              <p className="text-sm mb-4" style={{ color: '#B0A898' }}>
                 Clears your current expense list and restarts the setup flow. Your buffer, snapshots, P&amp;L history, and rules are all preserved.
               </p>
               <button
@@ -4714,7 +4714,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
             borderRadius: '6px', display: 'flex', alignItems: 'flex-start', gap: '10px',
           }}>
             <AlertTriangle size={15} color="#C56B5A" style={{ flexShrink: 0, marginTop: '2px' }} />
-            <div style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.6 }}>
+            <div style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.6 }}>
               Actions on this page are{' '}
               <strong style={{ color: '#C56B5A' }}>permanent and cannot be undone</strong>.
               {' '}Make sure you have exported a backup before proceeding.
@@ -4724,7 +4724,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
           {/* Delete account card */}
           <section className="card p-6" style={{ borderColor: '#3A2018', background: '#0E0805' }}>
             <h2 className="display text-2xl mb-1" style={{ color: '#C56B5A' }}>Delete account</h2>
-            <p className="text-sm mb-3" style={{ color: '#8B8478' }}>
+            <p className="text-sm mb-3" style={{ color: '#B0A898' }}>
               Permanently deletes all your data and signs you out. This cannot be undone.
             </p>
 
@@ -4796,7 +4796,7 @@ function Rules({ data, stats, setData, user }) {
         <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
           Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>rules</span>
         </h1>
-        <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
+        <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
           Every threshold and percentage in the system. Adjust them to match your situation.
         </p>
         <div className="flex items-center gap-2 mt-3">
@@ -4816,10 +4816,10 @@ function Rules({ data, stats, setData, user }) {
       {/* Tax reserve — standard users only */}
       {!isFoundation && <section className="card p-6">
         <h2 className="display text-2xl mb-3">Tax reserve</h2>
-        <p className="text-sm mb-4" style={{ color: '#8B8478' }}>Percentage of gross trading profit set aside for taxes before allocation. Talk to a tax advisor for your real rate.</p>
+        <p className="text-sm mb-4" style={{ color: '#B0A898' }}>Percentage of gross trading profit set aside for taxes before allocation. Talk to a tax advisor for your real rate.</p>
         <div className="grid md:grid-cols-3 gap-3 items-end">
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>Tax reserve %</div>
+            <div className="label mb-2" style={{ color: '#8B8478' }}>Tax reserve %</div>
             <input type="number" className="input" value={data.taxReservePct}
               readOnly={locked} onClick={() => locked && requestUnlock()}
               onChange={locked ? undefined : (e) => setData(d => ({ ...d, taxReservePct: Number(e.target.value) || 0 }))}
@@ -4831,7 +4831,7 @@ function Rules({ data, stats, setData, user }) {
       {/* Stage rules — standard users only */}
       {!isFoundation && <section className="card p-7">
         <h2 className="display text-2xl mb-3">Profit allocation by stage</h2>
-        <p className="text-sm mb-5" style={{ color: '#8B8478' }}>How net trading profit (after taxes) is split based on which stage you're in. Each row should add to 100%.</p>
+        <p className="text-sm mb-5" style={{ color: '#B0A898' }}>How net trading profit (after taxes) is split based on which stage you're in. Each row should add to 100%.</p>
         {[
           { key: 'stage1', label: 'Stage 1 (building floor)', desc: 'Below crisis floor — protect family first' },
           { key: 'stage15', label: 'Stage 1.5 (growing cushion)', desc: 'Floor reached — start long-term investing' },
@@ -4846,7 +4846,7 @@ function Rules({ data, stats, setData, user }) {
                 <h3 className="font-medium">{s.label}</h3>
                 <span className="text-xs mono" style={{ color: total === 100 ? '#7FA068' : '#C56B5A' }}>{total}%</span>
               </div>
-              <p className="text-xs mb-3" style={{ color: '#8B8478' }}>{s.desc}</p>
+              <p className="text-xs mb-3" style={{ color: '#B0A898' }}>{s.desc}</p>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 <RuleInput label="Buffer %" value={rule.bufferPct} onChange={(v) => updateRule(s.key, 'bufferPct', v)} color="#D97757" locked={locked} onClickLocked={requestUnlock} />
                 <RuleInput label="Long-term %" value={rule.longTermPct} onChange={(v) => updateRule(s.key, 'longTermPct', v)} color="#7FA068" locked={locked} onClickLocked={requestUnlock} />
@@ -4870,10 +4870,10 @@ function Rules({ data, stats, setData, user }) {
       {/* Spending Gate */}
       <section className="card p-6">
         <h2 className="display text-2xl mb-3">Spending Gate threshold</h2>
-        <p className="text-sm mb-4" style={{ color: '#8B8478' }}>Purchases at or above this amount trigger the full sleep-on-it gate.</p>
+        <p className="text-sm mb-4" style={{ color: '#B0A898' }}>Purchases at or above this amount trigger the full sleep-on-it gate.</p>
         <div className="grid md:grid-cols-3 gap-3">
           <div>
-            <div className="label mb-2" style={{ color: '#5C5648' }}>Threshold ({getCurrency(data.currency).symbol})</div>
+            <div className="label mb-2" style={{ color: '#8B8478' }}>Threshold ({getCurrency(data.currency).symbol})</div>
             <input type="number" className="input" value={data.spendingGateThreshold}
               readOnly={locked} onClick={() => locked && requestUnlock()}
               onChange={locked ? undefined : (e) => setData(d => ({ ...d, spendingGateThreshold: Number(e.target.value) || 0 }))}
@@ -4886,9 +4886,9 @@ function Rules({ data, stats, setData, user }) {
       <section className="card p-7">
         <div className="flex items-baseline justify-between mb-2">
           <h2 className="display text-2xl">Future goals</h2>
-          <span className="label" style={{ color: '#5C5648' }}>Optional</span>
+          <span className="label" style={{ color: '#8B8478' }}>Optional</span>
         </div>
-        <p className="text-sm mb-5" style={{ color: '#8B8478' }}>
+        <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
           Specific things you're saving toward — business, vehicle, equipment, property deposit, training. Each goal is a name and a target amount.
         </p>
         <div className="space-y-3 mb-4">
@@ -4918,7 +4918,7 @@ function Rules({ data, stats, setData, user }) {
                   />
                   <button
                     onClick={() => setData(d => ({ ...d, goals: d.goals.filter(g => g.id !== goal.id) }))}
-                    style={{ background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', padding: '4px' }}
+                    style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', padding: '4px' }}
                   >
                     <X size={14} />
                   </button>
@@ -4928,8 +4928,8 @@ function Rules({ data, stats, setData, user }) {
                     <div style={{ height: '4px', background: '#1A1610', borderRadius: '2px', marginBottom: '4px' }}>
                       <div style={{ height: '4px', background: '#A06B8C', borderRadius: '2px', width: `${progress}%`, transition: 'width 300ms' }} />
                     </div>
-                    <div className="flex justify-between text-xs" style={{ color: '#5C5648' }}>
-                      <span>{progress.toFixed(0)}% of target <span style={{ color: '#3A3028' }}>(shared pool)</span></span>
+                    <div className="flex justify-between text-xs" style={{ color: '#8B8478' }}>
+                      <span>{progress.toFixed(0)}% of target <span style={{ color: '#5C5648' }}>(shared pool)</span></span>
                       <span className="mono">{fmt(data.futureGoals || 0)} / {fmt(goal.target)}</span>
                     </div>
                   </div>
@@ -4940,11 +4940,11 @@ function Rules({ data, stats, setData, user }) {
         </div>
         <button
           onClick={() => setData(d => ({ ...d, goals: [...(d.goals || []), { id: Date.now(), name: 'New goal', target: 0, createdAt: Date.now() }] }))}
-          style={{ background: 'transparent', border: '1px dashed #3A2A1E', color: '#8B8478', borderRadius: '4px', fontSize: '13px', padding: '10px', width: '100%', cursor: 'pointer' }}
+          style={{ background: 'transparent', border: '1px dashed #3A2A1E', color: '#B0A898', borderRadius: '4px', fontSize: '13px', padding: '10px', width: '100%', cursor: 'pointer' }}
         >
           + Add goal
         </button>
-        <p className="text-xs mt-3" style={{ color: '#3A3028' }}>
+        <p className="text-xs mt-3" style={{ color: '#5C5648' }}>
           The Future Goals balance on Command tab is your total saved. Goals here track individual targets against that total.
         </p>
       </section>
@@ -5090,34 +5090,34 @@ function Backup({ data, setData }) {
         <Save size={16} style={{ color: '#D97757' }} />
         <h2 className="display text-2xl">Backup & restore</h2>
       </div>
-      <p className="text-sm mb-5" style={{ color: '#8B8478', lineHeight: 1.6 }}>
+      <p className="text-sm mb-5" style={{ color: '#B0A898', lineHeight: 1.6 }}>
         Your data lives only in this browser. Export regularly so you don't lose your records if you switch devices, clear cookies, or your browser misbehaves.
         Recommended: export monthly, especially after taking a snapshot.
       </p>
 
       {/* Current data summary */}
       <div className="card p-4 mb-5">
-        <div className="label mb-3" style={{ color: '#5C5648' }}>Currently stored</div>
+        <div className="label mb-3" style={{ color: '#8B8478' }}>Currently stored</div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
           <div>
             <div className="mono text-lg">{summary.expenses}</div>
-            <div className="text-xs" style={{ color: '#8B8478' }}>expenses</div>
+            <div className="text-xs" style={{ color: '#B0A898' }}>expenses</div>
           </div>
           <div>
             <div className="mono text-lg">{summary.snapshots}</div>
-            <div className="text-xs" style={{ color: '#8B8478' }}>snapshots</div>
+            <div className="text-xs" style={{ color: '#B0A898' }}>snapshots</div>
           </div>
           <div>
             <div className="mono text-lg">{summary.pnl}</div>
-            <div className="text-xs" style={{ color: '#8B8478' }}>P&L months</div>
+            <div className="text-xs" style={{ color: '#B0A898' }}>P&L months</div>
           </div>
           <div>
             <div className="mono text-lg">{summary.impulses}</div>
-            <div className="text-xs" style={{ color: '#8B8478' }}>impulses</div>
+            <div className="text-xs" style={{ color: '#B0A898' }}>impulses</div>
           </div>
           <div>
             <div className="mono text-lg">{summary.allocations}</div>
-            <div className="text-xs" style={{ color: '#8B8478' }}>allocations</div>
+            <div className="text-xs" style={{ color: '#B0A898' }}>allocations</div>
           </div>
         </div>
       </div>
@@ -5141,7 +5141,7 @@ function Backup({ data, setData }) {
       {/* Import buttons */}
       <div className="pt-5 border-t" style={{ borderColor: '#3A2A1E' }}>
         <h3 className="font-medium text-sm mb-3">Restore from backup</h3>
-        <p className="text-xs mb-3" style={{ color: '#8B8478' }}>
+        <p className="text-xs mb-3" style={{ color: '#B0A898' }}>
           Imports a previously exported file. <strong style={{ color: '#C56B5A' }}>Warning:</strong> This replaces all current data.
         </p>
         <div className="flex flex-wrap gap-2">
@@ -5167,7 +5167,7 @@ function Backup({ data, setData }) {
               <AlertTriangle size={15} style={{ color: '#C56B5A', flexShrink: 0, marginTop: '1px' }} />
               <div>
                 <div className="text-sm font-medium mb-1" style={{ color: '#E8E2D5' }}>Replace all current data?</div>
-                <div className="text-xs" style={{ color: '#8B8478', lineHeight: 1.6 }}>
+                <div className="text-xs" style={{ color: '#B0A898', lineHeight: 1.6 }}>
                   This backup contains{' '}
                   <strong style={{ color: '#E8E2D5' }}>{importPending.summary.expenses}</strong> expenses,{' '}
                   <strong style={{ color: '#E8E2D5' }}>{importPending.summary.snapshots}</strong> snapshots,{' '}
@@ -5206,7 +5206,7 @@ function Backup({ data, setData }) {
 function RuleInput({ label, value, onChange, color, locked, onClickLocked }) {
   return (
     <div>
-      <div className="label mb-2" style={{ color: '#5C5648' }}>{label}</div>
+      <div className="label mb-2" style={{ color: '#8B8478' }}>{label}</div>
       <input
         type="number" className="input"
         style={{ borderColor: color + '40', cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }}

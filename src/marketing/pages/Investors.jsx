@@ -52,7 +52,7 @@ export default function Investors({ navigate }) {
           </p>
           <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center', padding: '10px 16px', background: '#14110E', border: '1px solid #26221C', borderRadius: '4px' }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#7FA068' }} />
-            <span style={{ fontSize: '13px', color: '#8B8478' }}>Working product · Private beta · Invite-based access</span>
+            <span style={{ fontSize: '13px', color: '#B0A898' }}>Working product · Private beta · Invite-based access</span>
           </div>
         </div>
       </section>
@@ -99,7 +99,7 @@ export default function Investors({ navigate }) {
                   {num}
                 </div>
                 <div style={{ fontSize: '15px', fontWeight: 600, color: '#E8E2D5', marginBottom: '6px' }}>{label}</div>
-                <div style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.55 }}>{sub}</div>
+                <div style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.55 }}>{sub}</div>
               </div>
             ))}
           </div>
@@ -109,11 +109,11 @@ export default function Investors({ navigate }) {
               {['Freelancers', 'Traders', 'Side-income earners', 'Emerging market professionals'].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', borderBottom: i < 3 ? '1px solid #1A1610' : 'none' }}>
                   <span style={{ color: '#D97757', fontSize: '13px', flexShrink: 0 }}>→</span>
-                  <span style={{ fontSize: '15px', color: '#8B8478' }}>{item}</span>
+                  <span style={{ fontSize: '15px', color: '#B0A898' }}>{item}</span>
                 </div>
               ))}
             </div>
-            <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.7, marginBottom: '16px' }}>
+            <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, marginBottom: '16px' }}>
               All of them are managing money with tools designed for someone else.
             </p>
             <p style={{ fontSize: '16px', color: '#E8E2D5', lineHeight: 1.7 }}>
@@ -140,13 +140,13 @@ export default function Investors({ navigate }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '2px' }} className="category-grid">
             {[
-              { label: 'Budget apps', desc: 'Track spending after it happens. Passive, reactive, rearview.', color: '#3A3028' },
-              { label: 'Savings apps', desc: 'Round up and auto-save. Useful but narrow. No allocation architecture.', color: '#3A3028' },
+              { label: 'Budget apps', desc: 'Track spending after it happens. Passive, reactive, rearview.', color: '#5C5648' },
+              { label: 'Savings apps', desc: 'Round up and auto-save. Useful but narrow. No allocation architecture.', color: '#5C5648' },
               { label: 'Financial OS', desc: 'Allocates income on receipt. Enforces decisions before they happen. Runs in stages. Protects the household first.', color: '#D97757', highlight: true },
             ].map(({ label, desc, color, highlight }) => (
               <div key={label} className={highlight ? 'm-card-warm' : 'm-card-flat'} style={{ padding: '28px 24px' }}>
                 <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color, marginBottom: '16px' }}>{label}</div>
-                <p style={{ fontSize: '14px', color: highlight ? '#E8E2D5' : '#5C5648', lineHeight: 1.65 }}>{desc}</p>
+                <p style={{ fontSize: '14px', color: highlight ? '#E8E2D5' : '#8B8478', lineHeight: 1.65 }}>{desc}</p>
               </div>
             ))}
           </div>
@@ -159,7 +159,7 @@ export default function Investors({ navigate }) {
             ].map((line, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                 <span style={{ color: '#D97757', fontSize: '13px', flexShrink: 0, marginTop: '3px' }}>→</span>
-                <span style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7 }}>{line}</span>
+                <span style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.7 }}>{line}</span>
               </div>
             ))}
           </div>
@@ -181,7 +181,7 @@ export default function Investors({ navigate }) {
             {WHY_NOW.map(({ title, body }) => (
               <div key={title} className="m-card" style={{ padding: '28px 24px' }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#E8E2D5', marginBottom: '12px', lineHeight: 1.4 }}>{title}</h3>
-                <p style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.7 }}>{body}</p>
+                <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.7 }}>{body}</p>
               </div>
             ))}
           </div>
@@ -210,7 +210,7 @@ export default function Investors({ navigate }) {
               <div key={label} className="m-card" style={{ padding: '24px' }}>
                 <div className="m-label" style={{ marginBottom: '14px' }}>{label}</div>
                 {items.map((item, i) => (
-                  <div key={i} style={{ fontSize: '13px', color: '#8B8478', padding: '6px 0', borderBottom: i < items.length - 1 ? '1px solid #1A1610' : 'none', lineHeight: 1.5 }}>
+                  <div key={i} style={{ fontSize: '13px', color: '#B0A898', padding: '6px 0', borderBottom: i < items.length - 1 ? '1px solid #1A1610' : 'none', lineHeight: 1.5 }}>
                     {item}
                   </div>
                 ))}
@@ -220,7 +220,7 @@ export default function Investors({ navigate }) {
 
           <div className="m-card-warm" style={{ padding: '24px 28px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
             <div style={{ fontSize: '16px', flexShrink: 0, marginTop: '2px' }}>⚠️</div>
-            <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.7 }}>
+            <p style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.7 }}>
               <strong style={{ color: '#E8E2D5' }}>Honest statement: </strong>
               Royal Ledger is in early private beta. We are not claiming thousands of users, revenue, partnerships, or regulatory approval. We are a working product with a clear category, an honest problem statement, and a team focused on building the right thing.
             </p>
@@ -246,11 +246,11 @@ export default function Investors({ navigate }) {
               <div key={tier} className="m-card" style={{ padding: '28px 24px' }}>
                 <div className="m-label" style={{ marginBottom: '10px' }}>{tier}</div>
                 <div style={{ fontSize: '18px', fontWeight: 600, color: '#D97757', marginBottom: '12px' }}>{price}</div>
-                <p style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.65 }}>{desc}</p>
+                <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.65 }}>{desc}</p>
               </div>
             ))}
           </div>
-          <p style={{ fontSize: '13px', color: '#3A3028', marginTop: '20px' }}>
+          <p style={{ fontSize: '13px', color: '#5C5648', marginTop: '20px' }}>
             * Exact pricing not yet finalised. Pricing research will be conducted during closed beta phase.
           </p>
         </div>
@@ -266,12 +266,12 @@ export default function Investors({ navigate }) {
           <div className="m-timeline">
             {ROADMAP.map((item, i) => (
               <div key={i} className="m-timeline-item">
-                <div className="m-timeline-dot" style={{ background: item.done ? '#7FA068' : '#3A3028', boxShadow: `0 0 0 1px ${item.done ? '#7FA068' : '#3A3028'}` }} />
+                <div className="m-timeline-dot" style={{ background: item.done ? '#7FA068' : '#5C5648', boxShadow: `0 0 0 1px ${item.done ? '#7FA068' : '#5C5648'}` }} />
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '6px' }}>
-                  <div style={{ fontSize: '11px', fontWeight: 600, color: item.done ? '#7FA068' : '#5C5648', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{item.phase}</div>
+                  <div style={{ fontSize: '11px', fontWeight: 600, color: item.done ? '#7FA068' : '#8B8478', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{item.phase}</div>
                 </div>
                 <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#E8E2D5', marginBottom: '8px' }}>{item.label}</h3>
-                <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.65 }}>{item.desc}</p>
+                <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.65 }}>{item.desc}</p>
               </div>
             ))}
           </div>
@@ -288,7 +288,7 @@ export default function Investors({ navigate }) {
           <p className="m-body" style={{ marginBottom: '12px' }}>
             We're speaking with investors and strategic partners who see the variable-income market for what it is: underserved, global, and growing.
           </p>
-          <p style={{ fontSize: '13px', color: '#5C5648', marginBottom: '36px' }}>
+          <p style={{ fontSize: '13px', color: '#8B8478', marginBottom: '36px' }}>
             Be part of the first rollout.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
@@ -302,7 +302,7 @@ export default function Investors({ navigate }) {
               About the project →
             </button>
           </div>
-          <p style={{ marginTop: '16px', fontSize: '12px', color: '#3A3028' }}>
+          <p style={{ marginTop: '16px', fontSize: '12px', color: '#5C5648' }}>
             Use the early access form and mention investor interest in your note. We respond to all inquiries directly.
           </p>
         </div>

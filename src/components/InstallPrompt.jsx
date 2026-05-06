@@ -122,7 +122,7 @@ export default function InstallPrompt() {
         .ip-btn-primary { background: #D97757; color: #0A0908; padding: 11px 18px; font-weight: 600; border-radius: 4px; font-size: 13px; cursor: pointer; transition: all 150ms; border: none; display: inline-flex; align-items: center; gap: 6px; }
         .ip-btn-primary:hover { background: #E08868; }
         .ip-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-        .ip-btn-secondary { background: transparent; color: #8B8478; padding: 11px 14px; font-size: 13px; cursor: pointer; border: none; border-radius: 4px; transition: all 150ms; }
+        .ip-btn-secondary { background: transparent; color: #B0A898; padding: 11px 14px; font-size: 13px; cursor: pointer; border: none; border-radius: 4px; transition: all 150ms; }
         .ip-btn-secondary:hover { color: #E8E2D5; background: #14110E; }
         .ip-step { display: flex; align-items: flex-start; gap: 12px; padding: 14px; background: #14110E; border: 1px solid #26221C; border-radius: 4px; }
         .ip-step-num { background: #1A1410; color: #D97757; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
@@ -166,7 +166,7 @@ export default function InstallPrompt() {
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '2px' }}>Install Royal Ledger</div>
-            <div style={{ fontSize: '12px', color: '#8B8478' }}>
+            <div style={{ fontSize: '12px', color: '#B0A898' }}>
               {platform === 'ios' || platform === 'android' ? 'Add to your home screen' : 'Install as desktop app'}
             </div>
           </div>
@@ -175,7 +175,7 @@ export default function InstallPrompt() {
           </button>
           <button
             onClick={remindLater}
-            style={{ background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', padding: '6px', display: 'flex' }}
+            style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', padding: '6px', display: 'flex' }}
             aria-label="Dismiss"
           >
             <X size={16} />
@@ -225,13 +225,13 @@ export default function InstallPrompt() {
               </div>
               <button
                 onClick={() => setShowFullModal(false)}
-                style={{ background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', padding: '4px' }}
+                style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', padding: '4px' }}
               >
                 <X size={20} />
               </button>
             </div>
 
-            <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.6, marginBottom: '24px' }}>
+            <p style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.6, marginBottom: '24px' }}>
               Install Ledger as an app on your device. It opens full-screen, works offline, and lives on your home screen like any other app.
             </p>
 
@@ -239,7 +239,7 @@ export default function InstallPrompt() {
             {installEvent && (platform === 'android' || platform === 'desktop-chrome') && (
               <div style={{ marginBottom: '24px', padding: '20px', background: '#1A1410', border: '1px solid #D97757', borderRadius: '6px' }}>
                 <div style={{ fontWeight: 600, marginBottom: '6px' }}>One-tap install available</div>
-                <div style={{ fontSize: '13px', color: '#8B8478', marginBottom: '14px' }}>
+                <div style={{ fontSize: '13px', color: '#B0A898', marginBottom: '14px' }}>
                   Your browser supports direct install. No menu hunting required.
                 </div>
                 <button
@@ -280,7 +280,7 @@ function PlatformInstructions({ platform }) {
           <Smartphone size={16} style={{ color: '#D97757' }} />
           <span style={{ fontWeight: 600, fontSize: '14px' }}>On iPhone or iPad</span>
         </div>
-        <p style={{ fontSize: '12px', color: '#5C5648', marginBottom: '14px' }}>
+        <p style={{ fontSize: '12px', color: '#8B8478', marginBottom: '14px' }}>
           You're using Safari. iOS only allows installing PWAs through Safari, not Chrome or other browsers.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -290,7 +290,7 @@ function PlatformInstructions({ platform }) {
               <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>
                 Tap the <Share size={14} style={{ display: 'inline', verticalAlign: 'text-bottom', margin: '0 2px' }} /> Share button
               </div>
-              <div style={{ fontSize: '12px', color: '#8B8478' }}>
+              <div style={{ fontSize: '12px', color: '#B0A898' }}>
                 It's at the bottom of Safari (square with arrow pointing up)
               </div>
             </div>
@@ -299,7 +299,7 @@ function PlatformInstructions({ platform }) {
             <div className="ip-step-num">2</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>Scroll down and tap "Add to Home Screen"</div>
-              <div style={{ fontSize: '12px', color: '#8B8478' }}>
+              <div style={{ fontSize: '12px', color: '#B0A898' }}>
                 You'll see a list of options — keep scrolling if you don't see it
               </div>
             </div>
@@ -308,7 +308,7 @@ function PlatformInstructions({ platform }) {
             <div className="ip-step-num">3</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>Tap "Add"</div>
-              <div style={{ fontSize: '12px', color: '#8B8478' }}>
+              <div style={{ fontSize: '12px', color: '#B0A898' }}>
                 Ledger will appear on your home screen with its own icon
               </div>
             </div>
@@ -325,7 +325,7 @@ function PlatformInstructions({ platform }) {
           <Smartphone size={16} style={{ color: '#D97757' }} />
           <span style={{ fontWeight: 600, fontSize: '14px' }}>On Android</span>
         </div>
-        <p style={{ fontSize: '12px', color: '#5C5648', marginBottom: '14px' }}>
+        <p style={{ fontSize: '12px', color: '#8B8478', marginBottom: '14px' }}>
           Use Chrome for the easiest install.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -333,7 +333,7 @@ function PlatformInstructions({ platform }) {
             <div className="ip-step-num">1</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>Tap the three-dot menu</div>
-              <div style={{ fontSize: '12px', color: '#8B8478' }}>
+              <div style={{ fontSize: '12px', color: '#B0A898' }}>
                 Top-right corner of Chrome
               </div>
             </div>
@@ -342,7 +342,7 @@ function PlatformInstructions({ platform }) {
             <div className="ip-step-num">2</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>Tap "Install app" or "Add to Home screen"</div>
-              <div style={{ fontSize: '12px', color: '#8B8478' }}>
+              <div style={{ fontSize: '12px', color: '#B0A898' }}>
                 The exact wording depends on your Android version
               </div>
             </div>
@@ -351,7 +351,7 @@ function PlatformInstructions({ platform }) {
             <div className="ip-step-num">3</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>Tap "Install" to confirm</div>
-              <div style={{ fontSize: '12px', color: '#8B8478' }}>
+              <div style={{ fontSize: '12px', color: '#B0A898' }}>
                 Ledger appears in your app drawer and home screen
               </div>
             </div>
@@ -373,7 +373,7 @@ function PlatformInstructions({ platform }) {
             <div className="ip-step-num">1</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>Look at the address bar</div>
-              <div style={{ fontSize: '12px', color: '#8B8478' }}>
+              <div style={{ fontSize: '12px', color: '#B0A898' }}>
                 On the right side, you'll see a small monitor icon with a download arrow
               </div>
             </div>
@@ -382,7 +382,7 @@ function PlatformInstructions({ platform }) {
             <div className="ip-step-num">2</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>Click that icon, then "Install"</div>
-              <div style={{ fontSize: '12px', color: '#8B8478' }}>
+              <div style={{ fontSize: '12px', color: '#B0A898' }}>
                 A small popup will confirm — click Install
               </div>
             </div>
@@ -391,7 +391,7 @@ function PlatformInstructions({ platform }) {
             <div className="ip-step-num">3</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>Done — Ledger opens in its own window</div>
-              <div style={{ fontSize: '12px', color: '#8B8478' }}>
+              <div style={{ fontSize: '12px', color: '#B0A898' }}>
                 It also appears in your Start Menu / Dock for quick access
               </div>
             </div>
@@ -408,7 +408,7 @@ function PlatformInstructions({ platform }) {
           <Monitor size={16} style={{ color: '#D97757' }} />
           <span style={{ fontWeight: 600, fontSize: '14px' }}>On Mac Safari</span>
         </div>
-        <p style={{ fontSize: '12px', color: '#5C5648', marginBottom: '14px' }}>
+        <p style={{ fontSize: '12px', color: '#8B8478', marginBottom: '14px' }}>
           Safari 17+ supports installing web apps on macOS Sonoma and later.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -428,13 +428,13 @@ function PlatformInstructions({ platform }) {
             <div className="ip-step-num">3</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>Click "Add"</div>
-              <div style={{ fontSize: '12px', color: '#8B8478' }}>
+              <div style={{ fontSize: '12px', color: '#B0A898' }}>
                 Ledger will appear in your Dock and Launchpad
               </div>
             </div>
           </div>
         </div>
-        <p style={{ fontSize: '12px', color: '#5C5648', marginTop: '14px', padding: '12px', background: '#14110E', borderRadius: '4px' }}>
+        <p style={{ fontSize: '12px', color: '#8B8478', marginTop: '14px', padding: '12px', background: '#14110E', borderRadius: '4px' }}>
           On older macOS or other browsers, just bookmark this page. It still works the same — just opens in a tab.
         </p>
       </div>
@@ -448,7 +448,7 @@ function PlatformInstructions({ platform }) {
         <Monitor size={16} style={{ color: '#D97757' }} />
         <span style={{ fontWeight: 600, fontSize: '14px' }}>Your browser</span>
       </div>
-      <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.6, marginBottom: '14px' }}>
+      <p style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.6, marginBottom: '14px' }}>
         Your current browser doesn't fully support installing web apps. You have two options:
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -456,7 +456,7 @@ function PlatformInstructions({ platform }) {
           <div className="ip-step-num">1</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>Open this site in Chrome or Edge</div>
-            <div style={{ fontSize: '12px', color: '#8B8478' }}>
+            <div style={{ fontSize: '12px', color: '#B0A898' }}>
               Then come back to this prompt — install will work properly
             </div>
           </div>
@@ -465,7 +465,7 @@ function PlatformInstructions({ platform }) {
           <div className="ip-step-num">2</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>Or just bookmark the page</div>
-            <div style={{ fontSize: '12px', color: '#8B8478' }}>
+            <div style={{ fontSize: '12px', color: '#B0A898' }}>
               Press Ctrl+D (or Cmd+D on Mac). Works fine, just opens in a tab.
             </div>
           </div>

@@ -95,7 +95,7 @@ function ConflictModal({ localVersion, cloudVersion, localTs, cloudTs, onKeepLoc
         <h2 style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300, marginBottom: '8px' }}>
           Data conflict
         </h2>
-        <p style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.6, marginBottom: '24px' }}>
+        <p style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.6, marginBottom: '24px' }}>
           This device has unsaved local changes. Choose which version to keep — the other will be discarded.
         </p>
 
@@ -132,14 +132,14 @@ function ConflictModal({ localVersion, cloudVersion, localTs, cloudTs, onKeepLoc
                   </span>
                 )}
               </div>
-              <div style={{ fontSize: '11px', color: '#5C5648', fontFamily: 'JetBrains Mono, monospace' }}>
+              <div style={{ fontSize: '11px', color: '#8B8478', fontFamily: 'JetBrains Mono, monospace' }}>
                 v{opt.version ?? '?'} · {fmtAge(opt.ts)}
               </div>
             </button>
           ))}
         </div>
 
-        <p style={{ fontSize: '11px', color: '#3A3028', lineHeight: 1.5 }}>
+        <p style={{ fontSize: '11px', color: '#5C5648', lineHeight: 1.5 }}>
           "This device" syncs local changes to cloud. "Cloud copy" loads the cloud version into this device.
         </p>
       </div>
@@ -244,7 +244,7 @@ function LoginPage() {
   const codeInputStyle = { ...inputStyle, fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.3em', textTransform: 'uppercase', fontSize: '16px' };
   const labelStyle = {
     fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase',
-    fontWeight: 600, color: '#5C5648', marginBottom: '6px', display: 'block',
+    fontWeight: 600, color: '#8B8478', marginBottom: '6px', display: 'block',
   };
   const titles = { signin: 'Sign in', signup: 'Create account', request: 'Request access', magic: 'Magic link', reset: 'Reset password' };
 
@@ -259,17 +259,17 @@ function LoginPage() {
           <div style={{ fontFamily: 'Fraunces, serif', fontSize: '26px', fontStyle: 'italic', fontWeight: 300, marginBottom: '12px' }}>
             {mode === 'request' ? 'Request submitted.' : 'Check your email.'}
           </div>
-          <p style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.6 }}>
+          <p style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.6 }}>
             {sentMessage}
           </p>
-          <p style={{ color: '#5C5648', fontSize: '13px', marginTop: '8px' }}>
+          <p style={{ color: '#8B8478', fontSize: '13px', marginTop: '8px' }}>
             Check your inbox and spam folder. The link expires after 24 hours.
           </p>
 
           {/* Resend button — only shown after a signup (not request / magic / reset) */}
           {mode === 'signup' && signupEmail && (
             <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid #26221C' }}>
-              <p style={{ color: '#5C5648', fontSize: '12px', marginBottom: '12px' }}>
+              <p style={{ color: '#8B8478', fontSize: '12px', marginBottom: '12px' }}>
                 Didn't receive it?
               </p>
               {resendStatus === 'sent' ? (
@@ -298,7 +298,7 @@ function LoginPage() {
           )}
 
           <button onClick={() => switchMode('signin')}
-            style={{ marginTop: '24px', background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '13px' }}>
+            style={{ marginTop: '24px', background: 'transparent', border: 'none', color: '#B0A898', cursor: 'pointer', fontSize: '13px' }}>
             ← Back to sign in
           </button>
         </div>
@@ -324,7 +324,7 @@ function LoginPage() {
           <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 400, marginBottom: '4px' }}>
             Royal <span style={{ fontStyle: 'italic', color: '#D97757' }}>Ledger</span>
           </div>
-          <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#5C5648', fontWeight: 600 }}>
+          <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#8B8478', fontWeight: 600 }}>
             Personal finance for the disciplined
           </div>
         </div>
@@ -336,7 +336,7 @@ function LoginPage() {
               <button key={t.id} onClick={() => switchMode(t.id)} style={{
                 background: 'transparent', border: 'none',
                 borderBottom: `2px solid ${mode === t.id ? '#D97757' : 'transparent'}`,
-                color: mode === t.id ? '#D97757' : '#5C5648',
+                color: mode === t.id ? '#D97757' : '#8B8478',
                 padding: '10px 16px 10px 0', marginRight: '16px', marginBottom: '-1px',
                 fontSize: '13px', fontWeight: 500, cursor: 'pointer', transition: 'all 150ms',
               }}>{t.label}</button>
@@ -348,7 +348,7 @@ function LoginPage() {
         {!['signin', 'signup'].includes(mode) && (
           <div style={{ marginBottom: '24px' }}>
             <button onClick={() => switchMode('signin')}
-              style={{ background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', fontSize: '12px', padding: 0, marginBottom: '12px', display: 'block' }}>
+              style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '12px', padding: 0, marginBottom: '12px', display: 'block' }}>
               ← Back to sign in
             </button>
             <h2 style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300, margin: 0 }}>{titles[mode]}</h2>
@@ -366,7 +366,7 @@ function LoginPage() {
                 onChange={e => { setInviteCode(e.target.value.toUpperCase()); clearError(); }}
                 required placeholder="ABC123" maxLength={8} autoComplete="off"
                 style={codeInputStyle} />
-              <div style={{ fontSize: '11px', color: '#5C5648', marginTop: '5px' }}>
+              <div style={{ fontSize: '11px', color: '#8B8478', marginTop: '5px' }}>
                 No code?{' '}
                 <button type="button" onClick={() => switchMode('request')}
                   style={{ background: 'none', border: 'none', color: '#D97757', cursor: 'pointer', fontSize: '11px', padding: 0 }}>
@@ -384,7 +384,7 @@ function LoginPage() {
               onChange={e => { setEmail(e.target.value); clearError(); }}
               required placeholder="you@example.com" style={inputStyle} />
             {mode === 'magic' && (
-              <div style={{ fontSize: '12px', color: '#5C5648', marginTop: '5px' }}>We'll send a one-click login link.</div>
+              <div style={{ fontSize: '12px', color: '#8B8478', marginTop: '5px' }}>We'll send a one-click login link.</div>
             )}
           </div>
 
@@ -394,7 +394,7 @@ function LoginPage() {
               <label style={labelStyle}>
                 Password
                 {mode === 'signup' && (
-                  <span style={{ color: '#3A3028', letterSpacing: 'normal', textTransform: 'none', fontSize: '11px', fontWeight: 400 }}> (min. 8 characters)</span>
+                  <span style={{ color: '#5C5648', letterSpacing: 'normal', textTransform: 'none', fontSize: '11px', fontWeight: 400 }}> (min. 8 characters)</span>
                 )}
               </label>
               <input type="password" className="auth-input"
@@ -420,7 +420,7 @@ function LoginPage() {
             <div>
               <label style={labelStyle}>
                 Why do you want access?
-                <span style={{ color: '#3A3028', letterSpacing: 'normal', textTransform: 'none', fontSize: '11px', fontWeight: 400 }}> (optional)</span>
+                <span style={{ color: '#5C5648', letterSpacing: 'normal', textTransform: 'none', fontSize: '11px', fontWeight: 400 }}> (optional)</span>
               </label>
               <textarea className="auth-input"
                 value={requestNote}
@@ -451,27 +451,27 @@ function LoginPage() {
           {mode === 'signin' && (
             <>
               <button onClick={() => switchMode('magic')}
-                style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '13px', textAlign: 'left', padding: 0 }}>
+                style={{ background: 'transparent', border: 'none', color: '#B0A898', cursor: 'pointer', fontSize: '13px', textAlign: 'left', padding: 0 }}>
                 Sign in with a magic link →
               </button>
               <button onClick={() => switchMode('reset')}
-                style={{ background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', fontSize: '12px', textAlign: 'left', padding: 0 }}>
+                style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '12px', textAlign: 'left', padding: 0 }}>
                 Forgot password?
               </button>
             </>
           )}
           {mode === 'signup' && (
-            <div style={{ fontSize: '12px', color: '#5C5648' }}>
+            <div style={{ fontSize: '12px', color: '#8B8478' }}>
               Already have an account?{' '}
               <button type="button" onClick={() => switchMode('signin')}
-                style={{ background: 'none', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '12px', padding: 0 }}>
+                style={{ background: 'none', border: 'none', color: '#B0A898', cursor: 'pointer', fontSize: '12px', padding: 0 }}>
                 Sign in
               </button>
             </div>
           )}
           <a
             href="https://royalledger.app"
-            style={{ fontSize: '11px', color: '#3A3028', textDecoration: 'none', marginTop: '4px', display: 'inline-block' }}
+            style={{ fontSize: '11px', color: '#5C5648', textDecoration: 'none', marginTop: '4px', display: 'inline-block' }}
           >
             ← royalledger.app
           </a>
@@ -551,22 +551,22 @@ function SetNewPasswordPage() {
         {done ? (
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontFamily: 'Fraunces, serif', fontSize: '26px', fontStyle: 'italic', fontWeight: 300, marginBottom: '12px' }}>Password updated.</div>
-            <p style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.6, marginBottom: '24px' }}>You're signed in. Taking you to the app…</p>
+            <p style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.6, marginBottom: '24px' }}>You're signed in. Taking you to the app…</p>
           </div>
         ) : (
           <>
             <h2 style={{ fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 300, marginBottom: '24px' }}>{pageTitle}</h2>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
-                <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600, color: '#5C5648', marginBottom: '6px' }}>
-                  New password <span style={{ color: '#3A3028', letterSpacing: 'normal', textTransform: 'none', fontSize: '11px' }}>(min. 8 characters)</span>
+                <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600, color: '#8B8478', marginBottom: '6px' }}>
+                  New password <span style={{ color: '#5C5648', letterSpacing: 'normal', textTransform: 'none', fontSize: '11px' }}>(min. 8 characters)</span>
                 </div>
                 <input type="password" className="auth-input" value={password}
                   onChange={e => { setPassword(e.target.value); setAuthError(null); }}
                   required minLength={8} placeholder="••••••••" style={inputStyle} />
               </div>
               <div>
-                <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600, color: '#5C5648', marginBottom: '6px' }}>Confirm password</div>
+                <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600, color: '#8B8478', marginBottom: '6px' }}>Confirm password</div>
                 <input type="password" className="auth-input" value={confirm}
                   onChange={e => { setConfirm(e.target.value); setAuthError(null); }}
                   required minLength={8} placeholder="••••••••" style={inputStyle} />
@@ -582,7 +582,7 @@ function SetNewPasswordPage() {
               </button>
             </form>
             <button onClick={logout}
-              style={{ marginTop: '20px', background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', fontSize: '12px', padding: 0 }}>
+              style={{ marginTop: '20px', background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '12px', padding: 0 }}>
               Cancel
             </button>
           </>
