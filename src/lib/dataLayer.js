@@ -152,14 +152,28 @@ export async function deleteData(userId) {
 
 // ─── INVITE CODES ────────────────────────────────────────────────────────────
 
-// Called during signup (anon context). Atomically claims the code via RPC.
+// Called during signup (anon context).
+// First checks early_access_leads.invite_code (admin-sent codes via the dashboard).
+// Falls back to the invite_codes table / use_invite_code RPC for legacy manual codes.
 export async function validateAndClaimInviteCode(code, email) {
   if (!isSupabaseConfigured || !supabase) return false;
+  const normCode  = code.trim().toUpperCase();
+  const normEmail = email.trim().toLowerCase();
+
+  // ── Primary path: admin-sent invite codes stored in early_access_leads ──
+  const { data: leadValid, error: leadErr } = await supabase.rpc(
+    'validate_lead_invite_code',
+    { p_code: normCode, p_email: normEmail },
+  );
+  if (!leadErr && leadValid === true) return true;
+  if (leadErr) console.warn('[dataLayer] validate_lead_invite_code:', leadErr.message);
+
+  // ── Fallback: legacy invite_codes table (manually created codes) ──
   const { data, error } = await supabase.rpc('use_invite_code', {
-    p_code: code.trim().toUpperCase(),
-    p_email: email.trim().toLowerCase(),
+    p_code:  normCode,
+    p_email: normEmail,
   });
-  if (error) { console.error('[dataLayer] validateInviteCode:', error.message); return false; }
+  if (error) { console.warn('[dataLayer] use_invite_code fallback:', error.message); return false; }
   return data === true;
 }
 
