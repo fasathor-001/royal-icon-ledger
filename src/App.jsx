@@ -157,9 +157,9 @@ function MobileBottomNav({ tab, setTab, user, data }) {
   const isAdminUser  = ADMIN_MOBILE_EMAILS.includes(user?.email?.toLowerCase());
 
   const primary = [
-    { id: 'command', label: 'Home',   Icon: Home   },
-    { id: 'impulse', label: 'Gate',   Icon: Shield },
-    { id: 'budget',  label: 'Budget', Icon: Wallet },
+    { id: 'command', label: 'Home',    Icon: Home   },
+    { id: 'impulse', label: 'Impulse', Icon: Shield },
+    { id: 'budget',  label: 'Budget',  Icon: Wallet },
     ...(showTrading ? [{ id: 'trading', label: 'Trade', Icon: TrendingUp }] : []),
   ];
 
@@ -551,11 +551,15 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     });
   }, [onRegisterForceUpdate]);
 
-  // Show onboarding for new users or when setup hasn't been completed
+  // Show onboarding for new users or when setup hasn't been completed.
+  // Guard isNewUser with !data.setupComplete so that when finish() writes
+  // setupComplete:true and onComplete() hides onboarding, this effect
+  // doesn't immediately re-show it (isNewUser stays true for the lifetime
+  // of the component, so without the guard it fires again after every save).
   useEffect(() => {
     if (loading) return;
     const noData = !data.setupComplete && data.expenses.length === 0;
-    if (noData || isNewUser) setShowOnboarding(true);
+    if (noData || (isNewUser && !data.setupComplete)) setShowOnboarding(true);
   }, [loading, data.setupComplete, data.expenses.length, isNewUser]);
 
   // Block check + reset request check — runs after data is loaded and user email is known
