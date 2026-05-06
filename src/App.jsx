@@ -964,12 +964,12 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             currency={data.currency}
           />
           <BalanceInput
-            label="Monthly Salary"
+            label={isFoundation ? 'Money Available' : 'Monthly Salary'}
             icon={Wallet}
             color="#D97757"
             value={stats.salary}
             readOnly
-            note="Auto-computed from expenses"
+            note={isFoundation ? 'For this month' : 'Auto-computed from expenses'}
             currency={data.currency}
           />
           <BalanceInput
