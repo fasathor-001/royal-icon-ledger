@@ -22,8 +22,8 @@ import WeeklyPulseBanner from './components/WeeklyPulseBanner';
 import AdminDashboard from './components/AdminDashboard';
 import { usePinGate, usePinRowGate, useSectionPin } from './components/PinGate';
 import { PinContext, usePinVerify, usePinActive } from './components/PinContext';
-import { hashPin, verifyPin } from './lib/pinHash';
-import { supabase as supabaseClient } from './lib/supabase';
+import { hashPin } from './lib/pinHash';
+import { supabase } from './lib/supabase';
 import { CURRENCIES, getCurrency, makeFmt } from './lib/currency';
 import { getInviteCodes, createInviteCode, deleteInviteCode, resetInviteCode, getAccessRequests, approveAccessRequest, rejectAccessRequest, queueNotification, loadData, importLocalToCloud } from './lib/dataLayer';
 
@@ -3902,10 +3902,10 @@ function PinCard({ user, data, setData }) {
   };
 
   const handleForgot = async () => {
-    if (!canForgot || !supabaseClient || !user?.email) return;
+    if (!canForgot || !supabase || !user?.email) return;
     setStatus('saving');
     try {
-      await supabaseClient.from('pin_reset_requests').insert({
+      await supabase.from('pin_reset_requests').insert({
         user_email: user.email.toLowerCase(),
         reason: reason.trim() || null,
         status: 'pending',
