@@ -121,6 +121,23 @@ const CATEGORIES = {
 
 const TRIGGERS = ['Bored', 'Stressed', 'Tired', 'Won a trade', 'Lost a trade', 'Family pressure', 'Scrolling', 'Saw an ad'];
 
+// ── Foundation Mode Language System ──────────────────────────────────────────
+// Centralised copy overrides for users who chose Foundation income type.
+// Only used when data.mode === 'foundation'. Standard users see none of this.
+const foundationCopy = {
+  salary:         'Income',
+  monthlySalary:  'Money Available',      // balance input label (already wired)
+  buffer:         'Savings',              // balance input label (already wired)
+  setupAndSalary: 'Setup & Income',       // nav label
+  setupDesc:      'Add every expense honestly. The system works out how much money you need each month.',
+  incomeHelper:   'Includes allowance, support, and any money you receive',
+  salaryCardLabel:'Money Available',
+  salaryCardNote: 'Based on your monthly needs',
+  gettingStartedStep1Desc: 'Setup & Income → add every fixed cost. Your money available and savings target compute from this.',
+  gettingStartedStep1Action: 'Go to Setup & Income',
+  notSetupBody:   'Go to <strong>Setup & Income</strong> and add your real monthly expenses. Everything else recalculates from there — your money available and your savings target.',
+};
+
 // ── Mobile bottom navigation ──────────────────────────────────────────────────
 function MobileBottomNav({ tab, setTab, user, data }) {
   const [showMore, setShowMore] = useState(false);
@@ -134,7 +151,7 @@ function MobileBottomNav({ tab, setTab, user, data }) {
   ];
 
   const secondary = [
-    { id: 'setup',   label: 'Setup & Salary' },
+    { id: 'setup',   label: data?.mode === 'foundation' ? foundationCopy.setupAndSalary : 'Setup & Salary' },
     { id: 'profit',  label: data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' },
     { id: 'history', label: 'History' },
     { id: 'rules',   label: 'Rules' },
@@ -590,7 +607,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
         <div className="max-w-6xl mx-auto px-5 flex gap-7 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
           {[
             { id: 'command', label: 'Command' },
-            { id: 'setup', label: 'Setup & Salary' },
+            { id: 'setup', label: data.mode === 'foundation' ? foundationCopy.setupAndSalary : 'Setup & Salary' },
             { id: 'budget', label: 'Budget' },
             { id: 'profit', label: data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' },
             ...(data.incomeType !== 'fixed' && data.mode !== 'foundation' ? [{ id: 'trading', label: 'Trading P&L' }] : []),
@@ -670,6 +687,40 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
   );
 }
 
+// ── Foundation behavioural nudge ─────────────────────────────────────────────
+// No date fields are written during onboarding, so nudges are driven purely
+// by what the user has actually done: tracked spending, set a goal, hit the goal.
+// Returns { message, cta, ctaAction } or null (for non-Foundation / all done).
+function getFoundationNudge({ hasLoggedExpense, hasSavingsGoal, savingsProgress }) {
+  if (!hasLoggedExpense) {
+    return {
+      message: 'Start with one small action: track your next expense.',
+      cta: 'Track spending',
+      ctaAction: 'budget',
+    };
+  }
+  if (!hasSavingsGoal) {
+    return {
+      message: 'Good start. Now give your savings a purpose.',
+      cta: 'Add goal',
+      ctaAction: 'goal',
+    };
+  }
+  if (savingsProgress < 1) {
+    return {
+      message: 'Keep going — small amounts add up.',
+      cta: null,
+      ctaAction: null,
+    };
+  }
+  // Goal reached
+  return {
+    message: 'Goal reached — now set your next target.',
+    cta: 'Set new goal',
+    ctaAction: 'goal',
+  };
+}
+
 /* ─────────────── COMMAND ─────────────── */
 function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, setShowWeeklyPulse }) {
   const fmt = makeFmt(data.currency);
@@ -678,6 +729,7 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   const [goalEditing, setGoalEditing] = useState(false);
   const [goalDraft, setGoalDraft] = useState({ name: '', target: '' });
   const [goalError, setGoalError] = useState('');
+  const [upgradeDismissed, setUpgradeDismissed] = useState(false);
 
   const openGoalEditor = () => {
     setGoalDraft({
@@ -698,6 +750,26 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
     setGoalError('');
   };
   const { attempt: attemptUnlock, gate: unlockGate } = usePinGate(data.overridePin);
+
+  // ── Foundation nudge state (behavioural — no date fields available) ──────────
+  const hasLoggedExpense =
+    (data.impulses?.length > 0) ||
+    (data.envelopes || []).some(e => (e.spent || 0) > 0);
+  const hasSavingsGoal = !!data.savingsGoal?.name;
+  const savingsProgress =
+    data.savingsGoal?.target > 0 ? data.buffer / data.savingsGoal.target : 0;
+  const foundationNudge = isFoundation
+    ? getFoundationNudge({ hasLoggedExpense, hasSavingsGoal, savingsProgress })
+    : null;
+
+  // ── Foundation graduation trigger ─────────────────────────────────────────
+  // Fires when user has meaningfully used the system. Two signals (either is enough):
+  // 1. Savings goal reached (most explicit — they set a target and hit it)
+  // 2. No goal set but has saved at least half a month's money available (organic growth)
+  const goalReached = hasSavingsGoal && savingsProgress >= 1;
+  const hasBuiltSavings = !hasSavingsGoal && hasLoggedExpense && stats.salary > 0 && data.buffer >= stats.salary * 0.5;
+  const showUpgradePrompt = isFoundation && (goalReached || hasBuiltSavings);
+
   const stageInfo = {
     1: { name: 'Stage 1', title: 'Build the Floor', color: '#C56B5A', desc: data.incomeType === 'fixed' ? '100% of surplus to buffer.' : '100% of profits to buffer.' },
     1.5: { name: 'Stage 1.5', title: 'Grow the Cushion', color: '#D97757', desc: 'Long-term investing begins — split by your stage rules.' },
@@ -718,9 +790,12 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
       <div className="card-warm p-8 text-center">
         <Edit2 size={32} style={{ color: '#D97757' }} className="mx-auto mb-4" />
         <div className="display text-3xl mb-3" style={{ fontWeight: 300 }}>Let's start with your numbers.</div>
-        <p className="mb-6 max-w-md mx-auto" style={{ color: '#8B8478' }}>
-          Go to <strong style={{ color: '#E8E2D5' }}>Setup & Salary</strong> and add your real monthly expenses. Everything else recalculates from there — your salary, your buffer target, your stage thresholds.
-        </p>
+        <p className="mb-6 max-w-md mx-auto" style={{ color: '#8B8478' }}
+          dangerouslySetInnerHTML={{ __html: isFoundation
+            ? foundationCopy.notSetupBody
+            : 'Go to <strong style="color:#E8E2D5">Setup &amp; Salary</strong> and add your real monthly expenses. Everything else recalculates from there — your salary, your buffer target, your stage thresholds.'
+          }}
+        />
         <button onClick={() => setTab('setup')} className="btn btn-primary">Set up my numbers →</button>
       </div>
     );
@@ -782,8 +857,8 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 num: '1',
                 done: data.expenses.length > 0,
                 title: 'Add your monthly expenses',
-                desc: 'Setup & Salary → add every fixed cost. Your salary and buffer target compute from this.',
-                action: 'Go to Setup & Salary',
+                desc: isFoundation ? foundationCopy.gettingStartedStep1Desc : 'Setup & Salary → add every fixed cost. Your salary and buffer target compute from this.',
+                action: isFoundation ? foundationCopy.gettingStartedStep1Action : 'Go to Setup & Salary',
                 tab: 'setup',
                 color: '#D97757',
               },
@@ -883,6 +958,94 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
 		</button>
 	  </div>
 	)}
+      {/* Foundation graduation prompt — takes priority over nudge when triggered */}
+      {showUpgradePrompt && !upgradeDismissed ? (
+        <div style={{
+          background: '#0F1209',
+          border: '1px solid #3A5A2A',
+          borderRadius: '6px',
+          padding: '24px 24px 20px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '16px' }}>
+            <Sparkles size={16} style={{ color: '#7FA068', flexShrink: 0, marginTop: '2px' }} />
+            <div>
+              <div style={{ fontSize: '15px', fontWeight: 600, color: '#E8E2D5', marginBottom: '4px' }}>
+                You've built a strong foundation.
+              </div>
+              <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.6, margin: 0 }}>
+                Ready for more control over your money? The full system unlocks income structuring, advanced planning, and the full Royal Ledger dashboard.
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setData(d => ({ ...d, mode: 'standard' }))}
+              style={{
+                background: '#7FA068', color: '#0A0908', border: 'none',
+                borderRadius: '3px', padding: '10px 20px',
+                fontSize: '13px', fontWeight: 700, cursor: 'pointer',
+                fontFamily: 'Inter, sans-serif',
+              }}
+            >
+              Continue with full system →
+            </button>
+            <button
+              onClick={() => setUpgradeDismissed(true)}
+              style={{
+                background: 'transparent', color: '#5C5648',
+                border: '1px solid #26221C', borderRadius: '3px',
+                padding: '10px 16px', fontSize: '13px', cursor: 'pointer',
+                fontFamily: 'Inter, sans-serif',
+              }}
+            >
+              Stay in Foundation
+            </button>
+          </div>
+        </div>
+      ) : foundationNudge ? (
+        /* Foundation behavioural nudge — one message, calm, no pressure */
+        <div style={{
+          background: '#0F1A0E',
+          border: '1px solid #2A4A2A',
+          borderRadius: '6px',
+          padding: '14px 18px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '16px',
+          flexWrap: 'wrap',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
+            <Sparkles size={14} style={{ color: '#7FA068', flexShrink: 0 }} />
+            <span style={{ fontSize: '13px', color: '#A8C49A', lineHeight: 1.5 }}>
+              {foundationNudge.message}
+            </span>
+          </div>
+          {foundationNudge.cta && (
+            <button
+              onClick={() => {
+                if (foundationNudge.ctaAction === 'budget') setTab('budget');
+                else if (foundationNudge.ctaAction === 'goal') openGoalEditor();
+              }}
+              style={{
+                background: 'transparent',
+                color: '#7FA068',
+                border: '1px solid #2A4A2A',
+                borderRadius: '3px',
+                padding: '6px 14px',
+                fontSize: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                fontFamily: 'Inter, sans-serif',
+              }}
+            >
+              {foundationNudge.cta} →
+            </button>
+          )}
+        </div>
+      ) : null}
+
       {/* Stage banner — Foundation gets a simple savings card */}
       {isFoundation ? (
         <div className="card-warm p-7 glow-warm">
@@ -1314,6 +1477,7 @@ function PendingRow({ item, setData, currency }) {
 function Setup({ data, stats, setData }) {
   const fmt = makeFmt(data.currency);
   const { symbol: currencySymbol } = getCurrency(data.currency);
+  const isFoundation = data?.mode === 'foundation';
   const [newExpense, setNewExpense] = useState({ name: '', amount: '', category: 'Housing' });
   const { locked, requestUnlock, gate } = useSectionPin(data.overridePin);
 
@@ -1407,8 +1571,15 @@ function Setup({ data, stats, setData }) {
           Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>real numbers</span>
         </h1>
         <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
-          Add every monthly expense honestly. The system computes your salary and buffer target from your actual life, not assumptions.
+          {isFoundation
+            ? foundationCopy.setupDesc
+            : 'Add every monthly expense honestly. The system computes your salary and buffer target from your actual life, not assumptions.'}
         </p>
+        {isFoundation && (
+          <p style={{ fontSize: '12px', color: '#5C5648', marginTop: '6px', maxWidth: '520px' }}>
+            💡 {foundationCopy.incomeHelper}
+          </p>
+        )}
         {data.overridePin && (
           <div className="flex items-center gap-2 mt-3">
             {locked ? (
@@ -1434,9 +1605,9 @@ function Setup({ data, stats, setData }) {
             <div className="text-xs mt-1" style={{ color: '#8B8478' }}>Bills auto-pay</div>
           </div>
           <div>
-            <div className="label mb-2" style={{ color: '#D97757' }}>Monthly Salary</div>
+            <div className="label mb-2" style={{ color: '#D97757' }}>{isFoundation ? foundationCopy.salaryCardLabel : 'Monthly Salary'}</div>
             <div className="display text-3xl" style={{ fontWeight: 300, color: '#D97757' }}>{fmt(stats.salary)}</div>
-            <div className="text-xs mt-1" style={{ color: '#8B8478' }}>Expenses + spending + reserve</div>
+            <div className="text-xs mt-1" style={{ color: '#8B8478' }}>{isFoundation ? foundationCopy.salaryCardNote : 'Expenses + spending + reserve'}</div>
           </div>
           <div>
             <div className="label mb-2" style={{ color: '#D97757' }}>Buffer Target</div>
