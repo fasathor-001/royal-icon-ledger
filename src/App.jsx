@@ -618,7 +618,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
             { id: 'history', label: 'History' },
             { id: 'rules', label: 'Rules' },
             ...(user ? [{ id: 'settings', label: 'Settings' }] : []),
-            ...(['hello@royalledger.app'].includes(user?.email?.toLowerCase()) ? [{ id: 'admin', label: 'Admin' }] : []),
+            ...(['hello@royalledger.app', 'fasathor@gmail.com'].includes(user?.email?.toLowerCase()) ? [{ id: 'admin', label: 'Admin' }] : []),
           ].map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} className={`tab-btn ${tab === t.id ? 'tab-active' : 'tab-inactive'}`}>
               {t.label}
@@ -782,6 +782,9 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
               setShowGraduationModal(false);
               setData(d => ({ ...d, mode: 'standard' }));
               sessionStorage.setItem('rl_grad_modal', '1');
+              if (!localStorage.getItem('rl_welcome_dismissed')) {
+                sessionStorage.setItem('rl_just_graduated', '1');
+              }
             }}
             style={{
               width: '100%',
@@ -847,6 +850,13 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   const [goalError, setGoalError] = useState('');
   const [upgradeDismissed, setUpgradeDismissed] = useState(false);
   const [showStabilizeMessage, setShowStabilizeMessage] = useState(false);
+  const [welcomeDismissed, setWelcomeDismissed] = useState(false);
+  const showGraduationWelcome = !welcomeDismissed && !!sessionStorage.getItem('rl_just_graduated');
+  const dismissWelcome = () => {
+    sessionStorage.removeItem('rl_just_graduated');
+    localStorage.setItem('rl_welcome_dismissed', '1');
+    setWelcomeDismissed(true);
+  };
   const prevModeRef = React.useRef(data?.mode);
 
   // Detect the exact moment Foundation → standard upgrade happens this session.
@@ -965,6 +975,107 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           >
             <X size={14} />
           </button>
+        </div>
+      )}
+
+      {/* ── Foundation → Standard one-time welcome card ────────────────────────
+          Shown immediately after the graduation modal CTA is tapped.
+          Dismissed permanently via localStorage so it never reappears.     */}
+      {showGraduationWelcome && (
+        <div style={{
+          background: 'linear-gradient(135deg, #0F1A0E 0%, #0A0F09 100%)',
+          border: '1px solid #2A4A20',
+          borderRadius: '10px',
+          padding: '28px 24px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          {/* Subtle glow accent */}
+          <div style={{
+            position: 'absolute', top: 0, right: 0,
+            width: '180px', height: '180px',
+            background: 'radial-gradient(circle, rgba(127,160,104,0.08) 0%, transparent 70%)',
+            pointerEvents: 'none',
+          }} />
+
+          {/* Dismiss */}
+          <button
+            onClick={dismissWelcome}
+            style={{
+              position: 'absolute', top: '14px', right: '14px',
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: '#5C5648', padding: '4px', lineHeight: 1,
+            }}
+            aria-label="Dismiss welcome message"
+          >
+            <X size={15} />
+          </button>
+
+          {/* Badge */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            background: '#162512', border: '1px solid #2A4A20',
+            borderRadius: '20px', padding: '4px 12px',
+            marginBottom: '16px',
+          }}>
+            <Award size={12} style={{ color: '#7FA068' }} />
+            <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', color: '#7FA068', textTransform: 'uppercase' }}>
+              Foundation Graduate
+            </span>
+          </div>
+
+          {/* Headline */}
+          <h2 style={{
+            fontSize: 'clamp(20px, 4vw, 26px)',
+            fontWeight: 300,
+            color: '#E8E2D5',
+            letterSpacing: '-0.02em',
+            marginBottom: '10px',
+            lineHeight: 1.2,
+            fontFamily: 'Georgia, serif',
+          }}>
+            Welcome to Royal Ledger.
+          </h2>
+
+          {/* Subline */}
+          <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, marginBottom: '20px', maxWidth: '420px' }}>
+            You built discipline before you built wealth — and that's the harder part.
+            The full system is now yours. Take it one layer at a time.
+          </p>
+
+          {/* Feature bullets */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '22px' }}>
+            {[
+              'Full income structure with buffer management',
+              'Profit allocator — stage-based waterfall system',
+              'Long-term savings, goals, and net worth tracking',
+              'Complete financial history and monthly snapshots',
+            ].map(item => (
+              <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                <span style={{ color: '#7FA068', fontSize: '10px', marginTop: '4px', flexShrink: 0 }}>✦</span>
+                <span style={{ fontSize: '13px', color: '#A8C49A', lineHeight: 1.5 }}>{item}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA row */}
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <button
+              onClick={dismissWelcome}
+              style={{
+                background: '#7FA068', color: '#0A0908',
+                border: 'none', borderRadius: '5px',
+                padding: '10px 20px', fontSize: '13px', fontWeight: 700,
+                cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+                letterSpacing: '0.01em',
+              }}
+            >
+              Start exploring →
+            </button>
+            <span style={{ fontSize: '12px', color: '#3A3028' }}>
+              Everything is ready. No setup needed.
+            </span>
+          </div>
         </div>
       )}
 

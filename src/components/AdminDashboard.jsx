@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { RefreshCw, Users, Clock, CheckCircle, XCircle, Mail } from 'lucide-react';
 
-const ADMIN_EMAILS = ['hello@royalledger.app'];
+const ADMIN_EMAILS = ['hello@royalledger.app', 'fasathor@gmail.com'];
 
 function formatDate(dateStr) {
   if (!dateStr) return '—';
@@ -97,7 +97,7 @@ export default function AdminDashboard({ user }) {
     );
   }
 
-  if (!user?.email || !ADMIN_EMAILS.includes(user.email)) {
+  if (!user?.email || !ADMIN_EMAILS.includes(user.email.toLowerCase())) {
     return (
       <div
         style={{
