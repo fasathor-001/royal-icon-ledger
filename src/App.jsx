@@ -1213,6 +1213,10 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
     const target = Number(goalDraft.target);
     if (!name) { setGoalError('Goal name cannot be empty.'); return; }
     if (!target || target <= 0) { setGoalError('Target must be greater than 0.'); return; }
+    if (target <= data.buffer) {
+      setGoalError(`You already have more saved (${makeFmt(data.currency)(data.buffer)}) than this target. Set a higher goal to track real progress.`);
+      return;
+    }
     setData(d => ({ ...d, savingsGoal: { name, target } }));
     setGoalEditing(false);
     setGoalError('');
@@ -1232,9 +1236,11 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
 
   // ── Foundation graduation trigger ─────────────────────────────────────────
   // Fires when user has meaningfully used the system. Two signals (either is enough):
-  // 1. Savings goal reached (most explicit — they set a target and hit it)
-  // 2. No goal set but has saved at least half a month's money available (organic growth)
-  const goalReached = hasSavingsGoal && savingsProgress >= 1;
+  // 1. Savings goal reached AND the user has actually engaged (logged an expense / used an
+  //    envelope) — guards against day-0 false positives where the onboarding starting balance
+  //    already exceeds a goal set too low.
+  // 2. No goal set but has saved at least half a month's money available (organic growth).
+  const goalReached = hasSavingsGoal && savingsProgress >= 1 && hasLoggedExpense;
   const hasBuiltSavings = !hasSavingsGoal && hasLoggedExpense && stats.salary > 0 && data.buffer >= stats.salary * 0.5;
   const showUpgradePrompt = isFoundation && (goalReached || hasBuiltSavings);
 
