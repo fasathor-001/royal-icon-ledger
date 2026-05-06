@@ -730,6 +730,18 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   const [goalDraft, setGoalDraft] = useState({ name: '', target: '' });
   const [goalError, setGoalError] = useState('');
   const [upgradeDismissed, setUpgradeDismissed] = useState(false);
+  const [showStabilizeMessage, setShowStabilizeMessage] = useState(false);
+  const prevModeRef = React.useRef(data?.mode);
+
+  // Detect the exact moment Foundation → standard upgrade happens this session.
+  // useRef holds the previous mode; when the transition fires, show the one-time
+  // stabilization banner. Local state only — resets on page refresh, which is fine.
+  React.useEffect(() => {
+    if (prevModeRef.current === 'foundation' && data?.mode === 'standard') {
+      setShowStabilizeMessage(true);
+    }
+    prevModeRef.current = data?.mode;
+  }, [data?.mode]);
 
   const openGoalEditor = () => {
     setGoalDraft({
@@ -806,6 +818,34 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
 
   return (
     <div className="space-y-6">
+
+      {/* Post-upgrade stabilization banner — shown once, session only, after Foundation → standard */}
+      {showStabilizeMessage && (
+        <div style={{
+          background: '#14110E',
+          border: '1px solid #3A2A1E',
+          borderRadius: '6px',
+          padding: '14px 18px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '16px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
+            <Check size={14} style={{ color: '#D97757', flexShrink: 0 }} />
+            <span style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.5 }}>
+              You now have more control over your money.{' '}
+              <span style={{ color: '#E8E2D5' }}>Take it one step at a time.</span>
+            </span>
+          </div>
+          <button
+            onClick={() => setShowStabilizeMessage(false)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#5C5648', flexShrink: 0, padding: '2px' }}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {/* Feature 1: Weekly Pulse Banner */}
       <WeeklyPulseBanner
