@@ -6,7 +6,7 @@
 // - Month-end auto-rollover: reset / roll forward / sweep to buffer
 // - Smart suggestion engine for first-time setup based on user's expenses
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { usePinGate, usePinRowGate, useSectionPin } from './PinGate';
 import {
   Wallet, Plus, X, Edit2, Check, AlertTriangle, Lock, Unlock,
@@ -14,6 +14,46 @@ import {
   Users, Heart, Sparkles, Briefcase, Settings, Info
 } from 'lucide-react';
 import { makeFmt, getCurrency } from '../lib/currency';
+
+// ── InfoPopover ───────────────────────────────────────────────────────────────
+function InfoPopover({ label, children, align = 'right' }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  React.useEffect(() => {
+    if (!open) return;
+    const handle = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [open]);
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          color: '#D97757', fontWeight: 600, letterSpacing: '0.04em',
+          fontSize: 12, background: 'none', border: 'none', cursor: 'pointer',
+          fontFamily: 'Inter, sans-serif', padding: 0,
+        }}
+      >
+        <Info size={13} /> {label}
+      </button>
+      {open && (
+        <div style={{
+          position: 'absolute',
+          ...(align === 'right' ? { right: 0 } : { left: 0 }),
+          top: 'calc(100% + 8px)',
+          zIndex: 200, width: 320,
+          background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: 4,
+          padding: '12px 14px', lineHeight: 1.7, fontSize: 12, color: '#8B8478',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.55)',
+        }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ─────────────── ICONS & PRESETS ───────────────
 const ENVELOPE_ICONS = {
@@ -211,23 +251,18 @@ export default function Budget({ data, setData, stats }) {
           <h1 className="display text-4xl" style={{ fontWeight: 300 }}>
             Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>budget</span>
           </h1>
-          <details style={{ fontSize: 12, color: '#8B8478', maxWidth: 340, cursor: 'pointer' }}>
-            <summary style={{ color: '#D97757', fontWeight: 600, letterSpacing: '0.04em', listStyle: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Info size={13} /> How does this work?
-            </summary>
-            <div style={{ marginTop: 8, padding: '10px 12px', background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: 4, lineHeight: 1.7, zIndex: 10, position: 'relative' }}>
-              <p style={{ marginBottom: 6 }}>
-                <strong style={{ color: '#E8E2D5' }}>Envelopes</strong> are spending buckets for your variable expenses — groceries, petrol, kids. Each one has a cap and its own rules.
-              </p>
-              <p style={{ marginBottom: 6 }}>
-                <strong style={{ color: '#E8E2D5' }}>Fixed bills</strong> (rent, insurance, phone) don't need envelopes — they're automatic payments you can't control day-to-day.
-              </p>
-              <p style={{ marginBottom: 6 }}>
-                <strong style={{ color: '#E8E2D5' }}>Tip:</strong> Go to <strong style={{ color: '#D97757' }}>Setup & Salary</strong> and click the ✉ envelope icon on any variable expense to auto-create its envelope here — and set Reset, Rollover, or Sweep right there.
-              </p>
-              <p>When you log a purchase, tag it to an envelope. The app tracks your spending and enforces your rules.</p>
-            </div>
-          </details>
+          <InfoPopover label="How does this work?">
+            <p style={{ marginBottom: 6 }}>
+              <strong style={{ color: '#E8E2D5' }}>Envelopes</strong> are spending buckets for your variable expenses — groceries, petrol, kids. Each one has a cap and its own rules.
+            </p>
+            <p style={{ marginBottom: 6 }}>
+              <strong style={{ color: '#E8E2D5' }}>Fixed bills</strong> (rent, insurance, phone) don't need envelopes — they're automatic payments you can't control day-to-day.
+            </p>
+            <p style={{ marginBottom: 6 }}>
+              <strong style={{ color: '#E8E2D5' }}>Tip:</strong> Go to <strong style={{ color: '#D97757' }}>Setup & Salary</strong> and click the ✉ envelope icon on any variable expense to auto-create its envelope here — and set Reset, Rollover, or Sweep right there.
+            </p>
+            <p>When you log a purchase, tag it to an envelope. The app tracks your spending and enforces your rules.</p>
+          </InfoPopover>
         </div>
         <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
           {envelopes.length} envelopes · {fmt(totalAllocated)} total envelope caps · {fmt(data.spendingBudget)} discretionary limit. Each envelope has its own rules.

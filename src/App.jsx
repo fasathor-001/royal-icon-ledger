@@ -152,7 +152,7 @@ function MobileBottomNav({ tab, setTab, user, data }) {
 
   const secondary = [
     { id: 'setup',   label: data?.mode === 'foundation' ? foundationCopy.setupAndSalary : 'Setup & Salary' },
-    ...(data?.mode !== 'foundation' ? [{ id: 'profit', label: data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' }] : []),
+    { id: 'profit', label: data?.mode === 'foundation' ? 'Money Allocator' : data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' },
     { id: 'history', label: 'History' },
     { id: 'rules',   label: 'Rules' },
     ...(user ? [{ id: 'settings', label: 'Settings' }] : []),
@@ -609,7 +609,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
             { id: 'command', label: 'Command' },
             { id: 'setup', label: data.mode === 'foundation' ? foundationCopy.setupAndSalary : 'Setup & Salary' },
             { id: 'budget', label: 'Budget' },
-            ...(data.mode !== 'foundation' ? [{ id: 'profit', label: data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' }] : []),
+            { id: 'profit', label: data.mode === 'foundation' ? 'Money Allocator' : data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' },
             ...(data.incomeType !== 'fixed' && data.mode !== 'foundation' ? [{ id: 'trading', label: 'Trading P&L' }] : []),
             { id: 'impulse', label: 'Impulse Control' },
             { id: 'history', label: 'History' },
@@ -1513,6 +1513,48 @@ function PendingRow({ item, setData, currency }) {
   );
 }
 
+// ── InfoPopover ───────────────────────────────────────────────────────────────
+// Floating info panel — renders in front of the page (z-index 200) rather than
+// pushing content down. Click outside or re-click the trigger to close.
+function InfoPopover({ label, children, align = 'right' }) {
+  const [open, setOpen] = useState(false);
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    if (!open) return;
+    const handle = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [open]);
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          color: '#D97757', fontWeight: 600, letterSpacing: '0.04em',
+          fontSize: 12, background: 'none', border: 'none', cursor: 'pointer',
+          fontFamily: 'Inter, sans-serif', padding: 0,
+        }}
+      >
+        <Info size={13} /> {label}
+      </button>
+      {open && (
+        <div style={{
+          position: 'absolute',
+          ...(align === 'right' ? { right: 0 } : { left: 0 }),
+          top: 'calc(100% + 8px)',
+          zIndex: 200, width: 320,
+          background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: 4,
+          padding: '12px 14px', lineHeight: 1.7, fontSize: 12, color: '#8B8478',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.55)',
+        }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─────────────── SETUP & SALARY ─────────────── */
 function Setup({ data, stats, setData }) {
   const fmt = makeFmt(data.currency);
@@ -1661,21 +1703,16 @@ function Setup({ data, stats, setData }) {
       <section className="card p-7">
         <div className="flex items-start justify-between mb-2 flex-wrap gap-2">
           <h2 className="display text-2xl">Monthly expenses</h2>
-          <details style={{ fontSize: 12, color: '#8B8478', maxWidth: 320, cursor: 'pointer' }}>
-            <summary style={{ color: '#D97757', fontWeight: 600, letterSpacing: '0.04em', listStyle: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Info size={13} /> How does this work?
-            </summary>
-            <div style={{ marginTop: 8, padding: '10px 12px', background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: 4, lineHeight: 1.7 }}>
-              <p style={{ marginBottom: 6 }}>
-                <strong style={{ color: '#E8E2D5' }}>Expenses</strong> tell the app your total monthly cost of living — used to calculate your buffer target and salary requirement.
-              </p>
-              <p style={{ marginBottom: 6 }}>
-                <strong style={{ color: '#E8E2D5' }}>The envelope toggle</strong> (✉ icon) is for variable expenses you want to actively track and control day-to-day — groceries, petrol, family support. Fixed bills like rent don't need envelopes.
-              </p>
-              <p style={{ marginBottom: 6 }}>When you enable an envelope, pick the <strong style={{ color: '#E8E2D5' }}>month-end rule</strong>: 🔄 Reset (fresh each month), ➕ Rollover (carry leftover forward), or 💧 Sweep (unspent goes to your Buffer).</p>
-              <p>The envelope stays in sync — edit the amount here and the cap updates automatically.</p>
-            </div>
-          </details>
+          <InfoPopover label="How does this work?">
+            <p style={{ marginBottom: 6 }}>
+              <strong style={{ color: '#E8E2D5' }}>Expenses</strong> tell the app your total monthly cost of living — used to calculate your buffer target and salary requirement.
+            </p>
+            <p style={{ marginBottom: 6 }}>
+              <strong style={{ color: '#E8E2D5' }}>The envelope toggle</strong> (✉ icon) is for variable expenses you want to actively track and control day-to-day — groceries, petrol, family support. Fixed bills like rent don't need envelopes.
+            </p>
+            <p style={{ marginBottom: 6 }}>When you enable an envelope, pick the <strong style={{ color: '#E8E2D5' }}>month-end rule</strong>: 🔄 Reset (fresh each month), ➕ Rollover (carry leftover forward), or 💧 Sweep (unspent goes to your Buffer).</p>
+            <p>The envelope stays in sync — edit the amount here and the cap updates automatically.</p>
+          </InfoPopover>
         </div>
         <p className="text-sm mb-5" style={{ color: '#8B8478' }}>Add every monthly expense. Click the <strong style={{ color: '#E8E2D5' }}>✉ envelope</strong> on variable ones to track them in Budget, then set the month-end rule.</p>
 
@@ -1866,9 +1903,10 @@ function Setup({ data, stats, setData }) {
   );
 }
 
-/* ─────────────── PROFIT ALLOCATOR ─────────────── */
+/* ─────────────── PROFIT / MONEY ALLOCATOR ─────────────── */
 function ProfitAllocator({ data, stats, setData }) {
   const fmt = makeFmt(data.currency);
+  const isFoundation = data?.mode === 'foundation';
   const [profit, setProfit] = useState('');
   const [step, setStep] = useState('input');
   const [allocation, setAllocation] = useState(null);
@@ -1877,6 +1915,24 @@ function ProfitAllocator({ data, stats, setData }) {
   const calculate = () => {
     const grossProfit = Number(profit) || 0;
     if (grossProfit <= 0) return;
+
+    // Foundation: no tax deduction, 100% to Savings (buffer)
+    if (isFoundation) {
+      setAllocation({
+        grossProfit,
+        taxReserve: 0,
+        netProfit: grossProfit,
+        toBuffer: grossProfit,
+        toLongTerm: 0,
+        toTrading: 0,
+        toGoals: 0,
+        toLifestyle: 0,
+        stage: null,
+        isFoundation: true,
+      });
+      setStep('result');
+      return;
+    }
 
     const taxReserve = grossProfit * (data.taxReservePct / 100);
     const netProfit = grossProfit - taxReserve;
@@ -1925,35 +1981,45 @@ function ProfitAllocator({ data, stats, setData }) {
     <div className="space-y-6">
       <div>
         <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
-          {data.incomeType === 'fixed' ? 'Surplus' : 'Profit'} <span style={{ fontStyle: 'italic', color: '#D97757' }}>waterfall</span>
+          {isFoundation
+            ? <>Money <span style={{ fontStyle: 'italic', color: '#7FA068' }}>Allocator</span></>
+            : <>{data.incomeType === 'fixed' ? 'Surplus' : 'Profit'} <span style={{ fontStyle: 'italic', color: '#D97757' }}>waterfall</span></>
+          }
         </h1>
         <p style={{ color: '#8B8478', fontSize: '15px', maxWidth: '650px' }}>
-          {data.incomeType === 'fixed'
-            ? 'Enter your extra income this month. The system reserves taxes first, then routes the rest based on your current stage.'
-            : 'Enter your gross trading profit. The system reserves taxes first, then routes the rest based on your current stage.'}
+          {isFoundation
+            ? 'Decide where extra money should go before you spend it.'
+            : data.incomeType === 'fixed'
+              ? 'Enter your extra income this month. The system reserves taxes first, then routes the rest based on your current stage.'
+              : 'Enter your gross trading profit. The system reserves taxes first, then routes the rest based on your current stage.'}
         </p>
       </div>
 
-      <div className="card p-5">
-        <div className="flex items-baseline justify-between mb-2">
-          <div className="label" style={{ color: '#D97757' }}>Currently in Stage {stats.stage}</div>
-          <div className="text-xs mono" style={{ color: '#8B8478' }}>{stats.monthsCovered.toFixed(1)} months stored</div>
+      {/* Stage info card — hidden for Foundation (no stages, no tax) */}
+      {!isFoundation && (
+        <div className="card p-5">
+          <div className="flex items-baseline justify-between mb-2">
+            <div className="label" style={{ color: '#D97757' }}>Currently in Stage {stats.stage}</div>
+            <div className="text-xs mono" style={{ color: '#8B8478' }}>{stats.monthsCovered.toFixed(1)} months stored</div>
+          </div>
+          <p className="text-sm" style={{ color: '#E8E2D5' }}>
+            Tax reserve: {data.taxReservePct}% (edit in Rules tab) · Then current stage allocation applies.
+          </p>
         </div>
-        <p className="text-sm" style={{ color: '#E8E2D5' }}>
-          Tax reserve: {data.taxReservePct}% (edit in Rules tab) · Then current stage allocation applies.
-        </p>
-      </div>
+      )}
 
       {step === 'input' && (() => {
         const liveGross = Number(profit) || 0;
-        const liveTax   = liveGross * (data.taxReservePct / 100);
+        const liveTax   = isFoundation ? 0 : liveGross * (data.taxReservePct / 100);
         const liveNet   = liveGross - liveTax;
         let liveRule;
         if (stats.stage === 1 || stats.stage === 'protect') liveRule = data.stageRules.stage1;
         else if (stats.stage === 1.5) liveRule = data.stageRules.stage15;
         else if (stats.stage === 2)   liveRule = data.stageRules.stage2;
         else liveRule = data.stageRules.stage3;
-        const liveRows = [
+        const liveRows = isFoundation ? [
+          { label: 'To Savings', pct: 100, amt: liveGross, color: '#7FA068' },
+        ] : [
           { label: 'Tax reserve',       pct: data.taxReservePct,          amt: liveTax,                                        color: '#8B8478' },
           { label: 'Family Buffer',     pct: liveRule.bufferPct,          amt: liveNet * (liveRule.bufferPct / 100),            color: '#D97757' },
           { label: 'Long-term',         pct: liveRule.longTermPct,        amt: liveNet * (liveRule.longTermPct / 100),          color: '#7FA068' },
@@ -1964,14 +2030,21 @@ function ProfitAllocator({ data, stats, setData }) {
 
         return (
           <div className="card-warm p-7">
-            <div className="label mb-3" style={{ color: '#D97757' }}>{data.incomeType === 'fixed' ? 'Extra income this month' : 'Gross trading profit this month'}</div>
+            <div className="label mb-3" style={{ color: isFoundation ? '#7FA068' : '#D97757' }}>
+              {isFoundation ? 'Extra money received' : data.incomeType === 'fixed' ? 'Extra income this month' : 'Gross trading profit this month'}
+            </div>
             <div className="flex gap-3 items-end">
               <div className="flex-1">
                 <input type="number" className="input" placeholder="0" value={profit} onChange={(e) => setProfit(e.target.value)} style={{ fontSize: '18px' }} />
               </div>
-              <button className="btn btn-primary" onClick={calculate} disabled={!Number(profit)}>Allocate →</button>
+              <button className="btn btn-primary" onClick={calculate} disabled={!Number(profit)}>
+                {isFoundation ? 'Allocate money' : 'Allocate →'}
+              </button>
             </div>
-            <p className="text-xs mt-3" style={{ color: '#5C5648' }}>Enter pre-tax profit. The system reserves {data.taxReservePct}% for taxes automatically.</p>
+            {isFoundation
+              ? <p className="text-xs mt-3" style={{ color: '#5C5648' }}>From a gift, allowance, support payment, refund, or debt repayment. All of it goes straight to your Savings.</p>
+              : <p className="text-xs mt-3" style={{ color: '#5C5648' }}>Enter pre-tax profit. The system reserves {data.taxReservePct}% for taxes automatically.</p>
+            }
 
             {liveGross > 0 && (
               <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #26221C' }}>
@@ -1996,18 +2069,25 @@ function ProfitAllocator({ data, stats, setData }) {
         <div className="space-y-4 slide-up">
           <div className="card-warm p-7 glow-warm">
             <div className="flex items-baseline justify-between mb-2">
-              <div className="label" style={{ color: '#D97757' }}>Allocation breakdown</div>
-              <div className="text-xs mono" style={{ color: '#8B8478' }}>Stage {allocation.stage}</div>
+              <div className="label" style={{ color: isFoundation ? '#7FA068' : '#D97757' }}>
+                {isFoundation ? 'Where it goes' : 'Allocation breakdown'}
+              </div>
+              {!isFoundation && (
+                <div className="text-xs mono" style={{ color: '#8B8478' }}>Stage {allocation.stage}</div>
+              )}
             </div>
             <div className="display text-2xl" style={{ fontWeight: 300, fontStyle: 'italic' }}>
-              {data.incomeType === 'fixed' ? 'Income' : 'Gross'} {fmt(allocation.grossProfit)} → Net {fmt(allocation.netProfit)} after taxes
+              {isFoundation
+                ? <>{fmt(allocation.grossProfit)} → <span style={{ color: '#7FA068' }}>all to Savings</span></>
+                : <>{data.incomeType === 'fixed' ? 'Income' : 'Gross'} {fmt(allocation.grossProfit)} → Net {fmt(allocation.netProfit)} after taxes</>
+              }
             </div>
           </div>
 
-          <AllocationBlock label="Tax Reserve" amount={allocation.taxReserve} color="#8B8478" icon={Lock} note={`${data.taxReservePct}% set aside. Move to a separate savings account for quarterly estimated taxes.`} isReserve currency={data.currency} />
-          {allocation.toBuffer > 0 && <AllocationBlock label="To Family Buffer" amount={allocation.toBuffer} color="#D97757" icon={Shield} note="Protects family from trading volatility." currency={data.currency} />}
+          {!isFoundation && <AllocationBlock label="Tax Reserve" amount={allocation.taxReserve} color="#8B8478" icon={Lock} note={`${data.taxReservePct}% set aside. Move to a separate savings account for quarterly estimated taxes.`} isReserve currency={data.currency} />}
+          {allocation.toBuffer > 0 && <AllocationBlock label={isFoundation ? 'To Savings' : 'To Family Buffer'} amount={allocation.toBuffer} color={isFoundation ? '#7FA068' : '#D97757'} icon={Shield} note={isFoundation ? 'Goes straight into your Savings balance.' : 'Protects family from trading volatility.'} currency={data.currency} />}
           {allocation.toLongTerm > 0 && <AllocationBlock label="Long-term Investing" amount={allocation.toLongTerm} color="#7FA068" icon={PiggyBank} note="Index funds / long-term investments. Family's future independence." currency={data.currency} />}
-          {allocation.toTrading > 0 && data.incomeType !== 'fixed' && <AllocationBlock label="Trading Capital" amount={allocation.toTrading} color="#5B7FB8" icon={Briefcase} note="Compound your edge." currency={data.currency} />}
+          {allocation.toTrading > 0 && data.incomeType !== 'fixed' && !isFoundation && <AllocationBlock label="Trading Capital" amount={allocation.toTrading} color="#5B7FB8" icon={Briefcase} note="Compound your edge." currency={data.currency} />}
           {allocation.toGoals > 0 && (
             <AllocationBlock
               label="To Future Goals"
@@ -2031,9 +2111,15 @@ function ProfitAllocator({ data, stats, setData }) {
       {step === 'done' && (
         <div className="card-warm p-8 text-center slide-up">
           <Check size={32} style={{ color: '#7FA068' }} className="mx-auto mb-4" />
-          <div className="display text-3xl mb-2" style={{ fontStyle: 'italic', fontWeight: 300 }}>Allocated.</div>
-          <p style={{ color: '#8B8478' }}>Don't forget to actually transfer the tax reserve to a separate account.</p>
-          <button className="btn btn-primary mt-6" onClick={reset}>Allocate another</button>
+          <div className="display text-3xl mb-2" style={{ fontStyle: 'italic', fontWeight: 300 }}>Done.</div>
+          <p style={{ color: '#8B8478' }}>
+            {isFoundation
+              ? 'Your Savings balance has been updated.'
+              : "Don't forget to actually transfer the tax reserve to a separate account."}
+          </p>
+          <button className="btn btn-primary mt-6" onClick={reset}>
+            {isFoundation ? 'Allocate more money' : 'Allocate another'}
+          </button>
         </div>
       )}
 
@@ -2045,17 +2131,22 @@ function ProfitAllocator({ data, stats, setData }) {
             {data.profitAllocations.slice(-8).reverse().map(a => (
               <div key={a.id} className="flex items-center justify-between pb-3 border-b last:border-0" style={{ borderColor: '#26221C' }}>
                 <div>
-                  <div className="font-medium text-sm">Gross {fmt(a.grossProfit)} → Net {fmt(a.netProfit)}</div>
+                  <div className="font-medium text-sm">
+                    {a.isFoundation
+                      ? <>Received {fmt(a.grossProfit)}</>
+                      : <>Gross {fmt(a.grossProfit)} → Net {fmt(a.netProfit)}</>
+                    }
+                  </div>
                   <div className="text-xs mt-0.5" style={{ color: '#8B8478' }}>
                     {new Date(a.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                    {a.stage !== undefined && <span className="ml-2" style={{ color: '#5C5648' }}>· Stage {a.stage}</span>}
+                    {!a.isFoundation && a.stage !== undefined && <span className="ml-2" style={{ color: '#5C5648' }}>· Stage {a.stage}</span>}
                   </div>
                 </div>
                 <div className="flex gap-2 text-xs mono flex-wrap justify-end">
-                  <span style={{ color: '#8B8478' }}>tax {fmt(a.taxReserve)}</span>
-                  {a.toBuffer > 0 && <span style={{ color: '#D97757' }}>+{fmt(a.toBuffer)} buf</span>}
+                  {!a.isFoundation && <span style={{ color: '#8B8478' }}>tax {fmt(a.taxReserve)}</span>}
+                  {a.toBuffer > 0 && <span style={{ color: a.isFoundation ? '#7FA068' : '#D97757' }}>+{fmt(a.toBuffer)} {a.isFoundation ? 'savings' : 'buf'}</span>}
                   {a.toLongTerm > 0 && <span style={{ color: '#7FA068' }}>+{fmt(a.toLongTerm)} lt</span>}
-                  {a.toTrading > 0 && <span style={{ color: '#5B7FB8' }}>+{fmt(a.toTrading)} trd</span>}
+                  {!a.isFoundation && a.toTrading > 0 && <span style={{ color: '#5B7FB8' }}>+{fmt(a.toTrading)} trd</span>}
                   {a.toGoals > 0 && <span style={{ color: '#A06B8C' }}>+{fmt(a.toGoals)} goals</span>}
                   {a.toLifestyle > 0 && <span style={{ color: '#B89968' }}>+{fmt(a.toLifestyle)} life</span>}
                 </div>

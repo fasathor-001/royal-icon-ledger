@@ -4,7 +4,7 @@
 // Sets up currency, timezone, income type, expenses, spending budget,
 // buffer target, starting balances, PIN, and notifications.
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Heart, ArrowRight, Check, X, Plus, Wallet, Shield,
   Briefcase, Sparkles, Users, Bell, Lock, TrendingUp, Landmark, Info, Mail,
@@ -36,6 +36,43 @@ function getDefaultEnvelopeTracking(name) {
 }
 
 // TIMEZONES is imported from src/lib/timezones.js (13-entry curated IANA list).
+
+function InfoPopover({ label, children }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  React.useEffect(() => {
+    if (!open) return;
+    const handle = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [open]);
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'inline-block', marginBottom: '20px' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          fontSize: '12px', color: '#8B8478', fontWeight: 600, letterSpacing: '0.05em',
+          background: '#14110E', border: '1px solid #26221C', borderRadius: '4px',
+          padding: '8px 12px', cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+        }}
+      >
+        <Info size={13} style={{ color: '#D97757', flexShrink: 0 }} /> {label}
+      </button>
+      {open && (
+        <div style={{
+          position: 'absolute', left: 0, top: 'calc(100% + 6px)',
+          zIndex: 200, width: 320,
+          background: '#14110E', border: '1px solid #26221C', borderRadius: '4px',
+          padding: '14px 16px', fontSize: '13px', color: '#5C5648', lineHeight: 1.7,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.55)',
+        }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Onboarding({ data, setData, onComplete }) {
   const [step, setStep] = useState(1);
@@ -508,26 +545,19 @@ export default function Onboarding({ data, setData, onComplete }) {
               Turn on tracking for categories you want to actively control month to month — like groceries, transport, or family spending.
             </p>
 
-            {/* How does this work? */}
-            <details style={{ marginBottom: '20px', background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '14px 16px', cursor: 'pointer' }}>
-              <summary style={{ fontSize: '12px', color: '#8B8478', fontWeight: 600, letterSpacing: '0.05em', listStyle: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Info size={13} style={{ color: '#D97757', flexShrink: 0 }} /> How does envelope tracking work?
-              </summary>
-              <div style={{ marginTop: '12px', fontSize: '13px', color: '#5C5648', lineHeight: 1.7 }}>
-                <p style={{ margin: '0 0 8px' }}>
-                  <strong style={{ color: '#8B8478' }}>Fixed expenses</strong> (rent, insurance, phone) are predictable — no envelope needed. Just enter the amount.
-                </p>
-                <p style={{ margin: '0 0 8px' }}>
-                  <strong style={{ color: '#8B8478' }}>Variable expenses</strong> (groceries, transport, family support) can creep over budget. Tap 🪣 to create a Budget envelope that tracks your spending against the cap you set here.
-                </p>
-                <p style={{ margin: '0 0 8px' }}>
-                  Once the envelope is on, pick what happens at the end of each month:
-                </p>
-                <p style={{ margin: '0 0 4px' }}>🔄 <strong style={{ color: '#8B8478' }}>Reset</strong> — cap starts fresh at full every month. Best for rent, subscriptions.</p>
-                <p style={{ margin: '0 0 4px' }}>➕ <strong style={{ color: '#8B8478' }}>Rollover</strong> — unspent balance carries forward. Great for groceries or petrol.</p>
-                <p style={{ margin: 0 }}>💧 <strong style={{ color: '#8B8478' }}>Sweep</strong> — unspent balance moves to your Buffer automatically. Turns restraint into savings.</p>
-              </div>
-            </details>
+            {/* How does this work? — floating popover */}
+            <InfoPopover label="How does envelope tracking work?">
+              <p style={{ margin: '0 0 8px' }}>
+                <strong style={{ color: '#8B8478' }}>Fixed expenses</strong> (rent, insurance, phone) are predictable — no envelope needed. Just enter the amount.
+              </p>
+              <p style={{ margin: '0 0 8px' }}>
+                <strong style={{ color: '#8B8478' }}>Variable expenses</strong> (groceries, transport, family support) can creep over budget. Tap the envelope icon to create a Budget envelope that tracks your spending against the cap you set here.
+              </p>
+              <p style={{ margin: '0 0 8px' }}>Once the envelope is on, pick what happens at the end of each month:</p>
+              <p style={{ margin: '0 0 4px' }}>🔄 <strong style={{ color: '#8B8478' }}>Reset</strong> — cap starts fresh at full every month.</p>
+              <p style={{ margin: '0 0 4px' }}>➕ <strong style={{ color: '#8B8478' }}>Rollover</strong> — unspent balance carries forward.</p>
+              <p style={{ margin: 0 }}>💧 <strong style={{ color: '#8B8478' }}>Sweep</strong> — unspent balance moves to your Savings automatically.</p>
+            </InfoPopover>
 
             <div style={{ background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: '4px', padding: '16px', marginBottom: '24px' }}>
               <div className="ob-label" style={{ color: '#D97757', marginBottom: '8px' }}>Running total</div>
