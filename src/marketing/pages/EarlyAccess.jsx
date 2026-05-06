@@ -101,12 +101,30 @@ export default function EarlyAccess({ navigate }) {
       });
 
       if (error) {
+        // Always log the real error so it's visible in the browser console
+        console.error('[EarlyAccess] Supabase insert error:', error.code, error.message, error);
+
         // Duplicate email — treat as success so we don't leak who's already signed up
         if (error.code === '23505') {
           setSubmitting(false);
           setSubmitted(true);
           return;
         }
+
+        // Table does not exist — schema hasn't been applied yet
+        if (error.code === '42P01') {
+          setSubmitError('Service setup in progress. Please email us directly at hello@royalledger.app to join the early access list.');
+          setSubmitting(false);
+          return;
+        }
+
+        // RLS policy blocking insert
+        if (error.code === '42501' || error.message?.toLowerCase().includes('row-level security')) {
+          setSubmitError('Submission temporarily unavailable. Please email hello@royalledger.app to join early access.');
+          setSubmitting(false);
+          return;
+        }
+
         setSubmitError('Something went wrong. Please try again or email us at hello@royalledger.app.');
         setSubmitting(false);
         return;
