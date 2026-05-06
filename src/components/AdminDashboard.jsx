@@ -82,7 +82,8 @@ function countryDisplay(raw) {
   if (!raw) return '—';
   const trimmed = raw.trim();
   if (!trimmed) return '—';
-  // Already looks like a 2–3 letter code
+  if (trimmed.toUpperCase() === 'OTHER') return 'Other';
+  // Already a 2–3 letter ISO code
   if (trimmed.length <= 3) return trimmed.toUpperCase();
   return COUNTRY_CODES[trimmed.toLowerCase()] || trimmed;
 }
@@ -101,6 +102,30 @@ function incomeDisplay(raw, variant = 'short') {
   if (!raw) return '—';
   return INCOME_META[raw]?.[variant] || raw;
 }
+
+// ── Income situation labels ───────────────────────────────────────────────────
+const INCOME_SITUATION_LABELS = {
+  allowance:      'Allowance / Support',
+  salary:         'Salary',
+  freelance_gigs: 'Freelance / Gigs',
+  business:       'Business income',
+  trading:        'Trading income',
+  mixed:          'Mixed',
+};
+
+// ── Referral source labels ────────────────────────────────────────────────────
+const REFERRAL_LABELS = {
+  twitter_x:  'Twitter / X',
+  instagram:  'Instagram',
+  tiktok:     'TikTok',
+  linkedin:   'LinkedIn',
+  youtube:    'YouTube',
+  google:     'Google Search',
+  friend:     'Friend / Colleague',
+  whatsapp:   'WhatsApp',
+  podcast:    'Podcast / Newsletter',
+  other:      'Other',
+};
 
 function fmt(dateStr) {
   if (!dateStr) return '—';
@@ -755,9 +780,16 @@ function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onN
         <div style={{ borderTop: '1px solid #1A1610', padding: '16px 18px 16px 42px', display: 'flex', flexDirection: 'column', gap: '16px', background: '#0C0A08' }}>
 
           <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-            <MetaItem label="Country"  value={countryDisplay(lead.country)} />
-            <MetaItem label="Income"   value={incomeDisplay(lead.income_type, 'full')} />
-            <MetaItem label="Joined"   value={fmt(lead.created_at)} />
+            <MetaItem label="Country"   value={countryDisplay(lead.country)} />
+            {lead.phone && <MetaItem label="Phone" value={lead.phone} />}
+            <MetaItem label="Income"    value={incomeDisplay(lead.income_type, 'full')} />
+            {lead.income_situation && (
+              <MetaItem label="Situation" value={INCOME_SITUATION_LABELS[lead.income_situation] || lead.income_situation} />
+            )}
+            {lead.referral_source && (
+              <MetaItem label="Source" value={REFERRAL_LABELS[lead.referral_source] || lead.referral_source} />
+            )}
+            <MetaItem label="Joined"    value={fmt(lead.created_at)} />
             {lead.invited_at   && <MetaItem label="Invited"   value={fmt(lead.invited_at)} />}
             {lead.activated_at && <MetaItem label="Activated" value={fmt(lead.activated_at)} />}
             {lead.suspended_at && <MetaItem label="Suspended" value={fmt(lead.suspended_at)} />}
