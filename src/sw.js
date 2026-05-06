@@ -1,7 +1,13 @@
-import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching';
+import { precacheAndRoute, cleanupOutdatedCaches, createHandlerBoundToURL } from 'workbox-precaching';
+import { NavigationRoute, registerRoute } from 'workbox-routing';
 
 cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
+
+// SPA navigation fallback — serve the cached index.html for all navigations
+// so the app works offline regardless of which route the user visits.
+const navHandler = createHandlerBoundToURL('/index.html');
+registerRoute(new NavigationRoute(navHandler));
 
 // Take over immediately so new builds are served without waiting for all tabs to close
 self.addEventListener('install', () => self.skipWaiting());

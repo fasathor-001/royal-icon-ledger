@@ -35,7 +35,7 @@ function AppShell() {
       <AppV2 />
       {updateReady && (
         <div style={{
-          position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
+          position: 'fixed', bottom: 'calc(76px + env(safe-area-inset-bottom, 0px))', left: '50%', transform: 'translateX(-50%)',
           background: '#D97757', color: '#0A0908', padding: '14px 20px', borderRadius: '6px',
           zIndex: 9999, display: 'flex', alignItems: 'center', gap: '14px',
           fontFamily: 'Inter, system-ui, sans-serif', fontSize: '14px', fontWeight: 500,

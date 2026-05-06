@@ -134,7 +134,7 @@ export default function InstallPrompt() {
           className="ip-banner"
           style={{
             position: 'fixed',
-            bottom: '20px',
+            bottom: 'calc(76px + env(safe-area-inset-bottom, 0px))',
             left: '50%',
             transform: 'translateX(-50%)',
             background: '#1A1410',
