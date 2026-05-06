@@ -857,6 +857,45 @@ function RefreshBtn({ onClick, loading }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+// ── Pagination bar ────────────────────────────────────────────────────────────
+function PaginationBar({ page, pageSize, total, onPrev, onNext, itemLabel = 'items' }) {
+  if (total === 0) return null;
+  const from  = page * pageSize + 1;
+  const to    = Math.min((page + 1) * pageSize, total);
+  const pages = Math.ceil(total / pageSize);
+  if (pages <= 1) return null;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0 4px', borderTop: '1px solid #1A1610', marginTop: '12px' }}>
+      <span style={{ fontSize: '10px', color: '#5C5648' }}>
+        Showing {from}–{to} of {total} {itemLabel}
+      </span>
+      <div style={{ display: 'flex', gap: '6px' }}>
+        <button
+          onClick={onPrev}
+          disabled={page === 0}
+          style={{ fontSize: '11px', padding: '4px 11px', borderRadius: '4px', border: '1px solid #26221C', background: 'none', color: page === 0 ? '#2A2520' : '#8B8478', cursor: page === 0 ? 'not-allowed' : 'pointer', transition: 'all 0.12s' }}
+          onMouseEnter={e => { if (page > 0) { e.currentTarget.style.borderColor = '#5C5648'; e.currentTarget.style.color = '#B0A898'; } }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = page === 0 ? '#2A2520' : '#8B8478'; }}
+        >
+          ← Prev
+        </button>
+        <span style={{ fontSize: '11px', color: '#4A4038', padding: '4px 8px', lineHeight: 1.5 }}>
+          {page + 1} / {pages}
+        </span>
+        <button
+          onClick={onNext}
+          disabled={to >= total}
+          style={{ fontSize: '11px', padding: '4px 11px', borderRadius: '4px', border: '1px solid #26221C', background: 'none', color: to >= total ? '#2A2520' : '#8B8478', cursor: to >= total ? 'not-allowed' : 'pointer', transition: 'all 0.12s' }}
+          onMouseEnter={e => { if (to < total) { e.currentTarget.style.borderColor = '#5C5648'; e.currentTarget.style.color = '#B0A898'; } }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = to >= total ? '#2A2520' : '#8B8478'; }}
+        >
+          Next →
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard({ user }) {
   const [leads, setLeads]                         = useState([]);
   const [loading, setLoading]                     = useState(true);
@@ -875,6 +914,13 @@ export default function AdminDashboard({ user }) {
   const [activityLogs, setActivityLogs]           = useState([]);
   const [activityLoading, setActivityLoading]     = useState(false);
   const [bulkInviteOpen, setBulkInviteOpen]       = useState(false);
+  const [leadsPage, setLeadsPage]                 = useState(0);
+  const [pinResetsPage, setPinResetsPage]         = useState(0);
+  const [activityPage, setActivityPage]           = useState(0);
+
+  const USERS_PAGE_SIZE    = 50;
+  const PIN_PAGE_SIZE      = 25;
+  const ACTIVITY_PAGE_SIZE = 30;
 
   const isAdmin = !!(user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase()));
 
@@ -1009,6 +1055,12 @@ export default function AdminDashboard({ user }) {
     return matchFilter && matchSearch;
   });
 
+  // Paged slices
+  const pagedLeads        = visible.slice(leadsPage * USERS_PAGE_SIZE, (leadsPage + 1) * USERS_PAGE_SIZE);
+  const pagedPinResets    = pinResets.slice(pinResetsPage * PIN_PAGE_SIZE, (pinResetsPage + 1) * PIN_PAGE_SIZE);
+  const pagedActivityLogs = activityLogs.slice(activityPage * ACTIVITY_PAGE_SIZE, (activityPage + 1) * ACTIVITY_PAGE_SIZE);
+
+  // Select-all operates across ALL filtered leads (not just current page)
   const visibleIds          = visible.map(l => l.id);
   const allVisibleSelected  = visibleIds.length > 0 && visibleIds.every(id => selectedIds.has(id));
   const someVisibleSelected = visibleIds.some(id => selectedIds.has(id)) && !allVisibleSelected;
@@ -1381,13 +1433,13 @@ If you have any questions, just reply to this email.
                     type="text"
                     placeholder="Search name or email…"
                     value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
+                    onChange={e => { setSearchQuery(e.target.value); setLeadsPage(0); }}
                     style={{ width: '100%', background: '#0F0D0A', border: '1px solid #26221C', borderRadius: '5px', padding: '7px 10px 7px 28px', fontSize: '12px', color: '#E8E2D5', boxSizing: 'border-box', outline: 'none', transition: 'border-color 0.12s' }}
                     onFocus={e => e.target.style.borderColor = '#5C5648'}
                     onBlur={e => e.target.style.borderColor = '#26221C'}
                   />
                   {searchQuery && (
-                    <button onClick={() => setSearchQuery('')} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#5C5648', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
+                    <button onClick={() => { setSearchQuery(''); setLeadsPage(0); }} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#5C5648', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
                       <X size={11} />
                     </button>
                   )}
@@ -1401,7 +1453,7 @@ If you have any questions, just reply to this email.
                     return (
                       <button
                         key={f}
-                        onClick={() => { setActiveFilter(f); setSelectedIds(new Set()); }}
+                        onClick={() => { setActiveFilter(f); setSelectedIds(new Set()); setLeadsPage(0); }}
                         style={{ padding: '4px 11px', borderRadius: '999px', fontSize: '11px', fontWeight: isActive ? 700 : 400, border: `1px solid ${isActive ? meta.color : '#1E1C18'}`, background: isActive ? meta.bg : 'transparent', color: isActive ? meta.color : '#8B8478', cursor: 'pointer', transition: 'all 0.12s', display: 'flex', alignItems: 'center', gap: '4px' }}
                         onMouseEnter={e => { if (!isActive) { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = '#B0A898'; } }}
                         onMouseLeave={e => { if (!isActive) { e.currentTarget.style.borderColor = '#1E1C18'; e.currentTarget.style.color = '#8B8478'; } }}
@@ -1417,7 +1469,7 @@ If you have any questions, just reply to this email.
                   })}
                   {(activeFilter !== 'All' || searchQuery) && (
                     <button
-                      onClick={() => { setActiveFilter('All'); setSearchQuery(''); setSelectedIds(new Set()); }}
+                      onClick={() => { setActiveFilter('All'); setSearchQuery(''); setSelectedIds(new Set()); setLeadsPage(0); }}
                       style={{ padding: '4px 10px', borderRadius: '999px', fontSize: '11px', border: '1px solid #1E1C18', background: 'transparent', color: '#5C5648', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
                       onMouseEnter={e => { e.currentTarget.style.color = '#8B8478'; e.currentTarget.style.borderColor = '#26221C'; }}
                       onMouseLeave={e => { e.currentTarget.style.color = '#5C5648'; e.currentTarget.style.borderColor = '#1E1C18'; }}
@@ -1494,7 +1546,7 @@ If you have any questions, just reply to this email.
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                    {visible.map(lead => (
+                    {pagedLeads.map(lead => (
                       <LeadRow
                         key={lead.id}
                         lead={lead}
@@ -1509,6 +1561,15 @@ If you have any questions, just reply to this email.
                       />
                     ))}
                   </div>
+
+                  <PaginationBar
+                    page={leadsPage}
+                    pageSize={USERS_PAGE_SIZE}
+                    total={visible.length}
+                    onPrev={() => setLeadsPage(p => Math.max(0, p - 1))}
+                    onNext={() => setLeadsPage(p => p + 1)}
+                    itemLabel="users"
+                  />
                 </div>
               )}
 
@@ -1605,7 +1666,7 @@ If you have any questions, just reply to this email.
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {pinResets.map(req => {
+                  {pagedPinResets.map(req => {
                     const isPending  = req.status === 'pending';
                     const isApproved = req.status === 'approved';
                     const badgeColor = isPending ? '#D97757' : isApproved ? '#7FA068' : '#8B8478';
@@ -1650,6 +1711,14 @@ If you have any questions, just reply to this email.
                       </div>
                     );
                   })}
+                  <PaginationBar
+                    page={pinResetsPage}
+                    pageSize={PIN_PAGE_SIZE}
+                    total={pinResets.length}
+                    onPrev={() => setPinResetsPage(p => Math.max(0, p - 1))}
+                    onNext={() => setPinResetsPage(p => p + 1)}
+                    itemLabel="requests"
+                  />
                 </div>
               )}
             </>
@@ -1679,9 +1748,9 @@ If you have any questions, just reply to this email.
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  {activityLogs.map((log, idx) => {
+                  {pagedActivityLogs.map((log, idx) => {
                     const meta     = ACTION_META[log.action] || { label: log.action, color: '#B0A898' };
-                    const isLast   = idx === activityLogs.length - 1;
+                    const isLast   = idx === pagedActivityLogs.length - 1;
                     const ts       = log.created_at
                       ? new Date(log.created_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
                       : '—';
@@ -1745,6 +1814,14 @@ If you have any questions, just reply to this email.
                       </div>
                     );
                   })}
+                  <PaginationBar
+                    page={activityPage}
+                    pageSize={ACTIVITY_PAGE_SIZE}
+                    total={activityLogs.length}
+                    onPrev={() => setActivityPage(p => Math.max(0, p - 1))}
+                    onNext={() => setActivityPage(p => p + 1)}
+                    itemLabel="log entries"
+                  />
                 </div>
               )}
             </>
