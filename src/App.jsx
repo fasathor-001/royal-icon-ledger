@@ -145,85 +145,137 @@ const foundationCopy = {
 };
 
 // ── Mobile bottom navigation ──────────────────────────────────────────────────
+const ADMIN_MOBILE_EMAILS = ['hello@royalledger.app', 'fasathor@gmail.com'];
+
 function MobileBottomNav({ tab, setTab, user, data }) {
   const [showMore, setShowMore] = useState(false);
-  const showTrading = data?.incomeType !== 'fixed' && data?.mode !== 'foundation';
+
+  // Foundation check: guard on BOTH mode AND incomeType so old accounts
+  // (incomeType='foundation' set before 'mode' field existed) behave correctly.
+  const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
+  const showTrading  = !isFoundation && data?.incomeType !== 'fixed';
+  const isAdminUser  = ADMIN_MOBILE_EMAILS.includes(user?.email?.toLowerCase());
 
   const primary = [
-    { id: 'command',  label: 'Home',    Icon: Home },
-    { id: 'impulse',  label: 'Gate',    Icon: Shield },
-    { id: 'budget',   label: 'Budget',  Icon: Wallet },
+    { id: 'command', label: 'Home',   Icon: Home   },
+    { id: 'impulse', label: 'Gate',   Icon: Shield },
+    { id: 'budget',  label: 'Budget', Icon: Wallet },
     ...(showTrading ? [{ id: 'trading', label: 'Trade', Icon: TrendingUp }] : []),
   ];
 
   const secondary = [
-    { id: 'setup',   label: data?.mode === 'foundation' ? foundationCopy.setupAndSalary : 'Setup & Salary' },
-    { id: 'profit', label: data?.mode === 'foundation' ? 'Money Allocator' : data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' },
+    { id: 'setup',   label: isFoundation ? foundationCopy.setupAndSalary : 'Setup & Salary' },
+    { id: 'profit',  label: isFoundation ? 'Money Allocator' : data?.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' },
     { id: 'history', label: 'History' },
-    { id: 'rules',   label: 'Rules' },
-    ...(user ? [{ id: 'settings', label: 'Settings' }] : []),
+    { id: 'rules',   label: 'Rules'   },
+    ...(user       ? [{ id: 'settings', label: 'Settings' }] : []),
+    ...(isAdminUser ? [{ id: 'admin',    label: 'Admin'    }] : []),
   ];
 
   const isSecondaryActive = secondary.some(t => t.id === tab);
 
   return (
     <>
-      {/* More menu backdrop */}
+      {/* Backdrop — deliberately stops above the nav bar so primary buttons
+          remain directly tappable while the More sheet is open.            */}
       {showMore && (
-        <div onClick={() => setShowMore(false)} style={{ position: 'fixed', inset: 0, zIndex: 998 }} />
+        <div
+          onClick={() => setShowMore(false)}
+          style={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0,
+            bottom: 'calc(64px + env(safe-area-inset-bottom))',
+            zIndex: 998,
+          }}
+        />
       )}
 
-      {/* More menu sheet */}
+      {/* More sheet */}
       {showMore && (
         <div style={{
-          position: 'fixed', bottom: 'calc(64px + env(safe-area-inset-bottom))',
-          left: 0, right: 0, zIndex: 999,
-          background: '#14110E', borderTop: '1px solid #26221C',
+          position: 'fixed',
+          bottom: 'calc(64px + env(safe-area-inset-bottom))',
+          left: 0, right: 0,
+          zIndex: 999,
+          background: '#14110E',
+          borderTop: '1px solid #26221C',
           padding: '6px 0 10px',
         }}>
           {secondary.map(({ id, label }) => (
-            <button key={id} onClick={() => { setTab(id); setShowMore(false); }} style={{
-              display: 'block', width: '100%', textAlign: 'left',
-              padding: '13px 24px', fontSize: 15, background: 'none', border: 'none',
-              cursor: 'pointer', color: tab === id ? '#D97757' : '#8B8478',
-              borderLeft: tab === id ? '3px solid #D97757' : '3px solid transparent',
-            }}>
+            <button
+              key={id}
+              onClick={() => { setTab(id); setShowMore(false); }}
+              style={{
+                display: 'block', width: '100%', textAlign: 'left',
+                padding: '13px 24px', fontSize: 15,
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: tab === id ? '#D97757' : '#8B8478',
+                borderLeft: tab === id ? '3px solid #D97757' : '3px solid transparent',
+              }}
+            >
               {label}
             </button>
           ))}
         </div>
       )}
 
-      {/* Bottom bar — mobile-nav-bar class handles display:flex + hidden at sm+ */}
-      <nav className="mobile-nav-bar" style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 997,
-        background: '#0A0908', borderTop: '1px solid #26221C',
-        height: 64, paddingBottom: 'env(safe-area-inset-bottom)',
-      }}>
+      {/* Bottom bar — mobile-nav-bar class: display:flex on mobile, none at sm+ */}
+      <nav
+        className="mobile-nav-bar"
+        style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0,
+          zIndex: 1000,                          // above the More sheet backdrop
+          background: '#0A0908', borderTop: '1px solid #26221C',
+          height: 64, paddingBottom: 'env(safe-area-inset-bottom)',
+          alignItems: 'stretch',
+        }}
+      >
         {primary.map(({ id, label, Icon }) => {
           const active = tab === id;
           return (
-            <button key={id} onClick={() => { setTab(id); setShowMore(false); }} style={{
-              flex: 1, display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center', gap: 3,
-              background: 'none', border: 'none', cursor: 'pointer',
-              color: active ? '#D97757' : '#5C5648',
-              transition: 'color 150ms',
-            }}>
+            <button
+              key={id}
+              onClick={() => { setTab(id); setShowMore(false); }}
+              style={{
+                flex: 1, display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center', gap: 3,
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: active ? '#D97757' : '#5C5648',
+                transition: 'color 150ms',
+                minWidth: 0,
+              }}
+            >
               <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
-              <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{label}</span>
+              <span style={{
+                fontSize: 9, fontWeight: 600,
+                letterSpacing: '0.05em', textTransform: 'uppercase',
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>
+                {label}
+              </span>
             </button>
           );
         })}
-        <button onClick={() => setShowMore(s => !s)} style={{
-          flex: 1, display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center', gap: 3,
-          background: 'none', border: 'none', cursor: 'pointer',
-          color: (showMore || isSecondaryActive) ? '#D97757' : '#5C5648',
-          transition: 'color 150ms',
-        }}>
+
+        {/* More button */}
+        <button
+          onClick={() => setShowMore(s => !s)}
+          style={{
+            flex: 1, display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: 3,
+            background: 'none', border: 'none', cursor: 'pointer',
+            color: (showMore || isSecondaryActive) ? '#D97757' : '#5C5648',
+            transition: 'color 150ms',
+            minWidth: 0,
+          }}
+        >
           <MoreHorizontal size={20} strokeWidth={(showMore || isSecondaryActive) ? 2.2 : 1.8} />
-          <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>More</span>
+          <span style={{
+            fontSize: 9, fontWeight: 600,
+            letterSpacing: '0.05em', textTransform: 'uppercase',
+          }}>
+            More
+          </span>
         </button>
       </nav>
     </>
@@ -875,26 +927,34 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
       </header>
 
       {/* Desktop tab nav — hidden on mobile, replaced by bottom bar */}
-      <nav className="border-b hidden sm:block" style={{ borderColor: '#26221C', background: '#0A0908', flexShrink: 0 }}>
-        <div className="max-w-6xl mx-auto px-5 flex gap-7 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-          {[
-            { id: 'command', label: 'Command' },
-            { id: 'setup', label: data.mode === 'foundation' ? foundationCopy.setupAndSalary : 'Setup & Salary' },
-            { id: 'budget', label: 'Budget' },
-            { id: 'profit', label: data.mode === 'foundation' ? 'Money Allocator' : data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' },
-            ...(data.incomeType !== 'fixed' && data.mode !== 'foundation' ? [{ id: 'trading', label: 'Trading P&L' }] : []),
-            { id: 'impulse', label: 'Impulse Control' },
-            { id: 'history', label: 'History' },
-            { id: 'rules', label: 'Rules' },
-            ...(user ? [{ id: 'settings', label: 'Settings' }] : []),
-            ...(['hello@royalledger.app', 'fasathor@gmail.com'].includes(user?.email?.toLowerCase()) ? [{ id: 'admin', label: 'Admin' }] : []),
-          ].map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)} className={`tab-btn ${tab === t.id ? 'tab-active' : 'tab-inactive'}`}>
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </nav>
+      {(() => {
+        // Foundation: guard on BOTH mode AND incomeType so legacy accounts
+        // (incomeType='foundation' before 'mode' field was added) are handled.
+        const isFoundationDesk = data.mode === 'foundation' || data.incomeType === 'foundation';
+        const showTradingDesk  = !isFoundationDesk && data.incomeType !== 'fixed';
+        return (
+          <nav className="border-b hidden sm:block" style={{ borderColor: '#26221C', background: '#0A0908', flexShrink: 0 }}>
+            <div className="max-w-6xl mx-auto px-5 flex gap-7 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+              {[
+                { id: 'command', label: 'Command' },
+                { id: 'setup',   label: isFoundationDesk ? foundationCopy.setupAndSalary : 'Setup & Salary' },
+                { id: 'budget',  label: 'Budget' },
+                { id: 'profit',  label: isFoundationDesk ? 'Money Allocator' : data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator' },
+                ...(showTradingDesk ? [{ id: 'trading', label: 'Trading P&L' }] : []),
+                { id: 'impulse', label: 'Impulse Control' },
+                { id: 'history', label: 'History' },
+                { id: 'rules',   label: 'Rules' },
+                ...(user ? [{ id: 'settings', label: 'Settings' }] : []),
+                ...(ADMIN_MOBILE_EMAILS.includes(user?.email?.toLowerCase()) ? [{ id: 'admin', label: 'Admin' }] : []),
+              ].map(t => (
+                <button key={t.id} onClick={() => setTab(t.id)} className={`tab-btn ${tab === t.id ? 'tab-active' : 'tab-inactive'}`}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </nav>
+        );
+      })()}
 
       <div style={{ flexShrink: 0 }}>
         <PushPromptBanner user={user} data={data} setData={setData} />
