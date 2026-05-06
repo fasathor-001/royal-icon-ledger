@@ -205,6 +205,9 @@ export default function Onboarding({ data, setData, onComplete }) {
 
     setData(d => ({
       ...d,
+      // ── Onboarding timestamp — written once, never overwritten ──
+      // Used for time-based nudges and graduation timing.
+      createdAt: d.createdAt || new Date().toISOString(),
       // ── Existing fields (unchanged) ──
       expenses,
       envelopes: [...(d.envelopes || []), ...newEnvelopes],
@@ -878,10 +881,12 @@ export default function Onboarding({ data, setData, onComplete }) {
           <div>
             <div className="ob-label" style={{ color: '#D97757', marginBottom: '12px' }}>Step {step} of {totalSteps}</div>
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
-              <span style={{ fontStyle: 'italic', color: '#D97757' }}>Spending</span> & buffer reserve
+              <span style={{ fontStyle: 'italic', color: '#D97757' }}>Spending</span>{incomeType === 'foundation' ? ' & savings' : ' & buffer reserve'}
             </h1>
             <p style={{ color: '#8B8478', marginBottom: '32px', fontSize: '15px' }}>
-              Two more numbers to complete your monthly salary. These are what you take out of trading profits each month, on top of your expenses.
+              {incomeType === 'foundation'
+                ? 'Set a spending limit for the month. Any amount you choose to save on top goes straight into your savings.'
+                : 'Two more numbers to complete your monthly salary. These are what you take out of trading profits each month, on top of your expenses.'}
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '32px' }}>
@@ -904,9 +909,13 @@ export default function Onboarding({ data, setData, onComplete }) {
               </div>
 
               <div>
-                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Buffer reserve from salary</div>
+                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>
+                  {incomeType === 'foundation' ? 'Monthly savings amount' : 'Buffer reserve from salary'}
+                </div>
                 <p style={{ fontSize: '13px', color: '#8B8478', marginBottom: '12px' }}>
-                  Each month, this amount goes from your salary into the buffer (in addition to trading profits). Even {currencySymbol} 500/month adds up.
+                  {incomeType === 'foundation'
+                    ? `A small amount to put into savings each month. Even ${currencySymbol} 50/month makes a difference.`
+                    : `Each month, this amount goes from your salary into the buffer (in addition to trading profits). Even ${currencySymbol} 500/month adds up.`}
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span className="ob-mono" style={{ fontSize: '18px', color: '#5C5648' }}>{currencySymbol}</span>
@@ -924,7 +933,9 @@ export default function Onboarding({ data, setData, onComplete }) {
 
             {salary > 0 && (
               <div style={{ background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: '4px', padding: '20px', marginBottom: '32px' }}>
-                <div className="ob-label" style={{ color: '#D97757', marginBottom: '8px' }}>Your monthly salary</div>
+                <div className="ob-label" style={{ color: '#D97757', marginBottom: '8px' }}>
+                  {incomeType === 'foundation' ? 'Your money available' : 'Your monthly salary'}
+                </div>
                 <div className="ob-display" style={{ fontSize: '36px', fontWeight: 300, color: '#D97757' }}>{fmt(salary)}</div>
                 <div style={{ fontSize: '13px', color: '#8B8478', marginTop: '8px' }}>
                   {fmt(expenseTotal)} expenses + {fmt(Number(spendingBudget) || 0)} spending + {fmt(Number(bufferReserve) || 0)} buffer reserve
@@ -941,17 +952,33 @@ export default function Onboarding({ data, setData, onComplete }) {
           <div>
             <div className="ob-label" style={{ color: '#D97757', marginBottom: '12px' }}>Step {step} of {totalSteps}</div>
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
-              How big should your <span style={{ fontStyle: 'italic', color: '#D97757' }}>buffer</span> be?
+              {incomeType === 'foundation'
+                ? <>How much do you want to <span style={{ fontStyle: 'italic', color: '#D97757' }}>save</span>?</>
+                : <>How big should your <span style={{ fontStyle: 'italic', color: '#D97757' }}>buffer</span> be?</>}
             </h1>
             <p style={{ color: '#8B8478', marginBottom: '32px', fontSize: '15px' }}>
-              The buffer is months of full salary, stored in cash. More buffer means more peace of mind, less trading desperation. Bigger buffer = more protection for the people who depend on you.
+              {incomeType === 'foundation'
+                ? 'Pick a savings target in months. Start with something achievable — you can always grow it.'
+                : 'The buffer is months of full salary, stored in cash. More buffer means more peace of mind, less trading desperation. Bigger buffer = more protection for the people who depend on you.'}
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
               {[
-                { months: 6,  label: '6 months',  amount: salary * 6,  desc: 'Standard emergency fund. Survives one bad quarter.', recommended: incomeType === 'fixed' },
-                { months: 12, label: '12 months', amount: salary * 12, desc: 'A whole year of runway. Comfortable for most situations.', recommended: incomeType === 'mixed' },
-                { months: 18, label: '18 months', amount: salary * 18, desc: 'Sole earner with dependents. Variable income. The fortified position.', recommended: incomeType === 'variable' },
+                {
+                  months: 6,  label: '6 months',  amount: salary * 6,
+                  desc: incomeType === 'foundation' ? 'A solid starting point. Builds a real cushion.' : 'Standard emergency fund. Survives one bad quarter.',
+                  recommended: incomeType === 'fixed' || incomeType === 'foundation',
+                },
+                {
+                  months: 12, label: '12 months', amount: salary * 12,
+                  desc: incomeType === 'foundation' ? 'A full year of coverage. Worth growing toward.' : 'A whole year of runway. Comfortable for most situations.',
+                  recommended: incomeType === 'mixed',
+                },
+                {
+                  months: 18, label: '18 months', amount: salary * 18,
+                  desc: incomeType === 'foundation' ? 'Long-term security — set this as your ultimate goal.' : 'Sole earner with dependents. Variable income. The fortified position.',
+                  recommended: incomeType === 'variable',
+                },
               ].map(opt => (
                 <div
                   key={opt.months}
@@ -994,11 +1021,15 @@ export default function Onboarding({ data, setData, onComplete }) {
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '40px' }}>
-              {/* Buffer balance */}
+              {/* Buffer / Savings balance */}
               <div>
-                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Buffer account</div>
+                <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>
+                  {incomeType === 'foundation' ? 'Savings account' : 'Buffer account'}
+                </div>
                 <p style={{ fontSize: '13px', color: '#8B8478', marginBottom: '12px' }}>
-                  Your emergency / runway fund — ideally in a separate savings account.
+                  {incomeType === 'foundation'
+                    ? 'Your current savings — whatever you have set aside right now. Zero is fine.'
+                    : 'Your emergency / runway fund — ideally in a separate savings account.'}
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span className="ob-mono" style={{ fontSize: '18px', color: '#5C5648' }}>{currencySymbol}</span>
@@ -1013,8 +1044,8 @@ export default function Onboarding({ data, setData, onComplete }) {
                 </div>
               </div>
 
-              {/* Trading capital — hidden for fixed income */}
-              {incomeType !== 'fixed' && (
+              {/* Trading capital — hidden for fixed income and Foundation */}
+              {incomeType !== 'fixed' && incomeType !== 'foundation' && (
                 <div>
                   <div className="ob-label" style={{ color: '#5C5648', marginBottom: '8px' }}>Trading / investment capital</div>
                   <p style={{ fontSize: '13px', color: '#8B8478', marginBottom: '12px' }}>
@@ -1057,7 +1088,9 @@ export default function Onboarding({ data, setData, onComplete }) {
             {/* Live net worth preview */}
             {(Number(startingBuffer) || Number(startingTradingCapital) || Number(startingLongTerm)) > 0 && (
               <div style={{ background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: '4px', padding: '20px', marginBottom: '32px' }}>
-                <div className="ob-label" style={{ color: '#D97757', marginBottom: '8px' }}>Starting net worth</div>
+                <div className="ob-label" style={{ color: '#D97757', marginBottom: '8px' }}>
+                  {incomeType === 'foundation' ? 'Starting savings total' : 'Starting net worth'}
+                </div>
                 <div className="ob-display" style={{ fontSize: '32px', fontWeight: 300, color: '#D97757' }}>
                   {fmt((Number(startingBuffer) || 0) + (Number(startingTradingCapital) || 0) + (Number(startingLongTerm) || 0))}
                 </div>
