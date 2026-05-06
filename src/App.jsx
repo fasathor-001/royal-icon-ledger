@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Wallet, Shield, TrendingUp, TrendingDown, Lock, Unlock, Clock, Brain,
   Sparkles, Flame, Coffee, ShoppingBag, Smartphone, Package,
@@ -686,9 +687,9 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     )}
 
     {/* ── Foundation graduation modal ────────────────────────────────────────
-        Rendered at the app root level — outside <main> and any scroll
-        containers — so position:fixed is always relative to the viewport.   */}
-    {showGraduationModal && (
+        Uses createPortal to render directly into document.body — completely
+        outside any CSS stacking context in the app tree.                    */}
+    {showGraduationModal && createPortal(
       <div
         onClick={() => setShowGraduationModal(false)}
         style={{
@@ -792,7 +793,8 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
             Explore Royal Ledger →
           </button>
         </div>
-      </div>
+      </div>,
+      document.body
     )}
   </div>
   );
