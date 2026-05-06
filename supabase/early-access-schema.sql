@@ -62,11 +62,22 @@ END$$;
 ALTER TABLE early_access_leads ENABLE ROW LEVEL SECURITY;
 
 -- Public INSERT (no auth required — anyone can submit the form)
-CREATE POLICY IF NOT EXISTS "public_can_submit_early_access"
-  ON early_access_leads
-  FOR INSERT
-  TO anon, authenticated
-  WITH CHECK (true);
+-- CREATE POLICY doesn't support IF NOT EXISTS, so we guard it manually.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename  = 'early_access_leads'
+      AND policyname = 'public_can_submit_early_access'
+  ) THEN
+    CREATE POLICY "public_can_submit_early_access"
+      ON early_access_leads
+      FOR INSERT
+      TO anon, authenticated
+      WITH CHECK (true);
+  END IF;
+END$$;
 
 -- No SELECT / UPDATE / DELETE for anon. Admin access via service-role key or
 -- the AdminDashboard (authenticated admin users only, enforced by RLS on reads
