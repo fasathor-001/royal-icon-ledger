@@ -39,6 +39,7 @@ const ACTION_META = {
   delete:             { label: 'Deleted lead',            color: '#C56B5A' },
   approve_pin_reset:  { label: 'Approved PIN reset for',  color: '#7FA068' },
   dismiss_pin_reset:  { label: 'Dismissed PIN reset for', color: '#8B8478' },
+  data_reset:         { label: 'Reset app data for',      color: '#C56B5A' },
   note:               { label: 'Added note to',           color: '#B0A898' },
 };
 
@@ -562,12 +563,34 @@ function BulkInviteModal({ leads, onClose, onAllSent }) {
 
 // ── Lead row ──────────────────────────────────────────────────────────────────
 
-function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onNoteSave, onCodeSave, onDelete }) {
+function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onNoteSave, onCodeSave, onDelete, onLogAction }) {
   const [expanded, setExpanded] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  const [resetResult, setResetResult] = useState(null); // null | 'ok' | 'no_user' | 'error'
   const [hovered, setHovered] = useState(false);
+
+  const handleDataReset = async () => {
+    setResetting(true);
+    setResetResult(null);
+    try {
+      const { data: result, error } = await supabase.rpc('admin_reset_user_data', {
+        p_email: lead.email.trim().toLowerCase(),
+      });
+      if (error) throw error;
+      setResetResult(result === 'no_auth_user' ? 'no_user' : 'ok');
+      if (onLogAction) onLogAction('data_reset', lead.email);
+    } catch (err) {
+      console.error('[AdminDashboard] dataReset:', err);
+      setResetResult('error');
+    } finally {
+      setResetting(false);
+      setConfirmReset(false);
+    }
+  };
 
   const handleDelete = async () => {
     setDeleting(true);
@@ -729,13 +752,54 @@ function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onN
               <ActionBtn label="Reset to pending" active={false} color="#8B8478" disabled={false} onClick={() => onUpdateStatus(lead.id, 'pending')} />
             )}
 
-            <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '5px' }}>
+            <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+
+              {/* ── Data reset feedback ── */}
+              {resetResult === 'ok' && (
+                <div style={{ fontSize: '10px', color: '#7FA068', background: 'rgba(127,160,104,0.08)', border: '1px solid #2A4A20', borderRadius: '3px', padding: '3px 8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <CheckCircle size={9} /> App data wiped — user will re-onboard on next login.
+                </div>
+              )}
+              {resetResult === 'no_user' && (
+                <div style={{ fontSize: '10px', color: '#B89968', background: 'rgba(184,153,104,0.08)', border: '1px solid #3A2A1E', borderRadius: '3px', padding: '3px 8px' }}>
+                  No auth account found for this email — nothing to reset.
+                </div>
+              )}
+              {resetResult === 'error' && (
+                <div style={{ fontSize: '10px', color: '#C56B5A', background: 'rgba(197,107,90,0.08)', border: '1px solid #4A1020', borderRadius: '3px', padding: '3px 8px' }}>
+                  Reset failed — run admin-reset-user-data.sql in Supabase first.
+                </div>
+              )}
               {deleteError && (
                 <div style={{ fontSize: '10px', color: '#C56B5A', background: 'rgba(197,107,90,0.08)', border: '1px solid #4A1020', borderRadius: '3px', padding: '3px 8px', maxWidth: '260px', lineHeight: 1.4 }}>
                   {deleteError}
                 </div>
               )}
+
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+
+                {/* Reset app data */}
+                {confirmReset ? (
+                  <>
+                    <span style={{ fontSize: '11px', color: '#B0A898' }}>Wipe all data for {lead.name || lead.email}?</span>
+                    <button onClick={handleDataReset} disabled={resetting} style={{ padding: '3px 10px', borderRadius: '4px', border: '1px solid #4A1020', background: 'rgba(197,107,90,0.15)', color: '#C56B5A', fontSize: '11px', fontWeight: 600, cursor: resetting ? 'default' : 'pointer', opacity: resetting ? 0.6 : 1 }}>
+                      {resetting ? 'Resetting…' : 'Confirm reset'}
+                    </button>
+                    <button onClick={() => setConfirmReset(false)} style={{ fontSize: '11px', color: '#8B8478', background: 'none', border: 'none', cursor: 'pointer', padding: '3px' }}>Cancel</button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => { setConfirmReset(true); setResetResult(null); }}
+                    title="Wipe this user's app data — they will re-onboard on next login"
+                    style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 9px', borderRadius: '4px', border: '1px solid #26221C', background: 'transparent', color: '#5C5648', fontSize: '11px', cursor: 'pointer', transition: 'all 0.12s' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#B89968'; e.currentTarget.style.color = '#B89968'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = '#5C5648'; }}
+                  >
+                    <RefreshCw size={10} /> Reset app data
+                  </button>
+                )}
+
+                {/* Delete lead */}
                 {confirmDelete ? (
                   <>
                     <span style={{ fontSize: '11px', color: '#B0A898' }}>Delete {lead.name || lead.email}?</span>
@@ -1441,6 +1505,7 @@ If you have any questions, just reply to this email.
                         onNoteSave={handleNoteSave}
                         onCodeSave={handleCodeSave}
                         onDelete={handleDelete}
+                        onLogAction={logAdminAction}
                       />
                     ))}
                   </div>
