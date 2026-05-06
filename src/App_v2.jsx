@@ -325,7 +325,7 @@ function LoginPage() {
             Royal <span style={{ fontStyle: 'italic', color: '#D97757' }}>Ledger</span>
           </div>
           <div style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#8B8478', fontWeight: 600 }}>
-            Personal finance for the disciplined
+            Financial OS for variable-income earners
           </div>
         </div>
 
@@ -364,7 +364,7 @@ function LoginPage() {
               <input type="text" className="auth-input"
                 value={inviteCode}
                 onChange={e => { setInviteCode(e.target.value.toUpperCase()); clearError(); }}
-                required placeholder="ABC123" maxLength={8} autoComplete="off"
+                required placeholder="RL-XXXX" maxLength={10} autoComplete="off"
                 style={codeInputStyle} />
               <div style={{ fontSize: '11px', color: '#8B8478', marginTop: '5px' }}>
                 No code?{' '}
