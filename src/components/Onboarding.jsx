@@ -23,6 +23,18 @@ const SUGGESTED_EXPENSES = [
   { name: 'Family support',      category: 'Family support',  placeholder: '0', variable: true },
 ];
 
+// ── Smart envelope defaults ──────────────────────────────────────────────────
+// Case-insensitive partial-match keywords used to pre-toggle envelope tracking.
+const ENVELOPE_ON_KEYWORDS  = ['groceries', 'food', 'transport', 'petrol', 'fuel', 'family', 'kids', 'household'];
+const ENVELOPE_OFF_KEYWORDS = ['rent', 'bond', 'mortgage', 'insurance', 'school', 'phone'];
+
+function getDefaultEnvelopeTracking(name) {
+  const lower = name.toLowerCase();
+  if (ENVELOPE_OFF_KEYWORDS.some(k => lower.includes(k))) return false;
+  if (ENVELOPE_ON_KEYWORDS.some(k => lower.includes(k))) return true;
+  return false; // unknown expense — default off
+}
+
 // TIMEZONES is imported from src/lib/timezones.js (13-entry curated IANA list).
 
 export default function Onboarding({ data, setData, onComplete }) {
@@ -53,7 +65,14 @@ export default function Onboarding({ data, setData, onComplete }) {
 
   // ── Envelope tracking (Step 5) ───────────────────────────────────────────
   // keyed by suggested expense name; value: true/false
-  const [envelopeTracking, setEnvelopeTracking] = useState({});
+  // Initialised with smart defaults — variable categories pre-toggled on.
+  const [envelopeTracking, setEnvelopeTracking] = useState(() => {
+    const defaults = {};
+    SUGGESTED_EXPENSES.forEach(s => {
+      if (!s.fixed) defaults[s.name] = getDefaultEnvelopeTracking(s.name);
+    });
+    return defaults;
+  });
   // keyed by suggested expense name; value: 'reset' | 'rollover' | 'sweep'
   const [envelopeMode, setEnvelopeMode] = useState({});
   // Gate shown when user tries to advance past Step 5 with untracked variable costs
@@ -474,14 +493,15 @@ export default function Onboarding({ data, setData, onComplete }) {
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
               Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>real</span> monthly expenses
             </h1>
-            <p style={{ color: '#8B8478', marginBottom: '16px', fontSize: '15px' }}>
-              Add what you actually spend each month. Skip any that don't apply. Tap 🪣 to track an expense inside a Budget envelope — useful for variable costs like groceries or transport.
+            <p style={{ color: '#8B8478', marginBottom: '16px', fontSize: '15px', lineHeight: 1.7 }}>
+              Add everything that costs you money.<br />
+              Turn on tracking for categories you want to actively control month to month — like groceries, transport, or family spending.
             </p>
 
             {/* How does this work? */}
             <details style={{ marginBottom: '20px', background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '14px 16px', cursor: 'pointer' }}>
               <summary style={{ fontSize: '12px', color: '#8B8478', fontWeight: 600, letterSpacing: '0.05em', listStyle: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Info size={13} style={{ color: '#D97757', flexShrink: 0 }} /> How does the 🪣 envelope toggle work?
+                <Info size={13} style={{ color: '#D97757', flexShrink: 0 }} /> How does envelope tracking work?
               </summary>
               <div style={{ marginTop: '12px', fontSize: '13px', color: '#5C5648', lineHeight: 1.7 }}>
                 <p style={{ margin: '0 0 8px' }}>
