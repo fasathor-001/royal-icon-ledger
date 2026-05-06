@@ -1960,16 +1960,24 @@ function ProfitAllocator({ data, stats, setData }) {
   };
 
   const apply = () => {
+    if (!allocation) return;
+    // Capture all values from allocation before entering the setData updater.
+    // This avoids any stale-closure risk when React defers the functional update.
+    const toBuffer   = allocation.toBuffer   || 0;
+    const toLongTerm = allocation.toLongTerm || 0;
+    const toTrading  = allocation.toTrading  || 0;
+    const toGoals    = allocation.toGoals    || 0;
+    const snap       = { ...allocation };
     setData(d => ({
       ...d,
-      buffer: d.buffer + allocation.toBuffer,
-      longTerm: d.longTerm + allocation.toLongTerm,
-      tradingCapital: d.tradingCapital + allocation.toTrading,
-      futureGoals: (d.futureGoals || 0) + Math.round(allocation.toGoals || 0),
-      profitAllocations: [...d.profitAllocations, {
+      buffer:       d.buffer + toBuffer,
+      longTerm:     d.longTerm + toLongTerm,
+      tradingCapital: d.tradingCapital + toTrading,
+      futureGoals:  (d.futureGoals || 0) + Math.round(toGoals),
+      profitAllocations: [...(d.profitAllocations || []), {
         id: Date.now(),
         timestamp: Date.now(),
-        ...allocation,
+        ...snap,
       }],
     }));
     setProfit(''); setAllocation(null); setStep('done');
@@ -2112,11 +2120,20 @@ function ProfitAllocator({ data, stats, setData }) {
         <div className="card-warm p-8 text-center slide-up">
           <Check size={32} style={{ color: '#7FA068' }} className="mx-auto mb-4" />
           <div className="display text-3xl mb-2" style={{ fontStyle: 'italic', fontWeight: 300 }}>Done.</div>
-          <p style={{ color: '#8B8478' }}>
-            {isFoundation
-              ? 'Your Savings balance has been updated.'
-              : "Don't forget to actually transfer the tax reserve to a separate account."}
-          </p>
+          {isFoundation ? (
+            <>
+              <p style={{ color: '#8B8478', marginBottom: '8px' }}>
+                Your Savings balance has been updated.
+              </p>
+              <p className="mono" style={{ color: '#7FA068', fontSize: '22px', fontWeight: 300 }}>
+                {fmt(data.buffer)}
+              </p>
+            </>
+          ) : (
+            <p style={{ color: '#8B8478' }}>
+              Don't forget to actually transfer the tax reserve to a separate account.
+            </p>
+          )}
           <button className="btn btn-primary mt-6" onClick={reset}>
             {isFoundation ? 'Allocate more money' : 'Allocate another'}
           </button>
