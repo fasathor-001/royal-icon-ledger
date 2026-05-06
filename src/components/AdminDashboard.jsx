@@ -663,6 +663,15 @@ export default function AdminDashboard({ user }) {
     } catch {} finally { setAccessReqsLoading(false); }
   }, [isAdmin]);
 
+  const deleteAccessReq = async (id) => {
+    if (!supabase) return;
+    try {
+      const { error: err } = await supabase.from('access_requests').delete().eq('id', id);
+      if (err) throw err;
+      setAccessReqs(prev => prev.filter(r => r.id !== id));
+    } catch (err) { console.error('[AdminDashboard] deleteAccessReq:', err); }
+  };
+
   const approvePinReset = async (id) => {
     if (!supabase) return;
     try {
@@ -1212,6 +1221,15 @@ export default function AdminDashboard({ user }) {
                                   <Send size={9} /> Send invite
                                 </button>
                               )}
+                              <button
+                                onClick={() => deleteAccessReq(req.id)}
+                                title="Delete request"
+                                style={{ display: 'flex', alignItems: 'center', padding: '4px 7px', borderRadius: '4px', border: '1px solid #26221C', background: 'none', color: '#3A3028', cursor: 'pointer', transition: 'all 0.12s' }}
+                                onMouseEnter={e => { e.currentTarget.style.borderColor = '#C56B5A'; e.currentTarget.style.color = '#C56B5A'; }}
+                                onMouseLeave={e => { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = '#3A3028'; }}
+                              >
+                                <Trash2 size={10} />
+                              </button>
                             </div>
                           </div>
                         </div>
