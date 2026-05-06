@@ -19,6 +19,7 @@ import MonthlyReview, { useShouldShowReviewModal } from './components/MonthlyRev
 import RolloverModal from './components/RolloverModal';
 import RitualCard from './components/RitualCard';
 import WeeklyPulseBanner from './components/WeeklyPulseBanner';
+import AdminDashboard from './components/AdminDashboard';
 import { usePinGate, usePinRowGate, useSectionPin } from './components/PinGate';
 import { CURRENCIES, getCurrency, makeFmt } from './lib/currency';
 import { getInviteCodes, createInviteCode, deleteInviteCode, resetInviteCode, getAccessRequests, approveAccessRequest, rejectAccessRequest, queueNotification, loadData, importLocalToCloud } from './lib/dataLayer';
@@ -617,6 +618,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
             { id: 'history', label: 'History' },
             { id: 'rules', label: 'Rules' },
             ...(user ? [{ id: 'settings', label: 'Settings' }] : []),
+            ...(['hello@royalledger.app'].includes(user?.email?.toLowerCase()) ? [{ id: 'admin', label: 'Admin' }] : []),
           ].map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} className={`tab-btn ${tab === t.id ? 'tab-active' : 'tab-inactive'}`}>
               {t.label}
@@ -662,6 +664,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
 		{tab === 'review' && <MonthlyReview data={data} setData={setData} stats={stats} mode="tab" />}
         {tab === 'rules' && <Rules data={data} stats={stats} setData={setData} user={user} />}
         {tab === 'settings' && <AccountSettings user={user} onLogout={onLogout} onChangePassword={onChangePassword} onSignOutOthers={onSignOutOthers} data={data} setData={setData} syncStatus={syncStatus} isOnline={isOnline} lastSyncedAt={lastSyncedAt} onRetrySync={onRetrySync} />}
+        {tab === 'admin' && <AdminDashboard user={user} />}
         </main>
       </div>
 
