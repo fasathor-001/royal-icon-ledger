@@ -226,6 +226,41 @@ function MobileBottomNav({ tab, setTab, user, data }) {
   );
 }
 
+function BlockedScreen({ onLogout }) {
+  return (
+    <div style={{ minHeight: '100vh', background: '#0A0908', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+      <div style={{ textAlign: 'center', maxWidth: '420px' }}>
+        <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#14080A', border: '1px solid #3A1018', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px' }}>
+          <Lock size={22} style={{ color: '#C56B5A' }} />
+        </div>
+        <h1 style={{ fontSize: '26px', fontWeight: 300, color: '#E8E2D5', fontFamily: 'Georgia, serif', marginBottom: '14px', letterSpacing: '-0.01em' }}>
+          Access restricted.
+        </h1>
+        <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.75, marginBottom: '28px' }}>
+          Your Royal Ledger access has been restricted.<br />
+          Contact support if you believe this is a mistake.
+        </p>
+        <a
+          href="mailto:hello@royalledger.app"
+          style={{ fontSize: '13px', color: '#D97757', textDecoration: 'none', borderBottom: '1px solid #D9775750', paddingBottom: '1px' }}
+        >
+          hello@royalledger.app
+        </a>
+        {onLogout && (
+          <div style={{ marginTop: '32px' }}>
+            <button
+              onClick={onLogout}
+              style={{ fontSize: '12px', color: '#3A3028', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+            >
+              Sign out
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePassword, onSignOutOthers, isNewUser, syncStatus = 'idle', isOnline = true, lastSyncedAt = null, onRetrySync = null, onRegisterForceUpdate = null } = {}) {
   const [data, setData] = useState(defaultData);
   const [loading, setLoading] = useState(true);
@@ -239,6 +274,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
   const [showWeeklyPulse, setShowWeeklyPulse] = useState(false);
   const [pinBannerDismissed, setPinBannerDismissed] = useState(false);
   const [showGraduationModal, setShowGraduationModal] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
   const shouldAutoShow = useShouldShowReviewModal(data);
 
   useEffect(() => {
@@ -296,6 +332,19 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     const noData = !data.setupComplete && data.expenses.length === 0;
     if (noData || isNewUser) setShowOnboarding(true);
   }, [loading, data.setupComplete, data.expenses.length, isNewUser]);
+
+  // Block check — runs once when user email is known
+  useEffect(() => {
+    if (!user?.email || !supabase) return;
+    supabase
+      .from('early_access_leads')
+      .select('status')
+      .eq('email', user.email.toLowerCase())
+      .maybeSingle()
+      .then(({ data: lead }) => {
+        if (lead?.status === 'blocked') setIsBlocked(true);
+      });
+  }, [user?.email]);
   
   // Auto-show monthly review modal during review window
   useEffect(() => {
@@ -519,6 +568,10 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     );
   }
   
+  if (isBlocked) {
+    return <BlockedScreen onLogout={onLogout} />;
+  }
+
   if (showOnboarding) {
     return <Onboarding data={data} setData={setData} onComplete={() => { setShowOnboarding(false); setTab('command'); }} />;
   }
@@ -4304,14 +4357,13 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
             </div>
           </div>
 
-          {/* Reset card */}
+          {/* Delete account card */}
           <section className="card p-6" style={{ borderColor: '#3A2018', background: '#0E0805' }}>
-            <h2 className="display text-2xl mb-1" style={{ color: '#C56B5A' }}>Reset all data</h2>
+            <h2 className="display text-2xl mb-1" style={{ color: '#C56B5A' }}>Delete account</h2>
             <p className="text-sm mb-3" style={{ color: '#8B8478' }}>
-              Wipes everything and returns the app to its initial state.
+              Permanently deletes all your data and signs you out. This cannot be undone.
             </p>
 
-            {/* What will be deleted */}
             <ul style={{
               margin: '0 0 20px 0', padding: '12px 14px', listStyle: 'none',
               background: '#0A0705', border: '1px solid #2A1510', borderRadius: '5px',
@@ -4338,9 +4390,13 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                 color: '#E8887A', border: '1px solid #5A2018',
                 background: '#2A0E0A', borderRadius: '4px', fontWeight: 600,
               }}
-              onClick={() => attemptReset(() => setData(defaultData))}
+              onClick={() => attemptReset(() => {
+                try { localStorage.removeItem('open-trader-finance-v2'); } catch (_) {}
+                setData(defaultData);
+                if (onLogout) onLogout();
+              })}
             >
-              Reset all data
+              Delete account
             </button>
             {resetGate}
           </section>
