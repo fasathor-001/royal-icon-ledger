@@ -32,6 +32,7 @@ const NAV_ITEMS = [
 
 const ACTION_META = {
   invite:             { label: 'Sent invite to',          color: '#7FA068' },
+  bulk_invite:        { label: 'Bulk invite',             color: '#7FA068' },
   status_change:      { label: 'Status changed',          color: '#B89968' },
   bulk_status_change: { label: 'Bulk status change',      color: '#B89968' },
   bulk_delete:        { label: 'Bulk deleted users',      color: '#C56B5A' },
@@ -170,7 +171,7 @@ function ActionBtn({ label, active, color, disabled, onClick }) {
 
 // ── Bulk action bar ───────────────────────────────────────────────────────────
 
-function BulkActionBar({ count, onActivate, onSuspend, onBlock, onDelete, processing, confirmDelete, onConfirmDelete, onCancelDelete, onClearSelection }) {
+function BulkActionBar({ count, onActivate, onSuspend, onBlock, onDelete, onInvite, processing, confirmDelete, onConfirmDelete, onCancelDelete, onClearSelection }) {
   return (
     <div style={{
       position: 'sticky', top: 0, zIndex: 10,
@@ -185,6 +186,11 @@ function BulkActionBar({ count, onActivate, onSuspend, onBlock, onDelete, proces
       </span>
       <div style={{ width: '1px', height: '16px', background: '#1E3018', flexShrink: 0 }} />
       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', flex: 1 }}>
+        <button onClick={onInvite} disabled={processing} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '4px', border: '1px solid #1E3A2A', background: 'rgba(127,160,104,0.08)', color: '#7FA068', fontSize: '11px', fontWeight: 600, cursor: processing ? 'not-allowed' : 'pointer', opacity: processing ? 0.5 : 1 }}
+          onMouseEnter={e => { if (!processing) e.currentTarget.style.background = 'rgba(127,160,104,0.18)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(127,160,104,0.08)'; }}>
+          <Send size={10} /> Invite
+        </button>
         <button onClick={onActivate} disabled={processing} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '4px', border: '1px solid #2A4A20', background: 'rgba(127,160,104,0.1)', color: '#7FA068', fontSize: '11px', fontWeight: 600, cursor: processing ? 'not-allowed' : 'pointer', opacity: processing ? 0.5 : 1 }}>
           <UserCheck size={10} /> Activate
         </button>
@@ -383,6 +389,153 @@ function InviteModal({ lead, onClose, onSent }) {
             {sending ? 'Sending…' : 'Send Invite'}
           </button>
         </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ── Bulk invite modal ─────────────────────────────────────────────────────────
+
+function BulkInviteModal({ leads, onClose, onAllSent }) {
+  const [message, setMessage] = useState(DEFAULT_MESSAGE('everyone'));
+  const [sending, setSending] = useState(false);
+  const [progress, setProgress] = useState(null); // { done, total, current }
+  const [results, setResults] = useState([]);      // [{ email, ok, error }]
+  const [done, setDone] = useState(false);
+  const cancelRef = React.useRef(false);
+
+  const handleSend = async () => {
+    cancelRef.current = false;
+    setSending(true);
+    setResults([]);
+    setProgress({ done: 0, total: leads.length, current: leads[0]?.email });
+
+    const sent = [];
+    for (let i = 0; i < leads.length; i++) {
+      if (cancelRef.current) break;
+      const lead = leads[i];
+      setProgress({ done: i, total: leads.length, current: lead.email });
+      const inviteCode = generateInviteCode();
+      const personalised = `Hi ${lead.name || 'there'},\n\n${message.replace(/^Hi (everyone|there),\n\n/i, '')}`;
+      const fullMessage = `${personalised}\n\nYour invite code: ${inviteCode}`;
+      try {
+        const { error: fnError } = await supabase.functions.invoke('send-invite', {
+          body: { name: lead.name, email: lead.email, message: fullMessage },
+        });
+        if (fnError) throw new Error(fnError.message || 'Edge Function error');
+        await supabase
+          .from('early_access_leads')
+          .update({ status: 'invited', invited_at: new Date().toISOString(), invite_code: inviteCode })
+          .eq('id', lead.id);
+        sent.push({ id: lead.id, email: lead.email, name: lead.name, inviteCode, ok: true });
+        setResults(prev => [...prev, { email: lead.email, ok: true }]);
+      } catch (err) {
+        sent.push({ id: lead.id, email: lead.email, name: lead.name, ok: false, error: err.message });
+        setResults(prev => [...prev, { email: lead.email, ok: false, error: err.message }]);
+      }
+    }
+
+    setProgress({ done: leads.length, total: leads.length, current: null });
+    setSending(false);
+    setDone(true);
+    onAllSent(sent);
+  };
+
+  const successCount = results.filter(r => r.ok).length;
+  const failCount    = results.filter(r => !r.ok).length;
+
+  return createPortal(
+    <div onClick={done || sending ? undefined : onClose} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(10,9,8,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: '#0F1209', border: '1px solid #2A4A20', borderRadius: '8px', maxWidth: '560px', width: '100%', padding: '28px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
+
+        {/* Header */}
+        {!sending && !done && (
+          <button onClick={onClose} style={{ position: 'absolute', top: '14px', right: '14px', background: 'none', border: 'none', cursor: 'pointer', color: '#8B8478', padding: '4px' }}>
+            <X size={14} />
+          </button>
+        )}
+        <div style={{ marginBottom: '20px' }}>
+          <div style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#7FA068', marginBottom: '8px' }}>Bulk Invite</div>
+          <div style={{ fontSize: '15px', color: '#E8E2D5', fontWeight: 500 }}>Send invites to {leads.length} {leads.length === 1 ? 'user' : 'users'}</div>
+          <div style={{ fontSize: '12px', color: '#8B8478', marginTop: '4px' }}>
+            {leads.map(l => l.email).slice(0, 4).join(', ')}{leads.length > 4 ? ` +${leads.length - 4} more` : ''}
+          </div>
+        </div>
+
+        {/* Message editor — only before sending */}
+        {!sending && !done && (
+          <>
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8B8478', display: 'block', marginBottom: '8px' }}>Message Template</label>
+              <textarea value={message} onChange={e => setMessage(e.target.value)} rows={10} style={{ width: '100%', background: '#0A0908', border: '1px solid #26221C', borderRadius: '4px', padding: '12px', fontSize: '13px', color: '#E8E2D5', fontFamily: 'monospace', resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box', outline: 'none' }} />
+              <div style={{ fontSize: '11px', color: '#5C5648', marginTop: '5px' }}>Each email is personalised with the recipient's name. A unique invite code is appended automatically.</div>
+            </div>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button onClick={onClose} style={{ padding: '9px 18px', background: 'none', border: '1px solid #26221C', borderRadius: '5px', color: '#B0A898', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={handleSend} style={{ padding: '9px 18px', background: '#7FA068', border: 'none', borderRadius: '5px', color: '#0A0908', fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Send size={13} /> Send {leads.length} Invite{leads.length !== 1 ? 's' : ''}
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Sending progress */}
+        {sending && (
+          <div style={{ textAlign: 'center', padding: '12px 0' }}>
+            <RefreshCw size={18} style={{ animation: 'spin 1s linear infinite', color: '#7FA068', margin: '0 auto 12px' }} />
+            <div style={{ fontSize: '14px', color: '#E8E2D5', fontWeight: 500, marginBottom: '4px' }}>
+              Sending {progress?.done + 1} of {progress?.total}…
+            </div>
+            <div style={{ fontSize: '12px', color: '#8B8478', marginBottom: '16px' }}>{progress?.current}</div>
+            {/* progress bar */}
+            <div style={{ height: '3px', background: '#1A1610', borderRadius: '2px', overflow: 'hidden' }}>
+              <div style={{ height: '100%', background: '#7FA068', borderRadius: '2px', transition: 'width 0.3s', width: `${((progress?.done || 0) / (progress?.total || 1)) * 100}%` }} />
+            </div>
+            <div style={{ marginTop: '16px', textAlign: 'left' }}>
+              {results.map((r, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '3px 0', fontSize: '12px', color: r.ok ? '#7FA068' : '#C56B5A' }}>
+                  {r.ok ? <CheckCircle size={10} /> : <XCircle size={10} />}
+                  {r.email}
+                  {!r.ok && <span style={{ fontSize: '11px', color: '#8B8478' }}>— {r.error}</span>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Done summary */}
+        {done && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              {failCount === 0
+                ? <CheckCircle size={18} color="#7FA068" />
+                : <AlertTriangle size={18} color="#D97757" />
+              }
+              <div>
+                <div style={{ fontSize: '14px', color: '#E8E2D5', fontWeight: 500 }}>
+                  {successCount} invite{successCount !== 1 ? 's' : ''} sent{failCount > 0 ? `, ${failCount} failed` : ''}
+                </div>
+                <div style={{ fontSize: '12px', color: '#8B8478', marginTop: '2px' }}>
+                  {failCount > 0 ? 'Check the failed entries below and retry individually.' : 'All done — users will receive their invite emails shortly.'}
+                </div>
+              </div>
+            </div>
+            {failCount > 0 && (
+              <div style={{ background: '#100A08', border: '1px solid #3A1810', borderRadius: '5px', padding: '10px 12px', marginBottom: '16px' }}>
+                {results.filter(r => !r.ok).map((r, i) => (
+                  <div key={i} style={{ fontSize: '12px', color: '#C56B5A', padding: '3px 0' }}>
+                    {r.email} — {r.error}
+                  </div>
+                ))}
+              </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={onClose} style={{ padding: '9px 18px', background: '#7FA068', border: 'none', borderRadius: '5px', color: '#0A0908', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}>Done</button>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>,
     document.body
@@ -639,6 +792,7 @@ export default function AdminDashboard({ user }) {
   const [activeTab, setActiveTab]                 = useState('users');
   const [activityLogs, setActivityLogs]           = useState([]);
   const [activityLoading, setActivityLoading]     = useState(false);
+  const [bulkInviteOpen, setBulkInviteOpen]       = useState(false);
 
   const isAdmin = !!(user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase()));
 
@@ -861,6 +1015,20 @@ export default function AdminDashboard({ user }) {
     ));
     logAdminAction('invite', lead?.email, { invite_code: inviteCode, name: lead?.name });
     setInviteTarget(null);
+  };
+
+  const handleBulkInviteAllSent = (sent) => {
+    // Update local state for each successfully sent invite
+    const now = new Date().toISOString();
+    setLeads(prev => prev.map(l => {
+      const s = sent.find(s => s.id === l.id && s.ok);
+      return s ? { ...l, status: 'invited', invited_at: now, invite_code: s.inviteCode } : l;
+    }));
+    setSelectedIds(new Set());
+    const successEmails = sent.filter(s => s.ok).map(s => s.email);
+    if (successEmails.length > 0) {
+      logAdminAction('bulk_invite', null, { count: successEmails.length, emails: successEmails });
+    }
   };
 
   const handleNoteSave  = (id, notes)       => setLeads(prev => prev.map(l => l.id === id ? { ...l, notes } : l));
@@ -1152,6 +1320,7 @@ export default function AdminDashboard({ user }) {
                   count={selectedCount}
                   processing={bulkProcessing}
                   confirmDelete={bulkConfirmDelete}
+                  onInvite={() => setBulkInviteOpen(true)}
                   onActivate={() => handleBulkAction('active')}
                   onSuspend={() => handleBulkAction('suspended')}
                   onBlock={() => handleBulkAction('blocked')}
@@ -1414,6 +1583,9 @@ export default function AdminDashboard({ user }) {
                     if (log.action === 'bulk_delete') {
                       description = `Deleted ${log.metadata?.count || '?'} users`;
                     }
+                    if (log.action === 'bulk_invite') {
+                      description = `Sent bulk invite to ${log.metadata?.count || '?'} users`;
+                    }
 
                     return (
                       <div key={log.id} style={{ display: 'flex', gap: '14px', paddingBottom: isLast ? 0 : '16px', position: 'relative' }}>
@@ -1472,6 +1644,15 @@ export default function AdminDashboard({ user }) {
           lead={inviteTarget}
           onClose={() => setInviteTarget(null)}
           onSent={handleInviteSent}
+        />
+      )}
+
+      {/* Bulk invite modal */}
+      {bulkInviteOpen && (
+        <BulkInviteModal
+          leads={leads.filter(l => selectedIds.has(l.id))}
+          onClose={() => setBulkInviteOpen(false)}
+          onAllSent={(sent) => { handleBulkInviteAllSent(sent); setBulkInviteOpen(false); }}
         />
       )}
 
