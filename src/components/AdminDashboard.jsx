@@ -352,12 +352,15 @@ function InviteModal({ lead, onClose, onSent }) {
         body: { name: lead.name, email: lead.email, message: fullMessage },
       });
       if (fnError) throw new Error(fnError.message || 'Edge Function error');
+      const filter = lead.id ? { id: lead.id } : { email: lead.email };
+      const filterKey = Object.keys(filter)[0];
+      const filterVal = Object.values(filter)[0];
       const { error: dbError } = await supabase
         .from('early_access_leads')
         .update({ status: 'invited', invited_at: new Date().toISOString(), invite_code: inviteCode })
-        .eq('id', lead.id);
+        .eq(filterKey, filterVal);
       if (dbError) throw dbError;
-      onSent(lead.id, inviteCode);
+      onSent(lead.id ?? lead.email, inviteCode);
     } catch (err) {
       console.error('[AdminDashboard] sendInvite:', err);
       setError(err.message || 'Failed to send. Check the browser console.');
@@ -424,10 +427,12 @@ function BulkInviteModal({ leads, onClose, onAllSent }) {
           body: { name: lead.name, email: lead.email, message: fullMessage },
         });
         if (fnError) throw new Error(fnError.message || 'Edge Function error');
+        const fKey = lead.id ? 'id' : 'email';
+        const fVal = lead.id ?? lead.email;
         await supabase
           .from('early_access_leads')
           .update({ status: 'invited', invited_at: new Date().toISOString(), invite_code: inviteCode })
-          .eq('id', lead.id);
+          .eq(fKey, fVal);
         sent.push({ id: lead.id, email: lead.email, name: lead.name, inviteCode, ok: true });
         setResults(prev => [...prev, { email: lead.email, ok: true }]);
       } catch (err) {
@@ -1037,20 +1042,23 @@ If you have any questions, just reply to this email.
     } finally { setBulkProcessing(false); }
   };
 
-  const handleInviteSent = (id, inviteCode) => {
-    const lead = leads.find(l => l.id === id);
+  const handleInviteSent = (idOrEmail, inviteCode) => {
+    // id may be undefined if table pk isn't 'id' — fall back to matching by email
+    const lead = leads.find(l => l.id === idOrEmail || l.email === idOrEmail);
     setLeads(prev => prev.map(l =>
-      l.id === id ? { ...l, status: 'invited', invited_at: new Date().toISOString(), invite_code: inviteCode } : l
+      (l.id === idOrEmail || l.email === idOrEmail)
+        ? { ...l, status: 'invited', invited_at: new Date().toISOString(), invite_code: inviteCode }
+        : l
     ));
     logAdminAction('invite', lead?.email, { invite_code: inviteCode, name: lead?.name });
     setInviteTarget(null);
   };
 
   const handleBulkInviteAllSent = (sent) => {
-    // Update local state for each successfully sent invite
+    // Update local state for each successfully sent invite — match by id or email
     const now = new Date().toISOString();
     setLeads(prev => prev.map(l => {
-      const s = sent.find(s => s.id === l.id && s.ok);
+      const s = sent.find(s => s.ok && (s.id === l.id || s.email === l.email));
       return s ? { ...l, status: 'invited', invited_at: now, invite_code: s.inviteCode } : l;
     }));
     setSelectedIds(new Set());
