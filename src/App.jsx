@@ -4087,10 +4087,12 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
               {/* Notifications & timezone */}
               <NotificationSettings user={user} data={data} setData={setData} />
 
-              {/* Income profile */}
+              {/* Income profile — display only, set during onboarding */}
               <section className="card p-6">
                 <h2 className="display text-2xl mb-1">Income profile</h2>
-                <p className="text-sm mb-5" style={{ color: '#8B8478' }}>Controls which features are visible. You can change this any time.</p>
+                <p className="text-sm mb-5" style={{ color: '#8B8478' }}>
+                  This is your foundational account type — declared during onboarding. It shapes how the system works for you and cannot be changed without an assisted re-onboarding.
+                </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '480px' }}>
                   {[
                     { id: 'variable', title: 'Variable', desc: 'Trading, freelance, commissions, business. Includes Trading P&L tab.', icon: TrendingUp },
@@ -4099,12 +4101,12 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                   ].map(({ id, title, desc, icon: Icon }) => {
                     const active = (data.incomeType ?? 'variable') === id;
                     return (
-                      <button key={id} onClick={() => setData(d => ({ ...d, incomeType: id }))} style={{
+                      <div key={id} style={{
                         display: 'flex', alignItems: 'flex-start', gap: '14px',
                         background: active ? '#1E1A10' : '#0A0908',
-                        border: `1px solid ${active ? '#D97757' : '#26221C'}`,
-                        borderRadius: '6px', padding: '14px 16px', cursor: 'pointer',
-                        textAlign: 'left', transition: 'border-color 150ms',
+                        border: `1px solid ${active ? '#D97757' : '#1A1614'}`,
+                        borderRadius: '6px', padding: '14px 16px',
+                        opacity: active ? 1 : 0.35,
                       }}>
                         <Icon size={18} style={{ color: active ? '#D97757' : '#5C5648', marginTop: '2px', flexShrink: 0 }} />
                         <div>
@@ -4112,10 +4114,16 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                           <div style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.5 }}>{desc}</div>
                         </div>
                         {active && <Check size={16} style={{ color: '#D97757', marginLeft: 'auto', flexShrink: 0 }} />}
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
+                <p style={{ fontSize: '12px', color: '#3A3028', marginTop: '14px' }}>
+                  To change your income profile, contact{' '}
+                  <a href="mailto:hello@royalledger.app" style={{ color: '#5C5648', textDecoration: 'none' }}>
+                    hello@royalledger.app
+                  </a>
+                </p>
               </section>
             </div>
           </div>
