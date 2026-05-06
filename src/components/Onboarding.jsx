@@ -524,6 +524,11 @@ export default function Onboarding({ data, setData, onComplete }) {
               <div className="ob-display" style={{ fontSize: '32px', fontWeight: 300 }}>{fmt(expenseTotal)}</div>
             </div>
 
+            {/* Smart-default explanation */}
+            <p style={{ fontSize: '12px', color: '#5C5648', marginBottom: '12px', lineHeight: 1.6 }}>
+              We pre-selected variable expenses that are worth tracking in envelopes. Fixed bills stay off by default.
+            </p>
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
               {SUGGESTED_EXPENSES.map(item => {
                 const hasValue = (Number(expenseValues[item.name]) || 0) > 0;
@@ -556,7 +561,7 @@ export default function Onboarding({ data, setData, onComplete }) {
                       {/* Envelope toggle — locked for fixed expenses */}
                       {isFixed ? (
                         <div
-                          title="Fixed expense — amount is predictable, no envelope needed"
+                          title="Fixed bill — counted in your salary calculation, not tracked as an envelope"
                           style={{
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             width: '34px', height: '32px',
@@ -587,6 +592,12 @@ export default function Onboarding({ data, setData, onComplete }) {
                         </button>
                       )}
                     </div>
+                    {/* Fixed bill helper text */}
+                    {isFixed && (
+                      <p style={{ fontSize: '11px', color: '#3A3028', margin: '0 0 2px 2px', lineHeight: 1.5 }}>
+                        Fixed bill — counted in your salary calculation, not tracked as an envelope.
+                      </p>
+                    )}
                     {/* Month-end mode pills — shown only when envelope is active */}
                     {tracked && !isFixed && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', paddingLeft: '4px', paddingBottom: '4px' }}>
