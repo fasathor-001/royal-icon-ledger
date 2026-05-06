@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import {
   RefreshCw, Users, Clock, CheckCircle, XCircle,
   Mail, Lock, Search, Send, FileText, AlertTriangle, X, KeyRound, Hash,
+  ChevronDown, ChevronUp, Trash2,
 } from 'lucide-react';
 
 const ADMIN_EMAILS = ['hello@royalledger.app', 'fasathor@gmail.com'];
@@ -378,100 +379,142 @@ function InviteModal({ lead, onClose, onSent }) {
 
 // ── Lead row ───────────────────────────────────────────────────────────────────
 
-function LeadRow({ lead, onUpdateStatus, onInvite, onNoteSave, onCodeSave }) {
-  return (
-    <div style={{ background: '#0F0D0A', border: '1px solid #26221C', borderRadius: '8px', padding: '20px' }}>
+function LeadRow({ lead, onUpdateStatus, onInvite, onNoteSave, onCodeSave, onDelete }) {
+  const [expanded, setExpanded] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
-      {/* Top: name / email / badge */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', marginBottom: '14px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      const { error } = await supabase.from('early_access_leads').delete().eq('id', lead.id);
+      if (error) throw error;
+      onDelete(lead.id);
+    } catch (err) {
+      console.error('[AdminDashboard] deleteLead:', err);
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
+  };
+
+  return (
+    <div style={{ background: '#0F0D0A', border: '1px solid #26221C', borderRadius: '8px', overflow: 'hidden' }}>
+
+      {/* ── Compact header row — always visible ── */}
+      <div
+        onClick={() => setExpanded(e => !e)}
+        style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', cursor: 'pointer', userSelect: 'none' }}
+      >
+        {/* Chevron */}
+        <div style={{ flexShrink: 0, color: '#3A3028' }}>
+          {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+        </div>
+
+        {/* Name + email */}
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '15px', fontWeight: 600, color: '#E8E2D5' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#E8E2D5', whiteSpace: 'nowrap' }}>
               {lead.name || '—'}
             </span>
+            <span style={{ fontSize: '12px', color: '#5C5648', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {lead.email}
+            </span>
             {lead.invite_code && (
-              <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', color: '#5C5648', background: '#1A1810', border: '1px solid #26221C', padding: '1px 6px', borderRadius: '3px' }}>
+              <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', color: '#5C5648', background: '#1A1810', border: '1px solid #26221C', padding: '1px 6px', borderRadius: '3px', whiteSpace: 'nowrap' }}>
                 {lead.invite_code}
               </span>
             )}
           </div>
-          <span style={{ fontSize: '12px', color: '#5C5648', display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <Mail size={11} strokeWidth={1.5} />
-            {lead.email || '—'}
-          </span>
-        </div>
-        <StatusBadge status={lead.status} />
-      </div>
-
-      {/* Meta */}
-      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', paddingBottom: '14px', borderBottom: '1px solid #1A1610', marginBottom: '14px' }}>
-        <MetaItem label="Country"  value={lead.country} />
-        <MetaItem label="Income"   value={lead.income_type} />
-        <MetaItem label="Joined"   value={fmt(lead.created_at)} />
-        {lead.invited_at  && <MetaItem label="Invited"  value={fmt(lead.invited_at)} />}
-        {lead.rejected_at && <MetaItem label="Rejected" value={fmt(lead.rejected_at)} />}
-        {lead.blocked_at  && <MetaItem label="Blocked"  value={fmt(lead.blocked_at)} />}
-      </div>
-
-      {/* Interest */}
-      {lead.interest && (
-        <div style={{ paddingBottom: '14px', borderBottom: '1px solid #1A1610', marginBottom: '14px' }}>
-          <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#3A3028', marginBottom: '4px' }}>
-            Why interested
+          <div style={{ fontSize: '11px', color: '#3A3028', marginTop: '2px' }}>
+            {lead.country}{lead.income_type ? ` · ${lead.income_type}` : ''} · {fmt(lead.created_at)}
           </div>
-          <div style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.6 }}>{lead.interest}</div>
+        </div>
+
+        {/* Status + quick actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+          <StatusBadge status={lead.status} />
+          <button
+            onClick={() => onInvite(lead)}
+            title={lead.status === 'invited' ? 'Resend invite' : 'Send invite'}
+            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '4px', border: '1px solid #2A4A20', background: 'transparent', color: '#7FA068', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+          >
+            <Send size={10} />
+            {lead.status === 'invited' ? 'Resend' : 'Invite'}
+          </button>
+          {lead.status === 'blocked'
+            ? <button onClick={() => onUpdateStatus(lead.id, 'pending')} style={{ padding: '4px 10px', borderRadius: '4px', border: '1px solid #2A4A20', background: 'transparent', color: '#7FA068', fontSize: '11px', cursor: 'pointer' }}>Unblock</button>
+            : <button onClick={() => onUpdateStatus(lead.id, 'blocked')} style={{ padding: '4px 10px', borderRadius: '4px', border: '1px solid #3A1818', background: 'transparent', color: '#C56B5A', fontSize: '11px', cursor: 'pointer' }}>Block</button>
+          }
+        </div>
+      </div>
+
+      {/* ── Expanded detail panel ── */}
+      {expanded && (
+        <div style={{ borderTop: '1px solid #1A1610', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+
+          {/* Meta */}
+          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+            <MetaItem label="Country"  value={lead.country} />
+            <MetaItem label="Income"   value={lead.income_type} />
+            <MetaItem label="Joined"   value={fmt(lead.created_at)} />
+            {lead.invited_at  && <MetaItem label="Invited"  value={fmt(lead.invited_at)} />}
+            {lead.rejected_at && <MetaItem label="Rejected" value={fmt(lead.rejected_at)} />}
+            {lead.blocked_at  && <MetaItem label="Blocked"  value={fmt(lead.blocked_at)} />}
+          </div>
+
+          {/* Interest */}
+          {lead.interest && (
+            <div style={{ paddingTop: '10px', borderTop: '1px solid #1A1610' }}>
+              <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#3A3028', marginBottom: '4px' }}>Why interested</div>
+              <div style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.6 }}>{lead.interest}</div>
+            </div>
+          )}
+
+          {/* Notes */}
+          <div style={{ paddingTop: '10px', borderTop: '1px solid #1A1610' }}>
+            <NoteEditor lead={lead} onSave={onNoteSave} />
+          </div>
+
+          {/* Invite code */}
+          <div style={{ paddingTop: '10px', borderTop: '1px solid #1A1610' }}>
+            <InviteCodeManager lead={lead} onCodeSave={onCodeSave} />
+          </div>
+
+          {/* Actions */}
+          <div style={{ paddingTop: '10px', borderTop: '1px solid #1A1610', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <ActionBtn label="Reject" active={lead.status === 'rejected'} color="#D97757" disabled={lead.status === 'rejected'} onClick={() => onUpdateStatus(lead.id, 'rejected')} />
+            {lead.status !== 'pending' && (
+              <ActionBtn label="Reset to pending" active={false} color="#8B8478" disabled={false} onClick={() => onUpdateStatus(lead.id, 'pending')} />
+            )}
+
+            {/* Delete — right-aligned, confirmation step */}
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {confirmDelete ? (
+                <>
+                  <span style={{ fontSize: '12px', color: '#8B8478' }}>Delete {lead.name || lead.email}?</span>
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    style={{ padding: '4px 12px', borderRadius: '4px', border: '1px solid #4A1020', background: 'rgba(197,107,90,0.15)', color: '#C56B5A', fontSize: '12px', fontWeight: 600, cursor: deleting ? 'default' : 'pointer', opacity: deleting ? 0.6 : 1 }}
+                  >
+                    {deleting ? 'Deleting…' : 'Confirm delete'}
+                  </button>
+                  <button onClick={() => setConfirmDelete(false)} style={{ fontSize: '12px', color: '#5C5648', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>Cancel</button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setConfirmDelete(true)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '4px', border: '1px solid #26221C', background: 'transparent', color: '#5C5648', fontSize: '12px', cursor: 'pointer' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#C56B5A'; e.currentTarget.style.color = '#C56B5A'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = '#5C5648'; }}
+                >
+                  <Trash2 size={11} /> Delete lead
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       )}
-
-      {/* Notes */}
-      <div style={{ paddingBottom: '14px', borderBottom: '1px solid #1A1610', marginBottom: '14px' }}>
-        <NoteEditor lead={lead} onSave={onNoteSave} />
-      </div>
-
-      {/* Invite code */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '14px', borderBottom: '1px solid #1A1610', marginBottom: '14px' }}>
-        <InviteCodeManager lead={lead} onCodeSave={onCodeSave} />
-      </div>
-
-      {/* Actions */}
-      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-        {/* Send invite (always available, re-sendable) */}
-        <button
-          onClick={() => onInvite(lead)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: '5px',
-            padding: '5px 13px', borderRadius: '5px',
-            border: '1px solid #2A4A20', background: 'rgba(127,160,104,0.08)',
-            color: '#7FA068', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-          }}
-        >
-          <Send size={11} />
-          {lead.status === 'invited' ? 'Resend' : 'Send Invite'}
-        </button>
-
-        <ActionBtn
-          label="Reject"
-          active={lead.status === 'rejected'}
-          color="#D97757"
-          disabled={lead.status === 'rejected'}
-          onClick={() => onUpdateStatus(lead.id, 'rejected')}
-        />
-
-        {lead.status === 'blocked'
-          ? <ActionBtn label="Unblock" active={false} color="#7FA068" disabled={false} onClick={() => onUpdateStatus(lead.id, 'pending')} />
-          : <ActionBtn label="Block"   active={false} color="#C56B5A" disabled={false} onClick={() => onUpdateStatus(lead.id, 'blocked')} />
-        }
-
-        {lead.status !== 'pending' && (
-          <ActionBtn
-            label="Reset to pending"
-            active={false}
-            color="#8B8478"
-            disabled={false}
-            onClick={() => onUpdateStatus(lead.id, 'pending')}
-          />
-        )}
-      </div>
     </div>
   );
 }
@@ -622,6 +665,10 @@ export default function AdminDashboard({ user }) {
     setLeads(prev => prev.map(l => l.id === id ? { ...l, invite_code } : l));
   };
 
+  const handleDelete = (id) => {
+    setLeads(prev => prev.filter(l => l.id !== id));
+  };
+
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 24px' }}>
@@ -731,6 +778,7 @@ export default function AdminDashboard({ user }) {
               onInvite={setInviteTarget}
               onNoteSave={handleNoteSave}
               onCodeSave={handleCodeSave}
+              onDelete={handleDelete}
             />
           ))}
         </div>
