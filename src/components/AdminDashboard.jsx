@@ -948,6 +948,29 @@ export default function AdminDashboard({ user }) {
     });
   };
 
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  const sendActivationEmail = useCallback(async (lead) => {
+    if (!supabase || !lead?.email) return;
+    const firstName = (lead.name || '').split(' ')[0] || 'there';
+    const body =
+`Hi ${firstName},
+
+Your Royal Ledger account has been activated. You can now log in and start using the platform:
+
+https://royalledger.app
+
+If you have any questions, just reply to this email.
+
+— Royal Ledger Team`;
+    try {
+      await supabase.functions.invoke('send-invite', {
+        body: { name: lead.name, email: lead.email, message: body, subject: 'Your Royal Ledger account is now active' },
+      });
+    } catch (err) {
+      console.warn('[AdminDashboard] sendActivationEmail:', err.message);
+    }
+  }, []);
+
   // ── Actions ───────────────────────────────────────────────────────────────
   const updateStatus = async (id, status) => {
     const now = new Date().toISOString();
@@ -962,6 +985,7 @@ export default function AdminDashboard({ user }) {
       setLeads(prev => prev.map(l => l.id === id ? { ...l, ...patch } : l));
       const lead = leads.find(l => l.id === id);
       logAdminAction('status_change', lead?.email, { status, name: lead?.name });
+      if (status === 'active' && lead) sendActivationEmail(lead);
     } catch (err) { console.error('[AdminDashboard] updateStatus:', err); }
   };
 
@@ -979,9 +1003,14 @@ export default function AdminDashboard({ user }) {
       const { error: err } = await supabase.from('early_access_leads').update(patch).in('id', ids);
       if (err) throw err;
       setLeads(prev => prev.map(l => selectedIds.has(l.id) ? { ...l, ...patch } : l));
-      const emails = leads.filter(l => ids.includes(l.id)).map(l => l.email);
+      const activatedLeads = leads.filter(l => ids.includes(l.id));
+      const emails = activatedLeads.map(l => l.email);
       logAdminAction('bulk_status_change', null, { status, count: ids.length, emails });
       setSelectedIds(new Set());
+      // Send activation emails in background (fire-and-forget per user)
+      if (status === 'active') {
+        activatedLeads.forEach(lead => sendActivationEmail(lead));
+      }
     } catch (err) { console.error('[AdminDashboard] bulkAction:', err); }
     finally { setBulkProcessing(false); }
   };

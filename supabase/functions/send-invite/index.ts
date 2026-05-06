@@ -19,7 +19,7 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { name, email, message } = await req.json();
+    const { name, email, message, subject: customSubject } = await req.json();
 
     if (!email) {
       return new Response(
@@ -60,7 +60,7 @@ Let us know if you have any questions.
       body: JSON.stringify({
         from:    'Royal Ledger <hello@royalledger.app>',
         to:      [email],
-        subject: "You're invited to Royal Ledger",
+        subject: customSubject || "You're invited to Royal Ledger",
         text:    body,
       }),
     });
