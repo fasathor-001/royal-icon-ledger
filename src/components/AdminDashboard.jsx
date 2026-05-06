@@ -352,14 +352,16 @@ function InviteModal({ lead, onClose, onSent }) {
         body: { name: lead.name, email: lead.email, message: fullMessage },
       });
       if (fnError) throw new Error(fnError.message || 'Edge Function error');
-      const filter = lead.id ? { id: lead.id } : { email: lead.email };
-      const filterKey = Object.keys(filter)[0];
-      const filterVal = Object.values(filter)[0];
-      const { error: dbError } = await supabase
+      // Always update by email — most reliable since id may be undefined
+      const { data: updated, error: dbError } = await supabase
         .from('early_access_leads')
         .update({ status: 'invited', invited_at: new Date().toISOString(), invite_code: inviteCode })
-        .eq(filterKey, filterVal);
+        .eq('email', lead.email.trim().toLowerCase())
+        .select('id, email, invite_code');
       if (dbError) throw dbError;
+      if (!updated || updated.length === 0) {
+        throw new Error(`Invite code saved in email but DB update failed for ${lead.email}. Run admin-access-fix.sql in Supabase and try again.`);
+      }
       onSent(lead.id ?? lead.email, inviteCode);
     } catch (err) {
       console.error('[AdminDashboard] sendInvite:', err);
@@ -427,12 +429,13 @@ function BulkInviteModal({ leads, onClose, onAllSent }) {
           body: { name: lead.name, email: lead.email, message: fullMessage },
         });
         if (fnError) throw new Error(fnError.message || 'Edge Function error');
-        const fKey = lead.id ? 'id' : 'email';
-        const fVal = lead.id ?? lead.email;
-        await supabase
+        const { data: updated, error: dbErr } = await supabase
           .from('early_access_leads')
           .update({ status: 'invited', invited_at: new Date().toISOString(), invite_code: inviteCode })
-          .eq(fKey, fVal);
+          .eq('email', lead.email.trim().toLowerCase())
+          .select('id');
+        if (dbErr) throw dbErr;
+        if (!updated || updated.length === 0) throw new Error('DB update matched 0 rows — check RLS policies');
         sent.push({ id: lead.id, email: lead.email, name: lead.name, inviteCode, ok: true });
         setResults(prev => [...prev, { email: lead.email, ok: true }]);
       } catch (err) {
