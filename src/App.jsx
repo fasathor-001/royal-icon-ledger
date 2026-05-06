@@ -675,6 +675,28 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   const fmt = makeFmt(data.currency);
   const isFoundation = data?.mode === 'foundation';
   const [balancesLocked, setBalancesLocked] = useState(!!data.overridePin);
+  const [goalEditing, setGoalEditing] = useState(false);
+  const [goalDraft, setGoalDraft] = useState({ name: '', target: '' });
+  const [goalError, setGoalError] = useState('');
+
+  const openGoalEditor = () => {
+    setGoalDraft({
+      name: data.savingsGoal?.name || '',
+      target: data.savingsGoal?.target || '',
+    });
+    setGoalError('');
+    setGoalEditing(true);
+  };
+
+  const saveGoal = () => {
+    const name = goalDraft.name.trim();
+    const target = Number(goalDraft.target);
+    if (!name) { setGoalError('Goal name cannot be empty.'); return; }
+    if (!target || target <= 0) { setGoalError('Target must be greater than 0.'); return; }
+    setData(d => ({ ...d, savingsGoal: { name, target } }));
+    setGoalEditing(false);
+    setGoalError('');
+  };
   const { attempt: attemptUnlock, gate: unlockGate } = usePinGate(data.overridePin);
   const stageInfo = {
     1: { name: 'Stage 1', title: 'Build the Floor', color: '#C56B5A', desc: data.incomeType === 'fixed' ? '100% of surplus to buffer.' : '100% of profits to buffer.' },
@@ -864,29 +886,124 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
       {/* Stage banner — Foundation gets a simple savings card */}
       {isFoundation ? (
         <div className="card-warm p-7 glow-warm">
-          <div className="label mb-3" style={{ color: '#7FA068' }}>Your Savings</div>
-          <div className="display text-4xl mb-2" style={{ fontWeight: 300, color: '#7FA068' }}>
+          {/* Savings balance */}
+          <div className="label mb-2" style={{ color: '#7FA068' }}>Your Savings</div>
+          <div className="display text-4xl mb-4" style={{ fontWeight: 300, color: '#7FA068' }}>
             {fmt(data.buffer)}
           </div>
-          <p style={{ color: '#8B8478', fontSize: '14px', lineHeight: 1.6, marginBottom: data.savingsGoal?.target > 0 ? '16px' : 0 }}>
-            {data.savingsGoal?.name
-              ? `Goal: ${data.savingsGoal.name} · ${fmt(data.savingsGoal.target)}`
-              : 'Every rand saved here counts. Keep going.'}
-          </p>
-          {data.savingsGoal?.target > 0 && (() => {
-            const pct = Math.min(100, (data.buffer / data.savingsGoal.target) * 100);
-            return (
-              <>
-                <div className="progress mb-2">
-                  <div className="progress-fill" style={{ width: pct + '%', background: '#7FA068' }} />
+
+          {/* Goal section — inline editor */}
+          {goalEditing ? (
+            <div style={{ borderTop: '1px solid #2A3E2A', paddingTop: '20px', marginTop: '4px' }}>
+              <div className="label mb-3" style={{ color: '#5C5648' }}>
+                {data.savingsGoal ? 'Edit goal' : 'Set a goal'}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '12px' }}>
+                <input
+                  type="text"
+                  placeholder="Goal name (e.g. Laptop, Emergency fund)"
+                  value={goalDraft.name}
+                  onChange={e => { setGoalDraft(d => ({ ...d, name: e.target.value })); setGoalError(''); }}
+                  style={{
+                    background: '#0A0908', border: '1px solid #26221C', borderRadius: '3px',
+                    padding: '10px 12px', fontSize: '14px', color: '#E8E2D5',
+                    outline: 'none', fontFamily: 'Inter, sans-serif', width: '100%',
+                  }}
+                  autoFocus
+                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '16px', color: '#5C5648', fontFamily: 'JetBrains Mono, monospace' }}>
+                    {getCurrency(data.currency).symbol}
+                  </span>
+                  <input
+                    type="number"
+                    placeholder="Target amount"
+                    value={goalDraft.target}
+                    onChange={e => { setGoalDraft(d => ({ ...d, target: e.target.value })); setGoalError(''); }}
+                    style={{
+                      background: '#0A0908', border: '1px solid #26221C', borderRadius: '3px',
+                      padding: '10px 12px', fontSize: '14px', color: '#E8E2D5',
+                      outline: 'none', fontFamily: 'JetBrains Mono, monospace', flex: 1,
+                    }}
+                  />
                 </div>
-                <div className="flex justify-between text-xs mono" style={{ color: '#8B8478' }}>
-                  <span>{fmt(data.buffer)} saved · {Math.round(pct)}%</span>
-                  <span>{fmt(data.savingsGoal.target - data.buffer)} to go</span>
+              </div>
+              {goalError && (
+                <p style={{ fontSize: '12px', color: '#C56B5A', marginBottom: '10px' }}>{goalError}</p>
+              )}
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  onClick={saveGoal}
+                  style={{
+                    background: '#7FA068', color: '#0A0908', border: 'none', borderRadius: '3px',
+                    padding: '9px 18px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                  }}
+                >
+                  Save goal
+                </button>
+                <button
+                  onClick={() => { setGoalEditing(false); setGoalError(''); }}
+                  style={{
+                    background: 'transparent', color: '#5C5648', border: '1px solid #26221C',
+                    borderRadius: '3px', padding: '9px 14px', fontSize: '13px', cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : data.savingsGoal?.name ? (
+            /* Goal exists — show progress */
+            <div style={{ borderTop: '1px solid #2A3E2A', paddingTop: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <div>
+                  <div className="label" style={{ color: '#5C5648', marginBottom: '2px' }}>Savings Goal</div>
+                  <div style={{ fontSize: '15px', fontWeight: 500, color: '#E8E2D5' }}>{data.savingsGoal.name}</div>
                 </div>
-              </>
-            );
-          })()}
+                <button
+                  onClick={openGoalEditor}
+                  style={{
+                    background: 'transparent', color: '#5C5648', border: '1px solid #26221C',
+                    borderRadius: '3px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer',
+                    fontFamily: 'Inter, sans-serif',
+                  }}
+                >
+                  Edit goal
+                </button>
+              </div>
+              {(() => {
+                const pct = Math.min(100, Math.round((data.buffer / data.savingsGoal.target) * 100));
+                return (
+                  <>
+                    <div className="progress mb-2">
+                      <div className="progress-fill" style={{ width: pct + '%', background: '#7FA068' }} />
+                    </div>
+                    <div className="flex justify-between text-xs mono" style={{ color: '#8B8478' }}>
+                      <span>{fmt(data.buffer)} of {fmt(data.savingsGoal.target)} · {pct}%</span>
+                      <span>{data.buffer >= data.savingsGoal.target ? '🎉 Goal reached!' : `${fmt(data.savingsGoal.target - data.buffer)} to go`}</span>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          ) : (
+            /* No goal yet */
+            <div style={{ borderTop: '1px solid #2A3E2A', paddingTop: '16px' }}>
+              <p style={{ fontSize: '14px', color: '#5C5648', lineHeight: 1.6, marginBottom: '12px' }}>
+                Set a goal for your savings — a laptop, emergency fund, or anything worth working toward.
+              </p>
+              <button
+                onClick={openGoalEditor}
+                style={{
+                  background: 'transparent', color: '#7FA068', border: '1px solid #2A4A2A',
+                  borderRadius: '3px', padding: '8px 16px', fontSize: '13px', fontWeight: 600,
+                  cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+                }}
+              >
+                + Add goal
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <div className="card-warm p-7 glow-warm">
