@@ -4,7 +4,7 @@ import {
   Sparkles, Flame, Coffee, ShoppingBag, Smartphone, Package,
   Calendar, Check, X, Plus, AlertTriangle, Briefcase, PiggyBank,
   ArrowRight, Activity, Heart, Users, Home, Camera, Edit2, Save, Award, KeyRound,
-  MoreHorizontal, LayoutGrid, BookOpen, History as HistoryIcon, Settings as SettingsIcon, Info,
+  MoreHorizontal, LayoutGrid, BookOpen, History as HistoryIcon, Settings as SettingsIcon, Info, Mail,
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
@@ -1208,7 +1208,7 @@ function Setup({ data, stats, setData }) {
         envelopes: (d.envelopes || []).filter(env => env.fromExpenseId !== expense.id),
       }));
     } else {
-      // Check — create linked envelope
+      // Check — create linked envelope with default reset mode
       const newEnv = {
         id: `env_${expense.id}`,
         name: expense.name,
@@ -1224,6 +1224,16 @@ function Setup({ data, stats, setData }) {
         envelopes: [...(d.envelopes || []).filter(env => env.fromExpenseId !== expense.id), newEnv],
       }));
     }
+  };
+
+  // Update rollover mode on the linked envelope for a given expense
+  const setEnvelopeRolloverMode = (expenseId, mode) => {
+    setData(d => ({
+      ...d,
+      envelopes: (d.envelopes || []).map(env =>
+        env.fromExpenseId === expenseId ? { ...env, rolloverMode: mode } : env
+      ),
+    }));
   };
 
   // Group by category
@@ -1295,13 +1305,14 @@ function Setup({ data, stats, setData }) {
                 <strong style={{ color: '#E8E2D5' }}>Expenses</strong> tell the app your total monthly cost of living — used to calculate your buffer target and salary requirement.
               </p>
               <p style={{ marginBottom: 6 }}>
-                <strong style={{ color: '#E8E2D5' }}>The 🪣 envelope toggle</strong> is for variable expenses you want to actively track and control day-to-day (groceries, petrol, kids). Fixed bills like rent don't need envelopes.
+                <strong style={{ color: '#E8E2D5' }}>The envelope toggle</strong> (✉ icon) is for variable expenses you want to actively track and control day-to-day — groceries, petrol, family support. Fixed bills like rent don't need envelopes.
               </p>
-              <p>When you enable the envelope toggle, a Budget envelope is automatically created and kept in sync.</p>
+              <p style={{ marginBottom: 6 }}>When you enable an envelope, pick the <strong style={{ color: '#E8E2D5' }}>month-end rule</strong>: 🔄 Reset (fresh each month), ➕ Rollover (carry leftover forward), or 💧 Sweep (unspent goes to your Buffer).</p>
+              <p>The envelope stays in sync — edit the amount here and the cap updates automatically.</p>
             </div>
           </details>
         </div>
-        <p className="text-sm mb-5" style={{ color: '#8B8478' }}>Add every monthly expense. Toggle <strong style={{ color: '#E8E2D5' }}>🪣 Envelope</strong> on variable ones you want to track in Budget.</p>
+        <p className="text-sm mb-5" style={{ color: '#8B8478' }}>Add every monthly expense. Click the <strong style={{ color: '#E8E2D5' }}>✉ envelope</strong> on variable ones to track them in Budget, then set the month-end rule.</p>
 
         {Object.entries(byCategory).map(([cat, items]) => {
           const catTotal = items.reduce((s, i) => s + i.amount, 0);
@@ -1312,49 +1323,88 @@ function Setup({ data, stats, setData }) {
                 <span className="mono text-sm" style={{ color: '#8B8478' }}>{fmt(catTotal)}</span>
               </div>
               <div className="space-y-2">
-                {items.map(e => (
-                  <div key={e.id} className="flex items-center gap-3 group flex-wrap">
-                    <input
-                      type="text"
-                      value={e.name}
-                      onChange={locked ? undefined : (ev) => updateExpense(e.id, 'name', ev.target.value)}
-                      onClick={() => locked && requestUnlock()}
-                      className="input-text flex-1"
-                      style={{ padding: '8px 12px', cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1, minWidth: 120 }}
-                      readOnly={locked}
-                    />
-                    <input
-                      type="number"
-                      value={e.amount}
-                      onChange={locked ? undefined : (ev) => updateExpense(e.id, 'amount', ev.target.value)}
-                      onClick={() => locked && requestUnlock()}
-                      className="input"
-                      style={{ width: '110px', padding: '8px 12px', cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }}
-                      readOnly={locked}
-                    />
-                    {/* Envelope toggle */}
-                    <button
-                      onClick={() => !locked && toggleEnvelopeTracking(e)}
-                      title={e.trackInEnvelope ? 'Remove from Budget envelopes' : 'Track this in Budget envelopes'}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 4,
-                        background: e.trackInEnvelope ? '#0F1A0E' : 'transparent',
-                        border: `1px solid ${e.trackInEnvelope ? '#2A4A2A' : '#26221C'}`,
-                        borderRadius: 3, padding: '5px 9px',
-                        cursor: locked ? 'not-allowed' : 'pointer',
-                        color: e.trackInEnvelope ? '#7FA068' : '#5C5648',
-                        fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap',
-                        opacity: locked ? 0.4 : 1,
-                        transition: 'all 150ms',
-                      }}
-                    >
-                      🪣 {e.trackInEnvelope ? '✓ Envelope' : 'Envelope'}
-                    </button>
-                    <button onClick={() => locked ? requestUnlock() : removeExpense(e.id)} className="btn p-2" style={{ color: '#5C5648', opacity: locked ? 0.4 : 1 }}>
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
+                {items.map(e => {
+                  // Find linked envelope to know current rolloverMode
+                  const linkedEnv = (data.envelopes || []).find(env => env.fromExpenseId === e.id);
+                  const envMode = linkedEnv?.rolloverMode || 'reset';
+                  return (
+                    <div key={e.id} style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                      {/* Main row */}
+                      <div className="flex items-center gap-3 group flex-wrap">
+                        <input
+                          type="text"
+                          value={e.name}
+                          onChange={locked ? undefined : (ev) => updateExpense(e.id, 'name', ev.target.value)}
+                          onClick={() => locked && requestUnlock()}
+                          className="input-text flex-1"
+                          style={{ padding: '8px 12px', cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1, minWidth: 120 }}
+                          readOnly={locked}
+                        />
+                        <input
+                          type="number"
+                          value={e.amount}
+                          onChange={locked ? undefined : (ev) => updateExpense(e.id, 'amount', ev.target.value)}
+                          onClick={() => locked && requestUnlock()}
+                          className="input"
+                          style={{ width: '110px', padding: '8px 12px', cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }}
+                          readOnly={locked}
+                        />
+                        {/* Envelope toggle — Mail icon */}
+                        <button
+                          onClick={() => !locked && toggleEnvelopeTracking(e)}
+                          title={e.trackInEnvelope ? 'Remove from Budget envelopes' : 'Track this in Budget envelopes'}
+                          style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            width: 34, height: 34,
+                            background: e.trackInEnvelope ? '#0F1A0E' : 'transparent',
+                            border: `1px solid ${e.trackInEnvelope ? '#2A4A2A' : '#26221C'}`,
+                            borderRadius: 3,
+                            cursor: locked ? 'not-allowed' : 'pointer',
+                            opacity: locked ? 0.4 : 1,
+                            transition: 'all 150ms',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <Mail size={14} color={e.trackInEnvelope ? '#7FA068' : '#5C5648'} />
+                        </button>
+                        <button onClick={() => locked ? requestUnlock() : removeExpense(e.id)} className="btn p-2" style={{ color: '#5C5648', opacity: locked ? 0.4 : 1 }}>
+                          <X size={14} />
+                        </button>
+                      </div>
+                      {/* Month-end mode pills — shown when envelope is active */}
+                      {e.trackInEnvelope && !locked && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, paddingLeft: 2, paddingBottom: 4 }}>
+                          <span style={{ fontSize: 10, color: '#3A3028', marginRight: 2, letterSpacing: '0.05em' }}>Month-end:</span>
+                          {[
+                            { id: 'reset', label: '🔄 Reset',    tip: 'Cap resets to full each month. Unspent balance disappears.' },
+                            { id: 'roll',  label: '➕ Rollover', tip: 'Leftover carries into next month. Overspend is deducted.' },
+                            { id: 'sweep', label: '💧 Sweep',    tip: 'Leftover moves to your Buffer. Cap resets to full.' },
+                          ].map(m => (
+                            <button
+                              key={m.id}
+                              onClick={() => setEnvelopeRolloverMode(e.id, m.id)}
+                              title={m.tip}
+                              style={{
+                                background: envMode === m.id ? '#1A2A1E' : 'transparent',
+                                border: `1px solid ${envMode === m.id ? '#7FA068' : '#26221C'}`,
+                                borderRadius: 999,
+                                padding: '3px 10px',
+                                fontSize: 11,
+                                color: envMode === m.id ? '#7FA068' : '#5C5648',
+                                cursor: 'pointer',
+                                fontFamily: 'Inter, sans-serif',
+                                transition: 'all 120ms',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {m.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );

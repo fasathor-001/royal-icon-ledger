@@ -223,7 +223,7 @@ export default function Budget({ data, setData, stats }) {
                 <strong style={{ color: '#E8E2D5' }}>Fixed bills</strong> (rent, insurance, phone) don't need envelopes — they're automatic payments you can't control day-to-day.
               </p>
               <p style={{ marginBottom: 6 }}>
-                <strong style={{ color: '#E8E2D5' }}>Tip:</strong> Go to <strong style={{ color: '#D97757' }}>Setup & Salary</strong> and toggle 🪣 on any expense to auto-create its envelope here.
+                <strong style={{ color: '#E8E2D5' }}>Tip:</strong> Go to <strong style={{ color: '#D97757' }}>Setup & Salary</strong> and click the ✉ envelope icon on any variable expense to auto-create its envelope here — and set Reset, Rollover, or Sweep right there.
               </p>
               <p>When you log a purchase, tag it to an envelope. The app tracks your spending and enforces your rules.</p>
             </div>

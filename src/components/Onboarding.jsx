@@ -573,7 +573,7 @@ export default function Onboarding({ data, setData, onComplete }) {
                         <span style={{ fontSize: '10px', color: '#3A3028', marginRight: '2px', letterSpacing: '0.05em' }}>Month-end:</span>
                         {[
                           { id: 'reset',    label: '🔄 Reset',    tip: 'Cap resets to full each month. Unspent balance disappears.' },
-                          { id: 'rollover', label: '➕ Rollover', tip: 'Leftover carries into next month. Overspend is deducted.' },
+                          { id: 'roll',     label: '➕ Rollover', tip: 'Leftover carries into next month. Overspend is deducted.' },
                           { id: 'sweep',    label: '💧 Sweep',    tip: 'Leftover moves to your Buffer. Cap resets to full.' },
                         ].map(m => (
                           <button
@@ -671,7 +671,7 @@ export default function Onboarding({ data, setData, onComplete }) {
                         <span style={{ fontSize: '10px', color: '#3A3028', marginRight: '2px', letterSpacing: '0.05em' }}>Month-end:</span>
                         {[
                           { id: 'reset',    label: '🔄 Reset',    tip: 'Cap resets to full each month. Unspent balance disappears.' },
-                          { id: 'rollover', label: '➕ Rollover', tip: 'Leftover carries into next month. Overspend is deducted.' },
+                          { id: 'roll',     label: '➕ Rollover', tip: 'Leftover carries into next month. Overspend is deducted.' },
                           { id: 'sweep',    label: '💧 Sweep',    tip: 'Leftover moves to your Buffer. Cap resets to full.' },
                         ].map(m => (
                           <button
