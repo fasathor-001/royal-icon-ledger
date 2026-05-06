@@ -6,7 +6,7 @@ import {
   RefreshCw, Users, Clock, CheckCircle, XCircle,
   Mail, Lock, Search, Send, FileText, AlertTriangle, X, KeyRound, Hash,
   ChevronDown, ChevronUp, Trash2, ShieldOff, ShieldCheck, UserCheck,
-  Square, CheckSquare, MinusSquare,
+  Square, CheckSquare, MinusSquare, Inbox,
 } from 'lucide-react';
 
 const ADMIN_EMAILS = ['hello@royalledger.app', 'fasathor@gmail.com'];
@@ -652,6 +652,8 @@ export default function AdminDashboard({ user }) {
   const [inviteTarget, setInviteTarget]       = useState(null);
   const [pinResets, setPinResets]             = useState([]);
   const [pinResetsLoading, setPinResetsLoading] = useState(false);
+  const [accessReqs, setAccessReqs]           = useState([]);
+  const [accessReqsLoading, setAccessReqsLoading] = useState(false);
   // Bulk selection
   const [selectedIds, setSelectedIds]         = useState(new Set());
   const [bulkProcessing, setBulkProcessing]   = useState(false);
@@ -692,6 +694,20 @@ export default function AdminDashboard({ user }) {
     }
   }, [isAdmin]);
 
+  const fetchAccessReqs = useCallback(async () => {
+    if (!isAdmin || !supabase) return;
+    setAccessReqsLoading(true);
+    try {
+      const { data, error: err } = await supabase
+        .from('access_requests')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!err) setAccessReqs(data || []);
+    } catch {} finally {
+      setAccessReqsLoading(false);
+    }
+  }, [isAdmin]);
+
   const approvePinReset = async (id) => {
     if (!supabase) return;
     try {
@@ -719,7 +735,7 @@ export default function AdminDashboard({ user }) {
   };
 
   useEffect(() => {
-    if (isAdmin && supabase) { fetchLeads(); fetchPinResets(); }
+    if (isAdmin && supabase) { fetchLeads(); fetchPinResets(); fetchAccessReqs(); }
     else setLoading(false);
   }, [isAdmin, fetchLeads]);
 
@@ -1059,6 +1075,65 @@ export default function AdminDashboard({ user }) {
           onSent={handleInviteSent}
         />
       )}
+
+      {/* ── Access Requests (from in-app login page) ──────────────────────── */}
+      <div style={{ marginTop: '48px', borderTop: '1px solid #1A1610', paddingTop: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', gap: '12px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '4px' }}>
+              <Inbox size={15} color="#7FA068" />
+              <h2 style={{ fontSize: '18px', fontWeight: 400, color: '#E8E2D5', fontFamily: 'Georgia, serif' }}>Access Requests</h2>
+            </div>
+            <p style={{ fontSize: '12px', color: '#5C5648' }}>
+              From the in-app login page — people who don't have an invite code yet. Send them one via the early-access admin panel above.
+            </p>
+          </div>
+          <button onClick={fetchAccessReqs} disabled={accessReqsLoading} style={{ fontSize: '12px', color: '#5C5648', background: 'transparent', border: '1px solid #26221C', borderRadius: '5px', padding: '6px 12px', cursor: 'pointer', flexShrink: 0 }}>
+            <RefreshCw size={11} style={{ display: 'inline', marginRight: '5px', animation: accessReqsLoading ? 'spin 1s linear infinite' : 'none' }} />
+            Refresh
+          </button>
+        </div>
+
+        {accessReqs.length === 0 ? (
+          <p style={{ fontSize: '13px', color: '#3A3028', padding: '16px 0' }}>No access requests yet.</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {accessReqs.map(req => {
+              const statusColor = req.status === 'approved' ? '#7FA068' : req.status === 'rejected' ? '#5C5648' : '#D97757';
+              const statusBg    = req.status === 'approved' ? 'rgba(127,160,104,0.12)' : req.status === 'rejected' ? 'rgba(92,86,72,0.18)' : 'rgba(217,119,87,0.12)';
+              const isPending   = !req.status || req.status === 'pending';
+              return (
+                <div key={req.id} style={{ background: '#0F0D0A', border: `1px solid ${isPending ? '#3A2A1E' : '#1A1A1A'}`, borderRadius: '7px', padding: '16px 18px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '13px', color: '#E8E2D5', fontWeight: 500, marginBottom: '3px' }}>{req.email}</div>
+                      <div style={{ fontSize: '11px', color: '#3A3028' }}>Submitted: {fmt(req.created_at)}</div>
+                      {req.message && (
+                        <div style={{ fontSize: '12px', color: '#8B8478', marginTop: '6px', lineHeight: 1.5 }}>
+                          {req.message}
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                      <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '3px 10px', borderRadius: '999px', background: statusBg, color: statusColor }}>
+                        {req.status || 'pending'}
+                      </span>
+                      {isPending && (
+                        <button
+                          onClick={() => setInviteTarget({ name: null, email: req.email })}
+                          style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#7FA068', background: 'none', border: '1px solid #2A4A20', borderRadius: '4px', padding: '4px 12px', cursor: 'pointer', fontWeight: 600 }}
+                        >
+                          <Send size={10} /> Send invite
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       {/* ── PIN Reset Requests ─────────────────────────────────────────────── */}
       <div style={{ marginTop: '48px', borderTop: '1px solid #1A1610', paddingTop: '32px' }}>

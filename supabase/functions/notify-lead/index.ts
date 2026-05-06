@@ -54,7 +54,7 @@ async function sendEmail(
       'Content-Type':  'application/json',
     },
     body: JSON.stringify({
-      from:    'Royal Ledger <hello@royalledger.app>',
+      from:    'Royal Ledger <onboarding@resend.dev>',
       to:      [toEmail],
       subject,
       html,
