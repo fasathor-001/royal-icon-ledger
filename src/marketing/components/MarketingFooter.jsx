@@ -40,7 +40,7 @@ export default function MarketingFooter() {
               />
             </Link>
             <p style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.7, maxWidth: '240px', marginBottom: '20px', marginTop: '4px' }}>
-              A financial operating system for variable-income earners globally.
+              Personal finance for the disciplined. Structure that builds with you.
             </p>
             <div className="m-badge m-badge-orange" style={{ marginBottom: '20px' }}>Private Beta</div>
 
@@ -87,7 +87,7 @@ export default function MarketingFooter() {
           <div>
             <div className="m-footer-col-title">Product</div>
             {[
-              { label: 'Features',      path: '/product' },
+              { label: 'The System',     path: '/product' },
               { label: 'How It Works',  path: '/how-it-works' },
               { label: 'For Who',       path: '/for-who' },
               { label: 'Security',      path: '/security' },
@@ -175,7 +175,7 @@ export default function MarketingFooter() {
           </span>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
             <Link to="/privacy" style={{ fontSize: '12px', color: '#5C5648', textDecoration: 'none' }}>Privacy Policy</Link>
-            <span style={{ fontSize: '12px', color: '#5C5648' }}>Built for people who earn differently.</span>
+            <span style={{ fontSize: '12px', color: '#5C5648' }}>Built for people the system left out.</span>
           </div>
         </div>
 
