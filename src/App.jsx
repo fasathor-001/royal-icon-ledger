@@ -737,7 +737,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
 
           {/* Body */}
           <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.65, marginBottom: '20px' }}>
-            You gave your money a structure before spending it — that's the discipline most people never build.
+            You've shown discipline by saving and building control. You're ready for the full Royal Ledger system.
           </p>
 
           {/* What's unlocked */}
@@ -758,7 +758,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
             {[
               'Deeper income planning',
               'Full money allocation tools',
-              'Long-term fund and future goals tracking',
+              'Long-term savings and buffer structure',
               'Complete Royal Ledger dashboard',
             ].map(item => (
               <div key={item} style={{
