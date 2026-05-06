@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import {
   Heart, ArrowRight, Check, X, Plus, Wallet, Shield,
-  Briefcase, Sparkles, Users, Bell, Lock, TrendingUp, Landmark,
+  Briefcase, Sparkles, Users, Bell, Lock, TrendingUp, Landmark, Info,
 } from 'lucide-react';
 import { CURRENCIES, makeFmt, getCurrency } from '../lib/currency';
 import { TIMEZONES, offsetLabel, normalizeTimezone } from '../lib/timezones';
@@ -51,6 +51,12 @@ export default function Onboarding({ data, setData, onComplete }) {
   const [startingLongTerm, setStartingLongTerm] = useState(data.longTerm ?? 0);
   const [pinValue, setPinValue] = useState('');
 
+  // ── Envelope tracking (Step 5) ───────────────────────────────────────────
+  // keyed by suggested expense name; value: true/false
+  const [envelopeTracking, setEnvelopeTracking] = useState({});
+  // keyed by suggested expense name; value: 'reset' | 'rollover' | 'sweep'
+  const [envelopeMode, setEnvelopeMode] = useState({});
+
   // ── Notification permission state (Step 10: Summary) ────────────────────
   const [notifStatus, setNotifStatus] = useState('idle'); // 'idle' | 'granted' | 'denied'
 
@@ -70,27 +76,58 @@ export default function Onboarding({ data, setData, onComplete }) {
 
   // ── finish() — writes all collected data in one setData call ─────────────
   const finish = () => {
-    // Convert expense values to expense records
+    // Convert expense values to expense records, and build linked envelopes
     const expenses = [];
+    const newEnvelopes = [];
+
     SUGGESTED_EXPENSES.forEach(s => {
       const v = Number(expenseValues[s.name]) || 0;
       if (v > 0) {
+        const expId = Date.now() + Math.random();
+        const tracked = !!envelopeTracking[s.name];
         expenses.push({
-          id: Date.now() + Math.random(),
+          id: expId,
           name: s.name,
           amount: v,
           category: s.category,
+          trackInEnvelope: tracked,
         });
+        if (tracked) {
+          newEnvelopes.push({
+            id: `env_${expId}`,
+            name: s.name,
+            cap: v,
+            blockMode: 'soft',
+            rolloverMode: envelopeMode[s.name] || 'reset',
+            icon: 'other',
+            fromExpenseId: expId,
+          });
+        }
       }
     });
+
     customExpenses.forEach(c => {
       if (c.amount > 0 && c.name) {
+        const expId = Date.now() + Math.random();
+        const tracked = !!c.trackInEnvelope;
         expenses.push({
-          id: Date.now() + Math.random(),
+          id: expId,
           name: c.name,
           amount: Number(c.amount),
           category: c.category || 'Other',
+          trackInEnvelope: tracked,
         });
+        if (tracked) {
+          newEnvelopes.push({
+            id: `env_${expId}`,
+            name: c.name,
+            cap: Number(c.amount),
+            blockMode: 'soft',
+            rolloverMode: c.rolloverMode || 'reset',
+            icon: 'other',
+            fromExpenseId: expId,
+          });
+        }
       }
     });
 
@@ -98,6 +135,7 @@ export default function Onboarding({ data, setData, onComplete }) {
       ...d,
       // ── Existing fields (unchanged) ──
       expenses,
+      envelopes: [...(d.envelopes || []), ...newEnvelopes],
       currency: selectedCurrency,
       incomeType,
       spendingBudget: Number(spendingBudget) || 0,
@@ -420,9 +458,30 @@ export default function Onboarding({ data, setData, onComplete }) {
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
               Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>real</span> monthly expenses
             </h1>
-            <p style={{ color: '#8B8478', marginBottom: '24px', fontSize: '15px' }}>
-              Add what you actually spend each month. Skip any that don't apply. You can edit and add more later.
+            <p style={{ color: '#8B8478', marginBottom: '16px', fontSize: '15px' }}>
+              Add what you actually spend each month. Skip any that don't apply. Tap 🪣 to track an expense inside a Budget envelope — useful for variable costs like groceries or transport.
             </p>
+
+            {/* How does this work? */}
+            <details style={{ marginBottom: '20px', background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '14px 16px', cursor: 'pointer' }}>
+              <summary style={{ fontSize: '12px', color: '#8B8478', fontWeight: 600, letterSpacing: '0.05em', listStyle: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Info size={13} style={{ color: '#D97757', flexShrink: 0 }} /> How does the 🪣 envelope toggle work?
+              </summary>
+              <div style={{ marginTop: '12px', fontSize: '13px', color: '#5C5648', lineHeight: 1.7 }}>
+                <p style={{ margin: '0 0 8px' }}>
+                  <strong style={{ color: '#8B8478' }}>Fixed expenses</strong> (rent, insurance, phone) are predictable — no envelope needed. Just enter the amount.
+                </p>
+                <p style={{ margin: '0 0 8px' }}>
+                  <strong style={{ color: '#8B8478' }}>Variable expenses</strong> (groceries, transport, family support) can creep over budget. Tap 🪣 to create a Budget envelope that tracks your spending against the cap you set here.
+                </p>
+                <p style={{ margin: '0 0 8px' }}>
+                  Once the envelope is on, pick what happens at the end of each month:
+                </p>
+                <p style={{ margin: '0 0 4px' }}>🔄 <strong style={{ color: '#8B8478' }}>Reset</strong> — cap starts fresh at full every month. Best for rent, subscriptions.</p>
+                <p style={{ margin: '0 0 4px' }}>➕ <strong style={{ color: '#8B8478' }}>Rollover</strong> — unspent balance carries forward. Great for groceries or petrol.</p>
+                <p style={{ margin: 0 }}>💧 <strong style={{ color: '#8B8478' }}>Sweep</strong> — unspent balance moves to your Buffer automatically. Turns restraint into savings.</p>
+              </div>
+            </details>
 
             <div style={{ background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: '4px', padding: '16px', marginBottom: '24px' }}>
               <div className="ob-label" style={{ color: '#D97757', marginBottom: '8px' }}>Running total</div>
@@ -430,70 +489,211 @@ export default function Onboarding({ data, setData, onComplete }) {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
-              {SUGGESTED_EXPENSES.map(item => (
-                <div key={item.name} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '14px', fontWeight: 500 }}>{item.name}</div>
-                    <div style={{ fontSize: '11px', color: '#5C5648' }}>{item.category}</div>
+              {SUGGESTED_EXPENSES.map(item => {
+                const hasValue = (Number(expenseValues[item.name]) || 0) > 0;
+                const tracked = !!envelopeTracking[item.name];
+                const mode = envelopeMode[item.name] || 'reset';
+                return (
+                  <div key={item.name} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    {/* Main row */}
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '14px', fontWeight: 500 }}>{item.name}</div>
+                        <div style={{ fontSize: '11px', color: '#5C5648' }}>{item.category}</div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span className="ob-mono" style={{ color: '#5C5648' }}>{currencySymbol}</span>
+                        <input
+                          type="number"
+                          placeholder={item.placeholder}
+                          value={expenseValues[item.name] || ''}
+                          onChange={(e) => setExpenseValues(v => ({ ...v, [item.name]: e.target.value }))}
+                          className="ob-input"
+                          style={{ width: '110px', textAlign: 'right' }}
+                        />
+                      </div>
+                      {/* Envelope toggle */}
+                      <button
+                        onClick={() => setEnvelopeTracking(t => ({ ...t, [item.name]: !t[item.name] }))}
+                        disabled={!hasValue}
+                        title={tracked ? 'Remove Budget envelope' : 'Track in Budget envelope'}
+                        style={{
+                          background: tracked ? '#1A2A1E' : 'transparent',
+                          border: `1px solid ${tracked ? '#7FA068' : '#26221C'}`,
+                          borderRadius: '3px',
+                          padding: '5px 8px',
+                          cursor: hasValue ? 'pointer' : 'not-allowed',
+                          fontSize: '14px',
+                          lineHeight: 1,
+                          opacity: hasValue ? 1 : 0.3,
+                          transition: 'all 150ms',
+                          flexShrink: 0,
+                        }}
+                      >
+                        🪣
+                      </button>
+                    </div>
+                    {/* Month-end mode pills — shown only when envelope is active */}
+                    {tracked && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', paddingLeft: '4px', paddingBottom: '4px' }}>
+                        <span style={{ fontSize: '10px', color: '#3A3028', marginRight: '2px', letterSpacing: '0.05em' }}>Month-end:</span>
+                        {[
+                          { id: 'reset',    label: '🔄 Reset',    tip: 'Cap resets to full each month. Unspent balance disappears.' },
+                          { id: 'rollover', label: '➕ Rollover', tip: 'Leftover carries into next month. Overspend is deducted.' },
+                          { id: 'sweep',    label: '💧 Sweep',    tip: 'Leftover moves to your Buffer. Cap resets to full.' },
+                        ].map(m => (
+                          <button
+                            key={m.id}
+                            onClick={() => setEnvelopeMode(em => ({ ...em, [item.name]: m.id }))}
+                            title={m.tip}
+                            style={{
+                              background: mode === m.id ? '#1A2A1E' : 'transparent',
+                              border: `1px solid ${mode === m.id ? '#7FA068' : '#26221C'}`,
+                              borderRadius: '999px',
+                              padding: '3px 10px',
+                              fontSize: '11px',
+                              color: mode === m.id ? '#7FA068' : '#5C5648',
+                              cursor: 'pointer',
+                              fontFamily: 'Inter, sans-serif',
+                              transition: 'all 120ms',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {m.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span className="ob-mono" style={{ color: '#5C5648' }}>{currencySymbol}</span>
-                    <input
-                      type="number"
-                      placeholder={item.placeholder}
-                      value={expenseValues[item.name] || ''}
-                      onChange={(e) => setExpenseValues(v => ({ ...v, [item.name]: e.target.value }))}
-                      className="ob-input"
-                      style={{ width: '120px', textAlign: 'right' }}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
 
-              {customExpenses.map((c, i) => (
-                <div key={i} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                  <input
-                    type="text"
-                    placeholder="Expense name"
-                    value={c.name}
-                    onChange={(e) => {
-                      const updated = [...customExpenses];
-                      updated[i].name = e.target.value;
-                      setCustomExpenses(updated);
-                    }}
-                    className="ob-input-text"
-                    style={{ flex: 1 }}
-                  />
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span className="ob-mono" style={{ color: '#5C5648' }}>{currencySymbol}</span>
-                    <input
-                      type="number"
-                      value={c.amount}
-                      onChange={(e) => {
-                        const updated = [...customExpenses];
-                        updated[i].amount = e.target.value;
-                        setCustomExpenses(updated);
-                      }}
-                      className="ob-input"
-                      style={{ width: '120px', textAlign: 'right' }}
-                    />
+              {customExpenses.map((c, i) => {
+                const hasValue = (Number(c.amount) || 0) > 0;
+                const cMode = c.rolloverMode || 'reset';
+                return (
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    {/* Main row */}
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <input
+                        type="text"
+                        placeholder="Expense name"
+                        value={c.name}
+                        onChange={(e) => {
+                          const updated = [...customExpenses];
+                          updated[i] = { ...updated[i], name: e.target.value };
+                          setCustomExpenses(updated);
+                        }}
+                        className="ob-input-text"
+                        style={{ flex: 1 }}
+                      />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span className="ob-mono" style={{ color: '#5C5648' }}>{currencySymbol}</span>
+                        <input
+                          type="number"
+                          value={c.amount}
+                          onChange={(e) => {
+                            const updated = [...customExpenses];
+                            updated[i] = { ...updated[i], amount: e.target.value };
+                            setCustomExpenses(updated);
+                          }}
+                          className="ob-input"
+                          style={{ width: '110px', textAlign: 'right' }}
+                        />
+                      </div>
+                      {/* Envelope toggle */}
+                      <button
+                        onClick={() => {
+                          const updated = [...customExpenses];
+                          updated[i] = { ...updated[i], trackInEnvelope: !updated[i].trackInEnvelope };
+                          setCustomExpenses(updated);
+                        }}
+                        disabled={!hasValue}
+                        title={c.trackInEnvelope ? 'Remove Budget envelope' : 'Track in Budget envelope'}
+                        style={{
+                          background: c.trackInEnvelope ? '#1A2A1E' : 'transparent',
+                          border: `1px solid ${c.trackInEnvelope ? '#7FA068' : '#26221C'}`,
+                          borderRadius: '3px',
+                          padding: '5px 8px',
+                          cursor: hasValue ? 'pointer' : 'not-allowed',
+                          fontSize: '14px',
+                          lineHeight: 1,
+                          opacity: hasValue ? 1 : 0.3,
+                          transition: 'all 150ms',
+                          flexShrink: 0,
+                        }}
+                      >
+                        🪣
+                      </button>
+                      <button
+                        onClick={() => setCustomExpenses(customExpenses.filter((_, j) => j !== i))}
+                        style={{ background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', padding: '4px', flexShrink: 0 }}
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                    {/* Month-end mode pills */}
+                    {c.trackInEnvelope && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', paddingLeft: '4px', paddingBottom: '4px' }}>
+                        <span style={{ fontSize: '10px', color: '#3A3028', marginRight: '2px', letterSpacing: '0.05em' }}>Month-end:</span>
+                        {[
+                          { id: 'reset',    label: '🔄 Reset',    tip: 'Cap resets to full each month. Unspent balance disappears.' },
+                          { id: 'rollover', label: '➕ Rollover', tip: 'Leftover carries into next month. Overspend is deducted.' },
+                          { id: 'sweep',    label: '💧 Sweep',    tip: 'Leftover moves to your Buffer. Cap resets to full.' },
+                        ].map(m => (
+                          <button
+                            key={m.id}
+                            onClick={() => {
+                              const updated = [...customExpenses];
+                              updated[i] = { ...updated[i], rolloverMode: m.id };
+                              setCustomExpenses(updated);
+                            }}
+                            title={m.tip}
+                            style={{
+                              background: cMode === m.id ? '#1A2A1E' : 'transparent',
+                              border: `1px solid ${cMode === m.id ? '#7FA068' : '#26221C'}`,
+                              borderRadius: '999px',
+                              padding: '3px 10px',
+                              fontSize: '11px',
+                              color: cMode === m.id ? '#7FA068' : '#5C5648',
+                              cursor: 'pointer',
+                              fontFamily: 'Inter, sans-serif',
+                              transition: 'all 120ms',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {m.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <button
-                    onClick={() => setCustomExpenses(customExpenses.filter((_, j) => j !== i))}
-                    style={{ background: 'transparent', border: 'none', color: '#5C5648', cursor: 'pointer', padding: '4px' }}
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-              ))}
+                );
+              })}
 
               <button
-                onClick={() => setCustomExpenses([...customExpenses, { name: '', amount: '', category: 'Other' }])}
+                onClick={() => setCustomExpenses([...customExpenses, { name: '', amount: '', category: 'Other', trackInEnvelope: false }])}
                 style={{ background: 'transparent', border: '1px dashed #3A2A1E', color: '#8B8478', padding: '10px', borderRadius: '3px', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '8px' }}
               >
                 <Plus size={14} /> Add another expense
               </button>
             </div>
+
+            {/* Envelope summary */}
+            {Object.values(envelopeTracking).some(Boolean) || customExpenses.some(c => c.trackInEnvelope) ? (
+              <div style={{ background: '#141F14', border: '1px solid #2A3E2A', borderRadius: '4px', padding: '12px 16px', marginBottom: '20px', fontSize: '12px', color: '#7FA068', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>🪣</span>
+                <span>
+                  {[
+                    ...SUGGESTED_EXPENSES.filter(s => envelopeTracking[s.name]),
+                    ...customExpenses.filter(c => c.trackInEnvelope && c.name),
+                  ].length} envelope{[
+                    ...SUGGESTED_EXPENSES.filter(s => envelopeTracking[s.name]),
+                    ...customExpenses.filter(c => c.trackInEnvelope && c.name),
+                  ].length !== 1 ? 's' : ''} will be created in your Budget tab.
+                </span>
+              </div>
+            ) : null}
 
             <NavRow back={back} next={next} canAdvance={canAdvance()} hint={!canAdvance() ? 'Add at least one expense to continue' : null} />
           </div>
