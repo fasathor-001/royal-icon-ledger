@@ -5,11 +5,12 @@ import { supabase } from '../lib/supabase';
 import {
   RefreshCw, Users, Clock, CheckCircle, XCircle,
   Mail, Lock, Search, Send, FileText, AlertTriangle, X, KeyRound, Hash,
-  ChevronDown, ChevronUp, Trash2,
+  ChevronDown, ChevronUp, Trash2, ShieldOff, ShieldCheck, UserCheck,
+  Square, CheckSquare, MinusSquare,
 } from 'lucide-react';
 
 const ADMIN_EMAILS = ['hello@royalledger.app', 'fasathor@gmail.com'];
-const FILTERS = ['All', 'Pending', 'Invited', 'Rejected', 'Blocked'];
+const FILTERS = ['All', 'Pending', 'Active', 'Invited', 'Suspended', 'Blocked', 'Rejected'];
 
 const DEFAULT_MESSAGE = (name) =>
 `Hi ${name || 'there'},
@@ -43,10 +44,12 @@ function fmt(dateStr) {
 
 function StatusBadge({ status }) {
   const map = {
-    pending:  { bg: 'rgba(217,119,87,0.15)',  color: '#D97757', label: 'Pending'  },
-    invited:  { bg: 'rgba(127,160,104,0.15)', color: '#7FA068', label: 'Invited'  },
-    rejected: { bg: 'rgba(92,86,72,0.20)',    color: '#8B8478', label: 'Rejected' },
-    blocked:  { bg: 'rgba(197,107,90,0.15)',  color: '#C56B5A', label: 'Blocked'  },
+    pending:   { bg: 'rgba(217,119,87,0.15)',  color: '#D97757', label: 'Pending'   },
+    invited:   { bg: 'rgba(184,153,104,0.15)', color: '#B89968', label: 'Invited'   },
+    active:    { bg: 'rgba(127,160,104,0.15)', color: '#7FA068', label: 'Active'    },
+    suspended: { bg: 'rgba(184,153,104,0.15)', color: '#B89968', label: 'Suspended' },
+    rejected:  { bg: 'rgba(92,86,72,0.20)',    color: '#8B8478', label: 'Rejected'  },
+    blocked:   { bg: 'rgba(197,107,90,0.15)',  color: '#C56B5A', label: 'Blocked'   },
   };
   const s = map[status] || map.pending;
   return (
@@ -110,6 +113,81 @@ function ActionBtn({ label, active, color, disabled, onClick }) {
     >
       {label}
     </button>
+  );
+}
+
+// ── Bulk action bar ────────────────────────────────────────────────────────────
+
+function BulkActionBar({ count, onActivate, onSuspend, onBlock, onDelete, processing, confirmDelete, onConfirmDelete, onCancelDelete, onClearSelection }) {
+  return (
+    <div style={{
+      position: 'sticky', top: 0, zIndex: 10,
+      background: '#0D1209', border: '1px solid #2A4A20',
+      borderRadius: '8px', padding: '12px 16px',
+      display: 'flex', alignItems: 'center', gap: '10px',
+      flexWrap: 'wrap', marginBottom: '12px',
+      boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+    }}>
+      <span style={{ fontSize: '12px', fontWeight: 600, color: '#7FA068', minWidth: 'max-content' }}>
+        {count} selected
+      </span>
+
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', flex: 1 }}>
+        <button
+          onClick={onActivate}
+          disabled={processing}
+          style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '5px', border: '1px solid #2A4A20', background: 'rgba(127,160,104,0.1)', color: '#7FA068', fontSize: '12px', fontWeight: 600, cursor: processing ? 'not-allowed' : 'pointer', opacity: processing ? 0.5 : 1 }}
+        >
+          <UserCheck size={11} /> Activate
+        </button>
+        <button
+          onClick={onSuspend}
+          disabled={processing}
+          style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '5px', border: '1px solid #3A2A1E', background: 'rgba(184,153,104,0.1)', color: '#B89968', fontSize: '12px', fontWeight: 600, cursor: processing ? 'not-allowed' : 'pointer', opacity: processing ? 0.5 : 1 }}
+        >
+          <ShieldOff size={11} /> Suspend
+        </button>
+        <button
+          onClick={onBlock}
+          disabled={processing}
+          style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '5px', border: '1px solid #3A1818', background: 'rgba(197,107,90,0.1)', color: '#C56B5A', fontSize: '12px', fontWeight: 600, cursor: processing ? 'not-allowed' : 'pointer', opacity: processing ? 0.5 : 1 }}
+        >
+          <Lock size={11} /> Block
+        </button>
+
+        {confirmDelete ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '12px', color: '#8B8478' }}>Delete {count} lead{count !== 1 ? 's' : ''}?</span>
+            <button
+              onClick={onConfirmDelete}
+              disabled={processing}
+              style={{ padding: '5px 12px', borderRadius: '5px', border: '1px solid #4A1020', background: 'rgba(197,107,90,0.18)', color: '#C56B5A', fontSize: '12px', fontWeight: 700, cursor: processing ? 'not-allowed' : 'pointer', opacity: processing ? 0.5 : 1 }}
+            >
+              {processing ? 'Deleting…' : 'Confirm delete'}
+            </button>
+            <button onClick={onCancelDelete} style={{ fontSize: '12px', color: '#5C5648', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>Cancel</button>
+          </div>
+        ) : (
+          <button
+            onClick={onDelete}
+            disabled={processing}
+            style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 12px', borderRadius: '5px', border: '1px solid #26221C', background: 'transparent', color: '#5C5648', fontSize: '12px', fontWeight: 600, cursor: processing ? 'not-allowed' : 'pointer', opacity: processing ? 0.5 : 1 }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = '#C56B5A'; e.currentTarget.style.color = '#C56B5A'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = '#5C5648'; }}
+          >
+            <Trash2 size={11} /> Delete
+          </button>
+        )}
+      </div>
+
+      <button
+        onClick={onClearSelection}
+        style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', background: 'none', border: 'none', color: '#3A3028', fontSize: '11px', cursor: 'pointer' }}
+        title="Clear selection"
+      >
+        <X size={11} /> Clear
+      </button>
+    </div>
   );
 }
 
@@ -361,69 +439,120 @@ function InviteModal({ lead, onClose, onSent }) {
 
 // ── Lead row ───────────────────────────────────────────────────────────────────
 
-function LeadRow({ lead, onUpdateStatus, onInvite, onNoteSave, onCodeSave, onDelete }) {
+function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onNoteSave, onCodeSave, onDelete }) {
   const [expanded, setExpanded] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  const [deleteError, setDeleteError] = useState(null);
+
   const handleDelete = async () => {
     setDeleting(true);
+    setDeleteError(null);
     try {
-      const { error } = await supabase.from('early_access_leads').delete().eq('id', lead.id);
+      // Use .select() so Supabase returns the deleted rows — if the array is
+      // empty it means RLS silently blocked the delete (no error, 0 rows affected).
+      const { data: deleted, error } = await supabase
+        .from('early_access_leads')
+        .delete()
+        .eq('id', lead.id)
+        .select('id');
       if (error) throw error;
+      if (!deleted || deleted.length === 0) {
+        throw new Error('Delete was blocked — make sure the admin RLS policy is applied (run rls-fix-migration.sql in Supabase).');
+      }
       onDelete(lead.id);
     } catch (err) {
       console.error('[AdminDashboard] deleteLead:', err);
+      setDeleteError(err.message || 'Delete failed.');
       setDeleting(false);
       setConfirmDelete(false);
     }
   };
 
+  const isSuspended = lead.status === 'suspended';
+  const isBlocked   = lead.status === 'blocked';
+
   return (
-    <div style={{ background: '#0F0D0A', border: '1px solid #26221C', borderRadius: '8px', overflow: 'hidden' }}>
+    <div style={{
+      background: selected ? 'rgba(127,160,104,0.05)' : '#0F0D0A',
+      border: `1px solid ${selected ? '#2A4A20' : '#26221C'}`,
+      borderRadius: '8px', overflow: 'hidden',
+      transition: 'border-color 0.13s, background 0.13s',
+    }}>
 
       {/* ── Compact header row — always visible ── */}
       <div
-        onClick={() => setExpanded(e => !e)}
-        style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', cursor: 'pointer', userSelect: 'none' }}
+        style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', cursor: 'pointer', userSelect: 'none' }}
       >
-        {/* Chevron */}
-        <div style={{ flexShrink: 0, color: '#3A3028' }}>
-          {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+        {/* Checkbox */}
+        <div
+          onClick={e => { e.stopPropagation(); onToggleSelect(lead.id); }}
+          style={{ flexShrink: 0, color: selected ? '#7FA068' : '#3A3028', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+        >
+          {selected ? <CheckSquare size={15} /> : <Square size={15} />}
         </div>
 
-        {/* Name + email */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#E8E2D5', whiteSpace: 'nowrap' }}>
-              {lead.name || '—'}
-            </span>
-            <span style={{ fontSize: '12px', color: '#5C5648', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {lead.email}
-            </span>
-            {lead.invite_code && (
-              <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', color: '#5C5648', background: '#1A1810', border: '1px solid #26221C', padding: '1px 6px', borderRadius: '3px', whiteSpace: 'nowrap' }}>
-                {lead.invite_code}
-              </span>
-            )}
+        {/* Chevron + content — clicking expands */}
+        <div
+          onClick={() => setExpanded(e => !e)}
+          style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}
+        >
+          <div style={{ flexShrink: 0, color: '#3A3028' }}>
+            {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </div>
-          <div style={{ fontSize: '11px', color: '#3A3028', marginTop: '2px' }}>
-            {lead.country}{lead.income_type ? ` · ${lead.income_type}` : ''} · {fmt(lead.created_at)}
+
+          {/* Name + email */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#E8E2D5', whiteSpace: 'nowrap' }}>
+                {lead.name || '—'}
+              </span>
+              <span style={{ fontSize: '12px', color: '#5C5648', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {lead.email}
+              </span>
+              {lead.invite_code && (
+                <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', color: '#5C5648', background: '#1A1810', border: '1px solid #26221C', padding: '1px 6px', borderRadius: '3px', whiteSpace: 'nowrap' }}>
+                  {lead.invite_code}
+                </span>
+              )}
+            </div>
+            <div style={{ fontSize: '11px', color: '#3A3028', marginTop: '2px' }}>
+              {lead.country}{lead.income_type ? ` · ${lead.income_type}` : ''} · {fmt(lead.created_at)}
+            </div>
           </div>
         </div>
 
         {/* Status + quick actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }} onClick={e => e.stopPropagation()}>
           <StatusBadge status={lead.status} />
-          <button
-            onClick={() => onInvite(lead)}
-            title={lead.status === 'invited' ? 'Resend invite' : 'Send invite'}
-            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '4px', border: '1px solid #2A4A20', background: 'transparent', color: '#7FA068', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
-          >
-            <Send size={10} />
-            {lead.status === 'invited' ? 'Resend' : 'Invite'}
-          </button>
-          {lead.status === 'blocked'
+
+          {/* Invite button — only for non-active, non-blocked */}
+          {lead.status !== 'active' && lead.status !== 'blocked' && (
+            <button
+              onClick={() => onInvite(lead)}
+              title={lead.status === 'invited' ? 'Resend invite' : 'Send invite'}
+              style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '4px', border: '1px solid #2A4A20', background: 'transparent', color: '#7FA068', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+            >
+              <Send size={10} />
+              {lead.status === 'invited' ? 'Resend' : 'Invite'}
+            </button>
+          )}
+
+          {/* Suspend / Unsuspend */}
+          {isSuspended
+            ? <button onClick={() => onUpdateStatus(lead.id, 'active')} title="Lift suspension" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '4px', border: '1px solid #2A4A20', background: 'transparent', color: '#7FA068', fontSize: '11px', cursor: 'pointer' }}>
+                <ShieldCheck size={10} /> Unsuspend
+              </button>
+            : lead.status !== 'blocked' && lead.status !== 'rejected' && (
+                <button onClick={() => onUpdateStatus(lead.id, 'suspended')} title="Suspend user" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '4px', border: '1px solid #3A2A1E', background: 'transparent', color: '#B89968', fontSize: '11px', cursor: 'pointer' }}>
+                  <ShieldOff size={10} /> Suspend
+                </button>
+              )
+          }
+
+          {/* Block / Unblock */}
+          {isBlocked
             ? <button onClick={() => onUpdateStatus(lead.id, 'pending')} style={{ padding: '4px 10px', borderRadius: '4px', border: '1px solid #2A4A20', background: 'transparent', color: '#7FA068', fontSize: '11px', cursor: 'pointer' }}>Unblock</button>
             : <button onClick={() => onUpdateStatus(lead.id, 'blocked')} style={{ padding: '4px 10px', borderRadius: '4px', border: '1px solid #3A1818', background: 'transparent', color: '#C56B5A', fontSize: '11px', cursor: 'pointer' }}>Block</button>
           }
@@ -432,16 +561,18 @@ function LeadRow({ lead, onUpdateStatus, onInvite, onNoteSave, onCodeSave, onDel
 
       {/* ── Expanded detail panel ── */}
       {expanded && (
-        <div style={{ borderTop: '1px solid #1A1610', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div style={{ borderTop: '1px solid #1A1610', padding: '16px 20px 16px 46px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
 
           {/* Meta */}
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-            <MetaItem label="Country"  value={lead.country} />
-            <MetaItem label="Income"   value={lead.income_type} />
-            <MetaItem label="Joined"   value={fmt(lead.created_at)} />
-            {lead.invited_at  && <MetaItem label="Invited"  value={fmt(lead.invited_at)} />}
-            {lead.rejected_at && <MetaItem label="Rejected" value={fmt(lead.rejected_at)} />}
-            {lead.blocked_at  && <MetaItem label="Blocked"  value={fmt(lead.blocked_at)} />}
+            <MetaItem label="Country"   value={lead.country} />
+            <MetaItem label="Income"    value={lead.income_type} />
+            <MetaItem label="Joined"    value={fmt(lead.created_at)} />
+            {lead.invited_at    && <MetaItem label="Invited"    value={fmt(lead.invited_at)} />}
+            {lead.activated_at  && <MetaItem label="Activated"  value={fmt(lead.activated_at)} />}
+            {lead.suspended_at  && <MetaItem label="Suspended"  value={fmt(lead.suspended_at)} />}
+            {lead.rejected_at   && <MetaItem label="Rejected"   value={fmt(lead.rejected_at)} />}
+            {lead.blocked_at    && <MetaItem label="Blocked"    value={fmt(lead.blocked_at)} />}
           </div>
 
           {/* Interest */}
@@ -465,34 +596,42 @@ function LeadRow({ lead, onUpdateStatus, onInvite, onNoteSave, onCodeSave, onDel
           {/* Actions */}
           <div style={{ paddingTop: '10px', borderTop: '1px solid #1A1610', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
             <ActionBtn label="Reject" active={lead.status === 'rejected'} color="#D97757" disabled={lead.status === 'rejected'} onClick={() => onUpdateStatus(lead.id, 'rejected')} />
+            <ActionBtn label="Suspend" active={lead.status === 'suspended'} color="#B89968" disabled={false} onClick={() => onUpdateStatus(lead.id, lead.status === 'suspended' ? 'active' : 'suspended')} />
             {lead.status !== 'pending' && (
               <ActionBtn label="Reset to pending" active={false} color="#8B8478" disabled={false} onClick={() => onUpdateStatus(lead.id, 'pending')} />
             )}
 
             {/* Delete — right-aligned, confirmation step */}
-            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {confirmDelete ? (
-                <>
-                  <span style={{ fontSize: '12px', color: '#8B8478' }}>Delete {lead.name || lead.email}?</span>
-                  <button
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    style={{ padding: '4px 12px', borderRadius: '4px', border: '1px solid #4A1020', background: 'rgba(197,107,90,0.15)', color: '#C56B5A', fontSize: '12px', fontWeight: 600, cursor: deleting ? 'default' : 'pointer', opacity: deleting ? 0.6 : 1 }}
-                  >
-                    {deleting ? 'Deleting…' : 'Confirm delete'}
-                  </button>
-                  <button onClick={() => setConfirmDelete(false)} style={{ fontSize: '12px', color: '#5C5648', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>Cancel</button>
-                </>
-              ) : (
-                <button
-                  onClick={() => setConfirmDelete(true)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '4px', border: '1px solid #26221C', background: 'transparent', color: '#5C5648', fontSize: '12px', cursor: 'pointer' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#C56B5A'; e.currentTarget.style.color = '#C56B5A'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = '#5C5648'; }}
-                >
-                  <Trash2 size={11} /> Delete lead
-                </button>
+            <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+              {deleteError && (
+                <div style={{ fontSize: '11px', color: '#C56B5A', background: 'rgba(197,107,90,0.1)', border: '1px solid #4A1020', borderRadius: '4px', padding: '4px 10px', maxWidth: '280px', lineHeight: 1.4 }}>
+                  {deleteError}
+                </div>
               )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {confirmDelete ? (
+                  <>
+                    <span style={{ fontSize: '12px', color: '#8B8478' }}>Delete {lead.name || lead.email}?</span>
+                    <button
+                      onClick={handleDelete}
+                      disabled={deleting}
+                      style={{ padding: '4px 12px', borderRadius: '4px', border: '1px solid #4A1020', background: 'rgba(197,107,90,0.15)', color: '#C56B5A', fontSize: '12px', fontWeight: 600, cursor: deleting ? 'default' : 'pointer', opacity: deleting ? 0.6 : 1 }}
+                    >
+                      {deleting ? 'Deleting…' : 'Confirm delete'}
+                    </button>
+                    <button onClick={() => { setConfirmDelete(false); setDeleteError(null); }} style={{ fontSize: '12px', color: '#5C5648', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>Cancel</button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => { setConfirmDelete(true); setDeleteError(null); }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '4px', border: '1px solid #26221C', background: 'transparent', color: '#5C5648', fontSize: '12px', cursor: 'pointer' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#C56B5A'; e.currentTarget.style.color = '#C56B5A'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = '#5C5648'; }}
+                  >
+                    <Trash2 size={11} /> Delete lead
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -505,14 +644,18 @@ function LeadRow({ lead, onUpdateStatus, onInvite, onNoteSave, onCodeSave, onDel
 
 export default function AdminDashboard({ user }) {
   // ── All hooks must be at top — before any conditional returns ──
-  const [leads, setLeads] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeFilter, setActiveFilter] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [inviteTarget, setInviteTarget] = useState(null);
-  const [pinResets, setPinResets] = useState([]);
+  const [leads, setLeads]                     = useState([]);
+  const [loading, setLoading]                 = useState(true);
+  const [error, setError]                     = useState(null);
+  const [activeFilter, setActiveFilter]       = useState('All');
+  const [searchQuery, setSearchQuery]         = useState('');
+  const [inviteTarget, setInviteTarget]       = useState(null);
+  const [pinResets, setPinResets]             = useState([]);
   const [pinResetsLoading, setPinResetsLoading] = useState(false);
+  // Bulk selection
+  const [selectedIds, setSelectedIds]         = useState(new Set());
+  const [bulkProcessing, setBulkProcessing]   = useState(false);
+  const [bulkConfirmDelete, setBulkConfirmDelete] = useState(false);
 
   const isAdmin = !!(user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase()));
 
@@ -603,11 +746,13 @@ export default function AdminDashboard({ user }) {
 
   // ── Derived state ─────────────────────────────────────────────────────────
   const counts = {
-    total:    leads.length,
-    pending:  leads.filter(l => l.status === 'pending').length,
-    invited:  leads.filter(l => l.status === 'invited').length,
-    rejected: leads.filter(l => l.status === 'rejected').length,
-    blocked:  leads.filter(l => l.status === 'blocked').length,
+    total:     leads.length,
+    pending:   leads.filter(l => l.status === 'pending').length,
+    active:    leads.filter(l => l.status === 'active').length,
+    invited:   leads.filter(l => l.status === 'invited').length,
+    suspended: leads.filter(l => l.status === 'suspended').length,
+    rejected:  leads.filter(l => l.status === 'rejected').length,
+    blocked:   leads.filter(l => l.status === 'blocked').length,
   };
 
   const q = searchQuery.toLowerCase().trim();
@@ -617,18 +762,105 @@ export default function AdminDashboard({ user }) {
     return matchFilter && matchSearch;
   });
 
+  // Checkbox helpers
+  const visibleIds = visible.map(l => l.id);
+  const allVisibleSelected = visibleIds.length > 0 && visibleIds.every(id => selectedIds.has(id));
+  const someVisibleSelected = visibleIds.some(id => selectedIds.has(id)) && !allVisibleSelected;
+
+  const toggleSelectAll = () => {
+    if (allVisibleSelected) {
+      // Deselect all visible
+      setSelectedIds(prev => {
+        const next = new Set(prev);
+        visibleIds.forEach(id => next.delete(id));
+        return next;
+      });
+    } else {
+      // Select all visible
+      setSelectedIds(prev => {
+        const next = new Set(prev);
+        visibleIds.forEach(id => next.add(id));
+        return next;
+      });
+    }
+  };
+
+  const toggleSelect = (id) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
   // ── Actions ───────────────────────────────────────────────────────────────
   const updateStatus = async (id, status) => {
     const now = new Date().toISOString();
     const patch = { status };
-    if (status === 'rejected') patch.rejected_at = now;
-    if (status === 'blocked')  patch.blocked_at  = now;
+    if (status === 'rejected')  patch.rejected_at  = now;
+    if (status === 'blocked')   patch.blocked_at   = now;
+    if (status === 'suspended') patch.suspended_at = now;
+    if (status === 'active')    patch.activated_at = now;
     try {
       const { error: err } = await supabase.from('early_access_leads').update(patch).eq('id', id);
       if (err) throw err;
       setLeads(prev => prev.map(l => l.id === id ? { ...l, ...patch } : l));
     } catch (err) {
       console.error('[AdminDashboard] updateStatus:', err);
+    }
+  };
+
+  const handleBulkAction = async (status) => {
+    const ids = Array.from(selectedIds);
+    if (!ids.length) return;
+    setBulkProcessing(true);
+    const now = new Date().toISOString();
+    const patch = { status };
+    if (status === 'rejected')  patch.rejected_at  = now;
+    if (status === 'blocked')   patch.blocked_at   = now;
+    if (status === 'suspended') patch.suspended_at = now;
+    if (status === 'active')    patch.activated_at = now;
+    try {
+      const { error: err } = await supabase
+        .from('early_access_leads')
+        .update(patch)
+        .in('id', ids);
+      if (err) throw err;
+      setLeads(prev => prev.map(l => selectedIds.has(l.id) ? { ...l, ...patch } : l));
+      setSelectedIds(new Set());
+    } catch (err) {
+      console.error('[AdminDashboard] bulkAction:', err);
+    } finally {
+      setBulkProcessing(false);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    const ids = Array.from(selectedIds);
+    if (!ids.length) return;
+    setBulkProcessing(true);
+    try {
+      // .select() returns the actually-deleted rows so we can detect a silent RLS block
+      const { data: deleted, error: err } = await supabase
+        .from('early_access_leads')
+        .delete()
+        .in('id', ids)
+        .select('id');
+      if (err) throw err;
+      if (!deleted || deleted.length === 0) {
+        throw new Error('Delete was blocked by RLS — run rls-fix-migration.sql in Supabase SQL editor.');
+      }
+      // Only remove the rows that were actually deleted
+      const deletedSet = new Set(deleted.map(r => r.id));
+      setLeads(prev => prev.filter(l => !deletedSet.has(l.id)));
+      setSelectedIds(new Set());
+      setBulkConfirmDelete(false);
+    } catch (err) {
+      console.error('[AdminDashboard] bulkDelete:', err);
+      setError(err.message || 'Bulk delete failed.');
+      setBulkConfirmDelete(false);
+    } finally {
+      setBulkProcessing(false);
     }
   };
 
@@ -649,6 +881,20 @@ export default function AdminDashboard({ user }) {
 
   const handleDelete = (id) => {
     setLeads(prev => prev.filter(l => l.id !== id));
+    setSelectedIds(prev => { const next = new Set(prev); next.delete(id); return next; });
+  };
+
+  const selectedCount = selectedIds.size;
+
+  // ── Filter tab colour map ──────────────────────────────────────────────────
+  const filterColor = {
+    All:       '#D97757',
+    Pending:   '#D97757',
+    Active:    '#7FA068',
+    Invited:   '#B89968',
+    Suspended: '#B89968',
+    Blocked:   '#C56B5A',
+    Rejected:  '#5C5648',
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -662,7 +908,7 @@ export default function AdminDashboard({ user }) {
             Admin
           </h1>
           <p style={{ color: '#5C5648', fontSize: '12px' }}>
-            {counts.total === 0 ? 'No leads yet' : `${counts.total} lead${counts.total !== 1 ? 's' : ''} total`}
+            {counts.total === 0 ? 'No users yet' : `${counts.total} user${counts.total !== 1 ? 's' : ''} total`}
           </p>
         </div>
         <button
@@ -682,12 +928,14 @@ export default function AdminDashboard({ user }) {
         </button>
       </div>
 
-      {/* Stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '12px', marginBottom: '28px' }}>
-        <StatCard icon={Clock}       label="Pending"  count={counts.pending}  color="#D97757" />
-        <StatCard icon={CheckCircle} label="Invited"  count={counts.invited}  color="#7FA068" />
-        <StatCard icon={XCircle}     label="Rejected" count={counts.rejected} color="#5C5648" />
-        <StatCard icon={Lock}        label="Blocked"  count={counts.blocked}  color="#C56B5A" />
+      {/* Stat cards — 3-column on mobile, 6-column on wide */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '10px', marginBottom: '28px' }}>
+        <StatCard icon={Clock}       label="Pending"   count={counts.pending}   color="#D97757" />
+        <StatCard icon={CheckCircle} label="Active"    count={counts.active}    color="#7FA068" />
+        <StatCard icon={Mail}        label="Invited"   count={counts.invited}   color="#B89968" />
+        <StatCard icon={ShieldOff}   label="Suspended" count={counts.suspended} color="#B89968" />
+        <StatCard icon={Lock}        label="Blocked"   count={counts.blocked}   color="#C56B5A" />
+        <StatCard icon={XCircle}     label="Rejected"  count={counts.rejected}  color="#5C5648" />
       </div>
 
       {/* Search */}
@@ -710,16 +958,17 @@ export default function AdminDashboard({ user }) {
       <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
         {FILTERS.map(f => {
           const active = activeFilter === f;
-          const cnt = f !== 'All' ? counts[f.toLowerCase()] : null;
+          const cnt    = f !== 'All' ? counts[f.toLowerCase()] : null;
+          const col    = filterColor[f] || '#D97757';
           return (
             <button
               key={f}
-              onClick={() => setActiveFilter(f)}
+              onClick={() => { setActiveFilter(f); setSelectedIds(new Set()); }}
               style={{
                 padding: '5px 14px', borderRadius: '999px', fontSize: '13px',
-                border: `1px solid ${active ? '#D97757' : '#26221C'}`,
-                background: active ? 'rgba(217,119,87,0.1)' : 'transparent',
-                color: active ? '#D97757' : '#8B8478',
+                border: `1px solid ${active ? col : '#26221C'}`,
+                background: active ? `${col}18` : 'transparent',
+                color: active ? col : '#8B8478',
                 fontWeight: active ? 600 : 400, cursor: 'pointer',
               }}
             >
@@ -732,14 +981,30 @@ export default function AdminDashboard({ user }) {
         })}
       </div>
 
+      {/* Bulk action bar */}
+      {selectedCount > 0 && (
+        <BulkActionBar
+          count={selectedCount}
+          processing={bulkProcessing}
+          confirmDelete={bulkConfirmDelete}
+          onActivate={() => handleBulkAction('active')}
+          onSuspend={() => handleBulkAction('suspended')}
+          onBlock={() => handleBulkAction('blocked')}
+          onDelete={() => setBulkConfirmDelete(true)}
+          onConfirmDelete={handleBulkDelete}
+          onCancelDelete={() => setBulkConfirmDelete(false)}
+          onClearSelection={() => { setSelectedIds(new Set()); setBulkConfirmDelete(false); }}
+        />
+      )}
+
       {/* Content */}
       {loading ? (
-        <p style={{ color: '#3A3028', fontSize: '13px', padding: '20px 0' }}>Loading leads…</p>
+        <p style={{ color: '#3A3028', fontSize: '13px', padding: '20px 0' }}>Loading…</p>
       ) : error ? (
         <div style={{ background: '#140809', border: '1px solid #4A1020', borderRadius: '6px', padding: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
             <AlertTriangle size={13} color="#D97757" />
-            <span style={{ color: '#D97757', fontSize: '13px', fontWeight: 600 }}>Failed to load leads</span>
+            <span style={{ color: '#D97757', fontSize: '13px', fontWeight: 600 }}>Failed to load users</span>
           </div>
           <p style={{ color: '#8B8478', fontSize: '12px' }}>{error}</p>
         </div>
@@ -747,22 +1012,43 @@ export default function AdminDashboard({ user }) {
         <div style={{ textAlign: 'center', padding: '60px 24px', color: '#3A3028' }}>
           <Users size={26} style={{ margin: '0 auto 10px', opacity: 0.3 }} />
           <p style={{ fontSize: '13px' }}>
-            {q ? `No results for "${searchQuery}"` : `No ${activeFilter !== 'All' ? activeFilter.toLowerCase() + ' ' : ''}leads.`}
+            {q ? `No results for "${searchQuery}"` : `No ${activeFilter !== 'All' ? activeFilter.toLowerCase() + ' ' : ''}users.`}
           </p>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {visible.map(lead => (
-            <LeadRow
-              key={lead.id}
-              lead={lead}
-              onUpdateStatus={updateStatus}
-              onInvite={setInviteTarget}
-              onNoteSave={handleNoteSave}
-              onCodeSave={handleCodeSave}
-              onDelete={handleDelete}
-            />
-          ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+
+          {/* Select-all row */}
+          <div
+            onClick={toggleSelectAll}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 16px', cursor: 'pointer', color: '#3A3028', userSelect: 'none' }}
+          >
+            {allVisibleSelected
+              ? <CheckSquare size={14} color="#7FA068" />
+              : someVisibleSelected
+                ? <MinusSquare size={14} color="#7FA068" />
+                : <Square size={14} />
+            }
+            <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              {allVisibleSelected ? 'Deselect all' : `Select all ${visible.length}`}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {visible.map(lead => (
+              <LeadRow
+                key={lead.id}
+                lead={lead}
+                selected={selectedIds.has(lead.id)}
+                onToggleSelect={toggleSelect}
+                onUpdateStatus={updateStatus}
+                onInvite={setInviteTarget}
+                onNoteSave={handleNoteSave}
+                onCodeSave={handleCodeSave}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
         </div>
       )}
 

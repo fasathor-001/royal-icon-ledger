@@ -562,14 +562,25 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
   useEffect(() => {
     if (!user?.email || !supabase || loading) return;
 
-    // 1. Check if user is blocked
+    // 1. Check if user is blocked or suspended, and auto-activate invited users
     supabase
       .from('early_access_leads')
-      .select('status')
+      .select('id, status')
       .eq('email', user.email.toLowerCase())
       .maybeSingle()
       .then(({ data: lead }) => {
-        if (lead?.status === 'blocked') setIsBlocked(true);
+        if (lead?.status === 'blocked' || lead?.status === 'suspended') {
+          setIsBlocked(true);
+          return;
+        }
+        // Mark invited users as active now that they've signed in
+        if (lead?.id && lead?.status === 'invited') {
+          supabase
+            .from('early_access_leads')
+            .update({ status: 'active', activated_at: new Date().toISOString() })
+            .eq('id', lead.id)
+            .then(() => {});
+        }
       });
 
     // 2. Check for an approved PIN reset request

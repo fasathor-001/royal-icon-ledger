@@ -92,13 +92,15 @@ export default function EarlyAccess({ navigate }) {
 
     // ─── Supabase insert ──────────────────────────────────────────
     if (supabase) {
-      const { error } = await supabase.from('early_access_leads').insert({
+      const payload = {
         name:        form.name.trim(),
         email:       form.email.trim().toLowerCase(),
         country:     form.country.trim() || null,
         income_type: form.incomeType,
         interest:    form.interest.trim() || null,
-      });
+      };
+
+      const { error } = await supabase.from('early_access_leads').insert(payload);
 
       if (error) {
         // Always log the real error so it's visible in the browser console
@@ -129,6 +131,28 @@ export default function EarlyAccess({ navigate }) {
         setSubmitting(false);
         return;
       }
+
+      // ── Fire admin notification (best-effort — don't block on it) ──
+      // Calls the notify-lead Edge Function directly so Telegram/email
+      // alerts fire immediately without needing a Database Webhook.
+      supabase.functions
+        .invoke('notify-lead', {
+          body: { record: { ...payload, created_at: new Date().toISOString() } },
+        })
+        .then(({ error: fnErr, data }) => {
+          if (fnErr) {
+            console.warn('[EarlyAccess] notify-lead invocation error:', fnErr.message);
+          } else {
+            console.log('[EarlyAccess] notify-lead results:', data);
+            if (data?.results) {
+              data.results.forEach(r => {
+                if (!r.ok) console.warn(`[EarlyAccess] notify-lead ${r.service} failed:`, r.error);
+              });
+            }
+          }
+        })
+        .catch(err => console.warn('[EarlyAccess] notify-lead (network):', err));
+
     } else {
       // Supabase not configured — local dev fallback
       await new Promise(r => setTimeout(r, 600));

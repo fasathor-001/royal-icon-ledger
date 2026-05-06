@@ -209,10 +209,32 @@ export async function deleteInviteCode(id) {
 // Called by unauthenticated users to request access.
 export async function submitAccessRequest(email, message) {
   if (!isSupabaseConfigured || !supabase) return false;
+  const cleanEmail   = email.trim().toLowerCase();
+  const cleanMessage = message?.trim() || null;
+
   const { error } = await supabase
     .from('access_requests')
-    .insert({ email: email.trim().toLowerCase(), message: message.trim() || null });
+    .insert({ email: cleanEmail, message: cleanMessage });
   if (error) { console.error('[dataLayer] submitAccessRequest:', error.message); return false; }
+
+  // Fire admin notification (best-effort — don't block on it)
+  supabase.functions
+    .invoke('notify-lead', {
+      body: {
+        record: {
+          type:       'access_request',
+          email:      cleanEmail,
+          message:    cleanMessage,
+          created_at: new Date().toISOString(),
+        },
+      },
+    })
+    .then(({ error: fnErr, data }) => {
+      if (fnErr) console.warn('[dataLayer] notify-lead (access request):', fnErr.message);
+      else console.log('[dataLayer] notify-lead results:', data);
+    })
+    .catch(err => console.warn('[dataLayer] notify-lead (network):', err));
+
   return true;
 }
 
