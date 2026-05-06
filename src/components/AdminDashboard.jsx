@@ -64,6 +64,44 @@ function generateInviteCode() {
   ).join('');
 }
 
+// ── Country name → ISO-3166-1 alpha-2 code ───────────────────────────────────
+const COUNTRY_CODES = {
+  'nigeria': 'NG', 'south africa': 'ZA', 'ghana': 'GH', 'kenya': 'KE',
+  'ethiopia': 'ET', 'tanzania': 'TZ', 'uganda': 'UG', 'rwanda': 'RW',
+  'zimbabwe': 'ZW', 'zambia': 'ZM', 'senegal': 'SN', 'cameroon': 'CM',
+  'ivory coast': 'CI', "côte d'ivoire": 'CI', 'mozambique': 'MZ',
+  'botswana': 'BW', 'namibia': 'NA', 'malawi': 'MW', 'angola': 'AO',
+  'egypt': 'EG', 'morocco': 'MA', 'tunisia': 'TN', 'algeria': 'DZ',
+  'united states': 'US', 'usa': 'US', 'united kingdom': 'GB', 'uk': 'GB',
+  'canada': 'CA', 'australia': 'AU', 'india': 'IN', 'germany': 'DE',
+  'france': 'FR', 'netherlands': 'NL', 'uae': 'AE', 'united arab emirates': 'AE',
+  'singapore': 'SG', 'new zealand': 'NZ', 'ireland': 'IE',
+};
+
+function countryDisplay(raw) {
+  if (!raw) return '—';
+  const trimmed = raw.trim();
+  if (!trimmed) return '—';
+  // Already looks like a 2–3 letter code
+  if (trimmed.length <= 3) return trimmed.toUpperCase();
+  return COUNTRY_CODES[trimmed.toLowerCase()] || trimmed;
+}
+
+// ── Income type labels ────────────────────────────────────────────────────────
+const INCOME_META = {
+  fixed:      { short: 'Fixed',       full: 'Fixed salary' },
+  variable:   { short: 'Variable',    full: 'Variable income' },
+  trader:     { short: 'Trader',      full: 'Trader / Investor' },
+  freelancer: { short: 'Freelancer',  full: 'Freelancer / Contractor' },
+  family:     { short: 'Family',      full: 'Family / Household' },
+  other:      { short: 'Other',       full: 'Business / Other' },
+};
+
+function incomeDisplay(raw, variant = 'short') {
+  if (!raw) return '—';
+  return INCOME_META[raw]?.[variant] || raw;
+}
+
 function fmt(dateStr) {
   if (!dateStr) return '—';
   return new Date(dateStr).toLocaleDateString('en-GB', {
@@ -666,7 +704,11 @@ function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onN
               )}
             </div>
             <div style={{ fontSize: '10px', color: '#4A4038', marginTop: '2px' }}>
-              {[lead.country, lead.income_type, fmt(lead.created_at)].filter(Boolean).join(' · ')}
+              {[
+                lead.country    ? countryDisplay(lead.country)         : null,
+                lead.income_type ? incomeDisplay(lead.income_type, 'short') : null,
+                fmt(lead.created_at),
+              ].filter(v => v && v !== '—').join(' · ')}
             </div>
           </div>
         </div>
@@ -713,8 +755,8 @@ function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onN
         <div style={{ borderTop: '1px solid #1A1610', padding: '16px 18px 16px 42px', display: 'flex', flexDirection: 'column', gap: '16px', background: '#0C0A08' }}>
 
           <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-            <MetaItem label="Country"  value={lead.country} />
-            <MetaItem label="Income"   value={lead.income_type} />
+            <MetaItem label="Country"  value={countryDisplay(lead.country)} />
+            <MetaItem label="Income"   value={incomeDisplay(lead.income_type, 'full')} />
             <MetaItem label="Joined"   value={fmt(lead.created_at)} />
             {lead.invited_at   && <MetaItem label="Invited"   value={fmt(lead.invited_at)} />}
             {lead.activated_at && <MetaItem label="Activated" value={fmt(lead.activated_at)} />}
