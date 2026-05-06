@@ -26,9 +26,20 @@ const FILTER_META = {
 const NAV_ITEMS = [
   { id: 'users',    label: 'Users',              icon: Users    },
   { id: 'pin',      label: 'PIN Reset Requests', icon: KeyRound },
-  { id: 'activity', label: 'Activity Logs',       icon: Activity, disabled: true },
+  { id: 'activity', label: 'Activity Logs',       icon: Activity },
   { id: 'settings', label: 'System Settings',     icon: Settings, disabled: true },
 ];
+
+const ACTION_META = {
+  invite:             { label: 'Sent invite to',          color: '#7FA068' },
+  status_change:      { label: 'Status changed',          color: '#B89968' },
+  bulk_status_change: { label: 'Bulk status change',      color: '#B89968' },
+  bulk_delete:        { label: 'Bulk deleted users',      color: '#C56B5A' },
+  delete:             { label: 'Deleted lead',            color: '#C56B5A' },
+  approve_pin_reset:  { label: 'Approved PIN reset for',  color: '#7FA068' },
+  dismiss_pin_reset:  { label: 'Dismissed PIN reset for', color: '#8B8478' },
+  note:               { label: 'Added note to',           color: '#B0A898' },
+};
 
 const DEFAULT_MESSAGE = (name) =>
 `Hi ${name || 'there'},
@@ -626,6 +637,8 @@ export default function AdminDashboard({ user }) {
   const [bulkProcessing, setBulkProcessing]       = useState(false);
   const [bulkConfirmDelete, setBulkConfirmDelete] = useState(false);
   const [activeTab, setActiveTab]                 = useState('users');
+  const [activityLogs, setActivityLogs]           = useState([]);
+  const [activityLoading, setActivityLoading]     = useState(false);
 
   const isAdmin = !!(user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase()));
 
@@ -672,6 +685,27 @@ export default function AdminDashboard({ user }) {
     } catch (err) { console.error('[AdminDashboard] deleteAccessReq:', err); }
   };
 
+  const fetchActivityLogs = useCallback(async () => {
+    if (!isAdmin || !supabase) return;
+    setActivityLoading(true);
+    try {
+      const { data, error: err } = await supabase
+        .from('admin_actions').select('*').order('created_at', { ascending: false }).limit(200);
+      if (!err) setActivityLogs(data || []);
+    } catch {} finally { setActivityLoading(false); }
+  }, [isAdmin]);
+
+  const logAdminAction = useCallback(async (action, targetEmail, metadata = {}) => {
+    if (!supabase || !user?.email) return;
+    try {
+      const { data: newRow } = await supabase
+        .from('admin_actions')
+        .insert({ admin_email: user.email, target_email: targetEmail, action, metadata })
+        .select().single();
+      if (newRow) setActivityLogs(prev => [newRow, ...prev]);
+    } catch (err) { console.warn('[AdminDashboard] logAction:', err.message); }
+  }, [user?.email]);
+
   const approvePinReset = async (id) => {
     if (!supabase) return;
     try {
@@ -679,6 +713,8 @@ export default function AdminDashboard({ user }) {
         .update({ status: 'approved', reviewed_at: new Date().toISOString(), reviewed_by: user?.email })
         .eq('id', id);
       setPinResets(prev => prev.map(r => r.id === id ? { ...r, status: 'approved' } : r));
+      const req = pinResets.find(r => r.id === id);
+      logAdminAction('approve_pin_reset', req?.user_email);
     } catch (err) { console.error('[AdminDashboard] approvePinReset:', err); }
   };
 
@@ -689,11 +725,13 @@ export default function AdminDashboard({ user }) {
         .update({ status: 'dismissed', reviewed_at: new Date().toISOString(), reviewed_by: user?.email })
         .eq('id', id);
       setPinResets(prev => prev.map(r => r.id === id ? { ...r, status: 'dismissed' } : r));
+      const req = pinResets.find(r => r.id === id);
+      logAdminAction('dismiss_pin_reset', req?.user_email);
     } catch (err) { console.error('[AdminDashboard] dismissPinReset:', err); }
   };
 
   useEffect(() => {
-    if (isAdmin && supabase) { fetchLeads(); fetchPinResets(); fetchAccessReqs(); }
+    if (isAdmin && supabase) { fetchLeads(); fetchPinResets(); fetchAccessReqs(); fetchActivityLogs(); }
     else setLoading(false);
   }, [isAdmin, fetchLeads]);
 
@@ -768,6 +806,8 @@ export default function AdminDashboard({ user }) {
       const { error: err } = await supabase.from('early_access_leads').update(patch).eq('id', id);
       if (err) throw err;
       setLeads(prev => prev.map(l => l.id === id ? { ...l, ...patch } : l));
+      const lead = leads.find(l => l.id === id);
+      logAdminAction('status_change', lead?.email, { status, name: lead?.name });
     } catch (err) { console.error('[AdminDashboard] updateStatus:', err); }
   };
 
@@ -785,6 +825,8 @@ export default function AdminDashboard({ user }) {
       const { error: err } = await supabase.from('early_access_leads').update(patch).in('id', ids);
       if (err) throw err;
       setLeads(prev => prev.map(l => selectedIds.has(l.id) ? { ...l, ...patch } : l));
+      const emails = leads.filter(l => ids.includes(l.id)).map(l => l.email);
+      logAdminAction('bulk_status_change', null, { status, count: ids.length, emails });
       setSelectedIds(new Set());
     } catch (err) { console.error('[AdminDashboard] bulkAction:', err); }
     finally { setBulkProcessing(false); }
@@ -801,6 +843,8 @@ export default function AdminDashboard({ user }) {
       if (!deleted || deleted.length === 0)
         throw new Error('Delete blocked by RLS — run rls-fix-migration.sql in Supabase SQL editor.');
       const deletedSet = new Set(deleted.map(r => r.id));
+      const emails = leads.filter(l => deletedSet.has(l.id)).map(l => l.email);
+      logAdminAction('bulk_delete', null, { count: deleted.length, emails });
       setLeads(prev => prev.filter(l => !deletedSet.has(l.id)));
       setSelectedIds(new Set()); setBulkConfirmDelete(false);
     } catch (err) {
@@ -811,17 +855,21 @@ export default function AdminDashboard({ user }) {
   };
 
   const handleInviteSent = (id, inviteCode) => {
+    const lead = leads.find(l => l.id === id);
     setLeads(prev => prev.map(l =>
       l.id === id ? { ...l, status: 'invited', invited_at: new Date().toISOString(), invite_code: inviteCode } : l
     ));
+    logAdminAction('invite', lead?.email, { invite_code: inviteCode, name: lead?.name });
     setInviteTarget(null);
   };
 
   const handleNoteSave  = (id, notes)       => setLeads(prev => prev.map(l => l.id === id ? { ...l, notes } : l));
   const handleCodeSave  = (id, invite_code) => setLeads(prev => prev.map(l => l.id === id ? { ...l, invite_code } : l));
   const handleDelete    = (id) => {
+    const lead = leads.find(l => l.id === id);
     setLeads(prev => prev.filter(l => l.id !== id));
     setSelectedIds(prev => { const next = new Set(prev); next.delete(id); return next; });
+    if (lead) logAdminAction('delete', lead.email, { name: lead.name });
   };
 
   const selectedCount     = selectedIds.size;
@@ -1311,6 +1359,98 @@ export default function AdminDashboard({ user }) {
                                 >
                                   Dismiss
                                 </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* ════════════════════ ACTIVITY LOGS TAB ════════════════════ */}
+          {activeTab === 'activity' && (
+            <>
+              <SectionHeader
+                icon={Activity}
+                iconColor="#B0A898"
+                title="Activity Logs"
+                subtitle="Every admin action — invites, status changes, deletions, PIN approvals."
+                action={<RefreshBtn onClick={fetchActivityLogs} loading={activityLoading} />}
+              />
+
+              {activityLoading ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '24px 0', color: '#8B8478' }}>
+                  <RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }} />
+                  <span style={{ fontSize: '13px' }}>Loading logs…</span>
+                </div>
+              ) : activityLogs.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '48px 24px' }}>
+                  <Activity size={22} style={{ margin: '0 auto 12px', color: '#26221C' }} />
+                  <p style={{ fontSize: '14px', color: '#8B8478', fontWeight: 500, marginBottom: '4px' }}>No activity yet</p>
+                  <p style={{ fontSize: '12px', color: '#8B8478' }}>Admin actions will appear here as you invite, approve, and manage users.</p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {activityLogs.map((log, idx) => {
+                    const meta     = ACTION_META[log.action] || { label: log.action, color: '#B0A898' };
+                    const isLast   = idx === activityLogs.length - 1;
+                    const ts       = log.created_at
+                      ? new Date(log.created_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                      : '—';
+
+                    // Build description
+                    let description = meta.label;
+                    if (log.target_email) description += ` ${log.target_email}`;
+                    if (log.action === 'status_change' && log.metadata?.status) {
+                      description = `Changed ${log.target_email} → ${log.metadata.status}`;
+                    }
+                    if (log.action === 'bulk_status_change') {
+                      description = `Bulk set ${log.metadata?.count || '?'} users → ${log.metadata?.status}`;
+                    }
+                    if (log.action === 'bulk_delete') {
+                      description = `Deleted ${log.metadata?.count || '?'} users`;
+                    }
+
+                    return (
+                      <div key={log.id} style={{ display: 'flex', gap: '14px', paddingBottom: isLast ? 0 : '16px', position: 'relative' }}>
+                        {/* Timeline line */}
+                        {!isLast && (
+                          <div style={{ position: 'absolute', left: '11px', top: '22px', bottom: 0, width: '1px', background: '#1A1610' }} />
+                        )}
+                        {/* Dot */}
+                        <div style={{ flexShrink: 0, width: '22px', height: '22px', borderRadius: '50%', background: `${meta.color}18`, border: `1px solid ${meta.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1px' }}>
+                          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: meta.color }} />
+                        </div>
+                        {/* Content */}
+                        <div style={{ flex: 1, minWidth: 0, paddingBottom: '8px' }}>
+                          <div style={{ fontSize: '13px', color: '#E8E2D5', lineHeight: 1.4, marginBottom: '3px' }}>
+                            {description}
+                          </div>
+                          {log.metadata?.name && log.action === 'invite' && (
+                            <div style={{ fontSize: '11px', color: '#8B8478', marginBottom: '2px' }}>
+                              {log.metadata.name}
+                              {log.metadata.invite_code && (
+                                <span style={{ marginLeft: '8px', fontFamily: 'monospace', fontSize: '10px', color: '#8B8478', background: '#141210', padding: '1px 6px', borderRadius: '3px', border: '1px solid #26221C' }}>
+                                  {log.metadata.invite_code}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          {log.action === 'bulk_status_change' && log.metadata?.emails?.length > 0 && (
+                            <div style={{ fontSize: '11px', color: '#8B8478', marginBottom: '2px' }}>
+                              {log.metadata.emails.slice(0, 3).join(', ')}{log.metadata.emails.length > 3 ? ` +${log.metadata.emails.length - 3} more` : ''}
+                            </div>
+                          )}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '10px', color: '#8B8478' }}>{ts}</span>
+                            {log.admin_email && (
+                              <>
+                                <span style={{ fontSize: '10px', color: '#4A4038' }}>·</span>
+                                <span style={{ fontSize: '10px', color: '#8B8478' }}>{log.admin_email}</span>
                               </>
                             )}
                           </div>
