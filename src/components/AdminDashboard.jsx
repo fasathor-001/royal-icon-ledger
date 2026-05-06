@@ -7,6 +7,7 @@ import {
   Mail, Lock, Search, Send, FileText, AlertTriangle, X, KeyRound, Hash,
   ChevronDown, ChevronUp, Trash2, ShieldOff, ShieldCheck, UserCheck,
   Square, CheckSquare, MinusSquare, Inbox, Download, UserPlus, Bell,
+  Settings, Activity,
 } from 'lucide-react';
 
 const ADMIN_EMAILS = ['hello@royalledger.app', 'fasathor@gmail.com'];
@@ -21,6 +22,13 @@ const FILTER_META = {
   Blocked:   { color: '#C56B5A', bg: 'rgba(197,107,90,0.12)'  },
   Rejected:  { color: '#5C5648', bg: 'rgba(92,86,72,0.12)'    },
 };
+
+const NAV_ITEMS = [
+  { id: 'users',    label: 'Users',              icon: Users    },
+  { id: 'pin',      label: 'PIN Reset Requests', icon: KeyRound },
+  { id: 'activity', label: 'Activity Logs',       icon: Activity, disabled: true },
+  { id: 'settings', label: 'System Settings',     icon: Settings, disabled: true },
+];
 
 const DEFAULT_MESSAGE = (name) =>
 `Hi ${name || 'there'},
@@ -403,7 +411,6 @@ function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onN
 
   const isSuspended = lead.status === 'suspended';
   const isBlocked   = lead.status === 'blocked';
-  const isPending   = lead.status === 'pending';
 
   const rowBg = selected
     ? 'rgba(127,160,104,0.06)'
@@ -463,7 +470,6 @@ function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onN
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }} onClick={e => e.stopPropagation()}>
           <StatusBadge status={lead.status} />
 
-          {/* Invite — only for non-active non-blocked */}
           {lead.status !== 'active' && lead.status !== 'blocked' && (
             <button
               onClick={() => onInvite(lead)}
@@ -477,7 +483,6 @@ function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onN
             </button>
           )}
 
-          {/* Suspend / Unsuspend */}
           {isSuspended
             ? (
               <button onClick={() => onUpdateStatus(lead.id, 'active')} title="Lift suspension" style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '3px 9px', borderRadius: '4px', border: '1px solid #2A4A20', background: 'transparent', color: '#7FA068', fontSize: '10px', cursor: 'pointer' }}>
@@ -491,7 +496,6 @@ function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onN
             ))
           }
 
-          {/* Block / Unblock */}
           {isBlocked
             ? <button onClick={() => onUpdateStatus(lead.id, 'pending')} style={{ padding: '3px 9px', borderRadius: '4px', border: '1px solid #2A4A20', background: 'transparent', color: '#7FA068', fontSize: '10px', cursor: 'pointer' }}>Unblock</button>
             : <button onClick={() => onUpdateStatus(lead.id, 'blocked')} style={{ padding: '3px 9px', borderRadius: '4px', border: '1px solid #3A1818', background: 'transparent', color: '#C56B5A', fontSize: '10px', cursor: 'pointer' }}>Block</button>
@@ -503,7 +507,6 @@ function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onN
       {expanded && (
         <div style={{ borderTop: '1px solid #1A1610', padding: '16px 18px 16px 42px', display: 'flex', flexDirection: 'column', gap: '16px', background: '#0C0A08' }}>
 
-          {/* Meta row */}
           <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
             <MetaItem label="Country"  value={lead.country} />
             <MetaItem label="Income"   value={lead.income_type} />
@@ -515,7 +518,6 @@ function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onN
             {lead.blocked_at   && <MetaItem label="Blocked"   value={fmt(lead.blocked_at)} />}
           </div>
 
-          {/* Interest */}
           {lead.interest && (
             <div style={{ paddingTop: '14px', borderTop: '1px solid #1A1610' }}>
               <div style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#2E2820', marginBottom: '6px' }}>Why interested</div>
@@ -523,18 +525,15 @@ function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onN
             </div>
           )}
 
-          {/* Notes */}
           <div style={{ paddingTop: '14px', borderTop: '1px solid #1A1610' }}>
             <div style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#2E2820', marginBottom: '8px' }}>Internal notes</div>
             <NoteEditor lead={lead} onSave={onNoteSave} />
           </div>
 
-          {/* Invite code */}
           <div style={{ paddingTop: '14px', borderTop: '1px solid #1A1610' }}>
             <InviteCodeManager lead={lead} onCodeSave={onCodeSave} />
           </div>
 
-          {/* Status actions + delete */}
           <div style={{ paddingTop: '14px', borderTop: '1px solid #1A1610', display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
             <ActionBtn label="Reject" active={lead.status === 'rejected'} color="#D97757" disabled={lead.status === 'rejected'} onClick={() => onUpdateStatus(lead.id, 'rejected')} />
             <ActionBtn
@@ -626,7 +625,7 @@ export default function AdminDashboard({ user }) {
   const [selectedIds, setSelectedIds]             = useState(new Set());
   const [bulkProcessing, setBulkProcessing]       = useState(false);
   const [bulkConfirmDelete, setBulkConfirmDelete] = useState(false);
-  const [pinSectionOpen, setPinSectionOpen]       = useState(false);
+  const [activeTab, setActiveTab]                 = useState('users');
 
   const isAdmin = !!(user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase()));
 
@@ -727,9 +726,9 @@ export default function AdminDashboard({ user }) {
     return matchFilter && matchSearch;
   });
 
-  const visibleIds            = visible.map(l => l.id);
-  const allVisibleSelected    = visibleIds.length > 0 && visibleIds.every(id => selectedIds.has(id));
-  const someVisibleSelected   = visibleIds.some(id => selectedIds.has(id)) && !allVisibleSelected;
+  const visibleIds          = visible.map(l => l.id);
+  const allVisibleSelected  = visibleIds.length > 0 && visibleIds.every(id => selectedIds.has(id));
+  const someVisibleSelected = visibleIds.some(id => selectedIds.has(id)) && !allVisibleSelected;
 
   const toggleSelectAll = () => {
     setSelectedIds(prev => {
@@ -816,9 +815,9 @@ export default function AdminDashboard({ user }) {
     setSelectedIds(prev => { const next = new Set(prev); next.delete(id); return next; });
   };
 
-  const selectedCount      = selectedIds.size;
-  const pendingPinResets   = pinResets.filter(r => r.status === 'pending');
-  const pendingAccessReqs  = accessReqs.filter(r => !r.status || r.status === 'pending');
+  const selectedCount     = selectedIds.size;
+  const pendingPinResets  = pinResets.filter(r => r.status === 'pending');
+  const pendingAccessReqs = accessReqs.filter(r => !r.status || r.status === 'pending');
 
   const exportCSV = () => {
     const rows = [
@@ -832,65 +831,37 @@ export default function AdminDashboard({ user }) {
     a.click(); URL.revokeObjectURL(url);
   };
 
+  // ── Shared button styles ──────────────────────────────────────────────────
+  const headerBtnBase = {
+    display: 'flex', alignItems: 'center', gap: '5px',
+    padding: '6px 12px', borderRadius: '5px', fontSize: '11px',
+    cursor: 'pointer', transition: 'all 0.12s', fontFamily: 'inherit',
+  };
+
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div style={{ maxWidth: '920px', margin: '0 auto', padding: '32px 20px 60px', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '32px 20px 60px', fontFamily: 'Inter, system-ui, sans-serif' }}>
 
-      {/* ── Header ── */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '28px', gap: '16px', flexWrap: 'wrap' }}>
-        <div>
-          <div style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#3A3028', marginBottom: '6px' }}>
-            Royal Ledger
-          </div>
-          <h1 style={{ fontSize: '26px', fontWeight: 300, color: '#E8E2D5', fontFamily: 'Georgia, serif', margin: '0 0 4px', letterSpacing: '-0.01em' }}>
-            Admin Control Panel
-          </h1>
-          <p style={{ color: '#3A3028', fontSize: '12px', margin: 0 }}>
-            Manage users, access, invites, and recovery requests.
-          </p>
+      {/* ── Global header ── */}
+      <div style={{ marginBottom: '24px' }}>
+        <div style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#3A3028', marginBottom: '6px' }}>
+          Royal Ledger
         </div>
-
-        {/* Header actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-          <button
-            onClick={exportCSV}
-            disabled={leads.length === 0}
-            title="Export users as CSV"
-            style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 13px', background: 'transparent', border: '1px solid #26221C', borderRadius: '5px', color: '#5C5648', fontSize: '12px', cursor: leads.length === 0 ? 'not-allowed' : 'pointer', opacity: leads.length === 0 ? 0.4 : 1, transition: 'all 0.12s' }}
-            onMouseEnter={e => { if (leads.length > 0) { e.currentTarget.style.borderColor = '#5C5648'; e.currentTarget.style.color = '#8B8478'; } }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = '#5C5648'; }}
-          >
-            <Download size={11} /> Export
-          </button>
-          <button
-            onClick={() => setInviteTarget({ name: null, email: '' })}
-            style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 13px', background: 'transparent', border: '1px solid #2A4A20', borderRadius: '5px', color: '#7FA068', fontSize: '12px', fontWeight: 500, cursor: 'pointer', transition: 'background 0.12s' }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(127,160,104,0.07)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-          >
-            <UserPlus size={11} /> Invite user
-          </button>
-          <button
-            onClick={() => { fetchLeads(); fetchPinResets(); fetchAccessReqs(); }}
-            disabled={loading}
-            title="Refresh all data"
-            style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 13px', background: 'transparent', border: '1px solid #26221C', borderRadius: '5px', color: '#5C5648', fontSize: '12px', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1, transition: 'all 0.12s' }}
-            onMouseEnter={e => { if (!loading) { e.currentTarget.style.borderColor = '#5C5648'; e.currentTarget.style.color = '#8B8478'; } }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = '#5C5648'; }}
-          >
-            <RefreshCw size={11} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
-            Refresh
-          </button>
-        </div>
+        <h1 style={{ fontSize: '24px', fontWeight: 300, color: '#E8E2D5', fontFamily: 'Georgia, serif', margin: '0 0 4px', letterSpacing: '-0.01em' }}>
+          Admin Control Panel
+        </h1>
+        <p style={{ color: '#3A3028', fontSize: '12px', margin: 0 }}>
+          Manage users, access, invites, and recovery requests.
+        </p>
       </div>
 
-      {/* ── Priority alert: pending PIN resets ── */}
+      {/* ── Priority banner: pending PIN resets ── */}
       {pendingPinResets.length > 0 && (
-        <div style={{ background: 'rgba(217,119,87,0.07)', border: '1px solid rgba(217,119,87,0.25)', borderRadius: '7px', padding: '14px 18px', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+        <div style={{ background: 'rgba(217,119,87,0.06)', border: '1px solid rgba(217,119,87,0.22)', borderRadius: '7px', padding: '12px 16px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Bell size={14} color="#D97757" />
+            <Bell size={13} color="#D97757" />
             <div>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: '#D97757', marginBottom: '2px' }}>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: '#D97757', marginBottom: '1px' }}>
                 {pendingPinResets.length} PIN reset {pendingPinResets.length === 1 ? 'request needs' : 'requests need'} review
               </div>
               <div style={{ fontSize: '11px', color: '#8B8478' }}>
@@ -899,180 +870,445 @@ export default function AdminDashboard({ user }) {
             </div>
           </div>
           <button
-            onClick={() => { setPinSectionOpen(true); setTimeout(() => document.getElementById('pin-reset-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }}
-            style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 14px', borderRadius: '5px', border: '1px solid rgba(217,119,87,0.4)', background: 'rgba(217,119,87,0.1)', color: '#D97757', fontSize: '12px', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
+            onClick={() => setActiveTab('pin')}
+            style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 13px', borderRadius: '5px', border: '1px solid rgba(217,119,87,0.35)', background: 'rgba(217,119,87,0.09)', color: '#D97757', fontSize: '11px', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
           >
             Review requests →
           </button>
         </div>
       )}
 
-      {/* ── Stat cards ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px', marginBottom: '24px' }}>
-        {[
-          { key: 'pending',   label: 'Pending',   subtitle: 'waiting review',       icon: Clock,        color: '#D97757' },
-          { key: 'active',    label: 'Active',     subtitle: 'using the system',     icon: CheckCircle,  color: '#7FA068' },
-          { key: 'invited',   label: 'Invited',    subtitle: 'access sent',          icon: Mail,         color: '#B89968' },
-          { key: 'suspended', label: 'Suspended',  subtitle: 'temporarily paused',   icon: ShieldOff,    color: '#B89968' },
-          { key: 'blocked',   label: 'Blocked',    subtitle: 'restricted',           icon: Lock,         color: '#C56B5A' },
-          { key: 'rejected',  label: 'Rejected',   subtitle: 'declined',             icon: XCircle,      color: '#5C5648' },
-        ].map(({ key, label, subtitle, icon, color }) => (
-          <StatCard
-            key={key}
-            icon={icon}
-            label={label}
-            subtitle={subtitle}
-            count={counts[key]}
-            color={color}
-            active={activeFilter === label}
-            onClick={() => { setActiveFilter(label); setSelectedIds(new Set()); }}
-          />
-        ))}
-      </div>
+      {/* ── Two-column layout ── */}
+      <div className="admin-layout" style={{ display: 'flex', alignItems: 'flex-start' }}>
 
-      {/* ── Divider ── */}
-      <div style={{ height: '1px', background: '#1A1610', marginBottom: '20px' }} />
+        {/* ── Left sidebar ── */}
+        <nav
+          className="admin-sidebar"
+          style={{
+            width: '172px',
+            flexShrink: 0,
+            marginRight: '28px',
+            borderRight: '1px solid #1A1610',
+            paddingRight: '20px',
+          }}
+        >
+          <div
+            className="nav-section-label"
+            style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#26221C', padding: '0 14px', marginBottom: '8px' }}
+          >
+            Admin
+          </div>
 
-      {/* ── Search + filters row ── */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-        {/* Search */}
-        <div style={{ position: 'relative', flex: '1', minWidth: '180px' }}>
-          <Search size={12} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#2E2820', pointerEvents: 'none' }} />
-          <input
-            type="text"
-            placeholder="Search name or email…"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            style={{ width: '100%', background: '#0F0D0A', border: '1px solid #26221C', borderRadius: '5px', padding: '7px 10px 7px 28px', fontSize: '12px', color: '#E8E2D5', boxSizing: 'border-box', outline: 'none', transition: 'border-color 0.12s' }}
-            onFocus={e => e.target.style.borderColor = '#3A3028'}
-            onBlur={e => e.target.style.borderColor = '#26221C'}
-          />
-          {searchQuery && (
-            <button onClick={() => setSearchQuery('')} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#3A3028', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
-              <X size={11} />
-            </button>
-          )}
-        </div>
+          {NAV_ITEMS.map((item, idx) => {
+            const isActive = activeTab === item.id && !item.disabled;
+            const badge    = item.id === 'pin' ? pendingPinResets.length : 0;
+            const showDivider = idx === 1; // separator before disabled items
 
-        {/* Filter pills */}
-        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-          {FILTERS.map(f => {
-            const isActive = activeFilter === f;
-            const meta     = FILTER_META[f];
-            const cnt      = f !== 'All' ? counts[f.toLowerCase()] : null;
             return (
-              <button
-                key={f}
-                onClick={() => { setActiveFilter(f); setSelectedIds(new Set()); }}
-                style={{ padding: '4px 11px', borderRadius: '999px', fontSize: '11px', fontWeight: isActive ? 700 : 400, border: `1px solid ${isActive ? meta.color : '#1E1C18'}`, background: isActive ? meta.bg : 'transparent', color: isActive ? meta.color : '#5C5648', cursor: 'pointer', transition: 'all 0.12s', display: 'flex', alignItems: 'center', gap: '4px' }}
-                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = '#8B8478'; } }}
-                onMouseLeave={e => { if (!isActive) { e.currentTarget.style.borderColor = '#1E1C18'; e.currentTarget.style.color = '#5C5648'; } }}
-              >
-                {f}
-                {cnt != null && cnt > 0 && (
-                  <span style={{ fontSize: '10px', background: isActive ? `${meta.color}30` : '#1A1810', color: isActive ? meta.color : '#3A3028', borderRadius: '999px', padding: '0 5px', fontWeight: 700, lineHeight: '16px' }}>
-                    {cnt}
-                  </span>
+              <React.Fragment key={item.id}>
+                {showDivider && (
+                  <div className="nav-divider" style={{ height: '1px', background: '#1A1610', margin: '8px 14px' }} />
                 )}
-              </button>
+                <div className="nav-item-wrapper" style={{ position: 'relative', marginBottom: '1px' }}>
+                  {/* Active left-border indicator */}
+                  {isActive && (
+                    <div
+                      className="active-indicator"
+                      style={{ position: 'absolute', left: 0, top: '7px', bottom: '7px', width: '2px', background: '#D97757', borderRadius: '1px' }}
+                    />
+                  )}
+                  <button
+                    className={[
+                      'nav-btn',
+                      isActive   ? 'nav-btn-active'   : '',
+                      item.disabled ? 'nav-btn-disabled' : '',
+                    ].join(' ').trim()}
+                    onClick={() => { if (!item.disabled) setActiveTab(item.id); }}
+                    disabled={item.disabled}
+                    style={{
+                      width: '100%',
+                      display: 'flex', alignItems: 'center', gap: '8px',
+                      padding: '7px 12px 7px 14px',
+                      borderRadius: '5px', border: 'none',
+                      background: isActive ? 'rgba(217,119,87,0.06)' : 'transparent',
+                      color: item.disabled ? '#2A2520' : isActive ? '#E8E2D5' : '#5C5648',
+                      cursor: item.disabled ? 'default' : 'pointer',
+                      fontSize: '12px', textAlign: 'left',
+                      transition: 'background 0.12s, color 0.12s',
+                      fontFamily: 'inherit',
+                    }}
+                    onMouseEnter={e => {
+                      if (!item.disabled && !isActive) {
+                        e.currentTarget.style.background = 'rgba(232,226,213,0.03)';
+                        e.currentTarget.style.color = '#8B8478';
+                      }
+                    }}
+                    onMouseLeave={e => {
+                      if (!item.disabled && !isActive) {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.color = '#5C5648';
+                      }
+                    }}
+                  >
+                    <item.icon size={12} style={{ flexShrink: 0 }} />
+                    <span style={{ flex: 1, lineHeight: 1.3, textAlign: 'left' }}>{item.label}</span>
+                    {badge > 0 && !item.disabled && (
+                      <span style={{ fontSize: '10px', fontWeight: 700, background: '#D97757', color: '#0A0908', borderRadius: '999px', padding: '0 5px', lineHeight: '16px', minWidth: '16px', textAlign: 'center', flexShrink: 0 }}>
+                        {badge}
+                      </span>
+                    )}
+                    {item.disabled && (
+                      <span style={{ fontSize: '9px', color: '#1E1C18', letterSpacing: '0.08em', textTransform: 'uppercase', flexShrink: 0 }}>
+                        soon
+                      </span>
+                    )}
+                  </button>
+                </div>
+              </React.Fragment>
             );
           })}
-          {(activeFilter !== 'All' || searchQuery) && (
-            <button
-              onClick={() => { setActiveFilter('All'); setSearchQuery(''); setSelectedIds(new Set()); }}
-              style={{ padding: '4px 10px', borderRadius: '999px', fontSize: '11px', border: '1px solid #1E1C18', background: 'transparent', color: '#3A3028', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#5C5648'; e.currentTarget.style.borderColor = '#26221C'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#3A3028'; e.currentTarget.style.borderColor = '#1E1C18'; }}
-            >
-              <X size={9} /> Clear
-            </button>
-          )}
-        </div>
-      </div>
+        </nav>
 
-      {/* ── Bulk action bar ── */}
-      {selectedCount > 0 && (
-        <BulkActionBar
-          count={selectedCount}
-          processing={bulkProcessing}
-          confirmDelete={bulkConfirmDelete}
-          onActivate={() => handleBulkAction('active')}
-          onSuspend={() => handleBulkAction('suspended')}
-          onBlock={() => handleBulkAction('blocked')}
-          onDelete={() => setBulkConfirmDelete(true)}
-          onConfirmDelete={handleBulkDelete}
-          onCancelDelete={() => setBulkConfirmDelete(false)}
-          onClearSelection={() => { setSelectedIds(new Set()); setBulkConfirmDelete(false); }}
-        />
-      )}
+        {/* ── Right content area ── */}
+        <div style={{ flex: 1, minWidth: 0 }}>
 
-      {/* ── User list ── */}
-      {loading ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '24px 0', color: '#3A3028' }}>
-          <RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }} />
-          <span style={{ fontSize: '13px' }}>Loading users…</span>
-        </div>
-      ) : error ? (
-        <div style={{ background: '#140809', border: '1px solid #4A1020', borderRadius: '6px', padding: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <AlertTriangle size={14} color="#D97757" />
-          <div>
-            <div style={{ color: '#D97757', fontSize: '13px', fontWeight: 600, marginBottom: '2px' }}>Failed to load users</div>
-            <div style={{ color: '#8B8478', fontSize: '12px' }}>{error}</div>
-          </div>
-        </div>
-      ) : visible.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '48px 24px' }}>
-          <Users size={24} style={{ margin: '0 auto 12px', color: '#26221C' }} />
-          {q || activeFilter !== 'All' ? (
+          {/* ════════════════════ USERS TAB ════════════════════ */}
+          {activeTab === 'users' && (
             <>
-              <p style={{ fontSize: '14px', color: '#5C5648', fontWeight: 500, marginBottom: '4px' }}>No matching users</p>
-              <p style={{ fontSize: '12px', color: '#3A3028' }}>Try clearing the search or changing the filter.</p>
-            </>
-          ) : (
-            <>
-              <p style={{ fontSize: '14px', color: '#5C5648', fontWeight: 500, marginBottom: '4px' }}>No users yet</p>
-              <p style={{ fontSize: '12px', color: '#3A3028' }}>Early access leads will appear here when people submit the form.</p>
+              {/* Tab action row */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '7px', marginBottom: '20px' }}>
+                <button
+                  onClick={exportCSV}
+                  disabled={leads.length === 0}
+                  title="Export users as CSV"
+                  style={{ ...headerBtnBase, background: 'transparent', border: '1px solid #26221C', color: '#5C5648', opacity: leads.length === 0 ? 0.4 : 1, cursor: leads.length === 0 ? 'not-allowed' : 'pointer' }}
+                  onMouseEnter={e => { if (leads.length > 0) { e.currentTarget.style.borderColor = '#5C5648'; e.currentTarget.style.color = '#8B8478'; } }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = '#5C5648'; }}
+                >
+                  <Download size={11} /> Export
+                </button>
+                <button
+                  onClick={() => setInviteTarget({ name: null, email: '' })}
+                  style={{ ...headerBtnBase, background: 'transparent', border: '1px solid #2A4A20', color: '#7FA068', fontWeight: 500 }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(127,160,104,0.07)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                >
+                  <UserPlus size={11} /> Invite user
+                </button>
+                <button
+                  onClick={() => { fetchLeads(); fetchAccessReqs(); }}
+                  disabled={loading}
+                  title="Refresh"
+                  style={{ ...headerBtnBase, background: 'transparent', border: '1px solid #26221C', color: '#5C5648', opacity: loading ? 0.5 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
+                  onMouseEnter={e => { if (!loading) { e.currentTarget.style.borderColor = '#5C5648'; e.currentTarget.style.color = '#8B8478'; } }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = '#5C5648'; }}
+                >
+                  <RefreshCw size={11} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
+                  Refresh
+                </button>
+              </div>
+
+              {/* Stat cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px', marginBottom: '20px' }}>
+                {[
+                  { key: 'pending',   label: 'Pending',   subtitle: 'waiting review',     icon: Clock,       color: '#D97757' },
+                  { key: 'active',    label: 'Active',     subtitle: 'using the system',   icon: CheckCircle, color: '#7FA068' },
+                  { key: 'invited',   label: 'Invited',    subtitle: 'access sent',         icon: Mail,        color: '#B89968' },
+                  { key: 'suspended', label: 'Suspended',  subtitle: 'temporarily paused', icon: ShieldOff,   color: '#B89968' },
+                  { key: 'blocked',   label: 'Blocked',    subtitle: 'restricted',          icon: Lock,        color: '#C56B5A' },
+                  { key: 'rejected',  label: 'Rejected',   subtitle: 'declined',            icon: XCircle,     color: '#5C5648' },
+                ].map(({ key, label, subtitle, icon, color }) => (
+                  <StatCard
+                    key={key}
+                    icon={icon}
+                    label={label}
+                    subtitle={subtitle}
+                    count={counts[key]}
+                    color={color}
+                    active={activeFilter === label}
+                    onClick={() => { setActiveFilter(label); setSelectedIds(new Set()); }}
+                  />
+                ))}
+              </div>
+
+              {/* Divider */}
+              <div style={{ height: '1px', background: '#1A1610', marginBottom: '16px' }} />
+
+              {/* Search + filter row */}
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div style={{ position: 'relative', flex: '1', minWidth: '160px' }}>
+                  <Search size={12} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#2E2820', pointerEvents: 'none' }} />
+                  <input
+                    type="text"
+                    placeholder="Search name or email…"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    style={{ width: '100%', background: '#0F0D0A', border: '1px solid #26221C', borderRadius: '5px', padding: '7px 10px 7px 28px', fontSize: '12px', color: '#E8E2D5', boxSizing: 'border-box', outline: 'none', transition: 'border-color 0.12s' }}
+                    onFocus={e => e.target.style.borderColor = '#3A3028'}
+                    onBlur={e => e.target.style.borderColor = '#26221C'}
+                  />
+                  {searchQuery && (
+                    <button onClick={() => setSearchQuery('')} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#3A3028', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
+                      <X size={11} />
+                    </button>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                  {FILTERS.map(f => {
+                    const isActive = activeFilter === f;
+                    const meta     = FILTER_META[f];
+                    const cnt      = f !== 'All' ? counts[f.toLowerCase()] : null;
+                    return (
+                      <button
+                        key={f}
+                        onClick={() => { setActiveFilter(f); setSelectedIds(new Set()); }}
+                        style={{ padding: '4px 11px', borderRadius: '999px', fontSize: '11px', fontWeight: isActive ? 700 : 400, border: `1px solid ${isActive ? meta.color : '#1E1C18'}`, background: isActive ? meta.bg : 'transparent', color: isActive ? meta.color : '#5C5648', cursor: 'pointer', transition: 'all 0.12s', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        onMouseEnter={e => { if (!isActive) { e.currentTarget.style.borderColor = '#26221C'; e.currentTarget.style.color = '#8B8478'; } }}
+                        onMouseLeave={e => { if (!isActive) { e.currentTarget.style.borderColor = '#1E1C18'; e.currentTarget.style.color = '#5C5648'; } }}
+                      >
+                        {f}
+                        {cnt != null && cnt > 0 && (
+                          <span style={{ fontSize: '10px', background: isActive ? `${meta.color}30` : '#1A1810', color: isActive ? meta.color : '#3A3028', borderRadius: '999px', padding: '0 5px', fontWeight: 700, lineHeight: '16px' }}>
+                            {cnt}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                  {(activeFilter !== 'All' || searchQuery) && (
+                    <button
+                      onClick={() => { setActiveFilter('All'); setSearchQuery(''); setSelectedIds(new Set()); }}
+                      style={{ padding: '4px 10px', borderRadius: '999px', fontSize: '11px', border: '1px solid #1E1C18', background: 'transparent', color: '#3A3028', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                      onMouseEnter={e => { e.currentTarget.style.color = '#5C5648'; e.currentTarget.style.borderColor = '#26221C'; }}
+                      onMouseLeave={e => { e.currentTarget.style.color = '#3A3028'; e.currentTarget.style.borderColor = '#1E1C18'; }}
+                    >
+                      <X size={9} /> Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Bulk action bar */}
+              {selectedCount > 0 && (
+                <BulkActionBar
+                  count={selectedCount}
+                  processing={bulkProcessing}
+                  confirmDelete={bulkConfirmDelete}
+                  onActivate={() => handleBulkAction('active')}
+                  onSuspend={() => handleBulkAction('suspended')}
+                  onBlock={() => handleBulkAction('blocked')}
+                  onDelete={() => setBulkConfirmDelete(true)}
+                  onConfirmDelete={handleBulkDelete}
+                  onCancelDelete={() => setBulkConfirmDelete(false)}
+                  onClearSelection={() => { setSelectedIds(new Set()); setBulkConfirmDelete(false); }}
+                />
+              )}
+
+              {/* User list */}
+              {loading ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '24px 0', color: '#3A3028' }}>
+                  <RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }} />
+                  <span style={{ fontSize: '13px' }}>Loading users…</span>
+                </div>
+              ) : error ? (
+                <div style={{ background: '#140809', border: '1px solid #4A1020', borderRadius: '6px', padding: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <AlertTriangle size={14} color="#D97757" />
+                  <div>
+                    <div style={{ color: '#D97757', fontSize: '13px', fontWeight: 600, marginBottom: '2px' }}>Failed to load users</div>
+                    <div style={{ color: '#8B8478', fontSize: '12px' }}>{error}</div>
+                  </div>
+                </div>
+              ) : visible.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px 24px' }}>
+                  <Users size={22} style={{ margin: '0 auto 12px', color: '#26221C' }} />
+                  {q || activeFilter !== 'All' ? (
+                    <>
+                      <p style={{ fontSize: '14px', color: '#5C5648', fontWeight: 500, marginBottom: '4px' }}>No matching users</p>
+                      <p style={{ fontSize: '12px', color: '#3A3028' }}>Try clearing the search or changing the filter.</p>
+                    </>
+                  ) : (
+                    <>
+                      <p style={{ fontSize: '14px', color: '#5C5648', fontWeight: 500, marginBottom: '4px' }}>No users yet</p>
+                      <p style={{ fontSize: '12px', color: '#3A3028' }}>Early access leads will appear here when people submit the form.</p>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                  <div
+                    onClick={toggleSelectAll}
+                    style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '5px 14px', cursor: 'pointer', color: '#2E2820', userSelect: 'none', borderRadius: '4px' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#5C5648'}
+                    onMouseLeave={e => e.currentTarget.style.color = '#2E2820'}
+                  >
+                    {allVisibleSelected
+                      ? <CheckSquare size={13} color="#7FA068" />
+                      : someVisibleSelected
+                        ? <MinusSquare size={13} color="#7FA068" />
+                        : <Square size={13} />
+                    }
+                    <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                      {allVisibleSelected ? `Deselect all ${visible.length}` : `Select all ${visible.length}`}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                    {visible.map(lead => (
+                      <LeadRow
+                        key={lead.id}
+                        lead={lead}
+                        selected={selectedIds.has(lead.id)}
+                        onToggleSelect={toggleSelect}
+                        onUpdateStatus={updateStatus}
+                        onInvite={setInviteTarget}
+                        onNoteSave={handleNoteSave}
+                        onCodeSave={handleCodeSave}
+                        onDelete={handleDelete}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Access Requests */}
+              <div style={{ marginTop: '36px', borderTop: '1px solid #1A1610', paddingTop: '24px' }}>
+                <SectionHeader
+                  icon={Inbox}
+                  iconColor={pendingAccessReqs.length > 0 ? '#7FA068' : '#3A3028'}
+                  title={`Access Requests${pendingAccessReqs.length > 0 ? ` · ${pendingAccessReqs.length} pending` : ''}`}
+                  subtitle="From the in-app login page — people without an invite code. Send them one to grant access."
+                  action={<RefreshBtn onClick={fetchAccessReqs} loading={accessReqsLoading} />}
+                />
+
+                {accessReqs.length === 0 ? (
+                  <p style={{ fontSize: '12px', color: '#2E2820', padding: '8px 0' }}>No access requests yet.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {accessReqs.map(req => {
+                      const isPending  = !req.status || req.status === 'pending';
+                      const isApproved = req.status === 'approved';
+                      const badgeColor = isApproved ? '#7FA068' : isPending ? '#D97757' : '#5C5648';
+                      const badgeBg    = isApproved ? 'rgba(127,160,104,0.12)' : isPending ? 'rgba(217,119,87,0.12)' : 'rgba(92,86,72,0.12)';
+                      return (
+                        <div key={req.id} style={{ background: '#0F0D0A', border: `1px solid ${isPending ? '#2E2218' : '#1A1610'}`, borderRadius: '6px', padding: '14px 16px' }}>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontSize: '13px', color: '#E8E2D5', fontWeight: 500, marginBottom: '2px' }}>{req.email}</div>
+                              <div style={{ fontSize: '10px', color: '#3A3028', marginBottom: req.message ? '8px' : 0 }}>{fmt(req.created_at)}</div>
+                              {req.message && <div style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.55 }}>{req.message}</div>}
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                              <span style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '2px 8px', borderRadius: '999px', background: badgeBg, color: badgeColor }}>
+                                {req.status || 'pending'}
+                              </span>
+                              {isPending && (
+                                <button
+                                  onClick={() => setInviteTarget({ name: null, email: req.email })}
+                                  style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#7FA068', background: 'none', border: '1px solid #2A4A20', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer', fontWeight: 600, transition: 'background 0.12s' }}
+                                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(127,160,104,0.08)'}
+                                  onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                                >
+                                  <Send size={9} /> Send invite
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer totals */}
+              <div style={{ marginTop: '28px', paddingTop: '16px', borderTop: '1px solid #141210', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                <span style={{ fontSize: '10px', color: '#1E1C18' }}>
+                  {counts.total} total · {counts.pending} pending · {counts.active} active
+                </span>
+                <span style={{ fontSize: '10px', color: '#1E1C18' }}>Royal Ledger Admin</span>
+              </div>
             </>
           )}
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-          {/* Select-all row */}
-          <div
-            onClick={toggleSelectAll}
-            style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '5px 14px', cursor: 'pointer', color: '#2E2820', userSelect: 'none', borderRadius: '4px' }}
-            onMouseEnter={e => e.currentTarget.style.color = '#5C5648'}
-            onMouseLeave={e => e.currentTarget.style.color = '#2E2820'}
-          >
-            {allVisibleSelected
-              ? <CheckSquare size={13} color="#7FA068" />
-              : someVisibleSelected
-                ? <MinusSquare size={13} color="#7FA068" />
-                : <Square size={13} />
-            }
-            <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-              {allVisibleSelected ? `Deselect all ${visible.length}` : `Select all ${visible.length}`}
-            </span>
-          </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-            {visible.map(lead => (
-              <LeadRow
-                key={lead.id}
-                lead={lead}
-                selected={selectedIds.has(lead.id)}
-                onToggleSelect={toggleSelect}
-                onUpdateStatus={updateStatus}
-                onInvite={setInviteTarget}
-                onNoteSave={handleNoteSave}
-                onCodeSave={handleCodeSave}
-                onDelete={handleDelete}
+          {/* ════════════════════ PIN RESET TAB ════════════════════ */}
+          {activeTab === 'pin' && (
+            <>
+              <SectionHeader
+                icon={KeyRound}
+                iconColor={pendingPinResets.length > 0 ? '#D97757' : '#3A3028'}
+                title={`PIN Reset Requests${pendingPinResets.length > 0 ? ` · ${pendingPinResets.length} pending` : ''}`}
+                subtitle="Users who've forgotten their PIN. Approve to force re-setup on their next login."
+                action={<RefreshBtn onClick={fetchPinResets} loading={pinResetsLoading} />}
               />
-            ))}
-          </div>
-        </div>
-      )}
 
+              {pinResetsLoading ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '24px 0', color: '#3A3028' }}>
+                  <RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }} />
+                  <span style={{ fontSize: '13px' }}>Loading requests…</span>
+                </div>
+              ) : pinResets.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '48px 24px' }}>
+                  <KeyRound size={22} style={{ margin: '0 auto 12px', color: '#26221C' }} />
+                  <p style={{ fontSize: '14px', color: '#5C5648', fontWeight: 500, marginBottom: '4px' }}>No PIN reset requests</p>
+                  <p style={{ fontSize: '12px', color: '#3A3028' }}>Requests appear here when users submit a PIN reset from the app.</p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {pinResets.map(req => {
+                    const isPending  = req.status === 'pending';
+                    const isApproved = req.status === 'approved';
+                    const badgeColor = isPending ? '#D97757' : isApproved ? '#7FA068' : '#5C5648';
+                    const badgeBg    = isPending ? 'rgba(217,119,87,0.12)' : isApproved ? 'rgba(127,160,104,0.12)' : 'rgba(92,86,72,0.12)';
+                    return (
+                      <div key={req.id} style={{ background: '#0F0D0A', border: `1px solid ${isPending ? '#2E1E18' : '#1A1610'}`, borderRadius: '6px', padding: '14px 16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: '13px', color: '#E8E2D5', fontWeight: 500, marginBottom: '2px' }}>{req.user_email}</div>
+                            <div style={{ fontSize: '10px', color: '#3A3028', marginBottom: req.reason ? '6px' : 0 }}>{fmt(req.created_at)}</div>
+                            {req.reason && <div style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.55 }}>{req.reason}</div>}
+                            {req.reviewed_at && (
+                              <div style={{ fontSize: '10px', color: '#2E2820', marginTop: '6px' }}>
+                                Reviewed {fmt(req.reviewed_at)} by {req.reviewed_by}
+                              </div>
+                            )}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                            <span style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '2px 8px', borderRadius: '999px', background: badgeBg, color: badgeColor }}>
+                              {req.status}
+                            </span>
+                            {isPending && (
+                              <>
+                                <button
+                                  onClick={() => approvePinReset(req.id)}
+                                  style={{ fontSize: '11px', color: '#7FA068', background: 'none', border: '1px solid #2A4A20', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer', fontWeight: 600, transition: 'background 0.12s' }}
+                                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(127,160,104,0.08)'}
+                                  onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                                >
+                                  Approve
+                                </button>
+                                <button
+                                  onClick={() => dismissPinReset(req.id)}
+                                  style={{ fontSize: '11px', color: '#5C5648', background: 'none', border: 'none', cursor: 'pointer' }}
+                                >
+                                  Dismiss
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
+
+        </div>{/* end content area */}
+      </div>{/* end two-column layout */}
+
+      {/* Invite modal */}
       {inviteTarget && (
         <InviteModal
           lead={inviteTarget}
@@ -1081,123 +1317,56 @@ export default function AdminDashboard({ user }) {
         />
       )}
 
-      {/* ── Access Requests ── */}
-      <div style={{ marginTop: '40px', borderTop: '1px solid #1A1610', paddingTop: '28px' }}>
-        <SectionHeader
-          icon={Inbox}
-          iconColor={pendingAccessReqs.length > 0 ? '#7FA068' : '#3A3028'}
-          title={`Access Requests${pendingAccessReqs.length > 0 ? ` · ${pendingAccessReqs.length} pending` : ''}`}
-          subtitle="From the in-app login page — people without an invite code. Send them one to grant access."
-          action={<RefreshBtn onClick={fetchAccessReqs} loading={accessReqsLoading} />}
-        />
-
-        {accessReqs.length === 0 ? (
-          <p style={{ fontSize: '12px', color: '#2E2820', padding: '8px 0' }}>No access requests yet.</p>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {accessReqs.map(req => {
-              const isPending  = !req.status || req.status === 'pending';
-              const isApproved = req.status === 'approved';
-              const badgeColor = isApproved ? '#7FA068' : isPending ? '#D97757' : '#5C5648';
-              const badgeBg    = isApproved ? 'rgba(127,160,104,0.12)' : isPending ? 'rgba(217,119,87,0.12)' : 'rgba(92,86,72,0.12)';
-              return (
-                <div key={req.id} style={{ background: '#0F0D0A', border: `1px solid ${isPending ? '#2E2218' : '#1A1610'}`, borderRadius: '6px', padding: '14px 16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '13px', color: '#E8E2D5', fontWeight: 500, marginBottom: '2px' }}>{req.email}</div>
-                      <div style={{ fontSize: '10px', color: '#3A3028', marginBottom: req.message ? '8px' : 0 }}>{fmt(req.created_at)}</div>
-                      {req.message && <div style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.55 }}>{req.message}</div>}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '2px 8px', borderRadius: '999px', background: badgeBg, color: badgeColor }}>
-                        {req.status || 'pending'}
-                      </span>
-                      {isPending && (
-                        <button
-                          onClick={() => setInviteTarget({ name: null, email: req.email })}
-                          style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#7FA068', background: 'none', border: '1px solid #2A4A20', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer', fontWeight: 600, transition: 'background 0.12s' }}
-                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(127,160,104,0.08)'}
-                          onMouseLeave={e => e.currentTarget.style.background = 'none'}
-                        >
-                          <Send size={9} /> Send invite
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* ── PIN Reset Requests ── */}
-      <div id="pin-reset-section" style={{ marginTop: '32px', borderTop: '1px solid #1A1610', paddingTop: '28px' }}>
-        <SectionHeader
-          icon={KeyRound}
-          iconColor={pendingPinResets.length > 0 ? '#D97757' : '#3A3028'}
-          title={`PIN Reset Requests${pendingPinResets.length > 0 ? ` · ${pendingPinResets.length} pending` : ''}`}
-          subtitle="Users who've forgotten their PIN. Approve to force re-setup on their next login."
-          action={<RefreshBtn onClick={fetchPinResets} loading={pinResetsLoading} />}
-        />
-
-        {pinResets.length === 0 ? (
-          <p style={{ fontSize: '12px', color: '#2E2820', padding: '8px 0' }}>No PIN reset requests.</p>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {pinResets.map(req => {
-              const isPending  = req.status === 'pending';
-              const isApproved = req.status === 'approved';
-              const badgeColor = isPending ? '#D97757' : isApproved ? '#7FA068' : '#5C5648';
-              const badgeBg    = isPending ? 'rgba(217,119,87,0.12)' : isApproved ? 'rgba(127,160,104,0.12)' : 'rgba(92,86,72,0.12)';
-              return (
-                <div key={req.id} style={{ background: '#0F0D0A', border: `1px solid ${isPending ? '#2E1E18' : '#1A1610'}`, borderRadius: '6px', padding: '14px 16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '13px', color: '#E8E2D5', fontWeight: 500, marginBottom: '2px' }}>{req.user_email}</div>
-                      <div style={{ fontSize: '10px', color: '#3A3028', marginBottom: req.reason ? '6px' : 0 }}>{fmt(req.created_at)}</div>
-                      {req.reason && <div style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.55 }}>{req.reason}</div>}
-                      {req.reviewed_at && (
-                        <div style={{ fontSize: '10px', color: '#2E2820', marginTop: '6px' }}>
-                          Reviewed {fmt(req.reviewed_at)} by {req.reviewed_by}
-                        </div>
-                      )}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '2px 8px', borderRadius: '999px', background: badgeBg, color: badgeColor }}>
-                        {req.status}
-                      </span>
-                      {isPending && (
-                        <>
-                          <button onClick={() => approvePinReset(req.id)} style={{ fontSize: '11px', color: '#7FA068', background: 'none', border: '1px solid #2A4A20', borderRadius: '4px', padding: '4px 10px', cursor: 'pointer', fontWeight: 600, transition: 'background 0.12s' }}
-                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(127,160,104,0.08)'}
-                            onMouseLeave={e => e.currentTarget.style.background = 'none'}>
-                            Approve
-                          </button>
-                          <button onClick={() => dismissPinReset(req.id)} style={{ fontSize: '11px', color: '#5C5648', background: 'none', border: 'none', cursor: 'pointer' }}>
-                            Dismiss
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Footer note */}
-      <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid #141210', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-        <span style={{ fontSize: '10px', color: '#1E1C18' }}>
-          {counts.total} total · {counts.pending} pending · {counts.active} active
-        </span>
-        <span style={{ fontSize: '10px', color: '#1E1C18' }}>Royal Ledger Admin</span>
-      </div>
-
       <style>{`
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* ── Mobile: sidebar becomes horizontal scrollable pills ── */
+        @media (max-width: 640px) {
+          .admin-layout {
+            flex-direction: column !important;
+          }
+          .admin-sidebar {
+            width: 100% !important;
+            margin-right: 0 !important;
+            border-right: none !important;
+            padding-right: 0 !important;
+            border-bottom: 1px solid #1A1610;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex !important;
+            flex-direction: row !important;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            gap: 5px;
+            align-items: center;
+            scrollbar-width: none;
+          }
+          .admin-sidebar::-webkit-scrollbar { display: none; }
+          .nav-section-label { display: none !important; }
+          .nav-divider { display: none !important; }
+          .nav-item-wrapper {
+            position: static !important;
+            margin-bottom: 0 !important;
+            flex-shrink: 0;
+          }
+          .active-indicator { display: none !important; }
+          .nav-btn {
+            white-space: nowrap !important;
+            border-radius: 999px !important;
+            border: 1px solid #1E1C18 !important;
+            width: auto !important;
+            padding: 5px 14px !important;
+            flex-shrink: 0;
+          }
+          .nav-btn-active {
+            border-color: #D97757 !important;
+            background: rgba(217,119,87,0.08) !important;
+            color: #D97757 !important;
+          }
+          .nav-btn-disabled {
+            opacity: 0.35 !important;
+          }
+        }
       `}</style>
     </div>
   );
