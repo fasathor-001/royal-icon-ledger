@@ -4,35 +4,75 @@
 // Personal use only — no registration flow exposed.
 // Session expires after 7 days of inactivity (configured via Supabase dashboard).
 //
-// PKCE flow note (supabase.js uses flowType: 'pkce'):
-//   In PKCE mode Supabase redirects back as:
-//     https://your-app.com?code=xxx              ← NO type= param
-//   We embed ?type=recovery in the redirectTo URL so the app can detect it
-//   synchronously on mount, before the async onAuthStateChange fires.
-//   Fallback: if the code param is present with no type, we treat it as
-//   recovery too (the only other case — invite — is handled separately).
+// PKCE flow — how reset detection works (read before editing this file):
+//
+//   Supabase sends a reset link that redirects back as:
+//     https://your-app.com?type=recovery&code=xxx       ← ideal, type= preserved
+//     https://your-app.com?code=xxx                     ← happens when Supabase
+//                                                          dashboard Redirect URL
+//                                                          doesn't match our redirectTo
+//
+//   Three-layer detection (each layer is a fallback for the one above):
+//
+//   Layer 1 — URL type param (hash or query):
+//     Works when Supabase preserves ?type=recovery from our redirectTo URL.
+//     Most reliable when the Supabase dashboard Redirect URL allowlist includes
+//     a wildcard pattern like https://your-app.com/** or https://your-app.com*.
+//
+//   Layer 2 — PKCE code-verifier in localStorage (the KEY fix):
+//     supabase-js stores the verifier as "<base64>/<redirectType>" before sending
+//     the reset email. The redirectType is 'recovery' for password resets.
+//     storageKey = 'sb-auth-token' (set in supabase.js) so the key is always
+//     'sb-auth-token-code-verifier'. We read this synchronously at import time,
+//     before GoTrueClient._initialize()'s async chain removes it (GoTrueClient.js
+//     line 1483: removeItemAsync runs before _notifyAllSubscribers at line 1496).
+//     This layer handles the case where ?type= is missing from the URL.
+//
+//   Layer 3 — onAuthStateChange SIGNED_IN event:
+//     PASSWORD_RECOVERY is unreliable in PKCE mode (supabase/auth#1948) — the
+//     library often fires SIGNED_IN instead. We check URL type= again there as a
+//     belt-and-suspenders measure for late-arriving auth state changes.
+//
+//   Cross-device / expired links:
+//     If the verifier isn't in localStorage (different browser, different device),
+//     the code exchange fails silently and the user lands with no session.
+//     SetNewPasswordPage detects sessionMissing and shows a "request new link" form.
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 const AuthContext = createContext(null);
 
-// ── Synchronous URL inspection ────────────────────────────────────────────────
-// Runs once at import time so the state initialiser always gets the right value
-// regardless of render timing.
+// ── Layer 1 + 2: Synchronous URL + localStorage inspection ───────────────────
+// Runs once at import time so the state initialiser gets the right value before
+// any render. Must be synchronous — async detection is too late to set initial state.
 function detectRecoveryFromUrl() {
   const hash   = window.location.hash;
   const params = new URLSearchParams(window.location.search);
   const type   = params.get('type') || '';
 
-  // Implicit / old flow: type=recovery or type=invite in the hash fragment
+  // Layer 1a — implicit / old flow: type in hash fragment
   if (hash.includes('type=recovery') || hash.includes('type=invite')) return true;
 
-  // PKCE flow: type= is preserved from the redirectTo query param we embed
+  // Layer 1b — PKCE flow: type= preserved from our redirectTo query param
   if (type === 'recovery' || type === 'invite') return true;
 
-  // PKCE flow fallback: code present but no type means Supabase already stripped
-  // it — we check the onAuthStateChange event below to catch this case.
+  // Layer 2 — PKCE localStorage verifier (most reliable fallback).
+  // The verifier is stored when resetPasswordForEmail() is called and removed
+  // after the code exchange. Reading it here (synchronously, at import time)
+  // guarantees it's still present — the async _initialize() chain hasn't had
+  // a chance to remove it yet (JS microtasks queue behind this synchronous eval).
+  // Format: "<codeVerifier>/<redirectType>"  e.g. "abc123.../recovery"
+  if (params.get('code')) {
+    try {
+      const raw = localStorage.getItem('sb-auth-token-code-verifier');
+      if (raw) {
+        const redirectType = raw.split('/')[1]; // 'recovery' | 'invite' | 'magiclink' | ''
+        if (redirectType === 'recovery' || redirectType === 'invite') return true;
+      }
+    } catch (_) { /* localStorage unavailable (private mode, quota, etc.) */ }
+  }
+
   return false;
 }
 
@@ -143,12 +183,18 @@ export function AuthProvider({ children }) {
 
   const resetPassword = async (email) => {
     setAuthError(null);
-    // Embed ?type=recovery so the app can detect the returning URL synchronously
-    // in PKCE mode (where Supabase redirects with ?code= and no type in the URL).
-    // Supabase preserves existing query params in redirectTo, producing:
+    // Embed ?type=recovery so Layer 1b of detectRecoveryFromUrl() fires on return.
+    // Supabase appends ?code=xxx to the redirectTo URL, giving:
     //   https://your-app.com?type=recovery&code=xxx   (PKCE)
-    //   https://your-app.com?type=recovery#access_token=...&type=recovery  (implicit)
-    // Both are detected by detectRecoveryFromUrl() above.
+    //   https://your-app.com?type=recovery#access_token=...  (implicit fallback)
+    //
+    // IMPORTANT — Supabase dashboard configuration:
+    //   The Redirect URL allowlist must include a wildcard pattern so the query
+    //   param is preserved. Add one of these in Authentication → URL Configuration:
+    //     https://your-app.com**          (matches any path/query on the domain)
+    //   Without a wildcard, Supabase falls back to the Site URL (drops ?type=recovery).
+    //   Layer 2 (localStorage verifier) handles that case automatically for same-browser
+    //   flows, but adding the wildcard keeps Layer 1b working as the primary signal.
     const redirectTo = `${window.location.origin}?type=recovery`;
     const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
     if (error) { setAuthError(error.message); return false; }
