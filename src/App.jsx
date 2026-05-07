@@ -1176,6 +1176,7 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   const [upgradeDismissed, setUpgradeDismissed] = useState(false);
   const [showStabilizeMessage, setShowStabilizeMessage] = useState(false);
   const [welcomeDismissed, setWelcomeDismissed] = useState(false);
+  const [showDashWelcome, setShowDashWelcome] = useState(() => !localStorage.getItem('rl_seen_dashboard_welcome'));
   const showGraduationWelcome = !welcomeDismissed && !!sessionStorage.getItem('rl_just_graduated');
   const dismissWelcome = () => {
     console.log('[rl] banner_dismissed graduation');
@@ -1199,6 +1200,11 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
     }
     prevModeRef.current = data?.mode;
   }, [data?.mode]);
+
+  // ── One-time dashboard welcome flag ─────────────────────────────────────
+  React.useEffect(() => {
+    if (showDashWelcome) localStorage.setItem('rl_seen_dashboard_welcome', '1');
+  }, []);
 
   // ── User-testing telemetry (console only, no external deps) ─────────────
   React.useEffect(() => { console.log('[rl] dashboard_view'); }, []);
@@ -1331,6 +1337,34 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               This month
             </div>
 
+            {/* One-time welcome — shown only on first dashboard visit after onboarding */}
+            {showDashWelcome && (
+              <div style={{
+                background: '#14110E',
+                border: '1px solid #26221C',
+                borderRadius: '6px',
+                padding: '12px 16px',
+                marginBottom: '20px',
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'space-between',
+                gap: '12px',
+              }}>
+                <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.65, margin: 0 }}>
+                  You're set up. This is what you have left to spend this month. When it runs out, spending stops.
+                </p>
+                <button
+                  onClick={() => setShowDashWelcome(false)}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    color: '#5C5648', fontSize: '16px', lineHeight: 1,
+                    padding: '0', flexShrink: 0, marginTop: '1px',
+                  }}
+                  aria-label="Dismiss"
+                >×</button>
+              </div>
+            )}
+
             {/* Primary number */}
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', marginBottom: '12px' }}>
               <div style={{
@@ -1378,7 +1412,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             </div>
 
             <div style={{ marginTop: '16px', fontSize: '12px', color: '#5C5648', fontStyle: 'italic' }}>
-              This is your control point.
+              This is your control point. When it runs out, spending stops.
             </div>
           </div>
         );
