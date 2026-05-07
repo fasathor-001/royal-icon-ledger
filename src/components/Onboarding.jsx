@@ -951,8 +951,8 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                     style={{ fontSize: '18px' }}
                   />
                 </div>
-                <p style={{ fontSize: '11px', color: '#5C5648', lineHeight: 1.6, marginTop: '8px', fontStyle: 'italic' }}>
-                  Unused discretionary money rolls into next month — or you can sweep it to your buffer. It is never lost.
+                <p style={{ fontSize: '12px', color: '#8B8478', lineHeight: 1.6, marginTop: '8px', fontStyle: 'italic' }}>
+                  Unused spending money rolls into next month — or you can sweep it to your buffer. It is never lost.
                 </p>
               </div>
 

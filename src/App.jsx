@@ -945,6 +945,11 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
         @media (min-width: 640px) { .main-content { padding: 32px 20px 40px; } }
         .mobile-nav-bar { display: flex; }
         @media (min-width: 640px) { .mobile-nav-bar { display: none; } }
+        /* ── Mobile-specific helpers ── */
+        .rl-this-month { padding: 18px 16px; }
+        @media (min-width: 480px) { .rl-this-month { padding: 24px 28px; } }
+        .rl-mini-hdr { flex-wrap: wrap; gap: 4px; }
+        .rl-mini-hdr h3 { min-width: 0; }
       `}</style>
 
       <header className="border-b" style={{ borderColor: '#26221C', background: '#0A0908', flexShrink: 0, zIndex: 10 }}>
@@ -1368,11 +1373,10 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         const pctUsed = stats.discCap > 0 ? Math.min(1, stats.thisMonthSpend / stats.discCap) : 0;
         const leftColor = pctUsed >= 0.9 ? '#C56B5A' : pctUsed >= 0.7 ? '#D97757' : '#7FA068';
         return (
-          <div style={{
+          <div className="rl-this-month" style={{
             background: '#0F0D0A',
             border: '1px solid #26221C',
             borderRadius: '8px',
-            padding: '24px 28px',
           }}>
             <div style={{
               fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase',
@@ -1466,7 +1470,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 ? `Last month: ${fmt(leftover)} moved to buffer`
                 : `Last month: ${fmt(leftover)} carried forward`;
               return (
-                <div style={{ fontSize: '12px', color: '#5C5648', fontStyle: 'italic', marginBottom: '12px' }}>
+                <div style={{ fontSize: '12px', color: '#8B8478', fontStyle: 'italic', marginBottom: '12px' }}>
                   {copy}
                 </div>
               );
@@ -2124,9 +2128,9 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
       {/* Spending and trading */}
       <div className="grid md:grid-cols-2 gap-3">
         <section className="card p-6">
-          <div className="flex items-baseline justify-between mb-3">
-            <h3 className="display text-xl">Spending this month</h3>
-            <div className="mono text-sm" style={{ color: stats.spendingLeft > 0 ? '#E8E2D5' : '#C56B5A' }}>
+          <div className="rl-mini-hdr flex items-baseline justify-between mb-3">
+            <h3 className="display text-xl" style={{ minWidth: 0 }}>Spending</h3>
+            <div className="mono text-sm" style={{ color: stats.spendingLeft > 0 ? '#E8E2D5' : '#C56B5A', flexShrink: 0 }}>
               {fmt(stats.spendingLeft)} left
             </div>
           </div>
@@ -2654,7 +2658,7 @@ function Setup({ data, stats, setData }) {
               readOnly={locked} onClick={() => locked && requestUnlock()}
               onChange={locked ? undefined : (e) => setData(d => ({ ...d, spendingBudget: Number(e.target.value) || 0 }))}
               style={{ cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }} />
-            <p className="text-xs mt-2" style={{ color: '#8B8478' }}>Discretionary spending money for the month. Be realistic.</p>
+            <p className="text-xs mt-2" style={{ color: '#8B8478' }}>Free spending money for the month. Rolls over unused. Be realistic.</p>
           </div>
           <div>
             <div className="label mb-2" style={{ color: '#8B8478' }}>{isFoundation ? 'Monthly savings contribution' : 'Buffer reserve from salary'}</div>

@@ -265,27 +265,27 @@ export default function Budget({ data, setData, stats }) {
               <strong style={{ color: '#E8E2D5' }}>Tip:</strong> Go to <strong style={{ color: '#D97757' }}>Setup & Salary</strong> and click the ✉ envelope icon on any variable expense to auto-create its envelope here — and set Reset, Rollover, or Sweep right there.
             </p>
             <p style={{ marginBottom: 6 }}>When you log a purchase, tag it to an envelope. The app tracks your spending and enforces your rules.</p>
-            <p><strong style={{ color: '#E8E2D5' }}>Discretionary</strong> defaults to Rollover — unused money carries into next month. Switch to Sweep to move it to your buffer instead.</p>
+            <p><strong style={{ color: '#E8E2D5' }}>Spending</strong> envelope defaults to Rollover — unused money carries into next month. Switch to Sweep to move it to your buffer instead.</p>
           </InfoPopover>
         </div>
         <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
-          {envelopes.length} envelopes · {fmt(totalAllocated)} total envelope caps · {fmt(data.spendingBudget)} discretionary limit. Each envelope has its own rules.
+          {envelopes.length} envelopes · {fmt(totalAllocated)} total allocated · {fmt(data.spendingBudget)} spending limit. Each envelope has its own rules.
         </p>
       </div>
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="card p-5">
+      {/* Summary cards — 2-col on mobile, 3-col on sm+ */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="card p-4">
           <div className="label mb-2" style={{ color: '#8B8478' }}>Allocated</div>
-          <div className="display text-2xl" style={{ fontWeight: 300 }}>{fmt(totalAllocated)}</div>
+          <div className="display text-xl" style={{ fontWeight: 300 }}>{fmt(totalAllocated)}</div>
         </div>
-        <div className="card p-5">
+        <div className="card p-4">
           <div className="label mb-2" style={{ color: '#8B8478' }}>Spent</div>
-          <div className="display text-2xl" style={{ fontWeight: 300, color: '#D97757' }}>{fmt(totalSpent)}</div>
+          <div className="display text-xl" style={{ fontWeight: 300, color: '#D97757' }}>{fmt(totalSpent)}</div>
         </div>
-        <div className="card p-5">
+        <div className="card p-4 col-span-2 sm:col-span-1">
           <div className="label mb-2" style={{ color: '#8B8478' }}>Remaining</div>
-          <div className="display text-2xl" style={{ fontWeight: 300, color: totalRemaining < 0 ? '#C56B5A' : '#7FA068' }}>
+          <div className="display text-xl" style={{ fontWeight: 300, color: totalRemaining < 0 ? '#C56B5A' : '#7FA068' }}>
             {fmt(totalRemaining)}
           </div>
         </div>
@@ -372,10 +372,12 @@ function EnvelopeRow({ envelope, spent, dayOfMonth, daysInMonth, onEdit, currenc
       onClick={onEdit}
     >
       <div className="flex items-center gap-3 mb-3">
-        <Icon size={16} style={{ color: barColor }} />
-        <div className="flex-1">
-          <div className="font-medium text-sm">{envelope.name}</div>
-          <div className="text-xs flex gap-3 mt-0.5" style={{ color: '#8B8478' }}>
+        <Icon size={16} style={{ color: barColor, flexShrink: 0 }} />
+        <div className="flex-1" style={{ minWidth: 0 }}>
+          <div className="font-medium text-sm" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {envelope.isDiscretionary ? 'Spending' : envelope.name}
+          </div>
+          <div className="text-xs flex gap-2 mt-0.5 flex-wrap" style={{ color: '#8B8478' }}>
             <span>{blockMode.label}</span>
             <span>·</span>
             <span>{rolloverMode.label}</span>
@@ -395,8 +397,8 @@ function EnvelopeRow({ envelope, spent, dayOfMonth, daysInMonth, onEdit, currenc
         <div className="progress-fill" style={{ width: pct + '%', background: barColor }} />
       </div>
 
-      <div className="flex justify-between text-xs items-center" style={{ color: '#8B8478' }}>
-        <span>Day {dayOfMonth} of {daysInMonth}</span>
+      <div className="flex justify-between text-xs items-center flex-wrap gap-1" style={{ color: '#8B8478' }}>
+        <span style={{ flexShrink: 0 }}>Day {dayOfMonth} of {daysInMonth}</span>
         <VelocityAlert spent={spent} cap={cap} projected={projected} overBudget={overBudget} blockMode={envelope.blockMode} currency={currency} />
       </div>
     </div>
@@ -699,7 +701,7 @@ function EnvelopeEditCard({ envelope, onUpdate, onRemove, locked, onClickLocked,
             readOnly={!!locked}
             style={{ cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }}
           />
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <div>
               <div className="label mb-1" style={{ color: '#8B8478' }}>Cap</div>
               <input
@@ -781,12 +783,12 @@ function EnvelopeEditor({ envelope, data, setData, onClose }) {
     <div
       style={{
         position: 'fixed', inset: 0, background: 'rgba(10, 9, 8, 0.85)',
-        zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '20px', backdropFilter: 'blur(4px)',
+        zIndex: 9999, display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+        padding: '20px', backdropFilter: 'blur(4px)', overflowY: 'auto',
       }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="card p-6" style={{ maxWidth: '500px', width: '100%' }}>
+      <div className="card p-6" style={{ maxWidth: '500px', width: '100%', marginTop: '20px', marginBottom: '20px' }}>
         <div className="flex justify-between items-baseline mb-5">
           <h2 className="display text-2xl">Edit envelope</h2>
           <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#B0A898', cursor: 'pointer' }}>
