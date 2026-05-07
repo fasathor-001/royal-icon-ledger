@@ -1410,20 +1410,32 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             )}
 
             {/* Primary number */}
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', marginBottom: '12px' }}>
-              <div style={{
-                fontSize: 'clamp(36px, 8vw, 52px)',
-                fontWeight: 300,
-                color: leftColor,
-                fontFamily: "'Fraunces', Georgia, serif",
-                lineHeight: 1,
-              }}>
-                {fmt(stats.spendingLeft)}
-              </div>
-              <div style={{ fontSize: '13px', color: '#5C5648', paddingBottom: '6px' }}>
-                left to spend
-              </div>
-            </div>
+            {(() => {
+              const overspend = Math.max(0, stats.thisMonthSpend - stats.discCap);
+              return (
+                <div style={{ marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px' }}>
+                    <div style={{
+                      fontSize: 'clamp(36px, 8vw, 52px)',
+                      fontWeight: 300,
+                      color: leftColor,
+                      fontFamily: "'Fraunces', Georgia, serif",
+                      lineHeight: 1,
+                    }}>
+                      {fmt(stats.spendingLeft)}
+                    </div>
+                    <div style={{ fontSize: '13px', color: '#5C5648', paddingBottom: '6px' }}>
+                      left to spend
+                    </div>
+                  </div>
+                  {overspend > 0 && (
+                    <div style={{ fontSize: '12px', color: '#C56B5A', marginTop: '4px' }}>
+                      {fmt(overspend)} over budget
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Last month summary — reads from rollover history if available */}
             {(() => {
@@ -1444,7 +1456,10 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 const lastSpent = (data.impulses || [])
                   .filter(i => i.timestamp >= prevMonthStartTs && i.timestamp <= prevMonthEndTs && i.envelopeId === discEnv.id)
                   .reduce((s, i) => s + i.amount, 0);
-                leftover = Math.max(0, (Number(data.spendingBudget) || 0) - lastSpent);
+                // Use discEnv.cap (not spendingBudget) — correctly reflects prior
+                // rollover additions. Safe here because if rollover had run for
+                // last month, the history path above would have been taken instead.
+                leftover = Math.max(0, (discEnv.cap || Number(data.spendingBudget) || 0) - lastSpent);
               }
               if (leftover <= 0) return null;
               const copy = mode === 'sweep'
@@ -2116,7 +2131,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             </div>
           </div>
           {(() => {
-            const pct = data.spendingBudget > 0 ? stats.thisMonthSpend / data.spendingBudget : 0;
+            const pct = stats.discCap > 0 ? stats.thisMonthSpend / stats.discCap : 0;
             const barColor = pct > 0.8 ? '#C56B5A' : pct > 0.5 ? '#D97757' : '#7FA068';
             const pctDisplay = Math.round(pct * 100);
             return (
@@ -2134,7 +2149,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 </div>
                 <div className="flex justify-between text-xs mono" style={{ color: '#B0A898' }}>
                   <span>{fmt(stats.thisMonthSpend)} spent</span>
-                  <span>Limit: {fmt(data.spendingBudget)}</span>
+                  <span>Limit: {fmt(stats.discCap)}</span>
                 </div>
               </>
             );
@@ -2281,7 +2296,7 @@ function PendingRow({ item, setData, currency }) {
             setTimeout(() => setData(d => ({
               ...d,
               pending: d.pending.map(i => i.id === item.id ? { ...i, status: 'bought' } : i),
-              impulses: [...d.impulses, { id: Date.now(), name: item.name, amount: item.amount, category: item.category, envelopeId: item.envelopeId || null, timestamp: Date.now(), wasGated: true }],
+              impulses: [...d.impulses, { id: Date.now(), name: item.name, amount: item.amount, category: item.category, envelopeId: item.envelopeId || (d.envelopes || []).find(e => e.isDiscretionary)?.id || null, timestamp: Date.now(), wasGated: true }],
             })), 1200);
           }}>
           Buy
