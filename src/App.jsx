@@ -977,7 +977,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
 
       <div className="main-scroll">
         <main className="max-w-6xl mx-auto slide-up main-content" key={tab}>
-        {tab === 'command' && <Command data={data} stats={stats} setData={setData} setTab={setTab} takeSnapshot={takeSnapshot} showWeeklyPulse={showWeeklyPulse} setShowWeeklyPulse={setShowWeeklyPulse} onRequestGraduate={() => setShowGraduationModal(true)} />}
+        {tab === 'command' && <Command data={data} stats={stats} setData={setData} setTab={setTab} takeSnapshot={takeSnapshot} showWeeklyPulse={showWeeklyPulse} setShowWeeklyPulse={setShowWeeklyPulse} onRequestGraduate={() => setShowGraduationModal(true)} userId={user?.id} />}
         {tab === 'setup' && <Setup data={data} stats={stats} setData={setData} />}
 		{tab === 'budget' && <Budget data={data} setData={setData} stats={stats} />}
         {tab === 'profit' && <ProfitAllocator data={data} stats={stats} setData={setData} />}
@@ -1165,7 +1165,7 @@ function getFoundationNudge({ hasLoggedExpense, hasSavingsGoal, savingsProgress 
 }
 
 /* ─────────────── COMMAND ─────────────── */
-function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, setShowWeeklyPulse, onRequestGraduate }) {
+function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, setShowWeeklyPulse, onRequestGraduate, userId }) {
   const fmt = makeFmt(data.currency);
   const isFoundation = data?.mode === 'foundation';
   const hasPinProtection = !!(data.pinHash || data.overridePin);
@@ -1176,7 +1176,8 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   const [upgradeDismissed, setUpgradeDismissed] = useState(false);
   const [showStabilizeMessage, setShowStabilizeMessage] = useState(false);
   const [welcomeDismissed, setWelcomeDismissed] = useState(false);
-  const [showDashWelcome, setShowDashWelcome] = useState(() => !localStorage.getItem('rl_seen_dashboard_welcome'));
+  const _dashWelcomeKey = userId ? `rl_seen_dashboard_welcome_${userId}` : 'rl_seen_dashboard_welcome';
+  const [showDashWelcome, setShowDashWelcome] = useState(() => !localStorage.getItem(_dashWelcomeKey));
   const showGraduationWelcome = !welcomeDismissed && !!sessionStorage.getItem('rl_just_graduated');
   const dismissWelcome = () => {
     console.log('[rl] banner_dismissed graduation');
@@ -1203,7 +1204,7 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
 
   // ── One-time dashboard welcome flag ─────────────────────────────────────
   React.useEffect(() => {
-    if (showDashWelcome) localStorage.setItem('rl_seen_dashboard_welcome', '1');
+    if (showDashWelcome) localStorage.setItem(_dashWelcomeKey, '1');
   }, []);
 
   // ── User-testing telemetry (console only, no external deps) ─────────────
