@@ -960,7 +960,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
         .rl-imp-hdr { flex-wrap: wrap; gap: 6px; row-gap: 4px; }
       `}</style>
 
-      <header className="border-b" style={{ borderColor: '#26221C', background: '#0A0908', flexShrink: 0, zIndex: 10 }}>
+      <header className="border-b" style={{ borderColor: '#26221C', background: '#0A0908', flexShrink: 0, zIndex: 10, paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-6xl mx-auto flex items-center justify-between" style={{ padding: '14px 20px' }}>
           <div className="flex items-baseline gap-3">
             <h1 className="display" style={{ fontSize: 22 }}>

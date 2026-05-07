@@ -494,7 +494,7 @@ function SkeletonLoader() {
         @keyframes shimmer { 0% { opacity: 0.4 } 50% { opacity: 0.8 } 100% { opacity: 0.4 } }
         .skel { background: #1A1610; border-radius: 3px; animation: shimmer 1.6s ease infinite; }
       `}</style>
-      <div style={{ borderBottom: '1px solid #26221C', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ borderBottom: '1px solid #26221C', paddingTop: 'calc(20px + env(safe-area-inset-top))', paddingBottom: '20px', paddingLeft: '24px', paddingRight: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div className="skel" style={{ width: '180px', height: '24px' }} />
         <div className="skel" style={{ width: '80px', height: '32px' }} />
       </div>

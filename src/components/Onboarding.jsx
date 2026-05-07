@@ -322,6 +322,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
         overflow: 'auto',
         color: '#E8E2D5',
         fontFamily: 'Inter, system-ui, sans-serif',
+        paddingTop: 'env(safe-area-inset-top)',
       }}
     >
       <style>{`
