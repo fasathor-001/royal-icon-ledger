@@ -91,14 +91,24 @@ export function AuthProvider({ children }) {
 
   const signUp = async (email, password) => {
     setAuthError(null);
-    const { error } = await supabase.auth.signUp({ email, password });
+    // emailRedirectTo ensures the confirmation link always points to the live app,
+    // even if Supabase's Site URL is still set to a dev/localhost URL.
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: window.location.origin },
+    });
     if (error) { setAuthError(error.message); return false; }
     return true;
   };
 
   const sendMagicLink = async (email) => {
     setAuthError(null);
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    // emailRedirectTo: same reason as signUp — don't rely on the Site URL setting.
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin },
+    });
     if (error) { setAuthError(error.message); return false; }
     return true;
   };
@@ -134,7 +144,11 @@ export function AuthProvider({ children }) {
   // Called from the "check your email" screen if the user didn't receive it.
   const resendConfirmation = async (email) => {
     setAuthError(null);
-    const { error } = await supabase.auth.resend({ type: 'signup', email });
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: { emailRedirectTo: window.location.origin },
+    });
     if (error) { setAuthError(error.message); return false; }
     return true;
   };
