@@ -160,12 +160,13 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
 
     // Discretionary envelope — always created first from Stage 6 spending budget.
     // All spending logged without a specific envelope auto-routes here.
+    // Defaults to 'roll' — unused money carries into next month, rewarding discipline.
     const newEnvelopes = [{
       id: 'env_discretionary',
       name: 'Discretionary',
       cap: Number(spendingBudget) || 0,
       blockMode: 'soft',
-      rolloverMode: 'reset',
+      rolloverMode: 'roll',
       icon: 'personal',
       isDiscretionary: true,
     }];
@@ -948,7 +949,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                   />
                 </div>
                 <p style={{ fontSize: '11px', color: '#5C5648', lineHeight: 1.6, marginTop: '8px', fontStyle: 'italic' }}>
-                  Spending resets each month. Whatever you don't spend stays in your account — it is not moved automatically.
+                  Unused discretionary money rolls into next month — or you can sweep it to your buffer. It is never lost.
                 </p>
               </div>
 

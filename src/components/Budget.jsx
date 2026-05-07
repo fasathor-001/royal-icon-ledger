@@ -264,7 +264,8 @@ export default function Budget({ data, setData, stats }) {
             <p style={{ marginBottom: 6 }}>
               <strong style={{ color: '#E8E2D5' }}>Tip:</strong> Go to <strong style={{ color: '#D97757' }}>Setup & Salary</strong> and click the ✉ envelope icon on any variable expense to auto-create its envelope here — and set Reset, Rollover, or Sweep right there.
             </p>
-            <p>When you log a purchase, tag it to an envelope. The app tracks your spending and enforces your rules.</p>
+            <p style={{ marginBottom: 6 }}>When you log a purchase, tag it to an envelope. The app tracks your spending and enforces your rules.</p>
+            <p><strong style={{ color: '#E8E2D5' }}>Discretionary</strong> defaults to Rollover — unused money carries into next month. Switch to Sweep to move it to your buffer instead.</p>
           </InfoPopover>
         </div>
         <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
@@ -736,9 +737,11 @@ function EnvelopeEditCard({ envelope, onUpdate, onRemove, locked, onClickLocked,
                 disabled={!!locked}
                 style={{ cursor: locked ? 'pointer' : undefined, opacity: locked ? 0.65 : 1 }}
               >
-                {Object.entries(ROLLOVER_MODES).map(([k, v]) => (
-                  <option key={k} value={k}>{v.label}</option>
-                ))}
+                {Object.entries(ROLLOVER_MODES)
+                  .filter(([k]) => !envelope.isDiscretionary || k !== 'reset')
+                  .map(([k, v]) => (
+                    <option key={k} value={k}>{v.label}{envelope.isDiscretionary && k === 'roll' ? ' (default)' : ''}</option>
+                  ))}
               </select>
             </div>
           </div>

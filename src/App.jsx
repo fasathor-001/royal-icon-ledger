@@ -642,25 +642,37 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
   }, [loading, data.tradingGuardUntil]);
 
   // Migration — create Discretionary envelope for existing users who completed
-  // onboarding before this feature was added.
+  // onboarding before this feature was added, and update any that were created
+  // with rolloverMode 'reset' to 'roll'.
   useEffect(() => {
     if (loading || !data.setupComplete || !data.spendingBudget) return;
-    if ((data.envelopes || []).some(e => e.isDiscretionary)) return;
-    setData(d => ({
-      ...d,
-      envelopes: [
-        {
-          id: 'env_discretionary',
-          name: 'Discretionary',
-          cap: d.spendingBudget,
-          blockMode: 'soft',
-          rolloverMode: 'reset',
-          icon: 'personal',
-          isDiscretionary: true,
-        },
-        ...(d.envelopes || []),
-      ],
-    }));
+    const discEnv = (data.envelopes || []).find(e => e.isDiscretionary);
+    if (!discEnv) {
+      // No Discretionary envelope yet — create it
+      setData(d => ({
+        ...d,
+        envelopes: [
+          {
+            id: 'env_discretionary',
+            name: 'Discretionary',
+            cap: d.spendingBudget,
+            blockMode: 'soft',
+            rolloverMode: 'roll',
+            icon: 'personal',
+            isDiscretionary: true,
+          },
+          ...(d.envelopes || []),
+        ],
+      }));
+    } else if (discEnv.rolloverMode === 'reset') {
+      // Existing Discretionary stuck on reset — update to roll
+      setData(d => ({
+        ...d,
+        envelopes: d.envelopes.map(e =>
+          e.isDiscretionary ? { ...e, rolloverMode: 'roll' } : e
+        ),
+      }));
+    }
   }, [loading, data.setupComplete, data.spendingBudget]);
 
   // Feature 1: Weekly pulse via custom event (from RitualCard)
@@ -720,7 +732,10 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
       return discretionaryEnv ? i.envelopeId === discretionaryEnv.id : !i.envelopeId;
     });
     const thisMonthSpend = thisMonthImpulses.reduce((s, i) => s + i.amount, 0);
-    const spendingLeft = Math.max(0, (Number(data.spendingBudget) || 0) - thisMonthSpend);
+    // discCap: use the Discretionary envelope cap (grows with rollover) rather than
+    // the fixed spendingBudget, so Command and Budget stay aligned after month-end.
+    const discCap = discretionaryEnv?.cap ?? (Number(data.spendingBudget) || 0);
+    const spendingLeft = Math.max(0, discCap - thisMonthSpend);
 
     const totalAssets = data.buffer + data.tradingCapital + data.longTerm + (data.futureGoals || 0);
     const ytdPnL = data.tradingPnLHistory.reduce((s, h) => s + h.pnl, 0);
@@ -739,7 +754,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
       totalExpenses, salary, bufferTarget, bufferProtectThreshold,
       stage1End, stage15End, stage2End, stage, progressStage,
       monthsCovered, nextThreshold, progressPct,
-      thisMonthSpend, thisMonthImpulses, spendingLeft,
+      thisMonthSpend, thisMonthImpulses, spendingLeft, discCap,
       totalAssets, ytdPnL,
 	  highWater, drawdownPct, drawdownZone,
       isSetup: data.expenses.length > 0 && data.spendingBudget > 0,
@@ -1350,7 +1365,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           Shown whenever the system is set up and a spending budget exists.
           The large coloured number is the primary signal: how much is left.   */}
       {stats.isSetup && data.spendingBudget > 0 && (() => {
-        const pctUsed = Math.min(1, stats.thisMonthSpend / data.spendingBudget);
+        const pctUsed = stats.discCap > 0 ? Math.min(1, stats.thisMonthSpend / stats.discCap) : 0;
         const leftColor = pctUsed >= 0.9 ? '#C56B5A' : pctUsed >= 0.7 ? '#D97757' : '#7FA068';
         return (
           <div style={{
@@ -1410,6 +1425,38 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               </div>
             </div>
 
+            {/* Last month summary — reads from rollover history if available */}
+            {(() => {
+              const now = new Date();
+              const prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+              const prevMonthKey = `${prevStart.getFullYear()}-${String(prevStart.getMonth() + 1).padStart(2, '0')}`;
+              const prevMonthStartTs = prevStart.getTime();
+              const prevMonthEndTs = new Date(now.getFullYear(), now.getMonth(), 1).getTime() - 1;
+              const discEnv = (data.envelopes || []).find(e => e.isDiscretionary);
+              if (!discEnv) return null;
+              let leftover = 0;
+              let mode = discEnv.rolloverMode;
+              const histEntry = (data.envelopeRolloverHistory || []).find(h => h.month === prevMonthKey);
+              if (histEntry) {
+                const discResult = (histEntry.summary || []).find(e => e.isDiscretionary);
+                if (discResult) { leftover = discResult.unspent || 0; mode = discResult.rolloverMode || mode; }
+              } else {
+                const lastSpent = (data.impulses || [])
+                  .filter(i => i.timestamp >= prevMonthStartTs && i.timestamp <= prevMonthEndTs && i.envelopeId === discEnv.id)
+                  .reduce((s, i) => s + i.amount, 0);
+                leftover = Math.max(0, (Number(data.spendingBudget) || 0) - lastSpent);
+              }
+              if (leftover <= 0) return null;
+              const copy = mode === 'sweep'
+                ? `Last month: ${fmt(leftover)} moved to buffer`
+                : `Last month: ${fmt(leftover)} carried forward`;
+              return (
+                <div style={{ fontSize: '12px', color: '#5C5648', fontStyle: 'italic', marginBottom: '12px' }}>
+                  {copy}
+                </div>
+              );
+            })()}
+
             {/* Progress bar */}
             <div style={{
               height: '3px', background: '#1A1610', borderRadius: '2px',
@@ -1435,7 +1482,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               <div>
                 <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '3px' }}>Budget</div>
                 <div style={{ fontSize: '15px', color: '#8B8478', fontFamily: 'JetBrains Mono, monospace' }}>
-                  {fmt(data.spendingBudget)}
+                  {fmt(stats.discCap)}
                 </div>
               </div>
             </div>
