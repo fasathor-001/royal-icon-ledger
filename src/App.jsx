@@ -3705,14 +3705,58 @@ function QuickLog({ data, setData }) {
 function ImpulseHistory({ data, stats, setData }) {
   const fmt = makeFmt(data.currency);
   const [overrideOnly, setOverrideOnly] = useState(false);
+  const [expandedMonths, setExpandedMonths] = useState({});
   const { attemptRow: attemptImpulseRow, gateFor: impulseGateFor } = usePinRowGate();
 
   const removeImpulse = (id) => {
     setData(d => ({ ...d, impulses: d.impulses.filter(i => i.id !== id) }));
   };
+
+  // Month boundary — stable within a calendar month
+  const monthStart = useMemo(() => {
+    const n = new Date();
+    return new Date(n.getFullYear(), n.getMonth(), 1).getTime();
+  }, []);
+
+  // ALL impulses this month regardless of envelope (for display).
+  // stats.thisMonthImpulses filters by Discretionary envelope for financial
+  // tracking — correct for "spending left" maths, but wrong for history display
+  // because it hides items tagged to non-Discretionary envelopes.
+  const thisMonthAll = useMemo(
+    () => (data.impulses || []).filter(i => i.timestamp >= monthStart),
+    [data.impulses, monthStart],
+  );
+
+  // Past months: every impulse before this month, grouped newest-first.
+  const pastMonths = useMemo(() => {
+    const past = (data.impulses || []).filter(i => i.timestamp < monthStart);
+    const byMonth = {};
+    past.forEach(i => {
+      const d = new Date(i.timestamp);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      if (!byMonth[key]) {
+        byMonth[key] = {
+          label: d.toLocaleString('default', { month: 'long', year: 'numeric' }),
+          items: [],
+          total: 0,
+        };
+      }
+      byMonth[key].items.push(i);
+      byMonth[key].total += i.amount;
+    });
+    return Object.entries(byMonth)
+      .sort((a, b) => b[0].localeCompare(a[0]))            // newest month first
+      .map(([key, v]) => ({
+        key,
+        label: v.label,
+        items: v.items.slice().sort((a, b) => b.timestamp - a.timestamp), // newest entry first
+        total: v.total,
+      }));
+  }, [data.impulses, monthStart]);
+
   const triggerStats = useMemo(() => {
     const s = {};
-    data.impulses.filter(i => i.trigger).forEach(i => {
+    (data.impulses || []).filter(i => i.trigger).forEach(i => {
       if (!s[i.trigger]) s[i.trigger] = { count: 0, total: 0 };
       s[i.trigger].count += 1;
       s[i.trigger].total += i.amount;
@@ -3720,10 +3764,11 @@ function ImpulseHistory({ data, stats, setData }) {
     return Object.entries(s).sort((a, b) => b[1].total - a[1].total);
   }, [data.impulses]);
 
-  const overrideCount = stats.thisMonthImpulses.filter(i => i.overrideUsed).length;
+  const overrideCount   = thisMonthAll.filter(i => i.overrideUsed).length;
+  const thisMonthTotal  = thisMonthAll.reduce((s, i) => s + i.amount, 0);
   const visibleImpulses = overrideOnly
-    ? stats.thisMonthImpulses.filter(i => i.overrideUsed)
-    : stats.thisMonthImpulses;
+    ? thisMonthAll.filter(i => i.overrideUsed)
+    : thisMonthAll;
 
   const renderRow = (i) => (
     <div key={i.id} className="flex items-center justify-between py-2 border-b" style={{ borderColor: '#26221C', gap: '8px' }}>
@@ -3760,6 +3805,8 @@ function ImpulseHistory({ data, stats, setData }) {
 
   return (
     <div className="space-y-4">
+
+      {/* ── This month ── */}
       <section className="card p-6">
         <div className="rl-imp-hdr flex items-baseline justify-between mb-5">
           <h2 className="display text-2xl" style={{ flexShrink: 0 }}>This month</h2>
@@ -3777,7 +3824,7 @@ function ImpulseHistory({ data, stats, setData }) {
                 {overrideOnly ? '× PIN overrides only' : `PIN overrides (${overrideCount})`}
               </button>
             )}
-            <div className="mono">{fmt(stats.thisMonthSpend)}</div>
+            <div className="mono">{fmt(thisMonthTotal)}</div>
           </div>
         </div>
         {visibleImpulses.length === 0 ? (
@@ -3791,6 +3838,42 @@ function ImpulseHistory({ data, stats, setData }) {
         )}
       </section>
 
+      {/* ── Previous months ── */}
+      {pastMonths.length > 0 && (
+        <section className="card p-6">
+          <h2 className="display text-2xl mb-4">Previous months</h2>
+          <div>
+            {pastMonths.map(({ key, label, items, total }) => {
+              const isOpen = !!expandedMonths[key];
+              return (
+                <div key={key}>
+                  <button
+                    onClick={() => setExpandedMonths(s => ({ ...s, [key]: !s[key] }))}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      width: '100%', padding: '11px 0', background: 'none', border: 'none',
+                      borderBottom: '1px solid #26221C', cursor: 'pointer', gap: '8px',
+                    }}
+                  >
+                    <span className="text-sm" style={{ color: '#E8E2D5', fontWeight: 500 }}>{label}</span>
+                    <div className="flex items-center gap-3" style={{ flexShrink: 0 }}>
+                      <span className="mono text-sm" style={{ color: '#8B8478' }}>{fmt(total)}</span>
+                      <span style={{ color: '#5C5648', fontSize: '10px' }}>{isOpen ? '▲' : '▼'}</span>
+                    </div>
+                  </button>
+                  {isOpen && (
+                    <div style={{ paddingBottom: '4px' }}>
+                      {items.map(renderRow)}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* ── All triggers (all time) ── */}
       {triggerStats.length > 0 && (
         <section className="card p-6">
           <h2 className="display text-2xl mb-5">All triggers (all time)</h2>
@@ -3816,6 +3899,7 @@ function ImpulseHistory({ data, stats, setData }) {
           </div>
         </section>
       )}
+
     </div>
   );
 }
