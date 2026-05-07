@@ -940,7 +940,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
         .slide-up { animation: slideUp 400ms ease both; }
         .glow-warm { box-shadow: 0 0 0 1px #D9775740, 0 12px 40px #D9775720; }
         .app-shell { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
-        .main-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .main-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
         .main-content { padding: 20px 16px; padding-bottom: calc(64px + env(safe-area-inset-bottom) + 16px); }
         @media (min-width: 640px) { .main-content { padding: 32px 20px 40px; } }
         .mobile-nav-bar { display: flex; }
@@ -2259,9 +2259,9 @@ function StageRow({ label, target, subtitle, done, active }) {
       }}
     >
       <div className="display italic text-sm" style={{ color, minWidth: '90px' }}>{label}</div>
-      <div className="flex-1">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="font-medium text-sm" style={{ color: active && !done ? '#E8E2D5' : undefined }}>{target}</span>
+      <div className="flex-1" style={{ minWidth: 0 }}>
+        <div className="flex items-center gap-2 mb-1" style={{ flexWrap: 'wrap' }}>
+          <span className="font-medium text-sm" style={{ color: active && !done ? '#E8E2D5' : undefined, wordBreak: 'break-word' }}>{target}</span>
           {done && <Check size={12} style={{ color: '#7FA068' }} />}
           {active && !done && (
             <span className="pill" style={{ background: '#3A1E10', color: '#D97757', padding: '3px 10px', fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em' }}>

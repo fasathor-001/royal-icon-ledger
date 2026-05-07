@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  overflow-x: hidden; /* prevent document-level horizontal scroll on iOS Safari */
+}
+
 body {
   margin: 0;
   background: #0A0908;

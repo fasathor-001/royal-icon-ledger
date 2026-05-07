@@ -43,7 +43,7 @@ function InfoPopover({ label, children, align = 'right' }) {
           position: 'absolute',
           ...(align === 'right' ? { right: 0 } : { left: 0 }),
           top: 'calc(100% + 8px)',
-          zIndex: 200, width: 320,
+          zIndex: 200, width: 320, maxWidth: 'calc(100vw - 32px)',
           background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: 4,
           padding: '12px 14px', lineHeight: 1.7, fontSize: 12, color: '#B0A898',
           boxShadow: '0 8px 32px rgba(0,0,0,0.55)',
