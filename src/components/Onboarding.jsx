@@ -352,8 +352,11 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
               You don't need perfect habits.<br />
               You don't need a plan.
             </p>
-            <p style={{ fontSize: '15px', lineHeight: 1.85, color: '#8B8478', marginBottom: '40px' }}>
+            <p style={{ fontSize: '15px', lineHeight: 1.85, color: '#8B8478', marginBottom: '24px' }}>
               We'll just look at your numbers and build from there.
+            </p>
+            <p style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.65, marginBottom: '32px' }}>
+              This will only take a few minutes.
             </p>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <button onClick={next} className="ob-btn-primary">
@@ -540,6 +543,9 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             <p style={{ color: '#B0A898', marginBottom: '12px', fontSize: '15px', lineHeight: 1.7 }}>
               Add everything that costs you money.<br />
               Turn on tracking for categories you want to actively control month to month — like groceries, transport, or family spending.
+            </p>
+            <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.65, marginBottom: '8px' }}>
+              You don't need to get this perfect.
             </p>
             <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, marginBottom: '6px', fontStyle: 'italic' }}>
               We're not trying to fix everything. We're just trying to see clearly first.
@@ -896,7 +902,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
               <div>
                 <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>Monthly spending money</div>
                 <p style={{ fontSize: '13px', color: '#B0A898', marginBottom: '12px' }}>
-                  Eating out, fun, hobbies, anything discretionary. The empty-account-rule lives here — when this hits zero, spending stops for the month.
+                  Eating out, fun, hobbies, anything discretionary. This is the money you can use freely each month. When it runs out, spending stops.
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span className="ob-mono" style={{ fontSize: '18px', color: '#8B8478' }}>{currencySymbol}</span>
@@ -968,6 +974,9 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                 : 'The buffer is months of full salary, stored in cash. More buffer means more peace of mind, less trading desperation. Bigger buffer = more protection for the people who depend on you.'}
             </p>
 
+            <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.65, marginBottom: '20px' }}>
+              You can change this later as your situation evolves.
+            </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
               {[
                 {
@@ -1022,8 +1031,11 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             <p style={{ color: '#B0A898', marginBottom: '8px', fontSize: '15px' }}>
               Enter your current balances — not monthly income. These are the actual amounts sitting in your accounts today.
             </p>
-            <p style={{ fontSize: '14px', color: '#8B8478', marginBottom: '8px', fontStyle: 'italic' }}>
+            <p style={{ fontSize: '14px', color: '#8B8478', marginBottom: '6px', fontStyle: 'italic' }}>
               This is simply your starting point.
+            </p>
+            <p style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.65, marginBottom: '8px' }}>
+              Nothing here needs to be impressive — it just needs to be real.
             </p>
             <p style={{ color: '#8B8478', marginBottom: '32px', fontSize: '13px' }}>
               Leave any field at 0 if it doesn't apply yet. You can update these anytime from the Command tab.
@@ -1188,7 +1200,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
               You've set your <span style={{ fontStyle: 'italic', color: '#7FA068' }}>starting point</span>.
             </h1>
             <p style={{ color: '#B0A898', marginBottom: '32px', fontSize: '15px' }}>
-              From here, the system builds with you. You can update any of these later in Setup or Rules.
+              From here, the system begins to guide your decisions. You can update any of these later in Setup or Rules.
             </p>
 
             {/* Summary cards */}
