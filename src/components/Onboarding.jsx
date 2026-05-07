@@ -22,11 +22,12 @@ const SUGGESTED_EXPENSES = [
   { name: 'Insurance',           category: 'Insurance',       placeholder: '0'               },
   { name: 'School / Childcare',  category: 'Childcare/Kids',  placeholder: '0'               },
   { name: 'Family support',      category: 'Family support',  placeholder: '0', variable: true },
+  { name: 'Personal',            category: 'Personal expenses', placeholder: '0', variable: true },
 ];
 
 // ── Smart envelope defaults ──────────────────────────────────────────────────
 // Case-insensitive partial-match keywords used to pre-toggle envelope tracking.
-const ENVELOPE_ON_KEYWORDS  = ['groceries', 'food', 'transport', 'petrol', 'fuel', 'family', 'kids', 'household'];
+const ENVELOPE_ON_KEYWORDS  = ['groceries', 'food', 'transport', 'petrol', 'fuel', 'family', 'kids', 'household', 'personal'];
 const ENVELOPE_OFF_KEYWORDS = ['rent', 'bond', 'mortgage', 'insurance', 'school', 'phone'];
 
 function getDefaultEnvelopeTracking(name) {
@@ -602,7 +603,15 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                           type="number"
                           placeholder={item.placeholder}
                           value={expenseValues[item.name] || ''}
-                          onChange={(e) => setExpenseValues(v => ({ ...v, [item.name]: e.target.value }))}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setExpenseValues(v => ({ ...v, [item.name]: val }));
+                            // Auto-enable envelope for variable expenses the moment a value is entered.
+                            // Once on, clearing back to 0 does NOT turn it off — user must toggle manually.
+                            if (item.variable && (Number(val) || 0) > 0) {
+                              setEnvelopeTracking(t => t[item.name] ? t : { ...t, [item.name]: true });
+                            }
+                          }}
                           className="ob-input"
                           style={{ width: '110px', textAlign: 'right' }}
                         />
