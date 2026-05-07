@@ -1278,11 +1278,99 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
   // Feature 5: is trading guard active?
   const guardActive = data.tradingGuardUntil && Date.now() < data.tradingGuardUntil;
 
+  // ── Banner cascade — one alert banner at a time, highest priority wins ────
+  // Re-evaluated on every render: dismissing the active banner clears its
+  // condition so the next priority naturally surfaces without extra state.
+  const primaryBannerKey = (() => {
+    if (guardActive && !isFoundation) return 'guard';
+    if (stats.isSetup && data.incomeType !== 'fixed' && !isFoundation && stats.drawdownZone !== 'normal' && data.tradingCapital > 0) return 'drawdown';
+    if (stats.isSetup && needsBackup) return 'backup';
+    if (showUpgradePrompt && !upgradeDismissed) return 'upgrade';
+    if (isFoundation && foundationNudge) return 'nudge';
+    if (showGraduationWelcome) return 'graduation';
+    if (showStabilizeMessage) return 'stabilize';
+    if (showWeeklyPulse) return 'weekly-pulse';
+    return null;
+  })();
+
   return (
     <div className="space-y-6">
 
+      {/* ── This month — spending control point ───────────────────────────────
+          Shown whenever the system is set up and a spending budget exists.
+          The large coloured number is the primary signal: how much is left.   */}
+      {stats.isSetup && data.spendingBudget > 0 && (() => {
+        const pctUsed = Math.min(1, stats.thisMonthSpend / data.spendingBudget);
+        const leftColor = pctUsed >= 0.9 ? '#C56B5A' : pctUsed >= 0.7 ? '#D97757' : '#7FA068';
+        return (
+          <div style={{
+            background: '#0F0D0A',
+            border: '1px solid #26221C',
+            borderRadius: '8px',
+            padding: '24px 28px',
+          }}>
+            <div style={{
+              fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase',
+              color: '#5C5648', fontWeight: 600, marginBottom: '16px',
+            }}>
+              This month
+            </div>
+
+            {/* Primary number */}
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', marginBottom: '12px' }}>
+              <div style={{
+                fontSize: 'clamp(36px, 8vw, 52px)',
+                fontWeight: 300,
+                color: leftColor,
+                fontFamily: "'Fraunces', Georgia, serif",
+                lineHeight: 1,
+              }}>
+                {fmt(stats.spendingLeft)}
+              </div>
+              <div style={{ fontSize: '13px', color: '#5C5648', paddingBottom: '6px' }}>
+                left to spend
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div style={{
+              height: '3px', background: '#1A1610', borderRadius: '2px',
+              marginBottom: '16px', overflow: 'hidden',
+            }}>
+              <div style={{
+                height: '100%',
+                width: `${pctUsed * 100}%`,
+                background: leftColor,
+                borderRadius: '2px',
+                transition: 'width 0.4s ease',
+              }} />
+            </div>
+
+            {/* Spent / Budget row */}
+            <div style={{ display: 'flex', gap: '28px', flexWrap: 'wrap' }}>
+              <div>
+                <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '3px' }}>Spent</div>
+                <div style={{ fontSize: '15px', color: '#B0A898', fontFamily: 'JetBrains Mono, monospace' }}>
+                  {fmt(stats.thisMonthSpend)}
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '3px' }}>Budget</div>
+                <div style={{ fontSize: '15px', color: '#8B8478', fontFamily: 'JetBrains Mono, monospace' }}>
+                  {fmt(data.spendingBudget)}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '16px', fontSize: '12px', color: '#5C5648', fontStyle: 'italic' }}>
+              This is your control point.
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Post-upgrade stabilization banner — shown once, session only, after Foundation → standard */}
-      {showStabilizeMessage && (
+      {primaryBannerKey === 'stabilize' && (
         <div style={{
           background: '#14110E',
           border: '1px solid #3A2A1E',
@@ -1312,7 +1400,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
       {/* ── Foundation → Standard one-time welcome card ────────────────────────
           Shown immediately after the graduation modal CTA is tapped.
           Dismissed permanently via localStorage so it never reappears.     */}
-      {showGraduationWelcome && (
+      {primaryBannerKey === 'graduation' && (
         <div style={{
           background: 'linear-gradient(135deg, #0F1A0E 0%, #0A0F09 100%)',
           border: '1px solid #2A4A20',
@@ -1411,15 +1499,17 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
       )}
 
       {/* Feature 1: Weekly Pulse Banner */}
-      <WeeklyPulseBanner
-        data={data}
-        stats={stats}
-        forceShow={showWeeklyPulse}
-        onDismiss={() => setShowWeeklyPulse(false)}
-      />
+      {primaryBannerKey === 'weekly-pulse' && (
+        <WeeklyPulseBanner
+          data={data}
+          stats={stats}
+          forceShow={showWeeklyPulse}
+          onDismiss={() => setShowWeeklyPulse(false)}
+        />
+      )}
 
       {/* Feature 5: Trading Day Emotional Guard — standard users only */}
-      {guardActive && !isFoundation && (
+      {primaryBannerKey === 'guard' && (
         <div
           className="card-warm p-4 flex items-center gap-3"
           style={{
@@ -1531,7 +1621,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         </div>
       )}
 
-		{stats.isSetup && needsBackup && (
+		{primaryBannerKey === 'backup' && (
 	  <div className="card-warm p-4 flex items-center gap-3" style={{ borderColor: '#3A2620' }}>
 		<AlertTriangle size={16} style={{ color: '#D97757', flexShrink: 0 }} />
 		<div className="flex-1 text-sm">
@@ -1547,7 +1637,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
 		</button>
 	  </div>
 	)}
-	{stats.isSetup && data.incomeType !== 'fixed' && !isFoundation && stats.drawdownZone !== 'normal' && data.tradingCapital > 0 && (
+	{primaryBannerKey === 'drawdown' && (
 	  <div className="card-warm p-4 flex items-center gap-3" style={{ borderColor: stats.drawdownZone === 'stop' ? '#C56B5A60' : '#D9775760' }}>
 		<AlertTriangle size={16} style={{ color: stats.drawdownZone === 'stop' ? '#C56B5A' : '#D97757', flexShrink: 0 }} />
 		<div className="flex-1 text-sm">
@@ -1561,8 +1651,8 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
 		</button>
 	  </div>
 	)}
-      {/* Foundation graduation prompt — takes priority over nudge when triggered */}
-      {showUpgradePrompt && !upgradeDismissed ? (
+      {/* Foundation graduation prompt */}
+      {primaryBannerKey === 'upgrade' && (
         <div style={{
           background: '#0F1209',
           border: '1px solid #3A5A2A',
@@ -1605,8 +1695,10 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             </button>
           </div>
         </div>
-      ) : foundationNudge ? (
-        /* Foundation behavioural nudge — one message, calm, no pressure */
+      )}
+
+      {/* Foundation behavioural nudge — one message, calm, no pressure */}
+      {primaryBannerKey === 'nudge' && foundationNudge && (
         <div style={{
           background: '#0F1A0E',
           border: '1px solid #2A4A2A',
@@ -1647,7 +1739,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             </button>
           )}
         </div>
-      ) : null}
+      )}
 
       {/* Stage banner — Foundation gets a simple savings card */}
       {isFoundation ? (
