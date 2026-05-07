@@ -49,14 +49,16 @@ function SyncIndicator({ syncStatus, isOnline }) {
             : 'Sync failed — data saved locally';
 
   return (
-    <div style={{
-      position: 'fixed', bottom: '20px', right: '20px',
-      background: bg, border: `1px solid ${border}`,
-      borderRadius: '4px', padding: '8px 14px',
-      fontFamily: 'Inter, sans-serif', fontSize: '12px', color,
-      zIndex: 9997, display: 'flex', alignItems: 'center', gap: '6px',
-      transition: 'all 200ms',
-    }}>
+    <>
+      <style>{`@media(max-width:767px){.rl-sync-ind{bottom:calc(76px + env(safe-area-inset-bottom,0px))!important;}}`}</style>
+      <div className="rl-sync-ind" style={{
+        position: 'fixed', bottom: '20px', right: '20px',
+        background: bg, border: `1px solid ${border}`,
+        borderRadius: '4px', padding: '8px 14px',
+        fontFamily: 'Inter, sans-serif', fontSize: '12px', color,
+        zIndex: 9997, display: 'flex', alignItems: 'center', gap: '6px',
+        transition: 'all 200ms',
+      }}>
       {isSyncing && (
         <span style={{
           width: '7px', height: '7px', borderRadius: '50%', background: '#D97757',
@@ -65,6 +67,7 @@ function SyncIndicator({ syncStatus, isOnline }) {
       )}
       {label}
     </div>
+    </>
   );
 }
 
@@ -251,7 +254,8 @@ function LoginPage() {
   if (sent) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#0A0908' }}>
-        <div style={{
+        <style>{`@media(max-width:440px){.auth-card{padding:28px 20px!important}}`}</style>
+        <div className="auth-card" style={{
           maxWidth: '420px', width: '100%', padding: '40px',
           background: '#14110E', border: '1px solid #26221C', borderRadius: '6px',
           fontFamily: 'Inter, system-ui, sans-serif', color: '#E8E2D5', textAlign: 'center',
@@ -313,9 +317,10 @@ function LoginPage() {
         @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
         @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.4 } }
         .auth-input:focus { border-color: #D97757 !important; }
+        @media (max-width: 440px) { .auth-card { padding: 36px 24px !important; } }
       `}</style>
 
-      <div style={{
+      <div className="auth-card" style={{
         maxWidth: '420px', width: '100%', padding: '44px 40px',
         background: '#14110E', border: '1px solid #26221C', borderRadius: '6px', color: '#E8E2D5',
       }}>
@@ -562,8 +567,8 @@ function SetNewPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: '#0A0908', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;1,300&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap'); .auth-input:focus{border-color:#D97757!important}`}</style>
-      <div style={{ maxWidth: '420px', width: '100%', padding: '44px 40px', background: '#14110E', border: '1px solid #26221C', borderRadius: '6px', color: '#E8E2D5' }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;1,300&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap'); .auth-input:focus{border-color:#D97757!important} @media(max-width:440px){.auth-card{padding:36px 24px!important}}`}</style>
+      <div className="auth-card" style={{ maxWidth: '420px', width: '100%', padding: '44px 40px', background: '#14110E', border: '1px solid #26221C', borderRadius: '6px', color: '#E8E2D5' }}>
         <div style={{ marginBottom: '28px' }}>
           <div style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 400, marginBottom: '4px' }}>
             Royal <span style={{ fontStyle: 'italic', color: '#D97757' }}>Ledger</span>

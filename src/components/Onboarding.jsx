@@ -63,7 +63,7 @@ function InfoPopover({ label, children }) {
       {open && (
         <div style={{
           position: 'absolute', left: 0, top: 'calc(100% + 6px)',
-          zIndex: 200, width: 320,
+          zIndex: 200, width: 320, maxWidth: 'calc(100vw - 48px)',
           background: '#14110E', border: '1px solid #26221C', borderRadius: '4px',
           padding: '14px 16px', fontSize: '13px', color: '#8B8478', lineHeight: 1.7,
           boxShadow: '0 8px 32px rgba(0,0,0,0.55)',
@@ -346,6 +346,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
         @media (max-width: 480px) {
           .ob-input.ob-amount-input { width: 72px; }
           .ob-exp-name { min-width: 0; }
+          .ob-hero { font-size: 36px !important; }
         }
       `}</style>
 
@@ -365,7 +366,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
         {step === 1 && (
           <div>
             <Heart size={32} style={{ color: '#D97757', marginBottom: '24px' }} />
-            <h1 className="ob-display" style={{ fontSize: '48px', lineHeight: 1.1, marginBottom: '28px', fontWeight: 300 }}>
+            <h1 className="ob-display ob-hero" style={{ fontSize: '48px', lineHeight: 1.1, marginBottom: '28px', fontWeight: 300 }}>
               Welcome to <span style={{ fontStyle: 'italic', color: '#D97757' }}>Royal Ledger</span>.
             </h1>
             <p style={{ fontSize: '17px', lineHeight: 1.85, color: '#E8E2D5', marginBottom: '16px' }}>

@@ -838,7 +838,7 @@ function BudgetManager({ data, setData, onClose }) {
       }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="card p-7" style={{ maxWidth: '700px', width: '100%', marginTop: '40px' }}>
+      <div className="card p-7" style={{ maxWidth: '700px', width: '100%', marginTop: '16px' }}>
         <div className="flex justify-between items-baseline mb-5">
           <h2 className="display text-2xl">Manage envelopes</h2>
           <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#B0A898', cursor: 'pointer' }}>

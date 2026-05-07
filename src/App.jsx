@@ -2348,7 +2348,7 @@ function InfoPopover({ label, children, align = 'right' }) {
           position: 'absolute',
           ...(align === 'right' ? { right: 0 } : { left: 0 }),
           top: 'calc(100% + 8px)',
-          zIndex: 200, width: 320,
+          zIndex: 200, width: 320, maxWidth: 'calc(100vw - 32px)',
           background: '#1A1410', border: '1px solid #3A2A1E', borderRadius: 4,
           padding: '12px 14px', lineHeight: 1.7, fontSize: 12, color: '#B0A898',
           boxShadow: '0 8px 32px rgba(0,0,0,0.55)',
@@ -2503,7 +2503,7 @@ function Setup({ data, stats, setData }) {
       </div>
 
       {/* Expenses by category */}
-      <section className="card p-7">
+      <section className="card rl-cp">
         <div className="flex items-start justify-between mb-2 flex-wrap gap-2">
           <h2 className="display text-2xl">Monthly expenses</h2>
           <InfoPopover label="How does this work?">
@@ -2657,7 +2657,7 @@ function Setup({ data, stats, setData }) {
       </section>
 
       {/* Spending and reserve */}
-      <section className="card p-7">
+      <section className="card rl-cp">
         <h2 className="display text-2xl mb-5">{isFoundation ? 'Spending & savings' : 'Spending & buffer reserve'}</h2>
         <div className="grid md:grid-cols-2 gap-5">
           <div>
@@ -2684,7 +2684,7 @@ function Setup({ data, stats, setData }) {
       </section>
 
       {/* Buffer settings */}
-      <section className="card p-7">
+      <section className="card rl-cp">
         <h2 className="display text-2xl mb-2">{isFoundation ? 'Savings target' : 'Buffer target'}</h2>
         <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
           {isFoundation
@@ -2848,7 +2848,7 @@ function ProfitAllocator({ data, stats, setData }) {
         ].filter(r => r.pct > 0);
 
         return (
-          <div className="card-warm p-7">
+          <div className="card-warm rl-cp">
             <div className="label mb-3" style={{ color: isFoundation ? '#7FA068' : '#D97757' }}>
               {isFoundation ? 'Extra money received' : data.incomeType === 'fixed' ? 'Extra income this month' : 'Gross trading profit this month'}
             </div>
@@ -2886,7 +2886,7 @@ function ProfitAllocator({ data, stats, setData }) {
 
       {step === 'result' && allocation && (
         <div className="space-y-4 slide-up">
-          <div className="card-warm p-7 glow-warm">
+          <div className="card-warm rl-cp glow-warm">
             <div className="flex items-baseline justify-between mb-2">
               <div className="label" style={{ color: isFoundation ? '#7FA068' : '#D97757' }}>
                 {isFoundation ? 'Where it goes' : 'Allocation breakdown'}
@@ -5087,7 +5087,7 @@ function Rules({ data, stats, setData, user }) {
       </section>}
 
       {/* Stage rules — standard users only */}
-      {!isFoundation && <section className="card p-7">
+      {!isFoundation && <section className="card rl-cp">
         <h2 className="display text-2xl mb-3">Profit allocation by stage</h2>
         <p className="text-sm mb-5" style={{ color: '#B0A898' }}>How net trading profit (after taxes) is split based on which stage you're in. Each row should add to 100%.</p>
         {[
@@ -5141,7 +5141,7 @@ function Rules({ data, stats, setData, user }) {
       </section>
 
       {/* Future Goals */}
-      <section className="card p-7">
+      <section className="card rl-cp">
         <div className="flex items-baseline justify-between mb-2">
           <h2 className="display text-2xl">Future goals</h2>
           <span className="label" style={{ color: '#8B8478' }}>Optional</span>
