@@ -516,8 +516,10 @@ function SetNewPasswordPage() {
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
-  // Distinguish invite flow ("Create password") from recovery flow ("Set new password")
-  const isInvite = window.location.hash.includes('type=invite');
+  // Distinguish invite flow ("Create password") from recovery flow ("Set new password").
+  // Check both hash (implicit flow) and query params (PKCE flow).
+  const isInvite = window.location.hash.includes('type=invite') ||
+    new URLSearchParams(window.location.search).get('type') === 'invite';
   const pageTitle = isInvite ? 'Create your password' : 'Set new password';
   const buttonLabel = isInvite ? 'Create password' : 'Set new password';
 
