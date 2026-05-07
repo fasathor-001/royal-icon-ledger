@@ -213,7 +213,10 @@ export default function Budget({ data, setData, stats }) {
   const [view, setView] = useState('overview'); // overview | setup | edit
   const [editingEnvelope, setEditingEnvelope] = useState(null);
 
-  const envelopes = data.envelopes || [];
+  // Sort: Discretionary envelope always first, others follow in original order
+  const envelopes = [...(data.envelopes || [])].sort((a, b) =>
+    (b.isDiscretionary ? 1 : 0) - (a.isDiscretionary ? 1 : 0)
+  );
   const isSetup = envelopes.length > 0;
 
   // Get current month's spending per envelope

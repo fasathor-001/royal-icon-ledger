@@ -641,6 +641,28 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     }
   }, [loading, data.tradingGuardUntil]);
 
+  // Migration — create Discretionary envelope for existing users who completed
+  // onboarding before this feature was added.
+  useEffect(() => {
+    if (loading || !data.setupComplete || !data.spendingBudget) return;
+    if ((data.envelopes || []).some(e => e.isDiscretionary)) return;
+    setData(d => ({
+      ...d,
+      envelopes: [
+        {
+          id: 'env_discretionary',
+          name: 'Discretionary',
+          cap: d.spendingBudget,
+          blockMode: 'soft',
+          rolloverMode: 'reset',
+          icon: 'personal',
+          isDiscretionary: true,
+        },
+        ...(d.envelopes || []),
+      ],
+    }));
+  }, [loading, data.setupComplete, data.spendingBudget]);
+
   // Feature 1: Weekly pulse via custom event (from RitualCard)
   useEffect(() => {
     const handler = () => setShowWeeklyPulse(true);
@@ -690,7 +712,13 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
 
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-    const thisMonthImpulses = data.impulses.filter(i => i.timestamp >= monthStart);
+    const discretionaryEnv = (data.envelopes || []).find(e => e.isDiscretionary);
+    const thisMonthImpulses = data.impulses.filter(i => {
+      if (i.timestamp < monthStart) return false;
+      // Count only spending in the Discretionary envelope.
+      // Fall back to untagged impulses for users without one (pre-migration safety).
+      return discretionaryEnv ? i.envelopeId === discretionaryEnv.id : !i.envelopeId;
+    });
     const thisMonthSpend = thisMonthImpulses.reduce((s, i) => s + i.amount, 0);
     const spendingLeft = Math.max(0, (Number(data.spendingBudget) || 0) - thisMonthSpend);
 
@@ -2206,7 +2234,7 @@ function PendingRow({ item, setData, currency }) {
             setTimeout(() => setData(d => ({
               ...d,
               pending: d.pending.map(i => i.id === item.id ? { ...i, status: 'bought' } : i),
-              impulses: [...d.impulses, { id: Date.now(), name: item.name, amount: item.amount, category: item.category, timestamp: Date.now(), wasGated: true }],
+              impulses: [...d.impulses, { id: Date.now(), name: item.name, amount: item.amount, category: item.category, envelopeId: item.envelopeId || null, timestamp: Date.now(), wasGated: true }],
             })), 1200);
           }}>
           Buy
@@ -3233,6 +3261,8 @@ function ImpulseTab({ data, stats, setData, user }) {
   }, [envelopeId, data.envelopes, data.impulses, amt]);
 
   const logImpulse = (gated, usedOverride = false) => {
+    const discretionaryEnv = (data.envelopes || []).find(e => e.isDiscretionary);
+    const resolvedEnvelopeId = envelopeId || discretionaryEnv?.id || null;
     setData(d => ({
       ...d,
       impulses: [...d.impulses, {
@@ -3240,7 +3270,7 @@ function ImpulseTab({ data, stats, setData, user }) {
         name,
         amount: amt,
         category: category || 'other',
-        envelopeId: envelopeId || null,
+        envelopeId: resolvedEnvelopeId,
         trigger,
         timestamp: Date.now(),
         wasGated: gated,
@@ -3254,6 +3284,8 @@ function ImpulseTab({ data, stats, setData, user }) {
   };
 
   const sleep = () => {
+    const discretionaryEnv = (data.envelopes || []).find(e => e.isDiscretionary);
+    const resolvedEnvelopeId = envelopeId || discretionaryEnv?.id || null;
   setData(d => ({
     ...d,
     pending: [...d.pending, {
@@ -3261,7 +3293,7 @@ function ImpulseTab({ data, stats, setData, user }) {
       name,
       amount: amt,
       category: category || 'other',
-      envelopeId: envelopeId || null,
+      envelopeId: resolvedEnvelopeId,
       timestamp: Date.now(),
       status: 'pending',
     }],

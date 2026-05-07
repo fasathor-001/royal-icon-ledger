@@ -22,12 +22,11 @@ const SUGGESTED_EXPENSES = [
   { name: 'Insurance',           category: 'Insurance',       placeholder: '0'               },
   { name: 'School / Childcare',  category: 'Childcare/Kids',  placeholder: '0'               },
   { name: 'Family support',      category: 'Family support',  placeholder: '0', variable: true },
-  { name: 'Personal',            category: 'Personal expenses', placeholder: '0', variable: true },
 ];
 
 // ── Smart envelope defaults ──────────────────────────────────────────────────
 // Case-insensitive partial-match keywords used to pre-toggle envelope tracking.
-const ENVELOPE_ON_KEYWORDS  = ['groceries', 'food', 'transport', 'petrol', 'fuel', 'family', 'kids', 'household', 'personal'];
+const ENVELOPE_ON_KEYWORDS  = ['groceries', 'food', 'transport', 'petrol', 'fuel', 'family', 'kids', 'household'];
 const ENVELOPE_OFF_KEYWORDS = ['rent', 'bond', 'mortgage', 'insurance', 'school', 'phone'];
 
 function getDefaultEnvelopeTracking(name) {
@@ -158,7 +157,18 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
   const finish = async () => {
     // Convert expense values to expense records, and build linked envelopes
     const expenses = [];
-    const newEnvelopes = [];
+
+    // Discretionary envelope — always created first from Stage 6 spending budget.
+    // All spending logged without a specific envelope auto-routes here.
+    const newEnvelopes = [{
+      id: 'env_discretionary',
+      name: 'Discretionary',
+      cap: Number(spendingBudget) || 0,
+      blockMode: 'soft',
+      rolloverMode: 'reset',
+      icon: 'personal',
+      isDiscretionary: true,
+    }];
 
     SUGGESTED_EXPENSES.forEach(s => {
       const v = Number(expenseValues[s.name]) || 0;
