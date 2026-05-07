@@ -511,7 +511,7 @@ function SkeletonLoader() {
 
 // ─────────────── SET NEW PASSWORD PAGE ───────────────
 function SetNewPasswordPage() {
-  const { updatePassword, authError, setAuthError, logout } = useAuth();
+  const { user, updatePassword, resetPassword, authError, setAuthError, logout } = useAuth();
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
@@ -522,6 +522,26 @@ function SetNewPasswordPage() {
     new URLSearchParams(window.location.search).get('type') === 'invite';
   const pageTitle = isInvite ? 'Create your password' : 'Set new password';
   const buttonLabel = isInvite ? 'Create password' : 'Set new password';
+
+  // Cross-device / expired-link detection:
+  // The PKCE code exchange requires the code verifier to be in *this* browser's
+  // localStorage. If the user opened the email on a different device or browser,
+  // the exchange fails silently and user ends up here with no session.
+  const sessionMissing = !user;
+
+  // State for the "request new link" fallback form
+  const [fallbackEmail, setFallbackEmail] = useState('');
+  const [fallbackSent, setFallbackSent]   = useState(false);
+  const [fallbackLoading, setFallbackLoading] = useState(false);
+
+  const handleFallback = async (e) => {
+    e.preventDefault();
+    if (!fallbackEmail) return;
+    setFallbackLoading(true);
+    await resetPassword(fallbackEmail);
+    setFallbackSent(true);
+    setFallbackLoading(false);
+  };
 
   const inputStyle = {
     background: '#0A0908', border: '1px solid #26221C', padding: '11px 13px',
@@ -555,6 +575,55 @@ function SetNewPasswordPage() {
             <div style={{ fontFamily: 'Fraunces, serif', fontSize: '26px', fontStyle: 'italic', fontWeight: 300, marginBottom: '12px' }}>Password updated.</div>
             <p style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.6, marginBottom: '24px' }}>You're signed in. Taking you to the app…</p>
           </div>
+
+        ) : sessionMissing && !isInvite ? (
+          /* ── Cross-device / expired-link fallback ──────────────────────────
+             The PKCE code exchange requires the code verifier in THIS browser's
+             localStorage. A link opened on a different device or browser (or an
+             already-used / expired link) can't complete the exchange.
+             Show a helpful message and let the user request a fresh link.        */
+          <div>
+            <h2 style={{ fontFamily: 'Fraunces, serif', fontSize: '22px', fontWeight: 300, marginBottom: '12px' }}>
+              {fallbackSent ? 'Check your inbox.' : 'Link expired or opened in a different browser.'}
+            </h2>
+            {fallbackSent ? (
+              <p style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.65, marginBottom: '20px' }}>
+                A new password reset link is on its way. Open it <strong style={{ color: '#E8E2D5' }}>in this browser</strong> to set your new password.
+              </p>
+            ) : (
+              <>
+                <p style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.65, marginBottom: '20px' }}>
+                  Password reset links only work in the browser where you requested them.
+                  Enter your email and we'll send you a fresh link.
+                </p>
+                <form onSubmit={handleFallback} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <input
+                    type="email"
+                    required
+                    placeholder="your@email.com"
+                    value={fallbackEmail}
+                    onChange={e => setFallbackEmail(e.target.value)}
+                    className="auth-input"
+                    style={{ ...inputStyle, letterSpacing: 'normal' }}
+                  />
+                  {authError && (
+                    <div style={{ fontSize: '13px', color: '#C56B5A', padding: '8px 12px', background: '#1A0E0C', border: '1px solid #3A2018', borderRadius: '3px' }}>
+                      {authError}
+                    </div>
+                  )}
+                  <button type="submit" disabled={fallbackLoading}
+                    style={{ background: '#D97757', color: '#0A0908', padding: '12px 20px', fontWeight: 600, borderRadius: '3px', fontSize: '13px', border: 'none', cursor: fallbackLoading ? 'not-allowed' : 'pointer', opacity: fallbackLoading ? 0.7 : 1 }}>
+                    {fallbackLoading ? 'Sending…' : 'Send new reset link →'}
+                  </button>
+                </form>
+              </>
+            )}
+            <button onClick={logout}
+              style={{ marginTop: '20px', background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '12px', padding: 0 }}>
+              Back to sign in
+            </button>
+          </div>
+
         ) : (
           <>
             <h2 style={{ fontFamily: 'Fraunces, serif', fontSize: '26px', fontWeight: 300, marginBottom: '24px' }}>{pageTitle}</h2>

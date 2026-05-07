@@ -207,7 +207,7 @@ function MobileBottomNav({ tab, setTab, user, data }) {
               onClick={() => { setTab(id); setShowMore(false); }}
               style={{
                 display: 'block', width: '100%', textAlign: 'left',
-                padding: '13px 24px', fontSize: 15,
+                padding: '14px 24px', fontSize: 15,
                 background: 'none', border: 'none', cursor: 'pointer',
                 color: tab === id ? '#D97757' : '#B0A898',
                 borderLeft: tab === id ? '3px solid #D97757' : '3px solid transparent',
@@ -247,7 +247,7 @@ function MobileBottomNav({ tab, setTab, user, data }) {
             >
               <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
               <span style={{
-                fontSize: 9, fontWeight: 600,
+                fontSize: 10, fontWeight: 600,
                 letterSpacing: '0.05em', textTransform: 'uppercase',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
@@ -271,7 +271,7 @@ function MobileBottomNav({ tab, setTab, user, data }) {
         >
           <MoreHorizontal size={20} strokeWidth={(showMore || isSecondaryActive) ? 2.2 : 1.8} />
           <span style={{
-            fontSize: 9, fontWeight: 600,
+            fontSize: 10, fontWeight: 600,
             letterSpacing: '0.05em', textTransform: 'uppercase',
           }}>
             More
@@ -950,6 +950,14 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
         @media (min-width: 480px) { .rl-this-month { padding: 24px 28px; } }
         .rl-mini-hdr { flex-wrap: wrap; gap: 4px; }
         .rl-mini-hdr h3 { min-width: 0; }
+        /* Responsive card padding — 18px on mobile, 28px at 480px+ */
+        .rl-cp { padding: 18px; }
+        @media (min-width: 480px) { .rl-cp { padding: 28px; } }
+        /* ImpulseHistory row name truncation */
+        .rl-imp-name { min-width: 0; overflow: hidden; }
+        .rl-imp-name span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        /* ImpulseHistory month header on narrow screens */
+        .rl-imp-hdr { flex-wrap: wrap; gap: 6px; row-gap: 4px; }
       `}</style>
 
       <header className="border-b" style={{ borderColor: '#26221C', background: '#0A0908', flexShrink: 0, zIndex: 10 }}>
@@ -1679,7 +1687,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
 
       {/* Getting started — shown until first snapshot is taken */}
       {stats.isSetup && data.snapshots.length === 0 && (
-        <div style={{ background: '#0F0D0A', border: '1px solid #26221C', borderRadius: '6px', padding: '24px 28px' }}>
+        <div className="rl-this-month" style={{ background: '#0F0D0A', border: '1px solid #26221C', borderRadius: '6px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
             <div>
               <div style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#8B8478', fontWeight: 600, marginBottom: '4px' }}>Getting started</div>
@@ -1887,7 +1895,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
 
       {/* Stage banner — Foundation gets a simple savings card */}
       {isFoundation ? (
-        <div className="card-warm p-7 glow-warm">
+        <div className="card-warm rl-cp glow-warm">
           {/* Savings balance */}
           <div className="label mb-2" style={{ color: '#7FA068' }}>Your Savings</div>
           <div className="display text-4xl mb-4" style={{ fontWeight: 300, color: '#7FA068' }}>
@@ -2008,8 +2016,8 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           )}
         </div>
       ) : (
-        <div className="card-warm p-7 glow-warm">
-          <div className="flex items-baseline justify-between mb-3">
+        <div className="card-warm rl-cp glow-warm">
+          <div className="flex items-baseline justify-between mb-3 flex-wrap gap-1">
             <div className="label" style={{ color: stageInfo.color }}>{stageInfo.name} — {stageInfo.title}</div>
             <div className="mono text-xs" style={{ color: '#B0A898' }}>{stats.monthsCovered.toFixed(1)} months stored</div>
           </div>
@@ -2035,7 +2043,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
       )}
 
       {/* Editable balance inputs */}
-      <section className="card p-7">
+      <section className="card rl-cp">
         <div className="flex items-baseline justify-between mb-5">
           <h2 className="display text-2xl">Current balances</h2>
           <div className="flex items-center gap-3">
@@ -2112,7 +2120,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
       </section>
 
       {/* Stage progression visual — hidden for Foundation */}
-      {!isFoundation && <section className="card p-7">
+      {!isFoundation && <section className="card rl-cp">
         <h2 className="display text-2xl mb-2">Progression</h2>
         <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
           Salary {fmt(stats.salary)}/month · Target {data.bufferTargetMonths} months ({fmt(stats.bufferTarget)})
@@ -2281,12 +2289,12 @@ function PendingRow({ item, setData, currency }) {
   }
 
   return (
-    <div className="flex items-center justify-between p-3 border" style={{ borderColor: '#26221C', borderRadius: '3px' }}>
-      <div>
-        <div className="font-medium text-sm">{item.name}</div>
+    <div className="flex items-center justify-between p-3 border" style={{ borderColor: '#26221C', borderRadius: '3px', gap: '8px' }}>
+      <div style={{ minWidth: 0, overflow: 'hidden' }}>
+        <div className="font-medium text-sm" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
         <div className="mono text-xs mt-0.5" style={{ color: '#B0A898' }}>{fmt(item.amount)}</div>
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-2" style={{ flexShrink: 0 }}>
         <button className="btn px-3 py-1.5 text-xs" style={{ color: '#7FA068', border: '1px solid #2A3A1E', borderRadius: '3px' }}
           onClick={() => {
             setDone('skipped');
@@ -2474,7 +2482,7 @@ function Setup({ data, stats, setData }) {
       </div>
 
       {/* Live calculation card */}
-      <div className="card-warm p-7 glow-warm">
+      <div className="card-warm rl-cp glow-warm">
         <div className="grid md:grid-cols-3 gap-5">
           <div>
             <div className="label mb-2" style={{ color: '#D97757' }}>Total Expenses</div>
@@ -3409,21 +3417,21 @@ function ImpulseTab({ data, stats, setData, user }) {
         </p>
       </div>
 
-      <div className="flex gap-2 border-b" style={{ borderColor: '#26221C' }}>
+      <div className="flex gap-2 border-b" style={{ borderColor: '#26221C', overflowX: 'auto', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
         {[
           { id: 'gate', label: 'Spending Gate' },
           { id: 'log', label: 'Quick Log' },
           { id: 'history', label: 'History & Triggers' },
         ].map(v => (
           <button key={v.id} onClick={() => { setView(v.id); reset(); }} className="btn px-4 py-3 text-xs font-medium"
-            style={{ color: view === v.id ? '#D97757' : '#8B8478', borderBottom: '2px solid ' + (view === v.id ? '#D97757' : 'transparent'), marginBottom: '-1px' }}>
+            style={{ color: view === v.id ? '#D97757' : '#8B8478', borderBottom: '2px solid ' + (view === v.id ? '#D97757' : 'transparent'), marginBottom: '-1px', whiteSpace: 'nowrap', flexShrink: 0 }}>
             {v.label}
           </button>
         ))}
       </div>
 
       {view === 'gate' && step === 'input' && (
-        <div className="card p-7 space-y-5">
+        <div className="card rl-cp space-y-5">
           <div>
             <div className="label mb-2" style={{ color: '#8B8478' }}>What is it?</div>
             <input className="input-text" placeholder="e.g., Tech upgrade…" value={name} onChange={(e) => setName(e.target.value)} />
@@ -3468,7 +3476,7 @@ function ImpulseTab({ data, stats, setData, user }) {
 
       {view === 'gate' && step === 'gate' && (
         <div className="space-y-4">
-          <div className="card-warm p-7 glow-warm">
+          <div className="card-warm rl-cp glow-warm">
             <div className="label mb-3" style={{ color: '#D97757' }}>Pause and consider</div>
             <div className="display text-3xl mb-2" style={{ fontWeight: 300 }}>
               {fmt(amt)} <span className="text-xl" style={{ fontStyle: 'italic', color: '#B0A898' }}>for {name}</span>
@@ -3641,7 +3649,7 @@ function QuickLog({ data, setData }) {
   };
 
   return (
-    <div className="card p-7 space-y-5">
+    <div className="card rl-cp space-y-5">
       <p className="text-sm" style={{ color: '#B0A898' }}>Already bought it. Log without judgment.</p>
       <div>
         <div className="label mb-2" style={{ color: '#8B8478' }}>What did you buy?</div>
@@ -3718,24 +3726,24 @@ function ImpulseHistory({ data, stats, setData }) {
     : stats.thisMonthImpulses;
 
   const renderRow = (i) => (
-    <div key={i.id} className="flex items-center justify-between py-2 border-b" style={{ borderColor: '#26221C' }}>
-      <div className="flex-1">
-        <div className="flex items-center gap-2 text-sm">
-          <span>{i.name}</span>
+    <div key={i.id} className="flex items-center justify-between py-2 border-b" style={{ borderColor: '#26221C', gap: '8px' }}>
+      <div className="rl-imp-name flex-1">
+        <div className="flex items-center gap-2 text-sm" style={{ flexWrap: 'wrap' }}>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>{i.name}</span>
           {i.overrideUsed && (
-            <span style={{ background: '#3A1C1C', color: '#C56B5A', fontSize: '9px', padding: '2px 6px', borderRadius: '3px', fontWeight: 700, letterSpacing: '0.05em' }}>
+            <span style={{ background: '#3A1C1C', color: '#C56B5A', fontSize: '9px', padding: '2px 6px', borderRadius: '3px', fontWeight: 700, letterSpacing: '0.05em', flexShrink: 0 }}>
               PIN OVERRIDE
             </span>
           )}
         </div>
-        <div className="text-xs" style={{ color: '#8B8478' }}>
+        <div className="text-xs" style={{ color: '#8B8478', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {(CATEGORIES[i.category] || CATEGORIES.other).label}{i.trigger && ` · ${i.trigger}`}
           {i.overrideUsed && i.overrideAt && (
             <span style={{ color: '#8B8478' }}> · overridden {new Date(i.overrideAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
           )}
         </div>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3" style={{ flexShrink: 0 }}>
         <span className="mono text-sm">{fmt(i.amount)}</span>
         <button
           onClick={() => attemptImpulseRow(i.id, () => removeImpulse(i.id))}
@@ -3753,9 +3761,9 @@ function ImpulseHistory({ data, stats, setData }) {
   return (
     <div className="space-y-4">
       <section className="card p-6">
-        <div className="flex items-baseline justify-between mb-5">
-          <h2 className="display text-2xl">This month</h2>
-          <div className="flex items-center gap-3">
+        <div className="rl-imp-hdr flex items-baseline justify-between mb-5">
+          <h2 className="display text-2xl" style={{ flexShrink: 0 }}>This month</h2>
+          <div className="flex items-center gap-3" style={{ flexWrap: 'wrap', justifyContent: 'flex-end' }}>
             {overrideCount > 0 && (
               <button
                 onClick={() => setOverrideOnly(v => !v)}

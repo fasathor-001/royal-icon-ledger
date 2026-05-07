@@ -54,9 +54,27 @@ export function AuthProvider({ children }) {
     // Restore session on load.
     // In PKCE mode detectSessionInUrl:true (set in supabase.js) means the client
     // already started exchanging the ?code param before this runs.
+    //
+    // Critical timing fix: supabase-js fires PASSWORD_RECOVERY (and SIGNED_IN for
+    // invite links) inside a setTimeout(fn, 0) in GoTrueClient._initialize().
+    // That macrotask fires AFTER getSession() resolves (a microtask chain).
+    // If we call setAuthLoading(false) immediately in the .then(), React re-renders
+    // with authLoading=false before isPasswordRecovery is true — showing the wrong
+    // page for a split second (or permanently if the user navigates away).
+    //
+    // Fix: when a PKCE code is present in the URL, defer setAuthLoading(false) by
+    // one macrotask via setTimeout(fn, 0). Supabase's PASSWORD_RECOVERY setTimeout
+    // was registered first (during _initialize()), so it runs first in the macrotask
+    // queue → isPasswordRecovery=true is set BEFORE authLoading becomes false.
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
-      setAuthLoading(false);
+      const hasPkceCode = new URLSearchParams(window.location.search).get('code');
+      if (hasPkceCode) {
+        // Defer by one macrotask so PASSWORD_RECOVERY / SIGNED_IN event fires first
+        setTimeout(() => setAuthLoading(false), 0);
+      } else {
+        setAuthLoading(false);
+      }
     });
 
     // Listen for auth state changes
@@ -68,12 +86,17 @@ export function AuthProvider({ children }) {
         setIsPasswordRecovery(true);
       }
 
-      // Invite link: Supabase auto-signs the user in (SIGNED_IN event) but they
-      // still need to set a password — intercept before routing to the main app.
+      // Invite / recovery via SIGNED_IN event:
+      // Some supabase-js versions (or cross-device flows where the code verifier
+      // is missing from storage) fire SIGNED_IN instead of PASSWORD_RECOVERY.
+      // Check the URL's type param so we still land on the right page.
       if (event === 'SIGNED_IN') {
         const hash   = window.location.hash;
         const params = new URLSearchParams(window.location.search);
-        if (hash.includes('type=invite') || params.get('type') === 'invite') {
+        if (
+          hash.includes('type=invite')    || params.get('type') === 'invite' ||
+          hash.includes('type=recovery')  || params.get('type') === 'recovery'
+        ) {
           setIsPasswordRecovery(true);
         }
       }
