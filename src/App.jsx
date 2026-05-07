@@ -1178,6 +1178,7 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   const [welcomeDismissed, setWelcomeDismissed] = useState(false);
   const showGraduationWelcome = !welcomeDismissed && !!sessionStorage.getItem('rl_just_graduated');
   const dismissWelcome = () => {
+    console.log('[rl] banner_dismissed graduation');
     sessionStorage.removeItem('rl_just_graduated');
     localStorage.setItem('rl_welcome_dismissed', '1');
     setWelcomeDismissed(true);
@@ -1198,6 +1199,15 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
     }
     prevModeRef.current = data?.mode;
   }, [data?.mode]);
+
+  // ── User-testing telemetry (console only, no external deps) ─────────────
+  React.useEffect(() => { console.log('[rl] dashboard_view'); }, []);
+  const _thisMonthVisible = stats.isSetup && data.spendingBudget > 0;
+  React.useEffect(() => {
+    if (_thisMonthVisible) console.log('[rl] this_month_visible');
+  }, [_thisMonthVisible]);
+  // Ref used below (after primaryBannerKey is computed) to log only on key change.
+  const _prevBannerKeyRef = React.useRef(null);
 
   const openGoalEditor = () => {
     setGoalDraft({
@@ -1292,6 +1302,11 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
     if (showWeeklyPulse) return 'weekly-pulse';
     return null;
   })();
+  // Log banner changes — ref guards against duplicate logs on re-render
+  if (primaryBannerKey !== _prevBannerKeyRef.current) {
+    _prevBannerKeyRef.current = primaryBannerKey;
+    if (primaryBannerKey) console.log('[rl] banner_shown', primaryBannerKey);
+  }
 
   return (
     <div className="space-y-6">
@@ -1389,7 +1404,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             </span>
           </div>
           <button
-            onClick={() => setShowStabilizeMessage(false)}
+            onClick={() => { console.log('[rl] banner_dismissed stabilize'); setShowStabilizeMessage(false); }}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8B8478', flexShrink: 0, padding: '2px' }}
           >
             <X size={14} />
@@ -1504,7 +1519,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           data={data}
           stats={stats}
           forceShow={showWeeklyPulse}
-          onDismiss={() => setShowWeeklyPulse(false)}
+          onDismiss={() => { console.log('[rl] banner_dismissed weekly-pulse'); setShowWeeklyPulse(false); }}
         />
       )}
 
@@ -1683,7 +1698,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               Continue with full system →
             </button>
             <button
-              onClick={() => setUpgradeDismissed(true)}
+              onClick={() => { console.log('[rl] banner_dismissed upgrade'); setUpgradeDismissed(true); }}
               style={{
                 background: 'transparent', color: '#8B8478',
                 border: '1px solid #26221C', borderRadius: '3px',

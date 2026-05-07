@@ -121,6 +121,10 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
   // ── Notification permission state (Step 10: Summary) ────────────────────
   const [notifStatus, setNotifStatus] = useState('idle'); // 'idle' | 'granted' | 'denied'
 
+  // ── User-testing telemetry (console only, no external deps) ─────────────
+  React.useEffect(() => { console.log('[rl] onboarding_start'); }, []);
+  React.useEffect(() => { if (step === 5) console.log('[rl] step_5_enter'); }, [step]);
+
   const fmt = makeFmt(selectedCurrency);
   const currencySymbol = getCurrency(selectedCurrency).symbol;
 
@@ -145,6 +149,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
     if (untrackedVariable.length > 0) {
       setShowEnvelopeGate(true);
     } else {
+      console.log('[rl] step_5_exit');
       next();
     }
   };
@@ -242,6 +247,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
       pinHash: newPinHash,
       overridePin: '', // clear any legacy plain-text PIN
     }));
+    console.log('[rl] onboarding_complete');
     onComplete();
   };
 
@@ -606,9 +612,9 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                           onChange={(e) => {
                             const val = e.target.value;
                             setExpenseValues(v => ({ ...v, [item.name]: val }));
-                            // Auto-enable envelope for variable expenses the moment a value is entered.
-                            // Once on, clearing back to 0 does NOT turn it off — user must toggle manually.
-                            if (item.variable && (Number(val) || 0) > 0) {
+                            // Auto-enable envelope for any non-fixed expense the moment a value is entered.
+                            // Fixed expenses remain locked. Once on, clearing to 0 does NOT turn it off.
+                            if (!item.fixed && (Number(val) || 0) > 0) {
                               setEnvelopeTracking(t => t[item.name] ? t : { ...t, [item.name]: true });
                             }
                           }}
@@ -716,8 +722,12 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                           type="number"
                           value={c.amount}
                           onChange={(e) => {
+                            const val = e.target.value;
                             const updated = [...customExpenses];
-                            updated[i] = { ...updated[i], amount: e.target.value };
+                            // Auto-enable envelope when a value is first entered.
+                            // Once on, clearing to 0 does NOT turn it off.
+                            const shouldEnable = !updated[i].trackInEnvelope && (Number(val) || 0) > 0;
+                            updated[i] = { ...updated[i], amount: val, ...(shouldEnable ? { trackInEnvelope: true } : {}) };
                             setCustomExpenses(updated);
                           }}
                           className="ob-input"
@@ -874,7 +884,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                         <Mail size={14} /> Set envelopes
                       </button>
                       <button
-                        onClick={() => { setShowEnvelopeGate(false); next(); }}
+                        onClick={() => { setShowEnvelopeGate(false); console.log('[rl] step_5_exit'); next(); }}
                         style={{
                           flex: 1, background: 'transparent', color: '#8B8478',
                           border: '1px solid #26221C', borderRadius: '4px', padding: '12px',
