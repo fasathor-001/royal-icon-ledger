@@ -75,9 +75,17 @@ export default function Home({ navigate }) {
             You don't need perfect habits to start.
             Follow the system — discipline builds over time.
           </p>
-          <p className="m-body m-fade-up-3" style={{ fontSize: '16px', maxWidth: '520px', marginBottom: '40px', color: '#8B8478' }}>
+          <p className="m-body m-fade-up-3" style={{ fontSize: '16px', maxWidth: '520px', marginBottom: '20px', color: '#8B8478' }}>
             For students, allowance earners, and anyone whose income
             doesn't arrive on a fixed schedule.
+          </p>
+
+          <p className="m-fade-up-3" style={{ fontSize: '15px', maxWidth: '480px', marginBottom: '14px', color: '#B0A898', lineHeight: 1.75 }}>
+            If managing money has felt inconsistent or overwhelming, this is where you start.
+          </p>
+          <p className="m-fade-up-3" style={{ fontSize: '14px', maxWidth: '440px', marginBottom: '40px', color: '#5C5648', lineHeight: 1.65, borderLeft: '2px solid #26221C', paddingLeft: '16px' }}>
+            Your money stays in your bank.<br />
+            Royal Ledger gives it structure.
           </p>
 
           <div className="m-fade-up-3" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
@@ -175,6 +183,43 @@ export default function Home({ navigate }) {
                 {line.text}
               </p>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════
+          HOW IT STARTS
+      ════════════════════════════════════════════ */}
+      <section style={{ padding: '60px 24px', borderBottom: '1px solid #1A1610' }}>
+        <div className="m-wrap-sm">
+          <div className="home-how-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'start' }}>
+            <div>
+              <Label>How It Starts</Label>
+              <h2 className="m-display" style={{ fontSize: 'clamp(26px, 3.5vw, 40px)', color: '#E8E2D5', lineHeight: 1.2 }}>
+                You don't start with everything.
+                <br />
+                <em style={{ color: '#D97757', fontStyle: 'italic' }}>You start with clarity.</em>
+              </h2>
+            </div>
+            <div>
+              {[
+                'Enter your income',
+                'List your fixed expenses',
+                'See what\'s actually left',
+              ].map((step, i) => (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'center', gap: '16px',
+                  padding: '14px 0',
+                  borderBottom: i < 2 ? '1px solid #1A1610' : 'none',
+                }}>
+                  <span style={{ fontSize: '11px', color: '#5C5648', fontFamily: "'JetBrains Mono', monospace", minWidth: '20px' }}>0{i + 1}</span>
+                  <span style={{ fontSize: '15px', color: '#E8E2D5', lineHeight: 1.5 }}>{step}</span>
+                </div>
+              ))}
+              <p style={{ fontSize: '13px', color: '#8B8478', marginTop: '20px', lineHeight: 1.65 }}>
+                That's where control begins.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -324,6 +369,22 @@ export default function Home({ navigate }) {
               </div>
             ))}
           </div>
+
+          <div style={{ marginTop: '28px', paddingTop: '28px', borderTop: '1px solid #1A1610' }}>
+            <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.75, marginBottom: '6px' }}>
+              Most finance apps track what already happened. Royal Ledger structures what happens next.
+            </p>
+            <p style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.7 }}>
+              Your money doesn't need a new place to live. It needs direction.
+            </p>
+          </div>
+
+          <div style={{ marginTop: '32px', paddingTop: '32px', borderTop: '1px solid #1A1610', textAlign: 'center' }}>
+            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.75, fontStyle: 'italic' }}>
+              Most people don't fail because they lack discipline.<br />
+              They fail because they never had structure.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -468,6 +529,7 @@ export default function Home({ navigate }) {
       <style>{`
         @media (max-width: 600px) {
           .home-compare-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
+          .home-how-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
         }
       `}</style>
     </div>

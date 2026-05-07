@@ -121,8 +121,8 @@ export default function About({ navigate }) {
             <div className="m-label" style={{ marginBottom: '28px' }}>What we believe</div>
             {[
               'Structure creates discipline — not the other way around.',
-              'Income should not determine control.',
-              'Clarity should not depend on consistency.',
+              'People don\'t fail because they lack effort. They lack systems.',
+              'Control comes from consistency — and consistency comes from structure.',
             ].map((line, i, arr) => (
               <div key={i} style={{
                 padding: '20px 0',
@@ -198,6 +198,10 @@ export default function About({ navigate }) {
               That gap is what led to Royal Ledger.
             </p>
 
+            <p style={{ fontSize: '15px', color: '#E8E2D5', lineHeight: 1.85, fontStyle: 'italic' }}>
+              Royal Ledger was built for people starting without a system — not people who already have one.
+            </p>
+
             <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85 }}>
               The goal was never to build another budgeting app. Those already exist. They solve a different problem — they tell you what you already spent. What I needed was something that answered an earlier question:
             </p>
@@ -253,9 +257,9 @@ export default function About({ navigate }) {
         <div className="m-wrap-sm" style={{ textAlign: 'center' }}>
           <div className="m-label" style={{ marginBottom: '20px' }}>Who It's For</div>
           <h2 className="m-display" style={{ fontSize: 'clamp(28px, 4vw, 48px)', color: '#E8E2D5', marginBottom: '20px' }}>
-            For people who want{' '}
-            <em style={{ color: '#D97757', fontStyle: 'italic' }}>control</em>
-            {' '}— not just clarity.
+            For people who want control —
+            <br />
+            <em style={{ color: '#D97757', fontStyle: 'italic' }}>even if they don't feel in control yet.</em>
           </h2>
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: '32px', flexWrap: 'wrap', margin: '28px 0', padding: '28px 0', borderTop: '1px solid #1A1610', borderBottom: '1px solid #1A1610' }}>

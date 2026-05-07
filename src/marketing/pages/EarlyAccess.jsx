@@ -313,10 +313,13 @@ export default function EarlyAccess({ navigate }) {
               Application received.
             </h1>
             <p style={{ fontSize: '16px', color: '#B0A898', lineHeight: 1.75, marginBottom: '8px' }}>
-              Thank you, {form.name.split(' ')[0]}.
+              Your request has been submitted, {form.name.split(' ')[0]}.
             </p>
-            <p style={{ fontSize: '16px', color: '#B0A898', lineHeight: 1.75, marginBottom: '36px' }}>
-              We'll contact you at <strong style={{ color: '#E8E2D5' }}>{form.email}</strong> when your invite is ready.
+            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.75, marginBottom: '12px' }}>
+              We review applications in stages to maintain the quality and intent of the system.
+            </p>
+            <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.75, marginBottom: '36px' }}>
+              If accepted, you'll receive access via <strong style={{ color: '#E8E2D5' }}>{form.email}</strong>.
             </p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
               <button className="m-btn m-btn-primary" onClick={() => navigate('/')}>Back to home</button>
@@ -336,19 +339,80 @@ export default function EarlyAccess({ navigate }) {
       {/* Page header */}
       <section className="m-section-sm" style={{ borderBottom: '1px solid #1A1610' }}>
         <div className="m-wrap-sm">
-          <div className="m-label" style={{ marginBottom: '16px' }}>Early Access</div>
+          <div className="m-label" style={{ marginBottom: '16px' }}>Application</div>
           <h1 className="m-display" style={{ fontSize: 'clamp(36px, 5vw, 60px)', color: '#E8E2D5', marginBottom: '20px' }}>
-            Get{' '}
+            Apply for{' '}
             <em style={{ color: '#D97757', fontStyle: 'italic' }}>early access</em>.
           </h1>
           <p className="m-body" style={{ fontSize: '16px', marginBottom: '12px' }}>
-            Built for people who don't earn the same every month.
+            Royal Ledger is not open to everyone yet.
           </p>
-          <p style={{ fontSize: '13px', color: '#D97757', fontWeight: 500, marginBottom: '8px' }}>
-            Limited early rollout — every application is reviewed personally.
+          <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, maxWidth: '480px' }}>
+            Access is released in stages to ensure the system remains intentional, stable, and focused.
           </p>
-          <p style={{ fontSize: '13px', color: '#5C5648' }}>
-            No spam. We'll only reach out when your access is confirmed.
+        </div>
+      </section>
+
+      {/* ── Expectation ── */}
+      <section style={{ padding: '48px 24px', borderBottom: '1px solid #1A1610', background: '#0F0D0A' }}>
+        <div className="m-wrap-sm">
+          <div className="m-label" style={{ marginBottom: '14px' }}>What this is</div>
+          <h2 className="m-display" style={{ fontSize: 'clamp(22px, 3vw, 34px)', color: '#E8E2D5', marginBottom: '16px' }}>
+            This is not a typical signup.
+          </h2>
+          <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.75, marginBottom: '12px', maxWidth: '500px' }}>
+            You're not creating an account. You're applying for access to a system designed to help you build control over your money.
+          </p>
+          <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, maxWidth: '480px' }}>
+            We review each application to ensure the product reaches people it's built for.
+          </p>
+        </div>
+      </section>
+
+      {/* ── Who it's for ── */}
+      <section style={{ padding: '48px 24px', borderBottom: '1px solid #1A1610' }}>
+        <div className="m-wrap-sm">
+          <div className="m-label" style={{ marginBottom: '14px' }}>Who this is for</div>
+          <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.75, marginBottom: '24px', maxWidth: '500px' }}>
+            Royal Ledger is designed for people whose financial reality doesn't fit traditional systems.
+          </p>
+          <div>
+            {[
+              'You want control over your money',
+              'Your income or habits feel inconsistent',
+              'You\'re willing to follow a structured system',
+            ].map((item, i, arr) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 0', borderBottom: i < arr.length - 1 ? '1px solid #1A1610' : 'none' }}>
+                <span style={{ color: '#D97757', fontSize: '13px', flexShrink: 0 }}>→</span>
+                <span style={{ fontSize: '14px', color: '#E8E2D5', lineHeight: 1.5 }}>{item}</span>
+              </div>
+            ))}
+          </div>
+          <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, marginTop: '24px', fontStyle: 'italic' }}>
+            You don't need to be disciplined already. You need to be willing to start.
+          </p>
+        </div>
+      </section>
+
+      {/* ── What to expect ── */}
+      <section style={{ padding: '48px 24px', borderBottom: '1px solid #1A1610', background: '#0F0D0A' }}>
+        <div className="m-wrap-sm">
+          <div className="m-label" style={{ marginBottom: '14px' }}>What to expect</div>
+          <div>
+            {[
+              'Your application is reviewed',
+              'If accepted, you\'ll receive access in stages',
+              'You\'ll start in Foundation mode',
+              'The system expands as your structure builds',
+            ].map((item, i, arr) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px 0', borderBottom: i < arr.length - 1 ? '1px solid #1A1610' : 'none' }}>
+                <span style={{ color: '#D97757', fontSize: '13px', flexShrink: 0, marginTop: '1px' }}>→</span>
+                <span style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.6 }}>{item}</span>
+              </div>
+            ))}
+          </div>
+          <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, marginTop: '24px', fontStyle: 'italic' }}>
+            You don't switch systems. You grow into it.
           </p>
         </div>
       </section>
@@ -364,7 +428,7 @@ export default function EarlyAccess({ navigate }) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 <div>
                   <div style={{ fontSize: '18px', fontWeight: 600, color: '#E8E2D5', marginBottom: '4px' }}>About you</div>
-                  <div style={{ fontSize: '13px', color: '#5C5648' }}>Basic details so we can reach you when access opens.</div>
+                  <div style={{ fontSize: '13px', color: '#5C5648' }}>Tell us a bit about your current situation.</div>
                 </div>
 
                 {/* Full name */}
@@ -404,13 +468,13 @@ export default function EarlyAccess({ navigate }) {
                     autoComplete="tel"
                   />
                   <div style={{ fontSize: '11px', color: '#4A4038', marginTop: '6px' }}>
-                    Used only for account updates, never for marketing.
+                    Optional — if you prefer communication outside email.
                   </div>
                 </div>
 
                 {/* Country — required select */}
                 <div>
-                  <label className="m-field-label" htmlFor="ea-country">Country / Location</label>
+                  <label className="m-field-label" htmlFor="ea-country">Where are you based?</label>
                   <select
                     id="ea-country" className="m-input ea-select"
                     value={form.country} onChange={e => set('country', e.target.value)}
@@ -432,7 +496,7 @@ export default function EarlyAccess({ navigate }) {
                 <div>
                   <div style={{ fontSize: '18px', fontWeight: 600, color: '#E8E2D5', marginBottom: '4px' }}>Your finances</div>
                   <div style={{ fontSize: '13px', color: '#5C5648' }}>
-                    Royal Ledger is built around income type — this shapes your entire setup.
+                    This helps us understand how the system should fit your stage.
                   </div>
                 </div>
 
@@ -456,7 +520,7 @@ export default function EarlyAccess({ navigate }) {
 
                 {/* Primary income situation — select */}
                 <div>
-                  <label className="m-field-label" htmlFor="ea-situation">Primary income situation</label>
+                  <label className="m-field-label" htmlFor="ea-situation">How do you currently receive money?</label>
                   <select
                     id="ea-situation" className="m-input ea-select"
                     value={form.incomeSituation} onChange={e => set('incomeSituation', e.target.value)}
@@ -476,9 +540,9 @@ export default function EarlyAccess({ navigate }) {
             {step === 3 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 <div>
-                  <div style={{ fontSize: '18px', fontWeight: 600, color: '#E8E2D5', marginBottom: '4px' }}>One last thing</div>
+                  <div style={{ fontSize: '18px', fontWeight: 600, color: '#E8E2D5', marginBottom: '4px' }}>Anything else</div>
                   <div style={{ fontSize: '13px', color: '#5C5648' }}>
-                    Helps us prioritise access and understand how we're reaching people.
+                    Optional, but useful if there's context we should know.
                   </div>
                 </div>
 
@@ -493,6 +557,9 @@ export default function EarlyAccess({ navigate }) {
                       <option key={s.id} value={s.id} disabled={!!s.disabled}>{s.label}</option>
                     ))}
                   </select>
+                  <div style={{ fontSize: '11px', color: '#4A4038', marginTop: '6px' }}>
+                    Helps us understand what's working.
+                  </div>
                   <FieldError msg={errors.referralSource} />
                 </div>
 
@@ -526,8 +593,7 @@ export default function EarlyAccess({ navigate }) {
                 />
 
                 <p style={{ fontSize: '12px', color: '#5C5648', textAlign: 'center', lineHeight: 1.7 }}>
-                  No credit card required. We'll reach out when your invite is ready.
-                  <br />We do not sell or share your information.
+                  We don't share your data. Your information is used only to review your application and manage access.
                 </p>
               </div>
             )}

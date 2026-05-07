@@ -124,6 +124,19 @@ export default function Product({ navigate }) {
       {/* ── Stage accordion ── */}
       <section style={{ padding: '0 0 80px' }}>
         <div className="m-wrap">
+
+          {/* Intro paragraph */}
+          <div style={{ padding: '40px 0 8px', borderBottom: '1px solid #1A1610', marginBottom: '0' }}>
+            <p style={{ fontSize: '16px', color: '#B0A898', lineHeight: 1.85, marginBottom: '6px' }}>
+              You don't get everything at once.
+            </p>
+            <p style={{ fontSize: '16px', color: '#8B8478', lineHeight: 1.85, marginBottom: '6px' }}>
+              You start where you are.
+            </p>
+            <p style={{ fontSize: '16px', color: '#8B8478', lineHeight: 1.85 }}>
+              The system expands as your habits improve.
+            </p>
+          </div>
           <div style={{ marginTop: '0' }}>
             {STAGES.map((stage) => (
               <div
@@ -200,6 +213,49 @@ export default function Product({ navigate }) {
           .product-expand-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
+
+      {/* ── Why this works ── */}
+      <section style={{ padding: '72px 24px', borderTop: '1px solid #1A1610', borderBottom: '1px solid #1A1610', background: '#0F0D0A' }}>
+        <div className="m-wrap-sm">
+          <div className="m-label" style={{ marginBottom: '20px' }}>Why This Works</div>
+          <h2 className="m-display" style={{ fontSize: 'clamp(26px, 3.5vw, 42px)', color: '#E8E2D5', marginBottom: '32px', lineHeight: 1.2 }}>
+            Most people try to fix their finances<br />
+            <em style={{ color: '#D97757', fontStyle: 'italic' }}>with effort alone.</em>
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+            {[
+              { text: 'They try harder.', muted: true },
+              { text: 'They restart.', muted: true },
+              { text: 'They lose consistency.', muted: true },
+              { text: 'It doesn\'t last.', muted: false },
+            ].map((line, i) => (
+              <p key={i} style={{
+                fontSize: '16px',
+                color: line.muted ? '#5C5648' : '#8B8478',
+                lineHeight: 1.75,
+                padding: '10px 0',
+                borderBottom: i < 3 ? '1px solid #1A1610' : 'none',
+                margin: 0,
+              }}>
+                {line.text}
+              </p>
+            ))}
+          </div>
+          <div style={{ marginTop: '40px', paddingTop: '40px', borderTop: '1px solid #1A1610' }}>
+            <p style={{ fontSize: '16px', color: '#B0A898', lineHeight: 1.85, marginBottom: '14px' }}>
+              Royal Ledger works differently.
+            </p>
+            <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.85, marginBottom: '14px' }}>
+              It introduces structure first. Then builds consistency over time.
+            </p>
+            <p style={{ fontSize: '16px', fontWeight: 500, color: '#E8E2D5', lineHeight: 1.65, marginTop: '24px' }}>
+              It doesn't assume discipline.
+              <br />
+              <em style={{ color: '#D97757', fontStyle: 'italic' }}>It builds it.</em>
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* ── CTA ── */}
       <section className="m-section-sm" style={{ background: '#0F0D0A', borderTop: '1px solid #1A1610' }}>
