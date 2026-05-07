@@ -83,9 +83,16 @@ export default function Home({ navigate }) {
           <p className="m-fade-up-3" style={{ fontSize: '15px', maxWidth: '480px', marginBottom: '14px', color: '#B0A898', lineHeight: 1.75 }}>
             If managing money has felt inconsistent or overwhelming, this is where you start.
           </p>
-          <p className="m-fade-up-3" style={{ fontSize: '14px', maxWidth: '440px', marginBottom: '40px', color: '#5C5648', lineHeight: 1.65, borderLeft: '2px solid #26221C', paddingLeft: '16px' }}>
+          <p className="m-fade-up-3" style={{ fontSize: '14px', maxWidth: '440px', marginBottom: '20px', color: '#5C5648', lineHeight: 1.65, borderLeft: '2px solid #26221C', paddingLeft: '16px' }}>
             Your money stays in your bank.<br />
             Royal Ledger gives it structure.
+          </p>
+
+          <p className="m-fade-up-3" style={{ fontSize: '15px', maxWidth: '500px', marginBottom: '8px', color: '#B0A898', lineHeight: 1.75 }}>
+            Royal Ledger is built for people who have income but don't feel fully in control yet.
+          </p>
+          <p className="m-fade-up-3" style={{ fontSize: '14px', maxWidth: '480px', marginBottom: '40px', color: '#8B8478', lineHeight: 1.7 }}>
+            It gives your money structure — without needing perfect habits.
           </p>
 
           <div className="m-fade-up-3" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>

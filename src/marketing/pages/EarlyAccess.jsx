@@ -388,7 +388,10 @@ export default function EarlyAccess({ navigate }) {
               </div>
             ))}
           </div>
-          <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, marginTop: '24px', fontStyle: 'italic' }}>
+          <p style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.7, marginTop: '20px' }}>
+            Royal Ledger is built for people who have income but don't feel fully in control yet.
+          </p>
+          <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, marginTop: '12px', fontStyle: 'italic' }}>
             You don't need to be disciplined already. You need to be willing to start.
           </p>
         </div>

@@ -920,8 +920,11 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '32px' }}>
               <div>
                 <div className="ob-label" style={{ color: '#8B8478', marginBottom: '8px' }}>Monthly spending money</div>
-                <p style={{ fontSize: '13px', color: '#B0A898', marginBottom: '12px' }}>
+                <p style={{ fontSize: '13px', color: '#B0A898', marginBottom: '6px' }}>
                   Eating out, fun, hobbies, anything discretionary. This is the money you can use freely each month. When it runs out, spending stops.
+                </p>
+                <p style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.6, marginBottom: '12px' }}>
+                  This is for spending not already planned in your expenses above — eating out, entertainment, anything unstructured.
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span className="ob-mono" style={{ fontSize: '18px', color: '#8B8478' }}>{currencySymbol}</span>
@@ -934,6 +937,9 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                     style={{ fontSize: '18px' }}
                   />
                 </div>
+                <p style={{ fontSize: '11px', color: '#5C5648', lineHeight: 1.6, marginTop: '8px', fontStyle: 'italic' }}>
+                  Spending resets each month. Whatever you don't spend stays in your account — it is not moved automatically.
+                </p>
               </div>
 
               <div>

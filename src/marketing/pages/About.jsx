@@ -133,8 +133,12 @@ export default function About({ navigate }) {
             ))}
           </div>
 
+          <p style={{ fontSize: '15px', color: '#B0A898', lineHeight: 1.75, marginTop: '40px', maxWidth: '520px' }}>
+            Royal Ledger is built for people who have income but don't feel fully in control yet.
+          </p>
+
           {/* Transition */}
-          <div style={{ marginTop: '64px', paddingTop: '48px', borderTop: '1px solid #1A1610', maxWidth: '400px' }}>
+          <div style={{ marginTop: '32px', paddingTop: '32px', borderTop: '1px solid #1A1610', maxWidth: '400px' }}>
             <p style={{ fontSize: '15px', color: '#8B8478', lineHeight: 1.85, margin: 0 }}>
               This is the thinking behind Royal Ledger.
             </p>

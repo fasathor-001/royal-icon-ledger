@@ -118,6 +118,9 @@ export default function Product({ navigate }) {
             Start simple. Build control. Grow into the full system.
             Every stage is the same product — just working at a deeper level.
           </p>
+          <p style={{ fontSize: '14px', color: '#5C5648', maxWidth: '480px', lineHeight: 1.7, marginTop: '8px' }}>
+            It gives your money structure — without needing perfect habits.
+          </p>
         </div>
       </section>
 
