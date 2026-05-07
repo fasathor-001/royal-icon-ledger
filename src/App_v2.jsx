@@ -811,8 +811,33 @@ function AuthenticatedApp() {
       {showMigration && !showConflict && (
         <MigrationModal
           user={user}
-          onMigrated={(imported) => { setCloudData(imported); setShowMigration(false); }}
-          onSkip={() => { setIsNewUser(true); setShowMigration(false); }}
+          onMigrated={(imported) => {
+            // Clear stale localStorage — cloud is now the source of truth
+            try { localStorage.removeItem('open-trader-finance-v2'); } catch {}
+            // If imported data has real setup (expenses + setupComplete), go to dashboard.
+            // If empty/reset (post-admin-reset scenario), go through onboarding instead.
+            const hasRealData = imported?.setupComplete && (imported?.expenses?.length || 0) > 0;
+            if (!hasRealData) {
+              // Reset in-memory data (init() already loaded old localStorage on mount)
+              if (forceDataUpdateRef.current) forceDataUpdateRef.current({ setupComplete: false });
+              setIsNewUser(true);
+            } else {
+              // Apply imported data and go straight to dashboard
+              if (forceDataUpdateRef.current) forceDataUpdateRef.current(imported);
+              else setCloudData(imported);
+            }
+            setShowMigration(false);
+          }}
+          onSkip={() => {
+            // Clear stale localStorage so a refresh doesn't reload old data
+            try { localStorage.removeItem('open-trader-finance-v2'); } catch {}
+            // Force-reset in-memory data — init() already loaded old localStorage on mount,
+            // so data.setupComplete may be true even though the user wants a fresh start.
+            // Resetting to setupComplete: false lets the isNewUser onboarding guard fire.
+            if (forceDataUpdateRef.current) forceDataUpdateRef.current({ setupComplete: false });
+            setIsNewUser(true);
+            setShowMigration(false);
+          }}
         />
       )}
       <OpenFinanceApp
