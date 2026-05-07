@@ -342,6 +342,11 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
         .ob-btn-ghost { background: transparent; color: #B0A898; padding: 14px 24px; font-size: 14px; cursor: pointer; border: none; }
         .ob-btn-ghost:hover { color: #E8E2D5; }
         .ob-progress-dot { width: 8px; height: 8px; border-radius: 50%; transition: all 200ms; }
+        .ob-input.ob-amount-input { width: 110px; text-align: right; }
+        @media (max-width: 480px) {
+          .ob-input.ob-amount-input { width: 72px; }
+          .ob-exp-name { min-width: 0; }
+        }
       `}</style>
 
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '40px 24px 80px' }}>
@@ -606,8 +611,8 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                   <div key={item.name} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {/* Main row */}
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <div className="ob-exp-name" style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                           <span style={{ fontSize: '14px', fontWeight: 500 }}>{item.name}</span>
                           {item.variable && <span style={{ fontSize: '9px', color: '#D97757', background: '#2A1A0E', border: '1px solid #3A2A1E', borderRadius: '999px', padding: '1px 6px', letterSpacing: '0.08em', fontWeight: 600 }}>VARIABLE</span>}
                           {isFixed && <span style={{ fontSize: '9px', color: '#8B8478', background: '#14110E', border: '1px solid #26221C', borderRadius: '999px', padding: '1px 6px', letterSpacing: '0.08em', fontWeight: 600 }}>FIXED</span>}
@@ -629,8 +634,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                               setEnvelopeTracking(t => t[item.name] ? t : { ...t, [item.name]: true });
                             }
                           }}
-                          className="ob-input"
-                          style={{ width: '110px', textAlign: 'right' }}
+                          className="ob-input ob-amount-input"
                         />
                       </div>
                       {/* Envelope toggle — locked for fixed expenses */}
@@ -725,7 +729,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                           setCustomExpenses(updated);
                         }}
                         className="ob-input-text"
-                        style={{ flex: 1 }}
+                        style={{ flex: 1, minWidth: 0 }}
                       />
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <span className="ob-mono" style={{ color: '#8B8478' }}>{currencySymbol}</span>
@@ -741,8 +745,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                             updated[i] = { ...updated[i], amount: val, ...(shouldEnable ? { trackInEnvelope: true } : {}) };
                             setCustomExpenses(updated);
                           }}
-                          className="ob-input"
-                          style={{ width: '110px', textAlign: 'right' }}
+                          className="ob-input ob-amount-input"
                         />
                       </div>
                       {/* Envelope toggle */}
