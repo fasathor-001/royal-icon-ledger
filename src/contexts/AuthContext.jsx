@@ -211,6 +211,7 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut();
     setUser(null);
     setIsPasswordRecovery(false); // clear recovery mode so LoginPage renders
+    setAuthError(null);           // clear stale errors so LoginPage starts clean
   };
 
   const resetPassword = async (email) => {

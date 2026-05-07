@@ -302,7 +302,7 @@ function LoginPage() {
           )}
 
           <button onClick={() => switchMode('signin')}
-            style={{ marginTop: '24px', background: 'transparent', border: 'none', color: '#B0A898', cursor: 'pointer', fontSize: '13px' }}>
+            style={{ marginTop: '24px', background: 'transparent', border: 'none', color: '#B0A898', cursor: 'pointer', fontSize: '13px', padding: '10px 0', display: 'block' }}>
             ← Back to sign in
           </button>
         </div>
@@ -353,7 +353,7 @@ function LoginPage() {
         {!['signin', 'signup'].includes(mode) && (
           <div style={{ marginBottom: '24px' }}>
             <button onClick={() => switchMode('signin')}
-              style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '12px', padding: 0, marginBottom: '12px', display: 'block' }}>
+              style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '12px', padding: '10px 0', marginBottom: '4px', display: 'block' }}>
               ← Back to sign in
             </button>
             <h2 style={{ fontFamily: 'Fraunces, serif', fontSize: '24px', fontWeight: 300, margin: 0 }}>{titles[mode]}</h2>
@@ -456,11 +456,11 @@ function LoginPage() {
           {mode === 'signin' && (
             <>
               <button onClick={() => switchMode('magic')}
-                style={{ background: 'transparent', border: 'none', color: '#B0A898', cursor: 'pointer', fontSize: '13px', textAlign: 'left', padding: 0 }}>
+                style={{ background: 'transparent', border: 'none', color: '#B0A898', cursor: 'pointer', fontSize: '13px', textAlign: 'left', padding: '10px 0' }}>
                 Sign in with a magic link →
               </button>
               <button onClick={() => switchMode('reset')}
-                style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '12px', textAlign: 'left', padding: 0 }}>
+                style={{ background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '12px', textAlign: 'left', padding: '10px 0' }}>
                 Forgot password?
               </button>
             </>
@@ -624,7 +624,7 @@ function SetNewPasswordPage() {
               </>
             )}
             <button onClick={logout}
-              style={{ marginTop: '20px', background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '12px', padding: 0 }}>
+              style={{ marginTop: '12px', background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '12px', padding: '10px 0', display: 'block' }}>
               Back to sign in
             </button>
           </div>
@@ -658,7 +658,7 @@ function SetNewPasswordPage() {
               </button>
             </form>
             <button onClick={logout}
-              style={{ marginTop: '20px', background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '12px', padding: 0 }}>
+              style={{ marginTop: '12px', background: 'transparent', border: 'none', color: '#8B8478', cursor: 'pointer', fontSize: '12px', padding: '10px 0', display: 'block' }}>
               Cancel
             </button>
           </>
