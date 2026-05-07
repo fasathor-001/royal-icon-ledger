@@ -23,15 +23,27 @@
 //     supabase-js stores the verifier as "<base64>/<redirectType>" before sending
 //     the reset email. The redirectType is 'recovery' for password resets.
 //     storageKey = 'sb-auth-token' (set in supabase.js) so the key is always
-//     'sb-auth-token-code-verifier'. We read this synchronously at import time,
+//     'sb-auth-token-code-verifier'. We read this synchronously at module load,
 //     before GoTrueClient._initialize()'s async chain removes it (GoTrueClient.js
 //     line 1483: removeItemAsync runs before _notifyAllSubscribers at line 1496).
 //     This layer handles the case where ?type= is missing from the URL.
 //
-//   Layer 3 — onAuthStateChange SIGNED_IN event:
-//     PASSWORD_RECOVERY is unreliable in PKCE mode (supabase/auth#1948) — the
-//     library often fires SIGNED_IN instead. We check URL type= again there as a
-//     belt-and-suspenders measure for late-arriving auth state changes.
+//   Layer 3 — onAuthStateChange PASSWORD_RECOVERY / SIGNED_IN event:
+//     In supabase-js ≥2.105.x PASSWORD_RECOVERY is correctly fired for PKCE
+//     recovery flows (GoTrueClient.js line 1496). We also check URL type= in the
+//     SIGNED_IN handler as a belt-and-suspenders fallback.
+//
+//   WHY we snapshot URL + localStorage at module load (not inside useState):
+//     supabase-js _initialize() performs two async side-effects that would make
+//     a later read unreliable:
+//       1. window.history.replaceState() removes ?code= from the URL after the
+//          code exchange (GoTrueClient.js _getSessionFromURL, line 3062).
+//          By the time getSession().then() runs, ?code= is already gone, so the
+//          previous `hasPkceCode` check inside .then() always returned null —
+//          the setTimeout deferral never fired.
+//       2. localStorage removes 'sb-auth-token-code-verifier' after the exchange.
+//     Reading at module load (synchronous, before any await in _initialize())
+//     guarantees we see the original URL and storage state.
 //
 //   Cross-device / expired links:
 //     If the verifier isn't in localStorage (different browser, different device),
@@ -44,8 +56,8 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 const AuthContext = createContext(null);
 
 // ── Layer 1 + 2: Synchronous URL + localStorage inspection ───────────────────
-// Runs once at import time so the state initialiser gets the right value before
-// any render. Must be synchronous — async detection is too late to set initial state.
+// Called at module evaluation time (see _MODULE_SNAPSHOT below) so both the URL
+// and the code-verifier are read before supabase-js modifies them asynchronously.
 function detectRecoveryFromUrl() {
   const hash   = window.location.hash;
   const params = new URLSearchParams(window.location.search);
@@ -76,14 +88,23 @@ function detectRecoveryFromUrl() {
   return false;
 }
 
+// ── Module-level snapshot (runs synchronously at import time) ─────────────────
+// IMPORTANT: these must be top-level constants, NOT inside a useState() initialiser.
+// supabase-js _initialize() deletes ?code= via replaceState (GoTrueClient.js
+// line 3062) and removes the localStorage verifier (line 1483) asynchronously.
+// By the time any React render or .then() callback runs, the URL may already be
+// cleaned. Reading here guarantees the original state.
+const _isRecoveryOnLoad  = detectRecoveryFromUrl();
+const _hadPkceCodeOnLoad = !!new URLSearchParams(window.location.search).get('code');
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  // Detect recovery/invite synchronously so the correct page renders immediately
-  // before any async auth events fire (avoids a flash of the login page).
-  const [isPasswordRecovery, setIsPasswordRecovery] = useState(detectRecoveryFromUrl);
+  // Initialise from the module-level snapshot so the correct page renders
+  // immediately, before any async auth events fire.
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(_isRecoveryOnLoad);
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -95,41 +116,51 @@ export function AuthProvider({ children }) {
     // In PKCE mode detectSessionInUrl:true (set in supabase.js) means the client
     // already started exchanging the ?code param before this runs.
     //
-    // Critical timing fix: supabase-js fires PASSWORD_RECOVERY (and SIGNED_IN for
-    // invite links) inside a setTimeout(fn, 0) in GoTrueClient._initialize().
-    // That macrotask fires AFTER getSession() resolves (a microtask chain).
-    // If we call setAuthLoading(false) immediately in the .then(), React re-renders
-    // with authLoading=false before isPasswordRecovery is true — showing the wrong
-    // page for a split second (or permanently if the user navigates away).
+    // Critical timing fix — two facts about supabase-js _initialize():
     //
-    // Fix: when a PKCE code is present in the URL, defer setAuthLoading(false) by
-    // one macrotask via setTimeout(fn, 0). Supabase's PASSWORD_RECOVERY setTimeout
-    // was registered first (during _initialize()), so it runs first in the macrotask
-    // queue → isPasswordRecovery=true is set BEFORE authLoading becomes false.
+    //   Fact 1: PASSWORD_RECOVERY is fired via a setTimeout(fn, 0) registered
+    //   inside _initialize() BEFORE it returns (GoTrueClient.js line 322-329).
+    //   That macrotask is queued before initializePromise resolves.
+    //
+    //   Fact 2: _initialize() calls replaceState to remove ?code= from the URL
+    //   (line 3062) before returning. So by the time getSession().then() runs,
+    //   window.location.search no longer contains ?code=.
+    //   → We MUST use _hadPkceCodeOnLoad (captured at module load) instead of
+    //     re-reading the URL here — otherwise hasPkceCode is always null and
+    //     the setTimeout deferral never fires.
+    //
+    // Fix: when a PKCE code was present in the URL on load, defer
+    // setAuthLoading(false) by one macrotask via setTimeout(fn, 0).
+    // _initialize()'s PASSWORD_RECOVERY setTimeout was registered first
+    // (during the code exchange, before initializePromise resolved), so it
+    // runs first in the macrotask queue → isPasswordRecovery=true is set
+    // BEFORE authLoading becomes false.
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
-      const hasPkceCode = new URLSearchParams(window.location.search).get('code');
-      if (hasPkceCode) {
-        // Defer by one macrotask so PASSWORD_RECOVERY / SIGNED_IN event fires first
+      if (_hadPkceCodeOnLoad) {
+        // Defer by one macrotask so PASSWORD_RECOVERY fires first.
         setTimeout(() => setAuthLoading(false), 0);
       } else {
         setAuthLoading(false);
       }
     });
 
-    // Listen for auth state changes
+    // Listen for auth state changes.
+    // Register the listener BEFORE calling getSession() so we never miss an
+    // event that fires during initializePromise resolution.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
 
       if (event === 'PASSWORD_RECOVERY') {
-        // PKCE fallback: code was present but type wasn't detected synchronously
+        // supabase-js ≥2.105 correctly fires PASSWORD_RECOVERY for PKCE
+        // recovery flows (GoTrueClient.js line 1496).
         setIsPasswordRecovery(true);
       }
 
       // Invite / recovery via SIGNED_IN event:
-      // Some supabase-js versions (or cross-device flows where the code verifier
-      // is missing from storage) fire SIGNED_IN instead of PASSWORD_RECOVERY.
-      // Check the URL's type param so we still land on the right page.
+      // Older supabase-js versions or cross-device flows (where the code
+      // verifier is missing from storage) can fire SIGNED_IN instead.
+      // Check the URL's type param (still present after ?code= cleanup).
       if (event === 'SIGNED_IN') {
         const hash   = window.location.hash;
         const params = new URLSearchParams(window.location.search);
