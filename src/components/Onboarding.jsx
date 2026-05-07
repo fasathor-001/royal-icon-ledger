@@ -342,43 +342,18 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
         {step === 1 && (
           <div>
             <Heart size={32} style={{ color: '#D97757', marginBottom: '24px' }} />
-            <h1 className="ob-display" style={{ fontSize: '48px', lineHeight: 1.1, marginBottom: '24px', fontWeight: 300 }}>
+            <h1 className="ob-display" style={{ fontSize: '48px', lineHeight: 1.1, marginBottom: '28px', fontWeight: 300 }}>
               Welcome to <span style={{ fontStyle: 'italic', color: '#D97757' }}>Royal Ledger</span>.
             </h1>
-            <p style={{ fontSize: '17px', lineHeight: 1.7, color: '#E8E2D5', marginBottom: '20px' }}>
-              This is a personal finance system built around three ideas:
+            <p style={{ fontSize: '17px', lineHeight: 1.85, color: '#E8E2D5', marginBottom: '16px' }}>
+              If managing money has felt inconsistent or overwhelming, this is where you start.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '40px' }}>
-              <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                <Wallet size={20} style={{ color: '#D97757', marginTop: '2px', flexShrink: 0 }} />
-                <div>
-                  <div style={{ fontWeight: 500, marginBottom: '4px' }}>Pay yourself a salary</div>
-                  <div style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.6 }}>
-                    Whether your income is variable or fixed, you live on a steady predictable amount each month.
-                  </div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                <Shield size={20} style={{ color: '#D97757', marginTop: '2px', flexShrink: 0 }} />
-                <div>
-                  <div style={{ fontWeight: 500, marginBottom: '4px' }}>Build a buffer</div>
-                  <div style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.6 }}>
-                    A months-of-salary cushion that absorbs life's volatility — bad months, surprises, opportunities.
-                  </div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                <Sparkles size={20} style={{ color: '#D97757', marginTop: '2px', flexShrink: 0 }} />
-                <div>
-                  <div style={{ fontWeight: 500, marginBottom: '4px' }}>Protect what matters</div>
-                  <div style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.6 }}>
-                    Spending guards, impulse tracking, and clear stages turn willpower into automation.
-                  </div>
-                </div>
-              </div>
-            </div>
-            <p style={{ color: '#B0A898', fontSize: '13px', marginBottom: '40px' }}>
-              The next few minutes will set up your real numbers. You can change anything later.
+            <p style={{ fontSize: '16px', lineHeight: 1.85, color: '#B0A898', marginBottom: '16px' }}>
+              You don't need perfect habits.<br />
+              You don't need a plan.
+            </p>
+            <p style={{ fontSize: '15px', lineHeight: 1.85, color: '#8B8478', marginBottom: '40px' }}>
+              We'll just look at your numbers and build from there.
             </p>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <button onClick={next} className="ob-btn-primary">
@@ -510,7 +485,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
               How does <span style={{ fontStyle: 'italic', color: '#D97757' }}>income</span> reach you?
             </h1>
             <p style={{ color: '#B0A898', marginBottom: '32px', fontSize: '15px' }}>
-              This adjusts the system's defaults. Variable income needs a bigger buffer; fixed income needs less.
+              This adjusts the system's defaults. Variable income needs a bigger buffer; fixed income needs less. You can update this later in Settings.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '40px' }}>
@@ -562,9 +537,15 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
               Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>real</span> monthly expenses
             </h1>
-            <p style={{ color: '#B0A898', marginBottom: '16px', fontSize: '15px', lineHeight: 1.7 }}>
+            <p style={{ color: '#B0A898', marginBottom: '12px', fontSize: '15px', lineHeight: 1.7 }}>
               Add everything that costs you money.<br />
               Turn on tracking for categories you want to actively control month to month — like groceries, transport, or family spending.
+            </p>
+            <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.7, marginBottom: '6px', fontStyle: 'italic' }}>
+              We're not trying to fix everything. We're just trying to see clearly first.
+            </p>
+            <p style={{ fontSize: '12px', color: '#5C5648', lineHeight: 1.65, marginBottom: '16px' }}>
+              Most people don't fail because they lack discipline. They fail because they never had structure.
             </p>
 
             {/* How does this work? — floating popover */}
@@ -902,10 +883,13 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
               <span style={{ fontStyle: 'italic', color: '#D97757' }}>Spending</span>{incomeType === 'foundation' ? ' & savings' : ' & buffer reserve'}
             </h1>
-            <p style={{ color: '#B0A898', marginBottom: '32px', fontSize: '15px' }}>
+            <p style={{ color: '#B0A898', marginBottom: '16px', fontSize: '15px' }}>
               {incomeType === 'foundation'
                 ? 'Set a spending limit for the month. Any amount you choose to save on top goes straight into your savings.'
-                : 'Two more numbers to complete your monthly salary. These are what you take out of trading profits each month, on top of your expenses.'}
+                : 'Two more numbers to complete your monthly salary. This helps you understand your structure — not restrict you.'}
+            </p>
+            <p style={{ fontSize: '13px', color: '#5C5648', lineHeight: 1.65, marginBottom: '24px' }}>
+              Nothing is final here. You can adjust these anytime from Settings.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '32px' }}>
@@ -958,6 +942,9 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                 <div className="ob-display" style={{ fontSize: '36px', fontWeight: 300, color: '#D97757' }}>{fmt(salary)}</div>
                 <div style={{ fontSize: '13px', color: '#B0A898', marginTop: '8px' }}>
                   {fmt(expenseTotal)} expenses + {fmt(Number(spendingBudget) || 0)} spending + {fmt(Number(bufferReserve) || 0)} buffer reserve
+                </div>
+                <div style={{ fontSize: '12px', color: '#5C5648', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #3A2A1E', fontStyle: 'italic' }}>
+                  Your money hasn't changed. Your visibility has.
                 </div>
               </div>
             )}
@@ -1034,6 +1021,9 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             </h1>
             <p style={{ color: '#B0A898', marginBottom: '8px', fontSize: '15px' }}>
               Enter your current balances — not monthly income. These are the actual amounts sitting in your accounts today.
+            </p>
+            <p style={{ fontSize: '14px', color: '#8B8478', marginBottom: '8px', fontStyle: 'italic' }}>
+              This is simply your starting point.
             </p>
             <p style={{ color: '#8B8478', marginBottom: '32px', fontSize: '13px' }}>
               Leave any field at 0 if it doesn't apply yet. You can update these anytime from the Command tab.
@@ -1195,10 +1185,10 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             <div className="ob-label" style={{ color: '#D97757', marginBottom: '12px' }}>Step {step} of {totalSteps}</div>
             <Check size={32} style={{ color: '#7FA068', marginBottom: '16px' }} />
             <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
-              Your system is <span style={{ fontStyle: 'italic', color: '#7FA068' }}>set up</span>.
+              You've set your <span style={{ fontStyle: 'italic', color: '#7FA068' }}>starting point</span>.
             </h1>
             <p style={{ color: '#B0A898', marginBottom: '32px', fontSize: '15px' }}>
-              Here's what we've configured. You can change any of these later in Setup or Rules.
+              From here, the system builds with you. You can update any of these later in Setup or Rules.
             </p>
 
             {/* Summary cards */}
