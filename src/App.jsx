@@ -20,6 +20,7 @@ import RolloverModal from './components/RolloverModal';
 import RitualCard from './components/RitualCard';
 import WeeklyPulseBanner from './components/WeeklyPulseBanner';
 import AdminDashboard from './components/AdminDashboard';
+import HelpTip from './components/HelpTip';
 import { usePinGate, usePinRowGate, useSectionPin } from './components/PinGate';
 import { PinContext, usePinVerify, usePinActive } from './components/PinContext';
 import { hashPin } from './lib/pinHash';
@@ -994,9 +995,14 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
               {snapshotFlash ? <Check size={14} /> : <Camera size={14} />}
               <span className="hidden sm:inline">{snapshotFlash ? 'Saved!' : 'Snapshot'}</span>
             </button>
-            <div className="text-right">
-              <div className="label hidden sm:block" style={{ color: '#8B8478', fontSize: 9 }}>NET WORTH</div>
-              <div className="mono" style={{ fontSize: 'clamp(13px, 3.5vw, 18px)', fontWeight: 600 }}>{fmt(stats.totalAssets)}</div>
+            <div className="text-right" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <HelpTip title="Net Worth">
+                The sum of all your tracked balances: trading capital, family buffer, monthly salary account, long-term savings, and future goal funds. Updated each time you save a snapshot. It reflects your real financial position — not income, not budget, but what you actually hold.
+              </HelpTip>
+              <div>
+                <div className="label hidden sm:block" style={{ color: '#8B8478', fontSize: 9 }}>NET WORTH</div>
+                <div className="mono" style={{ fontSize: 'clamp(13px, 3.5vw, 18px)', fontWeight: 600 }}>{fmt(stats.totalAssets)}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1394,8 +1400,12 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             <div style={{
               fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase',
               color: '#5C5648', fontWeight: 600, marginBottom: '16px',
+              display: 'flex', alignItems: 'center',
             }}>
               This month
+              <HelpTip title="Spending Budget">
+                Your discretionary budget for the month — money you can spend freely on anything not in your fixed expenses. Once it runs out, spending stops. What you don't spend carries forward (or sweeps to your buffer, depending on your rollover setting).
+              </HelpTip>
             </div>
 
             {/* One-time welcome — shown only on first dashboard visit after onboarding */}
@@ -2042,7 +2052,14 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
       ) : (
         <div className="card-warm rl-cp glow-warm">
           <div className="flex items-baseline justify-between mb-3 flex-wrap gap-1">
-            <div className="label" style={{ color: stageInfo.color }}>{stageInfo.name} — {stageInfo.title}</div>
+            <div className="label" style={{ color: stageInfo.color, display: 'flex', alignItems: 'center' }}>
+              {stageInfo.name} — {stageInfo.title}
+              <HelpTip title="Buffer Stages">
+                <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Protect Mode</strong> — buffer is below your protection floor. 100% of surplus goes to rebuilding it before anything else is allocated.<br /><br />
+                <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Building</strong> — buffer is growing toward your target (e.g. 18 months of expenses).<br /><br />
+                <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Foundation Solid</strong> — target reached. Surplus flows to your Profit Allocator rules instead.
+              </HelpTip>
+            </div>
             <div className="mono text-xs" style={{ color: '#B0A898' }}>{stats.monthsCovered.toFixed(1)} months stored</div>
           </div>
           <h2 className="display text-3xl mb-3" style={{ fontWeight: 300, lineHeight: 1.2 }}>
@@ -2069,7 +2086,12 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
       {/* Editable balance inputs */}
       <section className="card rl-cp">
         <div className="flex items-baseline justify-between mb-5">
-          <h2 className="display text-2xl">Current balances</h2>
+          <h2 className="display text-2xl" style={{ display: 'flex', alignItems: 'center' }}>
+            Current balances
+            <HelpTip title="Current Balances">
+              Your live account totals across all tracked pots — trading capital, family buffer, monthly salary account, long-term savings, and future goals. Update these whenever your balances change, then hit <em>Save snapshot</em> to record the moment in your history. Your net worth in the header is the sum of all of these.
+            </HelpTip>
+          </h2>
           <div className="flex items-center gap-3">
             <button
               onClick={() => {
@@ -2603,7 +2625,15 @@ function Setup({ data, stats, setData }) {
                       {/* Month-end mode pills — shown when envelope is active */}
                       {e.trackInEnvelope && !locked && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 5, paddingLeft: 2, paddingBottom: 4 }}>
-                          <span style={{ fontSize: 10, color: '#5C5648', marginRight: 2, letterSpacing: '0.05em' }}>Month-end:</span>
+                          <span style={{ fontSize: 10, color: '#5C5648', letterSpacing: '0.05em', display: 'flex', alignItems: 'center' }}>
+                            Month-end:
+                            <HelpTip title="Month-End Mode">
+                              Controls what happens to unspent balance when the month closes.<br /><br />
+                              <strong style={{ color: '#E8E2D5' }}>Reset</strong> — unused balance disappears; cap returns to full next month.<br />
+                              <strong style={{ color: '#E8E2D5' }}>Rollover</strong> — unspent carries forward, adding to next month's cap. Overspend is deducted.<br />
+                              <strong style={{ color: '#E8E2D5' }}>Sweep</strong> — unspent moves to your buffer; cap resets to full.
+                            </HelpTip>
+                          </span>
                           {[
                             { id: 'reset', label: '🔄 Reset',    tip: 'Cap resets to full each month. Unspent balance disappears.' },
                             { id: 'roll',  label: '➕ Rollover', tip: 'Leftover carries into next month. Overspend is deducted.' },
@@ -2823,11 +2853,14 @@ function ProfitAllocator({ data, stats, setData }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
+        <h1 className="display text-4xl mb-2" style={{ fontWeight: 300, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
           {isFoundation
             ? <>Money <span style={{ fontStyle: 'italic', color: '#7FA068' }}>Allocator</span></>
             : <>{data.incomeType === 'fixed' ? 'Surplus' : 'Profit'} <span style={{ fontStyle: 'italic', color: '#D97757' }}>waterfall</span></>
           }
+          <HelpTip title="Profit Allocator">
+            Each time you enter income or profit here, the system deducts taxes first, then routes the remainder in a fixed waterfall: buffer gets priority until it's rebuilt, then long-term savings, future goals, and trading capital each receive their configured share. Nothing is allocated ad hoc — the rules run automatically every time.
+          </HelpTip>
         </h1>
         <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
           {isFoundation
@@ -3210,7 +3243,16 @@ function DrawdownProtocol({ data, stats, setData, onResetHwm, hwmGate }) {
   return (
     <section className="card p-7 mt-6">
       <div className="flex items-baseline justify-between mb-2">
-        <h2 className="display text-2xl">Drawdown Protocol</h2>
+        <h2 className="display text-2xl" style={{ display: 'flex', alignItems: 'center' }}>
+          Drawdown Protocol
+          <HelpTip title="Drawdown Protocol">
+            Tracks how far your trading capital has fallen from its highest recorded point (high-water mark). Four zones define the required response:<br /><br />
+            <strong style={{ color: '#7FA068' }}>Normal (0–9%)</strong> — trade as planned.<br />
+            <strong style={{ color: '#B89968' }}>Caution (10–19%)</strong> — reduce size 25%.<br />
+            <strong style={{ color: '#D97757' }}>Defensive (20–29%)</strong> — reduce size 50%.<br />
+            <strong style={{ color: '#C56B5A' }}>Stop (30%+)</strong> — full pause required.
+          </HelpTip>
+        </h2>
         <span className="label" style={{ color: '#8B8478' }}>Risk Management</span>
       </div>
       <p className="text-sm mb-6" style={{ color: '#B0A898' }}>
@@ -3431,8 +3473,11 @@ function ImpulseTab({ data, stats, setData, user }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
+        <h1 className="display text-4xl mb-2" style={{ fontWeight: 300, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
           Impulse <span style={{ fontStyle: 'italic', color: '#D97757' }}>control</span>
+          <HelpTip title="Impulse Control">
+            A deliberate friction layer before unplanned purchases. You log the item, set a waiting period, and return to decide. Many impulses dissolve before the timer expires — those that survive are conscious choices, not reactions. Each approved purchase deducts from your spending budget.
+          </HelpTip>
         </h1>
         <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
           {isFoundation

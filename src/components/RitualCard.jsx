@@ -6,6 +6,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { ChevronDown, ChevronUp, X, Check, Sun, ShoppingCart, Clock, BarChart3, Calendar } from 'lucide-react';
+import HelpTip from './HelpTip';
 
 const RITUAL_KEY = 'ritual-state-v1';
 
@@ -151,7 +152,12 @@ export default function RitualCard({ setTab }) {
             }
           </div>
           <div>
-            <div className="font-medium text-sm">Daily Checkpoints</div>
+            <div className="font-medium text-sm" style={{ display: 'flex', alignItems: 'center' }}>
+              Daily Checkpoints
+              <HelpTip title="Daily Checkpoints">
+                A short set of intentional questions each day to keep you financially aware. Takes under a minute. Completing them consistently builds your discipline and surfaces blind spots before they become problems. Each checkpoint type resets on its own schedule — daily, weekly, or monthly.
+              </HelpTip>
+            </div>
             <div className="text-xs" style={{ color: '#8B8478' }}>
               {doneCount === RITUALS.length ? 'All done today' : `${RITUALS.length - doneCount} remaining`}
             </div>
