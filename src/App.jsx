@@ -727,9 +727,14 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     const discretionaryEnv = (data.envelopes || []).find(e => e.isDiscretionary);
     const thisMonthImpulses = data.impulses.filter(i => {
       if (i.timestamp < monthStart) return false;
-      // Count only spending in the Discretionary envelope.
-      // Fall back to untagged impulses for users without one (pre-migration safety).
-      return discretionaryEnv ? i.envelopeId === discretionaryEnv.id : !i.envelopeId;
+      // Count spending that flows through the Discretionary budget:
+      //   • items explicitly tagged to the Discretionary envelope (normal path), AND
+      //   • items with no envelopeId (legacy entries logged before envelopes existed).
+      // Items explicitly tagged to OTHER envelopes (Groceries, Transport, etc.) are
+      // intentionally excluded — they track against their own envelope cap.
+      if (discretionaryEnv) return i.envelopeId === discretionaryEnv.id || i.envelopeId == null;
+      // No Discretionary envelope: original pre-envelope fallback.
+      return !i.envelopeId;
     });
     const thisMonthSpend = thisMonthImpulses.reduce((s, i) => s + i.amount, 0);
     // discCap: use the Discretionary envelope cap (grows with rollover) rather than
@@ -3770,7 +3775,13 @@ function ImpulseHistory({ data, stats, setData }) {
     ? thisMonthAll.filter(i => i.overrideUsed)
     : thisMonthAll;
 
-  const renderRow = (i) => (
+  // Resolve the envelope name for display; null if no match or no envelopes
+  const envNameFor = (envelopeId) =>
+    envelopeId ? (data.envelopes || []).find(e => e.id === envelopeId)?.name ?? null : null;
+
+  const renderRow = (i) => {
+    const envName = envNameFor(i.envelopeId);
+    return (
     <div key={i.id} className="flex items-center justify-between py-2 border-b" style={{ borderColor: '#26221C', gap: '8px' }}>
       <div className="rl-imp-name flex-1">
         <div className="flex items-center gap-2 text-sm" style={{ flexWrap: 'wrap' }}>
@@ -3782,7 +3793,11 @@ function ImpulseHistory({ data, stats, setData }) {
           )}
         </div>
         <div className="text-xs" style={{ color: '#8B8478', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {(CATEGORIES[i.category] || CATEGORIES.other).label}{i.trigger && ` · ${i.trigger}`}
+          {(CATEGORIES[i.category] || CATEGORIES.other).label}
+          {envName && (
+            <span style={{ color: '#5C7A5C' }}>{` · ${envName}`}</span>
+          )}
+          {i.trigger && ` · ${i.trigger}`}
           {i.overrideUsed && i.overrideAt && (
             <span style={{ color: '#8B8478' }}> · overridden {new Date(i.overrideAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
           )}
@@ -3801,7 +3816,8 @@ function ImpulseHistory({ data, stats, setData }) {
       </div>
       {impulseGateFor(i.id)}
     </div>
-  );
+    );
+  };
 
   return (
     <div className="space-y-4">
