@@ -403,36 +403,43 @@ function InviteCodeManager({ lead, onCodeSave }) {
 // ── Invite modal ──────────────────────────────────────────────────────────────
 
 function InviteModal({ lead, onClose, onSent }) {
+  const isFresh = !lead.email; // opened from "Invite user" header btn — no lead pre-filled
+  const [emailInput, setEmailInput] = useState(lead.email || '');
+  const [nameInput,  setNameInput]  = useState(lead.name  || '');
   const [message, setMessage] = useState(DEFAULT_MESSAGE(lead.name));
   const [sending, setSending] = useState(false);
   const [error, setError] = useState(null);
 
+  const resolvedEmail = isFresh ? emailInput.trim().toLowerCase() : lead.email;
+  const resolvedName  = isFresh ? (nameInput.trim() || emailInput.split('@')[0]) : (lead.name || lead.email);
+
   const handleSend = async () => {
+    if (!resolvedEmail) { setError('Please enter an email address.'); return; }
     setSending(true);
     setError(null);
     try {
       const inviteCode = generateInviteCode();
       const fullMessage = `${message}\n\nYour invite code: ${inviteCode}`;
       const { error: fnError } = await supabase.functions.invoke('send-invite', {
-        body: { name: lead.name, email: lead.email, message: fullMessage },
+        body: { name: resolvedName, email: resolvedEmail, message: fullMessage },
       });
       if (fnError) throw new Error(fnError.message || 'Edge Function error');
       // Upsert — creates the row if it doesn't exist yet, updates if it does
       const { data: upserted, error: dbError } = await supabase
         .from('early_access_leads')
         .upsert({
-          email:      lead.email.trim().toLowerCase(),
-          name:       lead.name || lead.email.split('@')[0],
-          status:     'invited',
-          invited_at: new Date().toISOString(),
+          email:       resolvedEmail,
+          name:        resolvedName,
+          status:      'invited',
+          invited_at:  new Date().toISOString(),
           invite_code: inviteCode,
         }, { onConflict: 'email', ignoreDuplicates: false })
         .select('id, email, invite_code');
       if (dbError) throw dbError;
       if (!upserted || upserted.length === 0) {
-        throw new Error(`DB upsert returned no rows for ${lead.email} — check Supabase RLS policies.`);
+        throw new Error(`DB upsert returned no rows for ${resolvedEmail} — check Supabase RLS policies.`);
       }
-      onSent(lead.id ?? lead.email, inviteCode);
+      onSent(lead.id ?? resolvedEmail, inviteCode);
     } catch (err) {
       console.error('[AdminDashboard] sendInvite:', err);
       setError(err.message || 'Failed to send. Check the browser console.');
@@ -440,23 +447,63 @@ function InviteModal({ lead, onClose, onSent }) {
     }
   };
 
+  const inputStyle = { width: '100%', background: '#0A0908', border: '1px solid #26221C', borderRadius: '4px', padding: '9px 12px', fontSize: '13px', color: '#E8E2D5', fontFamily: 'Inter, sans-serif', boxSizing: 'border-box', outline: 'none' };
+  const labelStyle = { fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8B8478', display: 'block', marginBottom: '6px' };
+
   return createPortal(
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(10,9,8,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div onClick={e => e.stopPropagation()} style={{ background: '#0F1209', border: '1px solid #2A4A20', borderRadius: '8px', maxWidth: '520px', width: '100%', padding: '28px', position: 'relative' }}>
         <button onClick={onClose} style={{ position: 'absolute', top: '14px', right: '14px', background: 'none', border: 'none', cursor: 'pointer', color: '#8B8478', padding: '4px' }}>
           <X size={14} />
         </button>
+
         <div style={{ marginBottom: '20px' }}>
           <div style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#7FA068', marginBottom: '8px' }}>Send Invite</div>
-          <div style={{ fontSize: '15px', color: '#E8E2D5', fontWeight: 500 }}>{lead.name || lead.email}</div>
-          {lead.name && <div style={{ fontSize: '12px', color: '#8B8478', marginTop: '2px' }}>{lead.email}</div>}
+          {isFresh ? (
+            <div style={{ fontSize: '14px', color: '#B0A898' }}>Invite a new tester</div>
+          ) : (
+            <>
+              <div style={{ fontSize: '15px', color: '#E8E2D5', fontWeight: 500 }}>{lead.name || lead.email}</div>
+              {lead.name && <div style={{ fontSize: '12px', color: '#8B8478', marginTop: '2px' }}>{lead.email}</div>}
+            </>
+          )}
         </div>
+
+        {/* Email + Name fields — only shown when inviting a fresh (not pre-filled) user */}
+        {isFresh && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
+            <div>
+              <label style={labelStyle}>Email address *</label>
+              <input
+                type="email"
+                value={emailInput}
+                onChange={e => { setEmailInput(e.target.value); setError(null); }}
+                placeholder="tester@example.com"
+                style={inputStyle}
+                autoFocus
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Name <span style={{ color: '#5C5648', textTransform: 'none', letterSpacing: 'normal', fontWeight: 400 }}>(optional)</span></label>
+              <input
+                type="text"
+                value={nameInput}
+                onChange={e => setNameInput(e.target.value)}
+                placeholder="First name or full name"
+                style={inputStyle}
+              />
+            </div>
+          </div>
+        )}
+
         <div style={{ marginBottom: '20px' }}>
-          <label style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8B8478', display: 'block', marginBottom: '8px' }}>Message</label>
-          <textarea value={message} onChange={e => setMessage(e.target.value)} rows={11} style={{ width: '100%', background: '#0A0908', border: '1px solid #26221C', borderRadius: '4px', padding: '12px', fontSize: '13px', color: '#E8E2D5', fontFamily: 'monospace', resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box', outline: 'none' }} />
+          <label style={labelStyle}>Message</label>
+          <textarea value={message} onChange={e => setMessage(e.target.value)} rows={isFresh ? 8 : 11} style={{ width: '100%', background: '#0A0908', border: '1px solid #26221C', borderRadius: '4px', padding: '12px', fontSize: '13px', color: '#E8E2D5', fontFamily: 'monospace', resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box', outline: 'none' }} />
           <div style={{ fontSize: '11px', color: '#5C5648', marginTop: '5px' }}>A unique invite code is appended automatically.</div>
         </div>
+
         {error && <div style={{ background: '#1A0E0A', border: '1px solid #4A2018', borderRadius: '4px', padding: '10px 14px', marginBottom: '16px', fontSize: '12px', color: '#C56B5A', lineHeight: 1.5 }}>{error}</div>}
+
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
           <button onClick={onClose} style={{ padding: '9px 18px', background: 'none', border: '1px solid #26221C', borderRadius: '5px', color: '#B0A898', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
           <button onClick={handleSend} disabled={sending} style={{ padding: '9px 18px', background: '#7FA068', border: 'none', borderRadius: '5px', color: '#0A0908', fontSize: '13px', fontWeight: 700, cursor: sending ? 'not-allowed' : 'pointer', opacity: sending ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: '6px' }}>
