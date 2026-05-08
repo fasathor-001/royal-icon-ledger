@@ -1661,15 +1661,8 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         </div>
       )}
 
-      {/* Feature 1: Weekly Pulse Banner */}
-      {primaryBannerKey === 'weekly-pulse' && (
-        <WeeklyPulseBanner
-          data={data}
-          stats={stats}
-          forceShow={showWeeklyPulse}
-          onDismiss={() => { console.log('[rl] banner_dismissed weekly-pulse'); setShowWeeklyPulse(false); }}
-        />
-      )}
+      {/* Feature 1: Weekly Pulse Banner — moved to just above the Check Pulse button
+          so it appears in context on mobile rather than at the top of the page */}
 
       {/* Feature 5: Trading Day Emotional Guard — standard users only */}
       {primaryBannerKey === 'guard' && (
@@ -1771,7 +1764,18 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         </div>
       )}
 
-      {/* Check Pulse button (shown when not Sunday) */}
+      {/* Weekly Pulse Banner — rendered here so it appears inline on mobile
+          rather than far above the button that triggers it */}
+      {primaryBannerKey === 'weekly-pulse' && (
+        <WeeklyPulseBanner
+          data={data}
+          stats={stats}
+          forceShow={showWeeklyPulse}
+          onDismiss={() => { setShowWeeklyPulse(false); }}
+        />
+      )}
+
+      {/* Check Pulse button (shown when pulse not active and not Sunday) */}
       {!showWeeklyPulse && new Date().getDay() !== 0 && stats.isSetup && (
         <div className="flex justify-end">
           <button
