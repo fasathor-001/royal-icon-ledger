@@ -3220,7 +3220,14 @@ function TradingTab({ data, stats, setData }) {
       <DrawdownProtocol data={data} stats={stats} setData={setData} onResetHwm={(action) => attemptHwm(action)} hwmGate={hwmGate} />
 
             <section className="card p-6">
-        <h2 className="display text-2xl mb-5">Log monthly P&L</h2>
+        <h2 className="display text-2xl mb-5" style={{ display: 'flex', alignItems: 'center' }}>
+          Log monthly P&L
+          <HelpTip title="Log Monthly P&L">
+            Enter your net trading profit or loss for the month — after all trading costs but before tax. Log it as soon as the month closes so the Profit Allocator has accurate numbers.<br /><br />
+            <strong style={{ color: '#E8E2D5' }}>Profit</strong> — enter a positive number. Tax is reserved first, then the remainder flows through your stage rules.<br />
+            <strong style={{ color: '#E8E2D5' }}>Loss</strong> — enter a negative number. No allocation runs; the loss is recorded for your drawdown tracking.
+          </HelpTip>
+        </h2>
         <div className="grid md:grid-cols-3 gap-3 items-end">
           <div>
             <div className="label mb-2" style={{ color: '#8B8478' }}>Month</div>
