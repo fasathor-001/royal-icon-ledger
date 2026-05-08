@@ -1377,14 +1377,17 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
   // Re-evaluated on every render: dismissing the active banner clears its
   // condition so the next priority naturally surfaces without extra state.
   const primaryBannerKey = (() => {
+    // guard is the only thing that should outrank an explicit user action
     if (guardActive && !isFoundation) return 'guard';
+    // weekly-pulse is user-triggered — give it priority over all passive banners
+    // so it works on every profile (fixed, foundation, variable, mixed)
+    if (showWeeklyPulse) return 'weekly-pulse';
     if (stats.isSetup && data.incomeType !== 'fixed' && !isFoundation && stats.drawdownZone !== 'normal' && data.tradingCapital > 0) return 'drawdown';
     if (stats.isSetup && needsBackup) return 'backup';
     if (showUpgradePrompt && !upgradeDismissed) return 'upgrade';
     if (isFoundation && foundationNudge) return 'nudge';
     if (showGraduationWelcome) return 'graduation';
     if (showStabilizeMessage) return 'stabilize';
-    if (showWeeklyPulse) return 'weekly-pulse';
     return null;
   })();
   // Log banner changes — ref guards against duplicate logs on re-render
