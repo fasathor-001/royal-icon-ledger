@@ -5054,6 +5054,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                   Income profile
                   <HelpTip title="Income Profile">
                     Your profile determines which features and tabs are available.<br /><br />
+                    <strong style={{ color: '#E8E2D5' }}>Foundation</strong> — savings-focused. Simplified Money Allocator, no trading features.<br />
                     <strong style={{ color: '#E8E2D5' }}>Variable</strong> — trading, freelance, or business income. Includes Trading P&L tab and full Profit Allocator.<br />
                     <strong style={{ color: '#E8E2D5' }}>Fixed</strong> — salary or pension. No Trading P&L tab. Surplus Allocator replaces Profit Allocator.<br />
                     <strong style={{ color: '#E8E2D5' }}>Mixed</strong> — salary plus side income or trading. All tabs active.<br /><br />
@@ -5065,11 +5066,13 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '480px' }}>
                   {[
-                    { id: 'variable', title: 'Variable', desc: 'Trading, freelance, commissions, business. Includes Trading P&L tab.', icon: TrendingUp },
-                    { id: 'fixed',    title: 'Fixed',    desc: 'Salary, pension, regular employment. Trading P&L tab hidden.', icon: Briefcase },
-                    { id: 'mixed',    title: 'Mixed',    desc: 'Salary plus side hustle or trading. Includes Trading P&L tab.', icon: Users },
+                    { id: 'foundation', title: 'Foundation', desc: 'Savings-focused. Simplified Money Allocator. No trading features.', icon: Home },
+                    { id: 'variable',   title: 'Variable',   desc: 'Trading, freelance, commissions, business. Includes Trading P&L tab.', icon: TrendingUp },
+                    { id: 'fixed',      title: 'Fixed',      desc: 'Salary, pension, regular employment. Trading P&L tab hidden.', icon: Briefcase },
+                    { id: 'mixed',      title: 'Mixed',      desc: 'Salary plus side hustle or trading. Includes Trading P&L tab.', icon: Users },
                   ].map(({ id, title, desc, icon: Icon }) => {
-                    const active = (data.incomeType ?? 'variable') === id;
+                    const isFoundationAccount = data.mode === 'foundation' || data.incomeType === 'foundation';
+                    const active = isFoundationAccount ? id === 'foundation' : (data.incomeType ?? 'variable') === id;
                     return (
                       <div key={id} style={{
                         display: 'flex', alignItems: 'flex-start', gap: '14px',
