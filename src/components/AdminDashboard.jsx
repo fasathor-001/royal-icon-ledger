@@ -1850,7 +1850,7 @@ If you have any questions, just reply to this email.
                   <div style={{ fontSize: '12px', color: '#8B8478', marginBottom: '12px' }}>{testerError}</div>
                   <div style={{ fontSize: '11px', color: '#5C5648', lineHeight: 1.6 }}>
                     Make sure the <code style={{ fontFamily: 'monospace', background: '#1A0E0C', padding: '1px 5px', borderRadius: '3px' }}>get_tester_activity_summary</code> RPC exists in Supabase.
-                    Run the SQL in <code style={{ fontFamily: 'monospace', background: '#1A0E0C', padding: '1px 5px', borderRadius: '3px' }}>admin/ADMIN_QUERIES.sql</code>.
+                    Run the SQL in <code style={{ fontFamily: 'monospace', background: '#1A0E0C', padding: '1px 5px', borderRadius: '3px' }}>supabase/get-tester-activity-rpc.sql</code>.
                   </div>
                 </div>
 
@@ -1884,7 +1884,7 @@ If you have any questions, just reply to this email.
                           weak:     { label: 'WEAK',     color: '#B89968', bg: 'rgba(184,153,104,0.15)' },
                           inactive: { label: 'INACTIVE', color: '#C56B5A', bg: 'rgba(197,107,90,0.15)'  },
                         };
-                        const s = statusMeta[row.status] || statusMeta.inactive;
+                        const s = statusMeta[row.status?.toLowerCase()] || statusMeta.inactive;
                         const lastSeen = row.last_seen
                           ? new Date(row.last_seen).toLocaleString('en-GB', {
                               day: '2-digit', month: 'short', year: 'numeric',
