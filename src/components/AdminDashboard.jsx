@@ -1115,6 +1115,7 @@ export default function AdminDashboard({ user }) {
     } catch (err) {
       console.error('[AdminDashboard] fetchTesterActivity:', err);
       setTesterError(err.message || 'Failed to load tester activity.');
+      setTesterLoaded(true); // ← stop the useEffect from re-triggering on error
     } finally {
       setTesterLoading(false);
     }
@@ -1882,7 +1883,7 @@ If you have any questions, just reply to this email.
                 iconColor="#B89968"
                 title="Tester Activity"
                 subtitle="Weekly usage summary — last 7 days. ACTIVE = 3+ days open and 10+ pings. Refresh to update."
-                action={<RefreshBtn onClick={fetchTesterActivity} loading={testerLoading} />}
+                action={<RefreshBtn onClick={() => { setTesterLoaded(false); setTesterError(null); fetchTesterActivity(); }} loading={testerLoading} />}
               />
 
               {testerLoading ? (
