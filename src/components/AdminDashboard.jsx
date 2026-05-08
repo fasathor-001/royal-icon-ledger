@@ -369,13 +369,14 @@ function InviteCodeManager({ lead, onCodeSave }) {
   const generate = async () => {
     setGenerating(true);
     const code = generateInviteCode();
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
     try {
       const { error } = await supabase
         .from('early_access_leads')
-        .update({ invite_code: code })
+        .update({ invite_code: code, invite_code_expires_at: expiresAt })
         .eq('id', lead.id);
       if (error) throw error;
-      onCodeSave(lead.id, code);
+      onCodeSave(lead.id, code, expiresAt);
     } catch (err) {
       console.error('[AdminDashboard] generateCode:', err);
     } finally {
@@ -389,10 +390,22 @@ function InviteCodeManager({ lead, onCodeSave }) {
       <span style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#5C5648' }}>
         Invite Code
       </span>
-      {lead.invite_code
-        ? <span style={{ fontSize: '12px', color: '#B0A898', fontFamily: 'monospace', letterSpacing: '0.1em', background: '#141210', padding: '2px 8px', borderRadius: '3px', border: '1px solid #26221C' }}>{lead.invite_code}</span>
-        : <span style={{ fontSize: '12px', color: '#26221C', fontStyle: 'italic' }}>None assigned</span>
-      }
+      {lead.invite_code ? (
+        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '12px', color: '#B0A898', fontFamily: 'monospace', letterSpacing: '0.1em', background: '#141210', padding: '2px 8px', borderRadius: '3px', border: '1px solid #26221C' }}>{lead.invite_code}</span>
+          {lead.invite_code_expires_at && (() => {
+            const exp = new Date(lead.invite_code_expires_at);
+            const expired = exp < new Date();
+            return (
+              <span style={{ fontSize: '10px', color: expired ? '#D97757' : '#5C5648', fontStyle: 'italic' }}>
+                {expired ? `Expired ${exp.toLocaleDateString()}` : `Expires ${exp.toLocaleDateString()}`}
+              </span>
+            );
+          })()}
+        </span>
+      ) : (
+        <span style={{ fontSize: '12px', color: '#26221C', fontStyle: 'italic' }}>None assigned</span>
+      )}
       <button onClick={generate} disabled={generating} style={{ fontSize: '11px', color: '#D97757', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', opacity: generating ? 0.5 : 1 }}>
         {generating ? '…' : lead.invite_code ? 'Regenerate' : 'Generate'}
       </button>
@@ -419,7 +432,8 @@ function InviteModal({ lead, onClose, onSent }) {
     setError(null);
     try {
       const inviteCode = generateInviteCode();
-      const fullMessage = `${message}\n\nYour invite code: ${inviteCode}`;
+      const inviteExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+      const fullMessage = `${message}\n\nYour invite code: ${inviteCode}\n(valid for 30 days)`;
       const { error: fnError } = await supabase.functions.invoke('send-invite', {
         body: { name: resolvedName, email: resolvedEmail, message: fullMessage },
       });
@@ -428,18 +442,19 @@ function InviteModal({ lead, onClose, onSent }) {
       const { data: upserted, error: dbError } = await supabase
         .from('early_access_leads')
         .upsert({
-          email:       resolvedEmail,
-          name:        resolvedName,
-          status:      'invited',
-          invited_at:  new Date().toISOString(),
-          invite_code: inviteCode,
+          email:                   resolvedEmail,
+          name:                    resolvedName,
+          status:                  'invited',
+          invited_at:              new Date().toISOString(),
+          invite_code:             inviteCode,
+          invite_code_expires_at:  inviteExpiresAt,
         }, { onConflict: 'email', ignoreDuplicates: false })
-        .select('id, email, invite_code');
+        .select('id, email, invite_code, invite_code_expires_at');
       if (dbError) throw dbError;
       if (!upserted || upserted.length === 0) {
         throw new Error(`DB upsert returned no rows for ${resolvedEmail} — check Supabase RLS policies.`);
       }
-      onSent(lead.id ?? resolvedEmail, inviteCode);
+      onSent(lead.id ?? resolvedEmail, inviteCode, inviteExpiresAt);
     } catch (err) {
       console.error('[AdminDashboard] sendInvite:', err);
       setError(err.message || 'Failed to send. Check the browser console.');
@@ -1322,12 +1337,12 @@ If you have any questions, just reply to this email.
     } finally { setBulkProcessing(false); }
   };
 
-  const handleInviteSent = (idOrEmail, inviteCode) => {
+  const handleInviteSent = (idOrEmail, inviteCode, inviteCodeExpiresAt) => {
     // id may be undefined if table pk isn't 'id' — fall back to matching by email
     const lead = leads.find(l => l.id === idOrEmail || l.email === idOrEmail);
     setLeads(prev => prev.map(l =>
       (l.id === idOrEmail || l.email === idOrEmail)
-        ? { ...l, status: 'invited', invited_at: new Date().toISOString(), invite_code: inviteCode }
+        ? { ...l, status: 'invited', invited_at: new Date().toISOString(), invite_code: inviteCode, invite_code_expires_at: inviteCodeExpiresAt }
         : l
     ));
     logAdminAction('invite', lead?.email, { invite_code: inviteCode, name: lead?.name });
@@ -1349,7 +1364,7 @@ If you have any questions, just reply to this email.
   };
 
   const handleNoteSave  = (id, notes)       => setLeads(prev => prev.map(l => l.id === id ? { ...l, notes } : l));
-  const handleCodeSave  = (id, invite_code) => setLeads(prev => prev.map(l => l.id === id ? { ...l, invite_code } : l));
+  const handleCodeSave  = (id, invite_code, invite_code_expires_at) => setLeads(prev => prev.map(l => l.id === id ? { ...l, invite_code, invite_code_expires_at } : l));
   const handleDelete    = (id) => {
     const lead = leads.find(l => l.id === id);
     setLeads(prev => prev.filter(l => l.id !== id));

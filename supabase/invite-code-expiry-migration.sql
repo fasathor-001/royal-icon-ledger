@@ -1,12 +1,22 @@
--- supabase/validate-invite-code.sql
+-- supabase/invite-code-expiry-migration.sql
 --
--- Creates a SECURITY DEFINER function that validates an invite code
--- against early_access_leads.invite_code (where admin-sent codes live).
+-- Adds a 30-day expiry to invite codes stored in early_access_leads.
 --
--- Run in Supabase → SQL Editor → New query
--- Safe to run multiple times.
+-- Run once in Supabase SQL Editor:
+--   Dashboard → SQL Editor → paste → Run
+--
+-- What this does:
+--   1. Adds invite_code_expires_at (timestamptz, nullable) to early_access_leads.
+--      NULL = legacy code with no expiry (grandfather existing codes).
+--   2. Replaces validate_lead_invite_code() to reject codes where
+--      invite_code_expires_at < now().
 -- ─────────────────────────────────────────────────────────────────────────────
 
+-- ── Step 1: add the column (safe to run again — IF NOT EXISTS) ────────────────
+ALTER TABLE early_access_leads
+  ADD COLUMN IF NOT EXISTS invite_code_expires_at timestamptz;
+
+-- ── Step 2: replace the validation function ───────────────────────────────────
 CREATE OR REPLACE FUNCTION validate_lead_invite_code(p_code text, p_email text)
 RETURNS boolean
 LANGUAGE plpgsql
@@ -29,5 +39,5 @@ BEGIN
 END;
 $$;
 
--- Grant execute to anon and authenticated roles (called before login)
+-- Ensure anon can still call this during signup
 GRANT EXECUTE ON FUNCTION validate_lead_invite_code(text, text) TO anon, authenticated;
