@@ -5054,28 +5054,6 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
             <Backup data={data} setData={setData} />
           </div>
 
-          {/* ── Setup ──────────────────────────────────────────── */}
-          <div>
-            <div style={{
-              fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase',
-              fontWeight: 700, color: '#5C5648', paddingBottom: '12px',
-              borderBottom: '1px solid #1A1610', marginBottom: '16px',
-            }}>Setup</div>
-            <section className="card p-6">
-              <h2 className="display text-2xl mb-1">Re-run setup wizard</h2>
-              <p className="text-sm mb-4" style={{ color: '#B0A898' }}>
-                Clears your current expense list and restarts the setup flow. Your buffer, snapshots, P&amp;L history, and rules are all preserved.
-              </p>
-              <button
-                className="btn px-4 py-2 text-sm"
-                style={{ color: '#D97757', border: '1px solid #3A2A1E', borderRadius: '3px' }}
-                onClick={() => attemptOnboarding(() => setData(d => ({ ...d, setupComplete: false, expenses: [] })))}
-              >
-                Re-run setup wizard
-              </button>
-              {onboardingGate}
-            </section>
-          </div>
         </div>
       )}
 
