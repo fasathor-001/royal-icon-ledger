@@ -240,6 +240,12 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
       bufferTargetMonths: bufferMonths || 18,
       bufferProtectMonths: Math.max(1, (bufferMonths || 18) - 2),
       setupComplete: true,
+      // Month the user first completed setup (YYYY-MM).
+      // Used to suppress spurious "last month carried forward" on first month.
+      setupMonth: d.setupMonth || (() => {
+        const n = new Date();
+        return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}`;
+      })(),
       mode: incomeType === 'foundation' ? 'foundation' : 'standard',
       notificationPreferences: {
         dailyEnabled: true,

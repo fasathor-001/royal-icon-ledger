@@ -1457,6 +1457,10 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             {/* Last month summary — reads from rollover history if available */}
             {(() => {
               const now = new Date();
+              const thisMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+              // First month: user set up this calendar month, so there is no "last month"
+              // to carry forward from. Suppress the banner entirely.
+              if (data.setupMonth === thisMonthKey) return null;
               const prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
               const prevMonthKey = `${prevStart.getFullYear()}-${String(prevStart.getMonth() + 1).padStart(2, '0')}`;
               const prevMonthStartTs = prevStart.getTime();
