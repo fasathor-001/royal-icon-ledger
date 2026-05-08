@@ -500,6 +500,12 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
   const [pinResetApproved, setPinResetApproved] = useState(false); // admin approved a reset request
   const shouldAutoShow = useShouldShowReviewModal(data);
 
+  // Income-profile flags — used throughout the component (header, tabs, tooltips).
+  // Guard on BOTH mode AND incomeType: legacy accounts set mode='foundation' before
+  // incomeType existed. null incomeType = legacy user who sees all features.
+  const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
+  const showTrading  = !isFoundation && data?.incomeType !== 'fixed';
+
   // Derived: does this user have any PIN protection active?
   const hasPinProtection = !!(data.pinHash || data.overridePin);
 
