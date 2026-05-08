@@ -146,7 +146,7 @@ const foundationCopy = {
 };
 
 // ── Mobile bottom navigation ──────────────────────────────────────────────────
-const ADMIN_MOBILE_EMAILS = ['hello@royalledger.app', 'fasathor@gmail.com'];
+const ADMIN_MOBILE_EMAILS = ['support@royalledger.app', 'fasathor@gmail.com'];
 
 function MobileBottomNav({ tab, setTab, user, data }) {
   const [showMore, setShowMore] = useState(false);
@@ -311,7 +311,7 @@ function PinSetupScreen({ onSave, isForgotPin = false, userEmail = '' }) {
       setForgotDone(true);
     } catch (err) {
       setForgotError(err.message === 'offline'
-        ? 'No connection. Email hello@royalledger.app to request a reset.'
+        ? 'No connection. Email support@royalledger.app to request a reset.'
         : 'Failed to submit. Please try again.');
     } finally {
       setForgotSending(false);
@@ -464,10 +464,10 @@ function BlockedScreen({ onLogout }) {
           Contact support if you believe this is a mistake.
         </p>
         <a
-          href="mailto:hello@royalledger.app"
+          href="mailto:support@royalledger.app"
           style={{ fontSize: '13px', color: '#D97757', textDecoration: 'none', borderBottom: '1px solid #D9775750', paddingBottom: '1px' }}
         >
-          hello@royalledger.app
+          support@royalledger.app
         </a>
         {onLogout && (
           <div style={{ marginTop: '32px' }}>
@@ -5020,8 +5020,8 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                 })()}
                 <p style={{ fontSize: '12px', color: '#5C5648', marginTop: '14px' }}>
                   To change your currency, contact{' '}
-                  <a href="mailto:hello@royalledger.app" style={{ color: '#8B8478', textDecoration: 'none' }}>
-                    hello@royalledger.app
+                  <a href="mailto:support@royalledger.app" style={{ color: '#8B8478', textDecoration: 'none' }}>
+                    support@royalledger.app
                   </a>
                 </p>
               </section>
@@ -5074,8 +5074,8 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                 </div>
                 <p style={{ fontSize: '12px', color: '#5C5648', marginTop: '14px' }}>
                   To change your income profile, contact{' '}
-                  <a href="mailto:hello@royalledger.app" style={{ color: '#8B8478', textDecoration: 'none' }}>
-                    hello@royalledger.app
+                  <a href="mailto:support@royalledger.app" style={{ color: '#8B8478', textDecoration: 'none' }}>
+                    support@royalledger.app
                   </a>
                 </p>
               </section>

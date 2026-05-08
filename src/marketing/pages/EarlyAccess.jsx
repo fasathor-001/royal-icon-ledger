@@ -259,14 +259,14 @@ export default function EarlyAccess({ navigate }) {
         if (error.code === '23505') { setSubmitting(false); setSubmitted(true); return; }
 
         if (error.code === '42P01') {
-          setSubmitError('Service setup in progress. Please email us at hello@royalledger.app to join the list.');
+          setSubmitError('Service setup in progress. Please email us at support@royalledger.app to join the list.');
           setSubmitting(false); return;
         }
         if (error.code === '42501' || error.message?.toLowerCase().includes('row-level security')) {
-          setSubmitError('Submission temporarily unavailable. Please email hello@royalledger.app.');
+          setSubmitError('Submission temporarily unavailable. Please email support@royalledger.app.');
           setSubmitting(false); return;
         }
-        setSubmitError('Something went wrong. Please try again or email us at hello@royalledger.app.');
+        setSubmitError('Something went wrong. Please try again or email us at support@royalledger.app.');
         setSubmitting(false); return;
       }
 

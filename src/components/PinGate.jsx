@@ -87,7 +87,7 @@ function ForgotPinFlow({ email, onClose }) {
       setDone(true);
     } catch (err) {
       if (err.message === 'offline') {
-        setError('No connection. Email hello@royalledger.app to request a PIN reset.');
+        setError('No connection. Email support@royalledger.app to request a PIN reset.');
       } else {
         setError('Failed to submit. Please try again.');
       }

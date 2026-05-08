@@ -49,8 +49,8 @@ const SECTIONS = [
     title: 'Your rights',
     body: [
       'You can export all your data at any time from Settings → Data & Sync.',
-      'You can delete your account and all associated data by contacting hello@royalledger.app. We will process deletion requests within 14 days.',
-      'You can request a copy of any personal data we hold about you by emailing hello@royalledger.app.',
+      'You can delete your account and all associated data by contacting support@royalledger.app. We will process deletion requests within 14 days.',
+      'You can request a copy of any personal data we hold about you by emailing support@royalledger.app.',
     ],
   },
   {
@@ -138,8 +138,8 @@ export default function Privacy({ navigate }) {
             <p style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.8, marginBottom: '16px' }}>
               If you have any questions about this policy or how your data is handled, contact us directly:
             </p>
-            <a href="mailto:hello@royalledger.app" style={{ fontSize: '14px', color: '#D97757', textDecoration: 'none' }}>
-              hello@royalledger.app
+            <a href="mailto:support@royalledger.app" style={{ fontSize: '14px', color: '#D97757', textDecoration: 'none' }}>
+              support@royalledger.app
             </a>
           </div>
         </div>

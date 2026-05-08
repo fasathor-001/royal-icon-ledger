@@ -124,11 +124,11 @@ export default function MarketingFooter() {
           <div>
             <div className="m-footer-col-title">Contact</div>
             <a
-              href="mailto:hello@royalledger.app"
+              href="mailto:support@royalledger.app"
               className="m-footer-link"
               style={{ textDecoration: 'none', display: 'block', marginBottom: '4px' }}
             >
-              hello@royalledger.app
+              support@royalledger.app
             </a>
             <a
               href="mailto:investors@royalledger.app"

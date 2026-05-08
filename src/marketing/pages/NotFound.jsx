@@ -51,7 +51,7 @@ export default function NotFound({ navigate }) {
 
           <p style={{ fontSize: '12px', color: '#5C5648' }}>
             If you think something is broken,{' '}
-            <a href="mailto:hello@royalledger.app" style={{ color: '#8B8478', textDecoration: 'none' }}>
+            <a href="mailto:support@royalledger.app" style={{ color: '#8B8478', textDecoration: 'none' }}>
               let us know
             </a>.
           </p>

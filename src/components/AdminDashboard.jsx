@@ -7,10 +7,11 @@ import {
   Mail, Lock, Search, Send, FileText, AlertTriangle, X, KeyRound, Hash,
   ChevronDown, ChevronUp, Trash2, ShieldOff, ShieldCheck, UserCheck,
   Square, CheckSquare, MinusSquare, Inbox, Download, UserPlus, Bell,
-  Settings, Activity,
+  Settings, Activity, Sliders,
 } from 'lucide-react';
+import { CURRENCIES } from '../lib/currency';
 
-const ADMIN_EMAILS = ['hello@royalledger.app', 'fasathor@gmail.com'];
+const ADMIN_EMAILS = ['support@royalledger.app', 'fasathor@gmail.com'];
 const FILTERS = ['All', 'Pending', 'Active', 'Invited', 'Suspended', 'Blocked', 'Rejected'];
 
 const FILTER_META = {
@@ -409,6 +410,131 @@ function InviteCodeManager({ lead, onCodeSave }) {
       <button onClick={generate} disabled={generating} style={{ fontSize: '11px', color: '#D97757', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', opacity: generating ? 0.5 : 1 }}>
         {generating ? '…' : lead.invite_code ? 'Regenerate' : 'Generate'}
       </button>
+    </div>
+  );
+}
+
+// ── Account override manager ──────────────────────────────────────────────────
+// Lets admin patch a user's currency and/or income profile in user_data.
+// Calls admin_patch_user_data(p_email, p_currency, p_income_type) RPC.
+
+const INCOME_PROFILES = [
+  { id: 'foundation', label: 'Foundation' },
+  { id: 'variable',   label: 'Variable'   },
+  { id: 'fixed',      label: 'Fixed'      },
+  { id: 'mixed',      label: 'Mixed'      },
+];
+
+function AccountOverrideManager({ lead }) {
+  const [currency,    setCurrency]    = useState('');
+  const [incomeType,  setIncomeType]  = useState('');
+  const [saving,      setSaving]      = useState(false);
+  const [result,      setResult]      = useState(null); // null | 'ok' | 'no_data' | 'no_user' | 'error'
+
+  const canSave = (currency || incomeType) && !saving;
+
+  const handleSave = async () => {
+    if (!canSave) return;
+    setSaving(true);
+    setResult(null);
+    try {
+      const { data: res, error } = await supabase.rpc('admin_patch_user_data', {
+        p_email:       lead.email.trim().toLowerCase(),
+        p_currency:    currency    || null,
+        p_income_type: incomeType  || null,
+      });
+      if (error) throw error;
+      setResult(res === 'no_auth_user' ? 'no_user' : res === 'no_data' ? 'no_data' : 'ok');
+      if (res === 'ok') { setCurrency(''); setIncomeType(''); }
+    } catch (err) {
+      console.error('[AdminDashboard] accountOverride:', err);
+      setResult('error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const selectStyle = {
+    background: '#0A0908', border: '1px solid #26221C', color: '#B0A898',
+    borderRadius: '3px', padding: '4px 8px', fontSize: '12px',
+    cursor: 'pointer', outline: 'none', fontFamily: 'inherit',
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Sliders size={11} style={{ color: '#4A4038', flexShrink: 0 }} />
+        <span style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#5C5648' }}>
+          Account Overrides
+        </span>
+        <span style={{ fontSize: '10px', color: '#4A4038', fontStyle: 'italic' }}>
+          — patches live user data
+        </span>
+      </div>
+
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center', paddingLeft: '19px' }}>
+        {/* Currency picker */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+          <label style={{ fontSize: '9px', color: '#4A4038', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 600 }}>Currency</label>
+          <select value={currency} onChange={e => { setCurrency(e.target.value); setResult(null); }} style={selectStyle}>
+            <option value="">— no change —</option>
+            {CURRENCIES.map(c => (
+              <option key={c.code} value={c.code}>{c.flag} {c.code} — {c.name}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Income profile picker */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+          <label style={{ fontSize: '9px', color: '#4A4038', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 600 }}>Income Profile</label>
+          <select value={incomeType} onChange={e => { setIncomeType(e.target.value); setResult(null); }} style={selectStyle}>
+            <option value="">— no change —</option>
+            {INCOME_PROFILES.map(p => (
+              <option key={p.id} value={p.id}>{p.label}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Save button */}
+        <button
+          onClick={handleSave}
+          disabled={!canSave}
+          style={{
+            marginTop: '14px', fontSize: '11px', fontWeight: 600,
+            color: canSave ? '#D97757' : '#4A4038',
+            background: 'none', border: `1px solid ${canSave ? '#3A2A1E' : '#1A1610'}`,
+            borderRadius: '4px', padding: '4px 12px',
+            cursor: canSave ? 'pointer' : 'not-allowed',
+            transition: 'all 0.12s',
+          }}
+          onMouseEnter={e => { if (canSave) { e.currentTarget.style.borderColor = '#D97757'; } }}
+          onMouseLeave={e => { if (canSave) { e.currentTarget.style.borderColor = '#3A2A1E'; } }}
+        >
+          {saving ? 'Saving…' : 'Apply'}
+        </button>
+      </div>
+
+      {/* Feedback */}
+      {result === 'ok' && (
+        <div style={{ paddingLeft: '19px', fontSize: '10px', color: '#7FA068', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <CheckCircle size={10} /> Saved — user will see changes on next sync or reload.
+        </div>
+      )}
+      {result === 'no_user' && (
+        <div style={{ paddingLeft: '19px', fontSize: '10px', color: '#B89968' }}>
+          No auth account found for this email.
+        </div>
+      )}
+      {result === 'no_data' && (
+        <div style={{ paddingLeft: '19px', fontSize: '10px', color: '#B89968' }}>
+          User has no app data yet — they may not have completed onboarding.
+        </div>
+      )}
+      {result === 'error' && (
+        <div style={{ paddingLeft: '19px', fontSize: '10px', color: '#C56B5A' }}>
+          Failed — run admin_patch_user_data migration in Supabase first.
+        </div>
+      )}
     </div>
   );
 }
@@ -874,6 +1000,10 @@ function LeadRow({ lead, selected, onToggleSelect, onUpdateStatus, onInvite, onN
 
           <div style={{ paddingTop: '14px', borderTop: '1px solid #1A1610' }}>
             <InviteCodeManager lead={lead} onCodeSave={onCodeSave} />
+          </div>
+
+          <div style={{ paddingTop: '14px', borderTop: '1px solid #1A1610' }}>
+            <AccountOverrideManager lead={lead} />
           </div>
 
           <div style={{ paddingTop: '14px', borderTop: '1px solid #1A1610', display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
