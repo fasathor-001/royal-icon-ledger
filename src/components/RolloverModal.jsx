@@ -25,15 +25,19 @@ export default function RolloverModal({ data, setData, onClose }) {
 
   const rolloverItems = useMemo(() => {
     const envelopes = data.envelopes || [];
+    // Resolve null envelopeId to Discretionary once, before the map.
+    // Mirrors the identical pattern in Budget.jsx envelopeSpending:
+    //   const eid = imp.envelopeId ?? discId
+    // This guarantees all three read paths (App.jsx stats, Budget.jsx,
+    // RolloverModal) use the same routing rule for legacy entries.
+    const discId = envelopes.find(e => e.isDiscretionary)?.id ?? null;
     return envelopes.map(env => {
-      // Fix #1: Discretionary includes legacy null-id entries (same rule as
-      // App.jsx stats and Budget.jsx envelopeSpending). Other envelopes keep
-      // the exact-match filter — no change to their behaviour.
       const spent = (data.impulses || [])
         .filter(i => {
           if (i.timestamp < prevMonth.start || i.timestamp > prevMonth.end) return false;
-          if (env.isDiscretionary) return i.envelopeId === env.id || i.envelopeId == null;
-          return i.envelopeId === env.id;
+          // Resolve: null envelopeId routes to Discretionary, explicit tag wins otherwise.
+          const eid = i.envelopeId ?? discId;
+          return eid === env.id;
         })
         .reduce((s, i) => s + i.amount, 0);
       const unspent = Math.max(0, env.cap - spent);
