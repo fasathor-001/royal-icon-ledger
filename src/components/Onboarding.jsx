@@ -406,7 +406,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
               Choose your <span style={{ fontStyle: 'italic', color: '#D97757' }}>currency</span>.
             </h1>
             <p style={{ color: '#B0A898', marginBottom: '32px', fontSize: '15px' }}>
-              All amounts and symbols will use this currency. You can change it later in Settings.
+              All amounts and symbols will use this currency. Choose carefully — this is locked after setup.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px', marginBottom: '40px' }}>
               {CURRENCIES.map(({ code, symbol, name, flag }) => {

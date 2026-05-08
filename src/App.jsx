@@ -4732,8 +4732,6 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
   const { attempt: attemptOnboarding, gate: onboardingGate } = usePinGate();
   const { attempt: attemptReset, gate: resetGate } = usePinGate();
 
-  const [currencyChanged, setCurrencyChanged] = useState(false);
-  const [hoveredCurrency, setHoveredCurrency] = useState(null);
 
 
   const inputStyle = {
@@ -4987,82 +4985,45 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
             }}>Preferences</div>
             <div className="space-y-4">
 
-              {/* Currency */}
+              {/* Currency — display only, set during onboarding */}
               <section className="card p-6">
                 <h2 className="display text-2xl mb-1" style={{ display: 'flex', alignItems: 'center' }}>
                   Currency
                   <HelpTip title="Currency">
-                    Changes how all amounts are displayed throughout the app — symbol, formatting, and separators. It does not convert your existing values. If you switch currency, update your balances manually to reflect the correct amounts in the new currency.
+                    Your currency is set during onboarding and determines how all amounts are displayed — symbol, formatting, and separators. It does not convert values. Changing currency mid-use would silently misrepresent your historical data, so it is locked to your onboarding choice. Contact support to change it.
                   </HelpTip>
                 </h2>
                 <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
-                  This only changes how amounts are displayed. It does not convert existing values.
+                  Set during onboarding. This is used to display all amounts across the app.
                 </p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 8 }}>
-                  {CURRENCIES.map(({ code, symbol, name, flag }) => {
-                    const active  = (data.currency ?? 'ZAR') === code;
-                    const hovered = hoveredCurrency === code && !active;
-                    return (
-                      <button
-                        key={code}
-                        onMouseEnter={() => setHoveredCurrency(code)}
-                        onMouseLeave={() => setHoveredCurrency(null)}
-                        onClick={() => {
-                          setData(d => ({ ...d, currency: code }));
-                          setCurrencyChanged(true);
-                          setTimeout(() => setCurrencyChanged(false), 2000);
-                        }}
-                        style={{
-                          position: 'relative',
-                          background: active ? '#231E12' : hovered ? '#0E0C0A' : '#080706',
-                          border: `1px solid ${active ? '#D97757' : hovered ? '#4A4038' : '#1E1A16'}`,
-                          borderRadius: 8, padding: '14px 12px', cursor: 'pointer',
-                          textAlign: 'left', transition: 'background 150ms, border-color 150ms',
-                        }}
-                      >
-                        {/* Active check mark */}
-                        {active && (
-                          <div style={{ position: 'absolute', top: 8, right: 8 }}>
-                            <Check size={11} color="#D97757" />
-                          </div>
-                        )}
-
-                        {/* Flag */}
-                        <div style={{ fontSize: 22, lineHeight: 1, marginBottom: 8 }}>{flag}</div>
-
-                        {/* Symbol + code */}
+                {(() => {
+                  const curr = getCurrency(data.currency ?? 'ZAR');
+                  return (
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: '16px',
+                      background: '#1E1A10', border: '1px solid #D97757',
+                      borderRadius: '6px', padding: '14px 16px', maxWidth: '320px',
+                    }}>
+                      <div style={{ fontSize: 28, lineHeight: 1, flexShrink: 0 }}>{curr.flag}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{
-                          fontSize: 13, fontWeight: 700, marginBottom: 4,
-                          color: active ? '#D97757' : '#6B6058',
-                          fontFamily: 'JetBrains Mono, monospace',
+                          fontSize: '15px', fontWeight: 700, color: '#D97757',
+                          fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.08em', marginBottom: '3px',
                         }}>
-                          {symbol} {code}
+                          {curr.symbol} {curr.code}
                         </div>
-
-                        {/* Full currency name */}
-                        <div style={{
-                          fontSize: 10, lineHeight: 1.4,
-                          color: active ? '#8B8478' : '#4A4038',
-                        }}>
-                          {name}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Inline confirmation — always rendered, fades in/out via opacity */}
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: '5px',
-                  marginTop: '14px', height: '16px',
-                  fontSize: '12px', color: '#7FA068',
-                  opacity: currencyChanged ? 1 : 0,
-                  transition: 'opacity 350ms',
-                  pointerEvents: 'none',
-                }}>
-                  <Check size={11} color="#7FA068" />
-                  Currency updated
-                </div>
+                        <div style={{ fontSize: '12px', color: '#8B8478' }}>{curr.name}</div>
+                      </div>
+                      <Check size={16} style={{ color: '#D97757', flexShrink: 0 }} />
+                    </div>
+                  );
+                })()}
+                <p style={{ fontSize: '12px', color: '#5C5648', marginTop: '14px' }}>
+                  To change your currency, contact{' '}
+                  <a href="mailto:hello@royalledger.app" style={{ color: '#8B8478', textDecoration: 'none' }}>
+                    hello@royalledger.app
+                  </a>
+                </p>
               </section>
 
               {/* Notifications & timezone */}
