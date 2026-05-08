@@ -997,7 +997,12 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
             </button>
             <div className="text-right" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <HelpTip title="Net Worth">
-                The sum of all your tracked balances: trading capital, family buffer, monthly salary account, long-term savings, and future goal funds. Updated each time you save a snapshot. It reflects your real financial position — not income, not budget, but what you actually hold.
+                {showTrading
+                  ? 'The sum of all your tracked balances: trading capital, family buffer, monthly salary account, long-term savings, and future goal funds. Updated each time you save a snapshot. It reflects your real financial position — not income, not budget, but what you actually hold.'
+                  : isFoundation
+                    ? 'The sum of your tracked balances: savings, money available, long-term savings, and future goal funds. Updated each time you save a snapshot. It reflects your real financial position — not income, not budget, but what you actually hold.'
+                    : 'The sum of your tracked balances: family buffer, monthly salary account, long-term savings, and future goal funds. Updated each time you save a snapshot. It reflects your real financial position — not income, not budget, but what you actually hold.'
+                }
               </HelpTip>
               <div>
                 <div className="label hidden sm:block" style={{ color: '#8B8478', fontSize: 9 }}>NET WORTH</div>
@@ -1404,7 +1409,10 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             }}>
               This month
               <HelpTip title="Spending Budget">
-                Your discretionary budget for the month — money you can spend freely on anything not in your fixed expenses. Once it runs out, spending stops. What you don't spend carries forward (or sweeps to your buffer, depending on your rollover setting).
+                {isFoundation
+                  ? 'Your lifestyle spending allowance for the month — money set aside for day-to-day living outside of your fixed costs. Once it runs out, spending stops. Keeping within it each month is how discipline compounds over time.'
+                  : 'Your discretionary budget for the month — money you can spend freely on anything not in your fixed expenses. Once it runs out, spending stops. Unspent balance carries forward or sweeps to your buffer at month end, depending on your rollover setting.'
+                }
               </HelpTip>
             </div>
 
@@ -2055,9 +2063,9 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             <div className="label" style={{ color: stageInfo.color, display: 'flex', alignItems: 'center' }}>
               {stageInfo.name} — {stageInfo.title}
               <HelpTip title="Buffer Stages">
-                <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Protect Mode</strong> — buffer is below your protection floor. 100% of surplus goes to rebuilding it before anything else is allocated.<br /><br />
-                <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Building</strong> — buffer is growing toward your target (e.g. 18 months of expenses).<br /><br />
-                <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Foundation Solid</strong> — target reached. Surplus flows to your Profit Allocator rules instead.
+                <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Protect Mode</strong> — buffer is below your protection floor. 100% of {data.incomeType === 'fixed' ? 'surplus' : 'profits'} goes to rebuilding it before anything else is allocated.<br /><br />
+                <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Building</strong> — buffer is growing toward your target number of months of expenses.<br /><br />
+                <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Foundation Solid</strong> — target reached. {data.incomeType === 'fixed' ? 'Surplus' : 'Profits'} flow to your {data.incomeType === 'fixed' ? 'Surplus' : 'Profit'} Allocator rules instead.
               </HelpTip>
             </div>
             <div className="mono text-xs" style={{ color: '#B0A898' }}>{stats.monthsCovered.toFixed(1)} months stored</div>
@@ -2089,7 +2097,12 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           <h2 className="display text-2xl" style={{ display: 'flex', alignItems: 'center' }}>
             Current balances
             <HelpTip title="Current Balances">
-              Your live account totals across all tracked pots — trading capital, family buffer, monthly salary account, long-term savings, and future goals. Update these whenever your balances change, then hit <em>Save snapshot</em> to record the moment in your history. Your net worth in the header is the sum of all of these.
+              {isFoundation
+                ? 'Your live account totals — savings, money available, long-term savings, and future goals. Update these whenever your balances change, then hit Save snapshot to record the moment. Your net worth in the header is the sum of all of these.'
+                : data.incomeType === 'fixed'
+                  ? 'Your live account totals — family buffer, monthly salary account, long-term savings, and future goals. Update these whenever your balances change, then hit Save snapshot to record the moment. Your net worth in the header is the sum of all of these.'
+                  : 'Your live account totals — trading capital, family buffer, monthly salary account, long-term savings, and future goals. Update these whenever your balances change, then hit Save snapshot to record the moment. Your net worth in the header is the sum of all of these.'
+              }
             </HelpTip>
           </h2>
           <div className="flex items-center gap-3">
@@ -2858,8 +2871,13 @@ function ProfitAllocator({ data, stats, setData }) {
             ? <>Money <span style={{ fontStyle: 'italic', color: '#7FA068' }}>Allocator</span></>
             : <>{data.incomeType === 'fixed' ? 'Surplus' : 'Profit'} <span style={{ fontStyle: 'italic', color: '#D97757' }}>waterfall</span></>
           }
-          <HelpTip title="Profit Allocator">
-            Each time you enter income or profit here, the system deducts taxes first, then routes the remainder in a fixed waterfall: buffer gets priority until it's rebuilt, then long-term savings, future goals, and trading capital each receive their configured share. Nothing is allocated ad hoc — the rules run automatically every time.
+          <HelpTip title={isFoundation ? 'Money Allocator' : data.incomeType === 'fixed' ? 'Surplus Allocator' : 'Profit Allocator'}>
+            {isFoundation
+              ? 'Enter any extra money you have available this month. The system routes it in order: savings target first, then long-term savings, and future goals. Each allocation follows rules you configured — nothing is decided in the moment.'
+              : data.incomeType === 'fixed'
+                ? 'Enter your extra income or surplus this month. Taxes are deducted first, then the remainder flows through a fixed waterfall: buffer gets priority until rebuilt, followed by long-term savings, future goals, and other allocations. Rules run automatically every time.'
+                : 'Enter your gross trading profit. Taxes are deducted first, then the remainder flows through a fixed waterfall: buffer gets priority until rebuilt, then long-term savings, future goals, and trading capital each receive their configured share. Nothing is allocated ad hoc — the rules run automatically every time.'
+            }
           </HelpTip>
         </h1>
         <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
