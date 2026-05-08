@@ -1460,7 +1460,12 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               const thisMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
               // First month: user set up this calendar month, so there is no "last month"
               // to carry forward from. Suppress the banner entirely.
-              if (data.setupMonth === thisMonthKey) return null;
+              // setupMonth is written by new installs; fall back to createdAt for existing
+              // users whose data predates the setupMonth field.
+              const setupMonthKey = data.setupMonth || (data.createdAt
+                ? (() => { const d = new Date(data.createdAt); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; })()
+                : null);
+              if (setupMonthKey === thisMonthKey) return null;
               const prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
               const prevMonthKey = `${prevStart.getFullYear()}-${String(prevStart.getMonth() + 1).padStart(2, '0')}`;
               const prevMonthStartTs = prevStart.getTime();
