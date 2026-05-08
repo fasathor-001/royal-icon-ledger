@@ -2186,7 +2186,16 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
 
       {/* Stage progression visual — hidden for Foundation */}
       {!isFoundation && <section className="card rl-cp">
-        <h2 className="display text-2xl mb-2">Progression</h2>
+        <h2 className="display text-2xl mb-2" style={{ display: 'flex', alignItems: 'center' }}>
+          Progression
+          <HelpTip title="Stage Progression">
+            Your journey to financial security is broken into four stages based on how many months of expenses your buffer covers.<br /><br />
+            <strong style={{ color: '#C56B5A' }}>Stage 1</strong> — Crisis floor. 100% of {data.incomeType === 'fixed' ? 'surplus' : 'profits'} goes to buffer until 6 months is reached.<br />
+            <strong style={{ color: '#D97757' }}>Stage 1.5</strong> — Comfort zone. Buffer keeps growing; long-term investing begins.<br />
+            <strong style={{ color: '#B89968' }}>Stage 2</strong> — Fortified. Buffer priority continues to your full target.<br />
+            <strong style={{ color: '#7FA068' }}>Stage 3</strong> — Full waterfall. All allocation rules activate.
+          </HelpTip>
+        </h2>
         <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
           Salary {fmt(stats.salary)}/month · Target {data.bufferTargetMonths} months ({fmt(stats.bufferTarget)})
         </p>
@@ -2202,7 +2211,12 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
       <div className="grid md:grid-cols-2 gap-3">
         <section className="card p-6">
           <div className="rl-mini-hdr flex items-baseline justify-between mb-3">
-            <h3 className="display text-xl" style={{ minWidth: 0 }}>Spending</h3>
+            <h3 className="display text-xl" style={{ minWidth: 0, display: 'flex', alignItems: 'center' }}>
+              Spending
+              <HelpTip title="Monthly Spending">
+                How much of your discretionary budget you've used this month. The bar turns amber above 50% and red above 80%. When it hits 100% your spending limit is reached — any further purchases come out of next month's budget via the impulse gate.
+              </HelpTip>
+            </h3>
             <div className="mono text-sm" style={{ color: stats.spendingLeft > 0 ? '#E8E2D5' : '#C56B5A', flexShrink: 0 }}>
               {fmt(stats.spendingLeft)} left
             </div>
@@ -2243,7 +2257,12 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         ) : (
           <section className="card p-6">
             <div className="flex items-baseline justify-between mb-3">
-              <h3 className="display text-xl">Trading P&L (YTD)</h3>
+              <h3 className="display text-xl" style={{ display: 'flex', alignItems: 'center' }}>
+                Trading P&L (YTD)
+                <HelpTip title="Trading P&L (YTD)">
+                  Your year-to-date trading profit or loss, summed from the monthly figures you log in the Trading P&L tab. This is gross — before tax reserves are deducted. Log each month's result promptly so the Profit Allocator has accurate numbers to work with.
+                </HelpTip>
+              </h3>
               <div className="mono text-sm" style={{ color: stats.ytdPnL >= 0 ? '#7FA068' : '#C56B5A' }}>
                 {stats.ytdPnL >= 0 ? '+' : ''}{fmt(stats.ytdPnL)}
               </div>
