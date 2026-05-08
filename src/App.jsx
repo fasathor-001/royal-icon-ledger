@@ -1471,7 +1471,13 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 if (discResult) { leftover = discResult.unspent || 0; mode = discResult.rolloverMode || mode; }
               } else {
                 const lastSpent = (data.impulses || [])
-                  .filter(i => i.timestamp >= prevMonthStartTs && i.timestamp <= prevMonthEndTs && i.envelopeId === discEnv.id)
+                  .filter(i =>
+                    i.timestamp >= prevMonthStartTs &&
+                    i.timestamp <= prevMonthEndTs &&
+                    // Mirror the same logic as thisMonthImpulses: count entries
+                    // explicitly tagged to Discretionary AND legacy null entries.
+                    (i.envelopeId === discEnv.id || i.envelopeId == null)
+                  )
                   .reduce((s, i) => s + i.amount, 0);
                 // Use discEnv.cap (not spendingBudget) — correctly reflects prior
                 // rollover additions. Safe here because if rollover had run for
@@ -3775,9 +3781,15 @@ function ImpulseHistory({ data, stats, setData }) {
     ? thisMonthAll.filter(i => i.overrideUsed)
     : thisMonthAll;
 
-  // Resolve the envelope name for display; null if no match or no envelopes
-  const envNameFor = (envelopeId) =>
-    envelopeId ? (data.envelopes || []).find(e => e.id === envelopeId)?.name ?? null : null;
+  // Resolve the envelope name for display; null if no match or no envelopes.
+  // Discretionary envelope shows as 'Spending' — consistent with Budget tab
+  // (Budget.jsx line ~378: `envelope.isDiscretionary ? 'Spending' : envelope.name`).
+  const envNameFor = (envelopeId) => {
+    if (!envelopeId) return null;
+    const env = (data.envelopes || []).find(e => e.id === envelopeId);
+    if (!env) return null;
+    return env.isDiscretionary ? 'Spending' : env.name;
+  };
 
   const renderRow = (i) => {
     const envName = envNameFor(i.envelopeId);

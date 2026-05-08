@@ -229,10 +229,17 @@ export default function Budget({ data, setData, stats }) {
     const spending = {};
     envelopes.forEach(env => { spending[env.id] = 0; });
 
-    // Sum up impulses tagged to envelopes this month
+    // Legacy entries (envelopeId: null) fall back to the Discretionary envelope.
+    // This mirrors the same rule used by stats.thisMonthImpulses so that Budget
+    // and Command always show the same "Spending" figure.
+    const discId = envelopes.find(e => e.isDiscretionary)?.id ?? null;
+
     (data.impulses || []).forEach(imp => {
-      if (imp.timestamp >= monthStart && imp.envelopeId && spending[imp.envelopeId] !== undefined) {
-        spending[imp.envelopeId] += imp.amount;
+      if (imp.timestamp < monthStart) return;
+      // Explicit tag takes priority; null falls back to Discretionary (legacy)
+      const eid = imp.envelopeId ?? discId;
+      if (eid && spending[eid] !== undefined) {
+        spending[eid] += imp.amount;
       }
     });
 
