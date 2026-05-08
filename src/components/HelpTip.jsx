@@ -13,7 +13,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
+import { X, HelpCircle } from 'lucide-react';
 
 const POPOVER_WIDTH = 268;
 const MARGIN        = 12; // min gap from viewport edge
@@ -96,37 +96,26 @@ export default function HelpTip({ title, children }) {
         onClick={handleOpen}
         aria-label={`Help: ${title}`}
         style={{
-          display:         'inline-flex',
-          alignItems:      'center',
-          justifyContent:  'center',
-          width:           '15px',
-          height:          '15px',
-          borderRadius:    '50%',
-          border:          `1px solid ${open ? '#3A3020' : '#26221C'}`,
-          background:      open ? '#1C1710' : 'transparent',
-          color:           open ? '#C4A96B' : '#4A4038',
-          cursor:          'pointer',
-          flexShrink:      0,
-          padding:         0,
-          lineHeight:      1,
-          transition:      'color 0.15s, background 0.15s, border-color 0.15s',
-          verticalAlign:   'middle',
-          marginLeft:      '6px',
-          position:        'relative',
-          top:             '-1px',
+          display:        'inline-flex',
+          alignItems:     'center',
+          justifyContent: 'center',
+          background:     'none',
+          border:         'none',
+          padding:        0,
+          marginLeft:     '7px',
+          cursor:         'pointer',
+          flexShrink:     0,
+          color:          open ? '#C4A96B' : '#6B6358',
+          transition:     'color 0.15s',
+          verticalAlign:  'middle',
+          position:       'relative',
+          top:            '-1px',
+          lineHeight:     1,
         }}
-        onMouseEnter={e => {
-          if (open) return;
-          e.currentTarget.style.color       = '#8B8478';
-          e.currentTarget.style.borderColor = '#3A3520';
-        }}
-        onMouseLeave={e => {
-          if (open) return;
-          e.currentTarget.style.color       = '#4A4038';
-          e.currentTarget.style.borderColor = '#26221C';
-        }}
+        onMouseEnter={e => { if (!open) e.currentTarget.style.color = '#C4A96B'; }}
+        onMouseLeave={e => { if (!open) e.currentTarget.style.color = '#6B6358'; }}
       >
-        <span style={{ fontSize: '8px', fontWeight: 700, fontFamily: 'Inter, sans-serif', letterSpacing: 0 }}>?</span>
+        <HelpCircle size={14} strokeWidth={1.75} />
       </button>
 
       {/* Popover — rendered into <body> to avoid clipping */}
