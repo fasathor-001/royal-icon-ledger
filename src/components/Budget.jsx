@@ -8,6 +8,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { usePinGate, usePinRowGate, useSectionPin } from './PinGate';
+import HelpTip from './HelpTip';
 import {
   Wallet, Plus, X, Edit2, Check, AlertTriangle, Lock, Unlock,
   ArrowRight, Shield, Repeat, Zap, ShoppingCart, Coffee, Home,
@@ -301,7 +302,12 @@ export default function Budget({ data, setData, stats }) {
       {/* Envelopes list */}
       <section className="card p-7">
         <div className="flex items-baseline justify-between mb-5">
-          <h2 className="display text-2xl">Envelopes</h2>
+          <h2 className="display text-2xl" style={{ display: 'flex', alignItems: 'center' }}>
+            Envelopes
+            <HelpTip title="Budget Envelopes">
+              Each envelope is a spending bucket with its own monthly cap and rules. When you log a purchase you tag it to an envelope — the app tracks usage and enforces your limits. Go to Setup &amp; Salary, click the ✉ icon on any variable expense to create its envelope automatically.
+            </HelpTip>
+          </h2>
           <button
             onClick={() => setView('setup')}
             className="btn px-3 py-1.5 text-xs"
@@ -722,7 +728,15 @@ function EnvelopeEditCard({ envelope, onUpdate, onRemove, locked, onClickLocked,
               />
             </div>
             <div>
-              <div className="label mb-1" style={{ color: '#8B8478' }}>Block mode</div>
+              <div className="label mb-1" style={{ color: '#8B8478', display: 'flex', alignItems: 'center' }}>
+                Block mode
+                <HelpTip title="Block Mode">
+                  Controls what happens when this envelope runs out of budget.<br /><br />
+                  <strong style={{ color: '#E8E2D5' }}>Soft</strong> — shows a warning but still allows the purchase.<br />
+                  <strong style={{ color: '#E8E2D5' }}>Hard</strong> — blocks the purchase entirely until the envelope resets.<br />
+                  <strong style={{ color: '#E8E2D5' }}>PIN</strong> — requires your PIN to override the block.
+                </HelpTip>
+              </div>
               <select
                 value={envelope.blockMode}
                 onChange={locked ? undefined : (e) => onUpdate({ blockMode: e.target.value })}
@@ -737,7 +751,15 @@ function EnvelopeEditCard({ envelope, onUpdate, onRemove, locked, onClickLocked,
               </select>
             </div>
             <div>
-              <div className="label mb-1" style={{ color: '#8B8478' }}>Rollover</div>
+              <div className="label mb-1" style={{ color: '#8B8478', display: 'flex', alignItems: 'center' }}>
+                Rollover
+                <HelpTip title="Month-End Rollover">
+                  What happens to unspent balance when the month closes.<br /><br />
+                  <strong style={{ color: '#E8E2D5' }}>Reset</strong> — unused balance disappears; cap returns to full.<br />
+                  <strong style={{ color: '#E8E2D5' }}>Rollover</strong> — unspent carries forward into next month's cap. Overspend is deducted.<br />
+                  <strong style={{ color: '#E8E2D5' }}>Sweep</strong> — unspent moves to your buffer; cap resets to full.
+                </HelpTip>
+              </div>
               <select
                 value={envelope.rolloverMode}
                 onChange={locked ? undefined : (e) => onUpdate({ rolloverMode: e.target.value })}

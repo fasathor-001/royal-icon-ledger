@@ -2538,8 +2538,13 @@ function Setup({ data, stats, setData }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
+        <h1 className="display text-4xl mb-2" style={{ fontWeight: 300, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
           Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>real numbers</span>
+          <HelpTip title={isFoundation ? 'Setup & Savings' : 'Setup & Salary'}>
+            {isFoundation
+              ? 'This is where you define your financial reality — your fixed monthly costs, how much you can spend freely, and how much you set aside each month for savings. Everything else in the app flows from these numbers.'
+              : 'This is where you define your financial reality — every fixed monthly expense, your discretionary spending budget, and how much of your salary feeds your buffer. Every calculation in the app flows from these numbers. Keep them accurate and honest.'}
+          </HelpTip>
         </h1>
         <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
           {isFoundation
@@ -2750,7 +2755,15 @@ function Setup({ data, stats, setData }) {
 
       {/* Spending and reserve */}
       <section className="card rl-cp">
-        <h2 className="display text-2xl mb-5">{isFoundation ? 'Spending & savings' : 'Spending & buffer reserve'}</h2>
+        <h2 className="display text-2xl mb-5" style={{ display: 'flex', alignItems: 'center' }}>
+          {isFoundation ? 'Spending & savings' : 'Spending & buffer reserve'}
+          <HelpTip title={isFoundation ? 'Spending & Savings' : 'Spending & Buffer Reserve'}>
+            {isFoundation
+              ? <><strong style={{ color: '#E8E2D5' }}>Monthly spending budget</strong> — the amount you allow yourself to spend freely each month on day-to-day life outside fixed costs.<br /><br /><strong style={{ color: '#E8E2D5' }}>Monthly savings contribution</strong> — a fixed amount automatically directed to your savings every month, independent of what you earn.</>
+              : <><strong style={{ color: '#E8E2D5' }}>Monthly spending budget</strong> — the discretionary amount you allow yourself each month. Unused balance rolls forward or sweeps to your buffer at month end.<br /><br /><strong style={{ color: '#E8E2D5' }}>Buffer reserve from salary</strong> — a fixed monthly amount that feeds your buffer in addition to trading profits. Useful for steady accumulation between trading months.</>
+            }
+          </HelpTip>
+        </h2>
         <div className="grid md:grid-cols-2 gap-5">
           <div>
             <div className="label mb-2" style={{ color: '#8B8478' }}>Monthly spending budget</div>
@@ -2777,7 +2790,15 @@ function Setup({ data, stats, setData }) {
 
       {/* Buffer settings */}
       <section className="card rl-cp">
-        <h2 className="display text-2xl mb-2">{isFoundation ? 'Savings target' : 'Buffer target'}</h2>
+        <h2 className="display text-2xl mb-2" style={{ display: 'flex', alignItems: 'center' }}>
+          {isFoundation ? 'Savings target' : 'Buffer target'}
+          <HelpTip title={isFoundation ? 'Savings Target' : 'Buffer Target'}>
+            {isFoundation
+              ? <><strong style={{ color: '#E8E2D5' }}>Target months</strong> — how many months of expenses your savings should cover. 3–6 months is a solid starting goal for most.</>
+              : <><strong style={{ color: '#E8E2D5' }}>Target months</strong> — how many months of salary your buffer should hold. Default is 18 for sole earners with dependants.<br /><br /><strong style={{ color: '#E8E2D5' }}>Protect threshold</strong> — if your buffer drops below this many months, Protect Mode activates automatically and redirects 100% of profits back to rebuilding it.</>
+            }
+          </HelpTip>
+        </h2>
         <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
           {isFoundation
             ? 'How many months of expenses should your savings cover? Start with 3–6 months.'
@@ -3143,8 +3164,11 @@ function TradingTab({ data, stats, setData }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
+        <h1 className="display text-4xl mb-2" style={{ fontWeight: 300, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
           Trading <span style={{ fontStyle: 'italic', color: '#5B7FB8' }}>P&L</span>
+          <HelpTip title="Trading P&L">
+            This tab keeps your trading business completely separate from your family finances. Log your gross monthly profit or loss here — the Profit Allocator uses it to calculate tax reserves and route the remainder. The Drawdown Protocol monitors your risk exposure automatically.
+          </HelpTip>
         </h1>
         <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
           The business, kept separate. Volatility lives here so it doesn't reach your family's daily life.
@@ -3233,7 +3257,12 @@ function TradingTab({ data, stats, setData }) {
 
       {sortedHistory.length > 0 && (
         <section className="card p-6">
-          <h2 className="display text-2xl mb-5">P&L history</h2>
+          <h2 className="display text-2xl mb-5" style={{ display: 'flex', alignItems: 'center' }}>
+            P&L history
+            <HelpTip title="P&L History">
+              Your month-by-month trading results as a bar chart. Green bars are profitable months, red are losses. Use this to spot performance patterns — consistent profitable months, seasonal slumps, or recovery after drawdown periods.
+            </HelpTip>
+          </h2>
           <div style={{ height: '260px' }}>
             <ResponsiveContainer>
               <BarChart data={sortedHistory} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
@@ -4046,8 +4075,11 @@ function History({ data, stats, setData }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
+        <h1 className="display text-4xl mb-2" style={{ fontWeight: 300, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
           Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>history</span>
+          <HelpTip title="Your History">
+            A time-series record of your financial position. Each snapshot captures your balances at a moment in time — tap the Snapshot button in the header whenever you want to record where you stand. The chart and list here show how your net worth has moved over time.
+          </HelpTip>
         </h1>
         <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
           Snapshots show your financial position over time. Take a snapshot anytime — weekly, monthly, or whenever something significant changes.
@@ -4066,7 +4098,12 @@ function History({ data, stats, setData }) {
         <>
           {/* Chart */}
           <section className="card p-6">
-            <h2 className="display text-2xl mb-5">Net worth over time</h2>
+            <h2 className="display text-2xl mb-5" style={{ display: 'flex', alignItems: 'center' }}>
+              Net worth over time
+              <HelpTip title="Net Worth Over Time">
+                Each point on this chart is a snapshot you saved. The line shows the combined total of all your tracked balances. Gaps between snapshots are normal — the chart connects the dots. Take snapshots regularly (weekly or monthly) for the most useful picture.
+              </HelpTip>
+            </h2>
             <div style={{ height: '320px' }}>
               <ResponsiveContainer>
                 <AreaChart data={sortedSnapshots} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
@@ -4099,7 +4136,12 @@ function History({ data, stats, setData }) {
 
           {/* Snapshot list */}
           <section className="card p-6">
-            <h2 className="display text-2xl mb-5">All snapshots</h2>
+            <h2 className="display text-2xl mb-5" style={{ display: 'flex', alignItems: 'center' }}>
+              All snapshots
+              <HelpTip title="All Snapshots">
+                Every snapshot you've saved, most recent first. Each one records your exact balances at that moment — buffer, trading capital, long-term savings, and total net worth. Green/red arrows show the change since the previous snapshot. Use these to review your progress and spot trends.
+              </HelpTip>
+            </h2>
             <div className="space-y-3">
               {[...sortedSnapshots].reverse().map((s, i) => {
                 const prev = sortedSnapshots[sortedSnapshots.length - 2 - i];
@@ -4917,7 +4959,12 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
 
               {/* Currency */}
               <section className="card p-6">
-                <h2 className="display text-2xl mb-1">Currency</h2>
+                <h2 className="display text-2xl mb-1" style={{ display: 'flex', alignItems: 'center' }}>
+                  Currency
+                  <HelpTip title="Currency">
+                    Changes how all amounts are displayed throughout the app — symbol, formatting, and separators. It does not convert your existing values. If you switch currency, update your balances manually to reflect the correct amounts in the new currency.
+                  </HelpTip>
+                </h2>
                 <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
                   This only changes how amounts are displayed. It does not convert existing values.
                 </p>
@@ -4993,7 +5040,16 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
 
               {/* Income profile — display only, set during onboarding */}
               <section className="card p-6">
-                <h2 className="display text-2xl mb-1">Income profile</h2>
+                <h2 className="display text-2xl mb-1" style={{ display: 'flex', alignItems: 'center' }}>
+                  Income profile
+                  <HelpTip title="Income Profile">
+                    Your profile determines which features and tabs are available.<br /><br />
+                    <strong style={{ color: '#E8E2D5' }}>Variable</strong> — trading, freelance, or business income. Includes Trading P&L tab and full Profit Allocator.<br />
+                    <strong style={{ color: '#E8E2D5' }}>Fixed</strong> — salary or pension. No Trading P&L tab. Surplus Allocator replaces Profit Allocator.<br />
+                    <strong style={{ color: '#E8E2D5' }}>Mixed</strong> — salary plus side income or trading. All tabs active.<br /><br />
+                    This is set during onboarding and cannot be changed without assisted re-onboarding.
+                  </HelpTip>
+                </h2>
                 <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
                   This is your foundational account type — declared during onboarding. It shapes how the system works for you and cannot be changed without an assisted re-onboarding.
                 </p>
@@ -5242,8 +5298,11 @@ function Rules({ data, stats, setData, user }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="display text-4xl mb-2" style={{ fontWeight: 300 }}>
+        <h1 className="display text-4xl mb-2" style={{ fontWeight: 300, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
           Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>rules</span>
+          <HelpTip title="Your Rules">
+            Every number the system uses to make decisions — tax rate, stage allocation percentages, spending gate threshold, and your financial goals. Changes here affect how profits are split and when the impulse gate fires. PIN-protected to prevent impulsive adjustments.
+          </HelpTip>
         </h1>
         <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
           Every threshold and percentage in the system. Adjust them to match your situation.
@@ -5264,7 +5323,12 @@ function Rules({ data, stats, setData, user }) {
 
       {/* Tax reserve — standard users only */}
       {!isFoundation && <section className="card p-6">
-        <h2 className="display text-2xl mb-3">Tax reserve</h2>
+        <h2 className="display text-2xl mb-3" style={{ display: 'flex', alignItems: 'center' }}>
+          Tax reserve
+          <HelpTip title="Tax Reserve">
+            The percentage withheld from gross {data.incomeType === 'fixed' ? 'surplus' : 'trading profit'} before any allocation happens. This money is ring-fenced — it never reaches your buffer, trading capital, or goals. Consult a tax advisor for your actual rate. Default is 25%.
+          </HelpTip>
+        </h2>
         <p className="text-sm mb-4" style={{ color: '#B0A898' }}>Percentage of gross trading profit set aside for taxes before allocation. Talk to a tax advisor for your real rate.</p>
         <div className="grid md:grid-cols-3 gap-3 items-end">
           <div>
@@ -5279,7 +5343,12 @@ function Rules({ data, stats, setData, user }) {
 
       {/* Stage rules — standard users only */}
       {!isFoundation && <section className="card rl-cp">
-        <h2 className="display text-2xl mb-3">Profit allocation by stage</h2>
+        <h2 className="display text-2xl mb-3" style={{ display: 'flex', alignItems: 'center' }}>
+          {data.incomeType === 'fixed' ? 'Surplus allocation by stage' : 'Profit allocation by stage'}
+          <HelpTip title="Allocation by Stage">
+            Each row defines how your net {data.incomeType === 'fixed' ? 'surplus' : 'profit'} (after taxes) is split across buffer, long-term savings, trading capital, goals, and lifestyle — depending on which stage you're currently in. Percentages in each row must add up to 100%. The app warns you if they don't.
+          </HelpTip>
+        </h2>
         <p className="text-sm mb-5" style={{ color: '#B0A898' }}>How net trading profit (after taxes) is split based on which stage you're in. Each row should add to 100%.</p>
         {[
           { key: 'stage1', label: 'Stage 1 (building floor)', desc: 'Below crisis floor — protect family first' },
@@ -5318,7 +5387,12 @@ function Rules({ data, stats, setData, user }) {
 
       {/* Spending Gate */}
       <section className="card p-6">
-        <h2 className="display text-2xl mb-3">Spending Gate threshold</h2>
+        <h2 className="display text-2xl mb-3" style={{ display: 'flex', alignItems: 'center' }}>
+          Spending Gate threshold
+          <HelpTip title="Spending Gate">
+            Any purchase at or above this amount triggers the full impulse control gate — you must log it, wait, and return to decide. Below the threshold, purchases are logged directly without the waiting period. Set it to the amount where you want friction to kick in. Default is {getCurrency(data.currency).symbol}50.
+          </HelpTip>
+        </h2>
         <p className="text-sm mb-4" style={{ color: '#B0A898' }}>Purchases at or above this amount trigger the full sleep-on-it gate.</p>
         <div className="grid md:grid-cols-3 gap-3">
           <div>
@@ -5334,7 +5408,12 @@ function Rules({ data, stats, setData, user }) {
       {/* Future Goals */}
       <section className="card rl-cp">
         <div className="flex items-baseline justify-between mb-2">
-          <h2 className="display text-2xl">Future goals</h2>
+          <h2 className="display text-2xl" style={{ display: 'flex', alignItems: 'center' }}>
+            Future goals
+            <HelpTip title="Future Goals">
+              Named financial targets that draw from your shared goals balance — a car, a course, a home deposit, a holiday. Define as many as you like. Progress is tracked against your current <em>Future Goals</em> balance, so adding money there via the Profit Allocator moves all goals forward simultaneously.
+            </HelpTip>
+          </h2>
           <span className="label" style={{ color: '#8B8478' }}>Optional</span>
         </div>
         <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
