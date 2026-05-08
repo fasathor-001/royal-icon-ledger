@@ -26,18 +26,31 @@ export default function RolloverModal({ data, setData, onClose }) {
   const rolloverItems = useMemo(() => {
     const envelopes = data.envelopes || [];
     return envelopes.map(env => {
+      // Fix #1: Discretionary includes legacy null-id entries (same rule as
+      // App.jsx stats and Budget.jsx envelopeSpending). Other envelopes keep
+      // the exact-match filter — no change to their behaviour.
       const spent = (data.impulses || [])
-        .filter(i => i.timestamp >= prevMonth.start && i.timestamp <= prevMonth.end && i.envelopeId === env.id)
+        .filter(i => {
+          if (i.timestamp < prevMonth.start || i.timestamp > prevMonth.end) return false;
+          if (env.isDiscretionary) return i.envelopeId === env.id || i.envelopeId == null;
+          return i.envelopeId === env.id;
+        })
         .reduce((s, i) => s + i.amount, 0);
       const unspent = Math.max(0, env.cap - spent);
       const overspent = Math.max(0, spent - env.cap);
-      return { ...env, spent, unspent, overspent, pct: env.cap > 0 ? (spent / env.cap) * 100 : 0 };
+      // Fix #2: Discretionary must never reset, even if stored rolloverMode is
+      // 'reset' (shouldn't occur via normal flow but possible via data restore
+      // or future bugs). Compute once here; all downstream code reads effectiveMode.
+      const effectiveMode = env.isDiscretionary && env.rolloverMode === 'reset'
+        ? 'roll'
+        : env.rolloverMode;
+      return { ...env, spent, unspent, overspent, pct: env.cap > 0 ? (spent / env.cap) * 100 : 0, effectiveMode };
     });
   }, [data.envelopes, data.impulses, prevMonth.start, prevMonth.end]);
 
-  const swept = rolloverItems.filter(e => e.rolloverMode === 'sweep');
-  const rolled = rolloverItems.filter(e => e.rolloverMode === 'roll');
-  const reset = rolloverItems.filter(e => e.rolloverMode === 'reset');
+  const swept = rolloverItems.filter(e => e.effectiveMode === 'sweep');
+  const rolled = rolloverItems.filter(e => e.effectiveMode === 'roll');
+  const reset  = rolloverItems.filter(e => e.effectiveMode === 'reset');
   const totalSwept = swept.reduce((s, e) => s + e.unspent, 0);
 
   const confirm = () => {
@@ -47,7 +60,7 @@ export default function RolloverModal({ data, setData, onClose }) {
       const updatedEnvelopes = (d.envelopes || []).map(env => {
         const item = rolloverItems.find(r => r.id === env.id);
         if (!item) return env;
-        if (env.rolloverMode === 'roll' && item.unspent > 0) {
+        if (item.effectiveMode === 'roll' && item.unspent > 0) {
           return { ...env, cap: env.cap + item.unspent };
         }
         return env;
@@ -73,12 +86,12 @@ export default function RolloverModal({ data, setData, onClose }) {
   };
 
   const actionLabel = (env) => {
-    if (env.rolloverMode === 'sweep') {
+    if (env.effectiveMode === 'sweep') {
       return env.unspent > 0
         ? { text: `Sweep ${fmt(env.unspent)} → buffer`, color: '#7FA068' }
         : { text: 'Nothing to sweep', color: '#8B8478' };
     }
-    if (env.rolloverMode === 'roll') {
+    if (env.effectiveMode === 'roll') {
       return env.unspent > 0
         ? { text: `Roll over ${fmt(env.unspent)}`, color: '#B89968' }
         : { text: 'Nothing to roll', color: '#8B8478' };
