@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, BellOff, Check, Loader, X } from 'lucide-react';
+import HelpTip from './HelpTip';
 import {
   savePushSubscription,
   deletePushSubscription,
@@ -347,8 +348,11 @@ export default function NotificationSettings({ user, data, setData }) {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
         <Bell size={16} style={{ color: '#D97757' }} />
-        <h2 style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: 22, fontWeight: 400, margin: 0 }}>
+        <h2 style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: 22, fontWeight: 400, margin: 0, display: 'flex', alignItems: 'center' }}>
           Notifications
+          <HelpTip title="Notifications">
+            Push alerts keep you on track without needing to open the app. Daily morning reminders nudge your morning check-in, weekly alerts remind you to run a Pulse check, and monthly alerts flag your review. Requires installing Royal Ledger to your home screen on iOS. You can set your timezone to ensure alerts fire at the right local time.
+          </HelpTip>
         </h2>
       </div>
       <p style={{ color: '#B0A898', fontSize: 14, marginBottom: 20, marginTop: 4 }}>

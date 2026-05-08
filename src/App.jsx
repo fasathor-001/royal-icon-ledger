@@ -4458,7 +4458,12 @@ function CloudSyncPanel({ user, data, setData, syncStatus, isOnline, lastSyncedA
 
   return (
     <section className="card p-6">
-      <h2 className="display text-2xl mb-1">Cloud Sync</h2>
+      <h2 className="display text-2xl mb-1" style={{ display: 'flex', alignItems: 'center' }}>
+        Cloud Sync
+        <HelpTip title="Cloud Sync">
+          When signed in, your data syncs automatically to the cloud on every change. If you use Royal Ledger on multiple devices, use "Download cloud → device" to pull the latest data from another device, or "Upload local → cloud" to push this device's data to the cloud.
+        </HelpTip>
+      </h2>
       <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
         Your data syncs automatically when signed in. Use the manual controls below if needed.
       </p>
@@ -4589,7 +4594,12 @@ function PinCard({ user, data, setData }) {
     <section className="card p-6">
       <div className="flex items-center gap-2 mb-2">
         <KeyRound size={16} style={{ color: '#5B7FB8' }} />
-        <h2 className="display text-2xl">Security PIN</h2>
+        <h2 className="display text-2xl" style={{ display: 'flex', alignItems: 'center' }}>
+          Security PIN
+          <HelpTip title="Security PIN">
+            A 4–6 digit PIN that locks structural settings — income targets, setup edits, and account actions. It prevents impulsive or accidental changes. The PIN is yours: it's stored locally and is never sent to a server. If you forget it, you can submit a reset request to support.
+          </HelpTip>
+        </h2>
       </div>
       <p className="text-sm mb-4" style={{ color: '#B0A898' }}>
         Your PIN protects important structural changes — setup edits, income targets, account actions.
@@ -4875,7 +4885,12 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
 
               {/* Profile */}
               <section className="card p-6">
-                <h2 className="display text-2xl mb-4">Profile</h2>
+                <h2 className="display text-2xl mb-4" style={{ display: 'flex', alignItems: 'center' }}>
+                  Profile
+                  <HelpTip title="Profile">
+                    Your display name appears in the app header in place of your email. It's cosmetic — changing it has no effect on your account login or data. Your email address is your login identifier and cannot be changed here.
+                  </HelpTip>
+                </h2>
                 <div className="space-y-4" style={{ maxWidth: '420px' }}>
                   <div>
                     <div className="label mb-2" style={{ color: '#8B8478' }}>Display name</div>
@@ -4907,7 +4922,12 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
 
               {/* Password */}
               <section className="card p-6">
-                <h2 className="display text-2xl mb-1">Password</h2>
+                <h2 className="display text-2xl mb-1" style={{ display: 'flex', alignItems: 'center' }}>
+                  Password
+                  <HelpTip title="Password">
+                    Update your login password. Your session stays active after the change — you won't be signed out. Use at least 8 characters. If you forget your password, use the "Forgot password?" link on the sign-in screen.
+                  </HelpTip>
+                </h2>
                 <p className="text-sm mb-5" style={{ color: '#B0A898' }}>Update your login password. You'll stay signed in after changing it.</p>
                 <form onSubmit={handleChangePassword} style={{ maxWidth: '420px' }}>
                   <div className="space-y-4">
@@ -5629,7 +5649,12 @@ function Backup({ data, setData }) {
     <section className="card-warm p-6">
       <div className="flex items-center gap-2 mb-2">
         <Save size={16} style={{ color: '#D97757' }} />
-        <h2 className="display text-2xl">Backup & restore</h2>
+        <h2 className="display text-2xl" style={{ display: 'flex', alignItems: 'center' }}>
+          Backup &amp; restore
+          <HelpTip title="Backup & Restore">
+            Your data lives in this browser. If you clear cookies, switch browsers, or get a new device, you'll lose everything without a backup. Export a JSON file monthly — it's small and takes seconds. To restore, choose the exported file or paste clipboard content. Restoring replaces all current data.
+          </HelpTip>
+        </h2>
       </div>
       <p className="text-sm mb-5" style={{ color: '#B0A898', lineHeight: 1.6 }}>
         Your data lives only in this browser. Export regularly so you don't lose your records if you switch devices, clear cookies, or your browser misbehaves.
