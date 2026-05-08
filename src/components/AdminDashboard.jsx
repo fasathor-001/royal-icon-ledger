@@ -24,9 +24,10 @@ const FILTER_META = {
 };
 
 const NAV_ITEMS = [
-  { id: 'users',    label: 'Users',              icon: Users    },
-  { id: 'pin',      label: 'PIN Reset Requests', icon: KeyRound },
-  { id: 'activity', label: 'Activity Logs',       icon: Activity },
+  { id: 'users',    label: 'Users',              icon: Users     },
+  { id: 'pin',      label: 'PIN Reset Requests', icon: KeyRound  },
+  { id: 'testers',  label: 'Tester Activity',    icon: UserCheck },
+  { id: 'activity', label: 'Activity Logs',       icon: Activity  },
   { id: 'settings', label: 'System Settings',     icon: Settings, disabled: true },
 ];
 
@@ -991,6 +992,10 @@ export default function AdminDashboard({ user }) {
   const [leadsPage, setLeadsPage]                 = useState(0);
   const [pinResetsPage, setPinResetsPage]         = useState(0);
   const [activityPage, setActivityPage]           = useState(0);
+  const [testerActivity, setTesterActivity]       = useState([]);
+  const [testerLoading, setTesterLoading]         = useState(false);
+  const [testerError, setTesterError]             = useState(null);
+  const [testerLoaded, setTesterLoaded]           = useState(false);
 
   const USERS_PAGE_SIZE    = 50;
   const PIN_PAGE_SIZE      = 25;
@@ -1051,6 +1056,23 @@ export default function AdminDashboard({ user }) {
     } catch {} finally { setActivityLoading(false); }
   }, [isAdmin]);
 
+  const fetchTesterActivity = useCallback(async () => {
+    if (!isAdmin || !supabase) return;
+    setTesterLoading(true);
+    setTesterError(null);
+    try {
+      const { data, error: err } = await supabase.rpc('get_tester_activity_summary');
+      if (err) throw err;
+      setTesterActivity(data || []);
+      setTesterLoaded(true);
+    } catch (err) {
+      console.error('[AdminDashboard] fetchTesterActivity:', err);
+      setTesterError(err.message || 'Failed to load tester activity.');
+    } finally {
+      setTesterLoading(false);
+    }
+  }, [isAdmin]);
+
   const logAdminAction = useCallback(async (action, targetEmail, metadata = {}) => {
     if (!supabase || !user?.email) return;
     try {
@@ -1090,6 +1112,13 @@ export default function AdminDashboard({ user }) {
     if (isAdmin && supabase) { fetchLeads(); fetchPinResets(); fetchAccessReqs(); fetchActivityLogs(); }
     else setLoading(false);
   }, [isAdmin, fetchLeads]);
+
+  // Lazy-load tester activity when the tab first becomes active
+  useEffect(() => {
+    if (activeTab === 'testers' && !testerLoaded && !testerLoading) {
+      fetchTesterActivity();
+    }
+  }, [activeTab, testerLoaded, testerLoading, fetchTesterActivity]);
 
   // ── Guards ────────────────────────────────────────────────────────────────
   if (!supabase) {
@@ -1793,6 +1822,116 @@ If you have any questions, just reply to this email.
                     onNext={() => setPinResetsPage(p => p + 1)}
                     itemLabel="requests"
                   />
+                </div>
+              )}
+            </>
+          )}
+
+          {/* ════════════════════ TESTER ACTIVITY TAB ════════════════════ */}
+          {activeTab === 'testers' && (
+            <>
+              <SectionHeader
+                icon={UserCheck}
+                iconColor="#B89968"
+                title="Tester Activity"
+                subtitle="Weekly usage summary — last 7 days. ACTIVE = 3+ days open and 10+ pings. Refresh to update."
+                action={<RefreshBtn onClick={fetchTesterActivity} loading={testerLoading} />}
+              />
+
+              {testerLoading ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '24px 0', color: '#5C5648' }}>
+                  <RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }} />
+                  <span style={{ fontSize: '13px' }}>Loading tester activity…</span>
+                </div>
+
+              ) : testerError ? (
+                <div style={{ background: '#100A08', border: '1px solid #3A1810', borderRadius: '6px', padding: '16px 18px' }}>
+                  <div style={{ fontSize: '13px', color: '#C56B5A', fontWeight: 500, marginBottom: '4px' }}>Failed to load</div>
+                  <div style={{ fontSize: '12px', color: '#8B8478', marginBottom: '12px' }}>{testerError}</div>
+                  <div style={{ fontSize: '11px', color: '#5C5648', lineHeight: 1.6 }}>
+                    Make sure the <code style={{ fontFamily: 'monospace', background: '#1A0E0C', padding: '1px 5px', borderRadius: '3px' }}>get_tester_activity_summary</code> RPC exists in Supabase.
+                    Run the SQL in <code style={{ fontFamily: 'monospace', background: '#1A0E0C', padding: '1px 5px', borderRadius: '3px' }}>admin/ADMIN_QUERIES.sql</code>.
+                  </div>
+                </div>
+
+              ) : testerActivity.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '48px 24px' }}>
+                  <UserCheck size={22} style={{ margin: '0 auto 12px', color: '#26221C' }} />
+                  <p style={{ fontSize: '14px', color: '#8B8478', fontWeight: 500, marginBottom: '4px' }}>No activity in the last 7 days</p>
+                  <p style={{ fontSize: '12px', color: '#5C5648' }}>Events appear here once testers open the app and interact with it.</p>
+                </div>
+
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid #1A1610' }}>
+                        {['Email', 'Active Days', 'App Opens', 'Pings', 'Last Seen', 'Status'].map(col => (
+                          <th key={col} style={{
+                            textAlign: 'left', padding: '8px 12px',
+                            fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em',
+                            textTransform: 'uppercase', color: '#4A4038', whiteSpace: 'nowrap',
+                          }}>
+                            {col}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {testerActivity.map((row, idx) => {
+                        const statusMeta = {
+                          active:   { label: 'ACTIVE',   color: '#7FA068', bg: 'rgba(127,160,104,0.15)' },
+                          weak:     { label: 'WEAK',     color: '#B89968', bg: 'rgba(184,153,104,0.15)' },
+                          inactive: { label: 'INACTIVE', color: '#C56B5A', bg: 'rgba(197,107,90,0.15)'  },
+                        };
+                        const s = statusMeta[row.status] || statusMeta.inactive;
+                        const lastSeen = row.last_seen
+                          ? new Date(row.last_seen).toLocaleString('en-GB', {
+                              day: '2-digit', month: 'short', year: 'numeric',
+                              hour: '2-digit', minute: '2-digit',
+                            })
+                          : '—';
+                        const isLast = idx === testerActivity.length - 1;
+                        return (
+                          <tr
+                            key={row.user_id}
+                            style={{ borderBottom: isLast ? 'none' : '1px solid #141210', transition: 'background 0.1s' }}
+                            onMouseEnter={e => { e.currentTarget.style.background = '#121009'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                          >
+                            <td style={{ padding: '11px 12px', color: '#E8E2D5', fontWeight: 500, maxWidth: '220px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {row.email || <span style={{ color: '#4A4038', fontStyle: 'italic' }}>{row.user_id?.slice(0, 8)}…</span>}
+                            </td>
+                            <td style={{ padding: '11px 12px', color: row.active_days >= 3 ? '#7FA068' : '#B0A898', fontWeight: 600, textAlign: 'center' }}>
+                              {row.active_days}
+                            </td>
+                            <td style={{ padding: '11px 12px', color: '#B0A898', textAlign: 'center' }}>
+                              {row.app_opens}
+                            </td>
+                            <td style={{ padding: '11px 12px', color: '#B0A898', textAlign: 'center' }}>
+                              {row.activity_pings}
+                            </td>
+                            <td style={{ padding: '11px 12px', color: '#5C5648', whiteSpace: 'nowrap' }}>
+                              {lastSeen}
+                            </td>
+                            <td style={{ padding: '11px 12px' }}>
+                              <span style={{
+                                display: 'inline-block', padding: '2px 9px', borderRadius: '999px',
+                                fontSize: '9px', fontWeight: 700, letterSpacing: '0.08em',
+                                background: s.bg, color: s.color, whiteSpace: 'nowrap',
+                              }}>
+                                {s.label}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+
+                  <div style={{ marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #141210', fontSize: '10px', color: '#2A2520', lineHeight: 1.6 }}>
+                    Active days and pings are counted over the last 7 days. Pings only fire when the user is visible and interacting — each ping represents ~60 seconds of genuine engagement.
+                  </div>
                 </div>
               )}
             </>
