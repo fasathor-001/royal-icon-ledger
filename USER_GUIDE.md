@@ -4,468 +4,537 @@
 
 ---
 
-## 1. App Philosophy
+## Table of Contents
 
-Royal Ledger is a discipline system, not a tracker. Most finance apps tell you what you've already spent — this one prevents you from spending what you shouldn't. Every feature exists to enforce a single principle: **protect family money first, build future money second**. The pause between impulse and payment is where wealth is built. If you remove the pause, no budget survives.
+1. [App Philosophy](#1-app-philosophy)
+2. [Getting Started](#2-getting-started)
+3. [Tab-by-Tab Guide](#3-tab-by-tab-guide)
+4. [Feature Deep-Dives](#4-feature-deep-dives)
+5. [Daily / Weekly / Monthly Ritual](#5-daily--weekly--monthly-ritual)
+6. [Emergency Scenarios](#6-emergency-scenarios)
+7. [Common Mistakes](#7-common-mistakes)
+8. [Success Metrics](#8-success-metrics)
 
 ---
 
-## 2. Tab-by-Tab Guide
+## 1. App Philosophy
 
-### Command
+Royal Ledger is a discipline system, not a tracker. Generic finance apps tell you what you've already spent. This one prevents the spending you shouldn't do, automates the saving you said you'd do, and protects the money your family depends on.
 
-**Purpose**: The home screen. Shows your current state at a glance — total assets, buffer status, current stage, drawdown zone, backup reminders, and quick-action buttons. This is where you start every session.
+Three operating principles:
+
+**1. Family money first.** Buffer (cash reserves for survival) is funded before any other allocation. Trading capital, long-term investments, and lifestyle spending all wait their turn behind family protection.
+
+**2. Trading is a job, not a windfall.** Profits flow through a tax reserve and a stage-based waterfall. Money you never see in your spending account is money you cannot impulse-spend.
+
+**3. The pause is the system.** The Spending Gate inserts a moment between impulse and payment. That moment — not willpower, not motivation — is what protects your wealth.
+
+The app is field-driven. Every calculation, warning, and rule depends on real numbers entered correctly. Garbage in, garbage out.
+
+---
+
+## 2. Getting Started
+
+### Account
+
+Royal Ledger is invite-only. You need an invite code to create an account. If you have one, go to the app at [royalledger.app](https://royalledger.app), click **Create account**, enter your invite code and email, and set a password. A confirmation link will be sent to your email — click it to activate.
+
+If you don't have an invite code, click **Request access** on the login page.
+
+### Cloud sync
+
+Your data is stored on secure cloud servers and synced to every device you sign in on. Changes save automatically — you don't need to manually back anything up for basic use. A sync indicator appears briefly in the bottom-right corner when data is being saved; a green "Synced ✓" confirms it went through. If you're offline, data saves locally and syncs when you reconnect.
+
+### PIN setup
+
+After completing onboarding, the app will ask you to set a security PIN (4–6 digits). This PIN protects structural changes like editing expense entries, adjusting stage rules, and resetting data. Keep it somewhere you won't lose it — it cannot be recovered without admin assistance.
+
+### Onboarding
+
+The setup wizard walks you through adding your monthly expenses, setting your spending budget, and choosing your income profile. Complete it fully before using any other tab. Honest numbers here are what make the rest of the system work.
+
+### Income profiles
+
+During onboarding you'll choose an income type. This changes what the app shows:
+
+| Profile | What changes |
+|---|---|
+| **Variable** (default) | Full feature set — trading, profit allocator, drawdown protocol |
+| **Fixed salary** | Trading tab hidden; Profit Allocator relabeled "Surplus Allocator"; trading allocation automatically redirected to goals |
+| **Mixed** | Same as Variable |
+| **Foundation** | Simplified language throughout ("Savings" instead of "Buffer", "Money Allocator" instead of "Profit Allocator"); trading hidden |
+
+---
+
+## 3. Tab-by-Tab Guide
+
+### Command (Home)
+
+**Purpose**: The home screen. Shows your current state at a glance — total assets, buffer status, stage, drawdown zone, spending this month, and any active warnings.
 
 **When to use**: Daily. Open the app, glance at Command, close it. 30 seconds.
 
-**Key actions**:
-- Read the four top metric cards (Buffer, Trading Capital, Long-term, Total)
-- Note the Stage banner — tells you which financial stage you're in
-- Check warning banners — backup reminders, drawdown alerts, rollover prompts
-- Use Quick Action buttons to jump to Profit Allocator, Impulse Control, Trading P&L, or Monthly Review
-- Click the **Snapshot** button (top right) to record current state for history
+**Key elements**:
+- **Balance cards** — Family Buffer, Trading Capital, Long-term, Goals. Edit them directly when your real account balances change.
+- **Stage banner** — which of the four stages you're currently in, and how far to the next.
+- **Months Stored** — how many months of full salary your buffer can cover right now.
+- **This Month spending** — what you've spent vs your discretionary budget this month.
+- **Warning banners** — backup reminders, drawdown alerts, rollover prompts. Act on anything that's orange or red.
+- **Quick Action buttons** — jump to Profit Allocator, Impulse Control, Trading P&L, or Monthly Review.
+- **Snapshot button** (top right, camera icon) — records current state and downloads a backup file.
 
-**Discipline rule**: Do not skip the Command tab. The first 30 seconds tell you whether to act normally, tighten up, or pause completely. Skipping it means you're trading on autopilot.
+**Discipline rule**: Open Command first, every session. The 30-second read tells you whether to act normally, tighten up, or pause completely.
 
 ---
 
 ### Setup & Salary
 
-**Purpose**: Defines the foundation of your entire system. Your monthly expenses, spending budget, buffer reserve, buffer target, and stage thresholds all live here. Every other number in the app derives from this tab.
+**Purpose**: The foundation. Your monthly expenses, spending budget, buffer reserve, and buffer target all live here. Every calculation in the app derives from this tab.
 
-**When to use**: Once during initial setup, then quarterly to update for life changes (rent increase, new dependent, salary change).
+**When to use**: Once during onboarding, then quarterly when life changes (rent increase, new dependent, income change).
 
-**Key actions**:
-- Add monthly expenses with name, amount, category
-- Set Monthly Spending Budget (discretionary money for the month)
-- Set Buffer Reserve from Salary (auto-feed into buffer each payday)
-- Set Buffer Target (number of months of full salary stored as cash)
-- Adjust Spending Gate threshold (default: any purchase ≥ this amount triggers the gate)
-- View calculated salary total (expenses + spending + reserve)
+**Key fields**:
+- **Expenses list** — every recurring monthly debit. Name, amount, category. Add each one.
+- **Monthly Spending Budget** — your total discretionary allowance (the pool that Budget envelopes split).
+- **Buffer Reserve** — amount set aside from salary every month to feed the buffer, independent of trading profit.
+- **Buffer Target Months** — how many months of salary you want stored as buffer (18 is the fortified target for variable-income earners).
+- **Buffer Protect Months** — threshold below which buffer-protect mode activates automatically.
+- **Spending Gate Threshold** — purchases at or above this amount trigger the gate pause. Default R100.
+- **Monthly Salary (display)** — auto-calculated: Total Expenses + Spending Budget + Buffer Reserve.
 
-**Discipline rule**: The numbers here must reflect reality, not aspiration. If you "want" to spend R3,000 but actually spend R5,000, set it to R5,000 and tighten over time. Lying to yourself here breaks every downstream feature.
+**Discipline rule**: Enter what you actually spend, not what you wish you spent. Underestimating here makes every downstream feature wrong.
 
 ---
 
 ### Budget
 
-**Purpose**: Splits your spending budget into envelopes (categories) with individual rules. Each envelope has a cap, a block mode (what happens when you exceed it), and a rollover mode (what happens at month-end). This is where impulse spending dies.
+**Purpose**: Splits your spending budget into named envelopes (categories) with individual rules for blocking and rollover. Where the monthly spending discipline lives.
 
-**When to use**: Initial setup once, then weekly check-in to see envelope progress, monthly to apply rollover.
+**When to use**: Initial setup once. Weekly check-in. Monthly rollover.
 
-**Key actions**:
-- Click **Generate envelopes** on first setup — system suggests envelopes based on your expenses
-- Review each envelope: name, cap, block mode, rollover mode
-- Click **Manage** to edit, add, or remove envelopes anytime
-- Watch progress bars during the month — green (under 50%), yellow (50–80%), orange (80–100%), red (over)
-- Watch pace projections — system tells you if your spending velocity will exceed cap by month-end
-- Apply month-end rollover when prompted (sweeps eligible envelopes to buffer)
+**Envelope settings**:
 
-**Discipline rule**: Total envelope caps must equal your spending budget exactly. If they don't, either the budget is wrong or the envelopes are wrong. Reconcile both.
+*Block mode — what happens when you hit the cap:*
+- **Soft warning** — shows you're over but allows the purchase. Use for essentials.
+- **Hard block** — refuses purchases that would exceed the cap. Use for discretionary spend.
+- **PIN override** — hard block, but bypassable with your security PIN. For safety-valve categories.
+
+*Rollover mode — what happens to unspent money at month-end:*
+- **Reset** — use it or lose it. Fresh budget each month. Best for groceries.
+- **Roll over** — unspent carries to next month's cap. Best for lumpy categories (gifts, household repairs).
+- **Sweep to buffer** — unspent transfers directly to your Family Buffer. The wealth-building option. Best for discretionary categories you want to under-spend.
+
+**Month-end rollover**:
+
+Two triggers — whichever comes first:
+1. **Auto-rollover modal** — at the start of a new month, if last month hasn't been rolled over, the app shows an automatic modal summarising what will happen to each envelope. Confirm it to execute.
+2. **Manual button** — in the last three days of the month, the Budget tab shows an **Apply rollover** button. Click it to execute early.
+
+The rollover is intentionally user-confirmed — it forces you to acknowledge the month is closing and verify everything is logged correctly before committing.
+
+**Pace projection**: Each envelope shows a predicted end-of-month total based on current spending rate. If pace projects you'll be over, tighten now, not at month-end.
+
+**Strategic combination**: Discretionary envelopes (eating out, personal) set to Hard block + Sweep to buffer literally cannot let you overspend, and reward under-spending with automatic savings.
 
 ---
 
 ### Profit Allocator
 
-**Purpose**: When trading produces profit, this tab decides where it goes. Applies the waterfall rule based on your current stage — buffer first, then trading capital, then long-term investments. Also reserves money for tax.
+*(Called "Surplus Allocator" for Fixed income users, "Money Allocator" for Foundation users)*
 
-**When to use**: After every profitable trading week or month, before you touch the money. Never spend trading profit without running it through here.
+**Purpose**: Routes trading profit through a tax reserve and stage-based waterfall before any of it becomes spendable. Prevents profit from becoming an impulse windfall.
 
-**Key actions**:
-- Enter the profit amount
-- Set tax reserve percentage (default 25% — adjust to your tax bracket)
-- System shows the waterfall split based on your current stage
-- Review the breakdown (buffer / trading / long-term / tax)
-- Click **Apply allocation** to record the split and update balances
-- Click **Cancel** to start over
+**When to use**: Every time you have realized profit. Before transferring anything anywhere.
 
-**Discipline rule**: Profit is not income until it has passed through the allocator. Money you never see in your spending account is money you cannot impulse-spend.
+**Process**:
+1. Enter gross profit amount.
+2. Tax reserve is subtracted first (your configured %, default 25%).
+3. Net profit flows down the waterfall based on your current stage.
+4. Review the breakdown — exact amounts going to Buffer / Long-term / Trading / Goals / Lifestyle.
+5. Click **Apply allocation** to update your balance fields. Then physically transfer matching amounts in your real bank accounts.
+
+**Why it matters**: Profit feels like a windfall. Windfalls trigger lifestyle creep. The allocator turns profit into a structured deposit before your brain has a chance to spend it.
+
+**Tax reserve**: Set this to match your actual tax bracket. South African traders typically reserve 18–36%. Treat reserved tax as already paid — keep it in a separate sub-account untouched until tax season.
 
 ---
 
 ### Trading P&L
 
-**Purpose**: Tracks monthly trading performance over time. Shows win rate, average win/loss ratio, current trading capital, year-to-date P&L. Houses the Drawdown Protocol — the trader's risk discipline system.
+*(Hidden for Fixed income and Foundation users)*
 
-**When to use**: Monthly to log P&L. Weekly during volatile periods to check drawdown zone.
+**Purpose**: Tracks monthly trading performance, computes win-rate stats, and runs the Drawdown Protocol — the trader's risk discipline system.
 
-**Key actions**:
-- Update Capital field if it changed (high water mark auto-updates when reaching new peak)
-- Log each month's P&L with the **Log monthly P&L** form
-- Review chart for trend visibility
-- Read Win Rate and Avg W/L stats
-- Check Drawdown Protocol — current zone, recovery needed, active rules
+**When to use**: Update Capital balance weekly minimum. Log P&L monthly. Check the Drawdown Protocol whenever you're trading actively.
 
-**Discipline rule**: Trading P&L is not personal money. Withdrawing from trading capital before completing the profit waterfall through the Allocator is forbidden. Capital protects family income; emotional withdrawals destroy it.
+**Capital field**: Enter your **total trading account balance** — not profit, not deposits alone, not just this month's change. The full equity in your broker account right now. Getting this wrong breaks the entire Drawdown Protocol.
+
+**Drawdown Protocol**: The system tracks your highest-ever Capital (high water mark). Drawdown is how far below that you currently are.
+
+| Zone | Drawdown | Rule |
+|---|---|---|
+| Normal | 0–9% | Full position sizes. Trade your plan. |
+| Caution | 10–19% | Reduce position sizes by 25%. Review last 10 trades. |
+| Defensive | 20–29% | Reduce position sizes by 50%. Consider a week off. |
+| Stop | 30%+ | Stop trading. Strategy review required before resuming. |
+
+The Command tab shows a warning banner when you cross into Caution or worse.
+
+**Reset high water**: Only click this after intentional capital withdrawals (you moved money out on purpose). Never reset to "fix" a drawdown — that destroys the protocol.
 
 ---
 
 ### Impulse Control
 
-**Purpose**: Three sub-views: Spending Gate (24-hour pause for purchases ≥ threshold), Quick Log (retroactive logging), and History & Triggers (pattern analysis of what triggers your spending).
+**Purpose**: Three sub-views — Spending Gate, Quick Log, and History & Triggers.
 
-**When to use**:
-- Spending Gate: Before any purchase ≥ R100 you didn't already plan
-- Quick Log: When you've already bought something — log it without judgment
-- History & Triggers: Weekly pattern review
+**Spending Gate** (before any planned purchase ≥ your gate threshold):
 
-**Key actions**:
-- **Spending Gate**: Enter what + amount + category + envelope + trigger. The gate calculates hours of work the purchase represents and 30-year compound cost. Pick Skip / Sleep on it / Buy.
-- **Quick Log**: Same fields but no gate — just records the purchase
-- **History & Triggers**: Read the trigger breakdown — bored, stressed, social, etc. Knowing the trigger is half the fix. Use the × button to delete bad test entries.
+1. Enter: What is it / Amount / Category / Envelope / Trigger.
+2. The gate checks envelope rules first:
+   - Hard block envelope over cap → blocked, no purchase.
+   - PIN override envelope over cap → PIN prompt.
+   - Soft warning → continues regardless.
+3. Decision screen shows: Hours of work this purchase represents / Money left this month / 30-year compound cost.
+4. Choose: **Skip it** (log nothing) / **Sleep on it** (add to pending list) / **Buy now** (log and record to envelope).
 
-**Discipline rule**: Every purchase ≥ R100 goes through the gate. No exceptions. The discipline isn't in saying no — it's in always asking the question.
+**Quick Log** (for purchases already made):
+Same fields (What / Amount / Category / Trigger) but no gate and no envelope blocking — just records the purchase retroactively. Use it for honest catch-up, not as a way to bypass the gate.
+
+**History & Triggers**:
+- Current month and past months of logged impulses, each showing name, amount, envelope, and date.
+- Trigger breakdown — which emotional state you were in when you spent. Your most common trigger is your biggest spending pattern. Lying here makes the data useless.
+- Delete (×) on any entry to remove it. Clean up test data immediately — bad entries corrupt every downstream calculation.
+
+**Discipline rule**: Every purchase ≥ your gate threshold goes through the Spending Gate. No exceptions. The discipline is in always asking the question, not always saying no.
 
 ---
 
 ### History
 
-**Purpose**: Long-term view. Stacked area chart of buffer / trading / long-term over time, list of all snapshots, ability to delete snapshots if needed.
+**Purpose**: Long-term view. Stacked area chart of buffer / trading / long-term over time, built from snapshots. List of all snapshots with delete option.
 
-**When to use**: Monthly. After taking a month-end snapshot, review the chart to see your trajectory.
+**When to use**: Monthly, after taking a month-end snapshot.
 
-**Key actions**:
-- Read the chart — buffer in orange, trading in blue, long-term in green
-- Scroll the snapshot list to see specific dates
-- Delete bad/test snapshots with the × button
-- Compare current state to where you were 3, 6, 12 months ago
-
-**Discipline rule**: Only meaningful snapshots get kept. Delete test data immediately. Your history must be honest or it lies to future-you.
+- Chart: orange = buffer, blue = trading, green = long-term.
+- Snapshot list: date, all four balances, change from previous snapshot.
+- Delete bad or test snapshots with ×. Bad snapshots distort the chart and the Review tab's buffer-change calculation.
 
 ---
 
 ### Review (Monthly Review)
 
-**Purpose**: Guided end-of-month wrap-up. Shows top-line metrics (spending, P&L, savings rate, buffer change), envelope performance, stage progress, and walks you through three required actions: log P&L, apply rollover, take snapshot.
+**Purpose**: End-of-month guided wrap-up. Aggregates monthly spending, P&L, savings rate, envelope performance, and stage progress into a single page.
 
-**When to use**: Last 3 days of every month, or first 3 days of next month. The system auto-popups during this window if you haven't reviewed yet.
+**When to use**: Last 3 days of every month, or first 3 days of the next. The system auto-popups during this window if you haven't reviewed yet.
 
-**Key actions**:
-- Review the four metric cards
-- Read envelope performance — note which were on target, which weren't, and why
-- See the discipline reward (sweep total going to buffer)
-- Read the auto-generated takeaway message
-- Click through the three end-of-month actions
-- Click **Mark month as reviewed** when done
+**What it shows**:
+- Four metric cards: Spent / Trading P&L / Savings Rate / Buffer Change.
+- Envelope performance — each envelope with on-target indicator.
+- Stage progress — current months covered, projected months to fortified.
+- Discipline reward — total sweep amount going to buffer from under-spent envelopes.
+- Auto-generated takeaway message.
 
-**Discipline rule**: A month doesn't end until it's reviewed. Skipping monthly review is how patterns hide. Even if numbers were bad, especially if numbers were bad, you review.
+**Three required end-of-month actions** (linked from the Review tab):
+1. Log this month's P&L (if not already done).
+2. Apply envelope rollover.
+3. Take snapshot (auto-downloads backup file).
+
+Click **Mark month as reviewed** when done. The auto-popup won't reappear until next month.
+
+**Discipline rule**: A month doesn't end until it's reviewed. Even if the numbers were bad — especially if the numbers were bad.
 
 ---
 
 ### Rules
 
-**Purpose**: System configuration — buffer protection thresholds, stage definitions, gate thresholds, sweep rules. Also where you re-run onboarding, manage backup/restore, and reset data.
+**Purpose**: System configuration. Stage thresholds, allocation percentages, gate threshold, stage rule editing. Also where you access advanced setup options.
 
-**When to use**: Initial setup to confirm rules. Quarterly to check thresholds match your situation. As-needed for backup/restore.
+**When to use**: Initial setup to confirm defaults. Quarterly to verify thresholds match your situation. As-needed for re-running setup.
 
-**Key actions**:
-- Review and edit Stage thresholds (when do you graduate from Stage 1 → 2 → 3)
-- Review buffer protect threshold (when buffer drops below this, system warns you)
-- Edit Spending Gate threshold (default usually fine)
-- Click **Re-run setup wizard** to redo onboarding
-- Click **Download as file** to export full backup as JSON
-- Click **Import backup** to restore from a JSON file
-- Click **Reset everything** as a nuclear option (don't unless you have a backup)
+**What you can configure**:
+- **Tax Reserve %** — percentage of gross profit reserved for tax. Default 25%.
+- **Stage allocation %s** — per-stage waterfall percentages for Buffer / Long-term / Trading / Goals / Lifestyle. Each stage must sum to 100%.
+- **Buffer Target and Protect thresholds** — expressed in months of salary.
+- **Re-run setup wizard** — rebuilds your expense list from scratch (keeps snapshots and P&L history).
 
-**Discipline rule**: Rules drift over time. Set them once thoughtfully, then leave them alone. Changing rules during a bad month to make yourself feel better is just impulse spending wearing a different mask.
+**Default stage allocations**:
+
+| Stage | Buffer | Long-term | Trading | Goals | Lifestyle |
+|---|---|---|---|---|---|
+| Stage 1 | 100% | 0% | 0% | 0% | 0% |
+| Stage 1.5 | 55% | 30% | 0% | 15% | 0% |
+| Stage 2 | 65% | 20% | 0% | 15% | 0% |
+| Stage 3 | 0% | 30% | 30% | 20% | 20% |
+
+For Fixed income users, the Trading % is automatically redirected to Goals at runtime — the stored numbers stay the same but trading capital never receives an allocation.
+
+The Rules tab warns if percentages don't sum to 100% but will still save. Fix the sum immediately if you see the warning.
 
 ---
 
-## 3. Feature Deep-Dives
+### Settings
+
+**Purpose**: Account management, display preferences, cloud sync status, data backup, and danger-zone operations.
+
+**Sub-tabs**:
+
+**Account**
+- Display name — shown in the app header instead of your email.
+- Currency — changes the symbol and formatting everywhere in the app. Default ZAR.
+- Cloud sync status — shows when your data was last synced and lets you retry if sync failed.
+- Change password — enter new password (minimum 8 characters) and confirm.
+
+**Sessions**
+- Sign out other devices — terminates sessions on all browsers/devices except the current one.
+
+**Notifications**
+- Push notification preferences — daily/weekly/monthly alerts, morning/evening check-in times, timezone.
+- Requires browser permission for notifications.
+
+**Setup**
+- Re-run setup wizard — same as in Rules tab.
+- Currency selection — accessible here as well.
+
+**Backup & Data**
+- **Download as file** — exports your complete data as a JSON backup. Good as a secondary safety net.
+- **Import backup** — restores from a JSON file. Replaces all current data.
+
+**Danger zone**
+- **Reset all data** — wipes everything and returns to first-launch state. Requires PIN confirmation. Take a backup first.
+
+---
+
+## 4. Feature Deep-Dives
 
 ### Spending Gate
 
-The gate is the heart of impulse control. When you log a purchase ≥ your gate threshold (default R100):
+The gate runs three calculations to reframe the purchase decision:
 
-1. You enter what + amount + category + envelope + trigger
-2. System calculates: hours of work this represents (based on your hourly rate from salary), what you'd have if invested for 30 years at 7%
-3. Three buttons appear:
-   - **Skip it** — Don't need it. Closes the gate, logs nothing.
-   - **Sleep on it** — Adds to pending list. Decide tomorrow.
-   - **Buy now** — Logs as a real purchase. Records to envelope.
+- **Hours of work** — Amount ÷ (Monthly Salary ÷ 160 hours). R1,500 headphones = ~6 hours of trading work.
+- **Left this month** — How much spending budget remains if you buy this.
+- **30-year value** — What the amount compounds to at 7% annual return over 30 years. R1,500 today = ~R11,400 not had at retirement.
 
-The gate also enforces envelope rules. If your envelope is in Hard Block mode and the purchase would exceed the cap, the gate refuses regardless of which button you press. Soft Warning mode allows it but flags it. PIN Override mode requires the 4-digit PIN.
+These numbers don't tell you what to decide. They tell you what you're actually trading for.
 
-**Use the gate every time.** The discipline is in the asking, not in the answering.
+**Pending items** (Sleep on it): Items in the pending list stay there until you decide. Each is tagged to the same envelope you selected. Coming back to buy from the pending list processes it the same way as a fresh buy — envelope rules still apply.
 
 ---
 
 ### Envelope System
 
-Each envelope has three settings:
+**The wealth-building combination**: Discretionary envelopes (eating out, personal) on Hard block + Sweep to buffer mean the system literally refuses overspend and automatically routes every unspent rand to your family protection fund at month-end. Under-spend Eating Out by R200 every month = R2,400/year of pure discipline savings added to buffer automatically.
 
-**Block modes** (what happens when you exceed cap):
-- **Soft warning** — Shows you're over but allows the purchase. Use for essentials (groceries, transport).
-- **Hard block** — Refuses purchases that would exceed the cap. Use for discretionary (eating out, personal).
-- **PIN override** — Hard block but bypassable with a 4-digit PIN. Use for envelopes where you need a safety valve but want friction.
+**Rollover in detail**:
+- Roll over envelopes have their cap increased by the unspent amount next month.
+- Sweep envelopes transfer the unspent amount directly to `data.buffer`.
+- Reset envelopes simply zero out — the cap stays the same.
 
-**Rollover modes** (what happens at month-end):
-- **Reset** — Use it or lose it. Fresh budget each month. Best for groceries (you eat fresh each month anyway).
-- **Roll over** — Unspent amount carries to next month. Best for lumpy spending (gifts, household repairs).
-- **Sweep to buffer** — Unspent goes straight to your savings buffer. **The wealth-building option.** Best for discretionary categories you want to under-spend.
-
-**Strategic combination**: Set discretionary envelopes (Eating Out, Personal) to Hard Block + Sweep. The system literally cannot let you over-spend, and rewards under-spending with savings. Discipline becomes automation.
+**Discretionary envelope**: The app maintains one special envelope called Discretionary (or Spending) that catches any purchase not explicitly tagged to another envelope. All spending that existed before the envelope system was set up is attributed here.
 
 ---
 
 ### Stage System
 
-Your buffer determines which stage you're in. Each stage has different rules for how trading profit gets allocated.
+Stages auto-detect from your buffer balance versus monthly salary. You don't manually change stage — you earn it.
 
-**Stage 1 — Survive** (Buffer < 6 months of salary)
-- Goal: Reach 6 months of expenses covered
-- Profit allocation: 100% to buffer (after tax)
-- Rules: No personal use of trading profit. Family protection only.
+| Stage | Buffer coverage | What it means |
+|---|---|---|
+| Stage 1 — Survive | < 6 months | Family protection is the only priority. All profit goes to buffer. |
+| Stage 1.5 — Stabilize | 6–12 months | Floor reached. Long-term investing begins at 30%. |
+| Stage 2 — Build | 12–18 months | Goals investing added. Final push to fortified. |
+| Stage 3 — Fortified | 18+ months | Wealth-building mode. First stage where lifestyle spending of profit is permitted. |
+| Buffer-protect mode | Buffer below protect threshold | Automatically activated; treated like Stage 1 for allocation purposes. |
 
-**Stage 1.5 — Stabilize** (6–12 months)
-- Goal: Reach 12 months coverage
-- Profit allocation: 70% buffer / 30% trading capital growth
-- Rules: Slight reinvestment allowed, but most still goes to buffer.
-
-**Stage 2 — Build** (12–18 months)
-- Goal: Reach 18 months — the fortified position
-- Profit allocation: 80% buffer / 20% long-term investments
-- Rules: Long-term investments unlocked. Still no spending of profit.
-
-**Stage 3 — Compound** (18+ months, fortified)
-- Goal: Wealth growth
-- Profit allocation: 50% buffer top-up / 30% long-term / 20% spending
-- Rules: First stage where personal spending of profit is allowed. By design — you've earned the right.
-
-**Discipline rule**: You don't skip stages. Stage 1 with R20,000 in buffer and a R5,000 lifestyle upgrade urge does not become Stage 3. Earn it.
+The stage thresholds are set by your Buffer Target Months in Setup. Default is 18 months = fully fortified. Stage 1 ends at 6 months, Stage 1.5 ends at 12 months.
 
 ---
 
-### Profit Allocator
+### PIN System
 
-The waterfall logic prevents profit from becoming impulse spending.
+The security PIN (4–6 digits) protects structural edits — expense changes, stage rule edits, data reset. It is set after you complete onboarding and is stored as a cryptographic hash (never plain text). The app cannot tell you what your PIN is — it can only verify it.
 
-**Process**:
-1. Enter profit amount (e.g., R5,000)
-2. Tax reserve subtracted first (e.g., 25% = R1,250)
-3. Net profit (R3,750) flows down the waterfall based on current stage
-4. System shows breakdown card with exact allocation
-5. **Apply** button updates buffer/trading/long-term balances
-6. **Cancel** discards and starts over
+**If you forget your PIN**: On the PIN entry screen, click "Forgot your PIN?" and submit a reset request. An admin will review it. When approved, you'll be prompted to set a new PIN on your next login.
 
-**Why this matters**: Trading profit feels like a windfall. Windfalls trigger lifestyle creep and impulse spending — both kill long-term wealth. The allocator turns profit into a structured deposit, not a check.
-
-**Tax reserve**: Set this once based on your tax bracket. South African traders typically reserve 18–36% depending on income tier. Default 25% is reasonable for most. Reserved tax money should sit in a separate sub-account untouched until tax time.
+**PIN override on envelopes**: The envelope-level PIN is the same as your security PIN. When an envelope is set to PIN Override mode and you hit its cap, you'll be prompted for your PIN to proceed. Every override is tagged in History & Triggers — review this weekly.
 
 ---
 
-### Drawdown Protocol
+### Auto-Rollover Modal
 
-Your trading capital gets a high-water mark — the highest it has ever been. Drawdown is how far below that you currently are.
+At the start of each new month, if the previous month hasn't been rolled over, the app automatically shows a modal summarising what happened to each envelope:
 
-**Zones and rules**:
-- **0–9% (Normal)**: Full position sizes. Trade your plan.
-- **10–19% (Caution)**: Reduce position sizes by 25%. Review your last 10 trades for pattern issues.
-- **20–29% (Defensive)**: Reduce position sizes by 50%. Consider a week off. Review strategy assumptions.
-- **30%+ (Stop)**: Stop trading. Mandatory strategy review before resuming.
+- Which envelopes will **sweep** unspent to buffer (and how much).
+- Which envelopes will **roll forward** (increasing next month's cap).
+- Which envelopes will **reset** to their original cap.
+- Buffer balance before and after the sweep.
 
-**Why this matters**: Drawdowns compound brutally. Down 30% requires +43% to break even. Down 50% requires +100%. Down 70% requires +233%. Most blown trading accounts didn't blow up — they slow-bled because the trader couldn't reduce size when down.
-
-The protocol changes behavior automatically based on math, not emotion. The Command tab shows a warning banner when you cross into Caution or worse.
-
----
-
-### PIN Override
-
-For envelopes set to PIN Override mode, exceeding the cap triggers a 4-digit PIN prompt.
-
-**Default PIN**: `0000`. You should change this.
-
-**To change the PIN**: Currently requires editing the source code (find `if (pin !== '0000')` in App.jsx and change). A proper PIN settings screen is on the roadmap.
-
-**When to use**: Set this on envelopes where occasional overage is legitimate but should be rare — like an Emergency Buffer envelope or a Family envelope. Hard Block is too rigid; Soft Warning is too lax; PIN sits in between.
-
-**Accountability**: The PIN works because of friction, not security. Anyone could guess `0000`. The point is the pause — the moment of "do I really want to override this?" That moment is where discipline lives.
-
----
-
-### Auto-Rollover
-
-At month-end, each envelope handles its unspent money based on its rollover mode:
-
-- **Reset** envelopes lose their unspent balance (groceries, eating out by default)
-- **Roll over** envelopes carry unspent to next month (household, family by default)
-- **Sweep** envelopes send unspent directly to buffer (personal, emergency by default)
-
-**Trigger**: The Budget tab shows a "Apply rollover" button during the last 3 days of the month. Click it to execute the rollover. The button records that month so it can't be applied twice.
-
-**Manual or automatic**: Currently manual (you click the button). This is intentional — forces you to acknowledge the month is closing.
-
-**Result**: Your buffer balance grows automatically from disciplined under-spending. R200 unspent in Personal × 12 months = R2,400/year of pure discipline savings.
+Clicking **Confirm and continue** executes the rollover. This is the primary rollover path — the manual button in Budget covers the same function for the last few days of the month before this modal appears.
 
 ---
 
 ### Snapshot System
 
-A snapshot captures your full financial state at a point in time:
-- Buffer balance
-- Trading capital balance
-- Long-term balance
-- Total assets
-- Salary
-- Months covered
-- Current stage
+A snapshot captures:
+- Family Buffer, Trading Capital, Long-term, Goals balances.
+- Total assets, salary, months covered, current stage.
 
-**When to take one**: Take a snapshot after any meaningful change — month-end, after a profit allocation, after a major expense, after restoring from backup.
+Take a snapshot:
+- At every month-end as part of the Review ritual.
+- After any meaningful change (large deposit, profit allocation, big expense).
 
-**What snapshots enable**: The History tab uses snapshots to draw your stacked area chart. The Monthly Review uses snapshots to calculate buffer change for the month.
+Every snapshot also auto-downloads a JSON backup file. Two actions in one click.
 
-**Backup connection**: Every snapshot also auto-downloads a backup JSON file. Two birds, one stone.
-
----
-
-### Backup & Restore
-
-Your data lives in your browser's localStorage. This is fast and private but fragile — clear browser cache, switch devices, or wipe the app and the data is gone.
-
-**Three layers of backup**:
-
-1. **Manual export**: Rules tab → Backup section → "Download as file." Saves a timestamped JSON to your Downloads folder.
-
-2. **Auto-backup on snapshot**: Every snapshot you take also downloads a backup. Take snapshots monthly minimum.
-
-3. **Backup reminder banner**: If you haven't backed up in 7+ days, the Command tab shows a reminder banner. Click "Back up" to download immediately.
-
-**Restore process**: Rules tab → "Import backup" → select a backup JSON file → confirms → loads. Replaces all current data.
-
-**Where to keep backups**: Your Downloads folder isn't enough. Email backups to yourself, save to Google Drive, or copy to a USB. The discipline is the same as the buffer — multiple layers of protection.
+Snapshots feed:
+- The History tab's stacked area chart.
+- The Review tab's buffer-change metric.
 
 ---
 
-## 4. Daily / Weekly / Monthly Ritual
+### Backup and Data Safety
+
+**Primary backup: cloud sync.** Your data is automatically synced to secure cloud servers every time it changes. As long as you're signed in and online, your data is safe regardless of what happens to your device or browser.
+
+**Secondary backup: manual JSON export.** Rules tab or Settings → Backup & Data → Download as file. Exports a complete JSON snapshot. Use this for:
+- Migrating to a new account.
+- Keeping a local archive.
+- Recovering from an account issue.
+
+**Backup reminder**: The Command tab shows a reminder banner if you haven't taken a manual backup in 7+ days. Click it to download immediately.
+
+**Restore from file**: Settings → Backup & Data → Import backup → select a JSON file. This replaces all current data. Take a backup of the current state first if there's anything you'd want to keep.
+
+---
+
+### Goals
+
+Goals are specific things you're saving toward — a car, education, business equipment, a deposit on property. Each goal has a name and a target amount.
+
+Goals are tracked against a single shared pool (`data.futureGoals`). Progress is shown per goal as a proportion of the pool balance vs that goal's target. Add and edit goals in the Rules tab.
+
+The Profit Allocator routes a Goals % allocation here based on your stage rule. This allocation accumulates in the pool over time.
+
+---
+
+## 5. Daily / Weekly / Monthly Ritual
 
 ### Morning (30 seconds)
-- [ ] Open app
-- [ ] Glance at Command tab
-- [ ] Read banners (backup reminder, drawdown warning, rollover prompt)
-- [ ] Close app
+- [ ] Open app → Command tab.
+- [ ] Read Stage, Months Stored, This Month spending.
+- [ ] Read any warning banners. Act or note.
+- [ ] Close app.
 
-### Before any purchase ≥ R100
-- [ ] Open Impulse Control → Spending Gate
-- [ ] Enter what + amount + category + envelope + trigger
-- [ ] Read the "hours of work" and "30-year cost"
-- [ ] Choose: Skip / Sleep / Buy
-- [ ] Done
+### Before any purchase ≥ gate threshold
+- [ ] Open Impulse Control → Spending Gate.
+- [ ] Enter: What / Amount / Category / Envelope / Trigger.
+- [ ] Read Hours of work / Left this month / 30-year value.
+- [ ] Choose: Skip / Sleep / Buy.
 
-### After any purchase you forgot to gate
-- [ ] Open Impulse Control → Quick Log
-- [ ] Log without judgment
-- [ ] Note the trigger — it's the most useful field
+### After any purchase already made
+- [ ] Open Impulse Control → Quick Log.
+- [ ] Log without judgment. Note the trigger honestly.
 
-### Sunday (5 minutes — weekly pulse)
-- [ ] Command tab — overall state
-- [ ] Budget tab — which envelopes are pacing over
-- [ ] Impulse Control → History & Triggers — what triggered me this week
-- [ ] One adjustment if needed (tighten an envelope, talk to wife about a spending area)
+### Sunday weekly pulse (5 minutes)
+- [ ] Command — overall state, any banners.
+- [ ] Budget — envelope pace, anything trending over.
+- [ ] Impulse Control → History — triggers this week.
+- [ ] One adjustment if needed.
 
-### Month-end (15 minutes)
-- [ ] Open Review tab (or click the auto-popup)
-- [ ] Read all metrics top to bottom
-- [ ] Log this month's trading P&L
-- [ ] Apply envelope rollover (sweeps to buffer)
-- [ ] Take a snapshot (auto-downloads backup)
-- [ ] Click "Mark month as reviewed"
-- [ ] Email the backup file to yourself
+### Month-end ritual (15 minutes)
+- [ ] Open Review tab (or confirm the auto-popup).
+- [ ] Read all metric cards and envelope performance.
+- [ ] Log this month's trading P&L.
+- [ ] Apply envelope rollover (auto-modal or manual button).
+- [ ] Take snapshot (auto-downloads backup).
+- [ ] Click Mark month as reviewed.
 
 ---
 
-## 5. Emergency Scenarios
+## 6. Emergency Scenarios
 
 ### Hard block fired on a legitimate need
-**Example**: Eating Out envelope is at R0 but mom is in town and wants dinner.
+**Example**: Eating Out envelope is at R0 but family is visiting.
 
-**Options, in order**:
-1. Use a Soft Warning envelope instead (Family if you have one)
-2. Move money between envelopes via the Manage screen
-3. If the envelope has PIN Override, enter the PIN — but recognize this is the friction working
-4. Adjust the cap permanently in Manage if R0 is too tight every month
+Options in order:
+1. Use a different envelope (Family if you have one).
+2. Edit the envelope cap temporarily in Budget → Manage.
+3. If envelope is PIN Override mode, enter your PIN — but recognise this is the friction doing its job.
+4. Adjust the cap permanently if it's consistently too tight.
 
-**What not to do**: Disable the envelope or change Hard Block to Soft Warning to "fix" today's problem. That's not solving the issue — it's removing the system.
+**Do not**: Disable the envelope or change Hard block to Soft warning just to fix today's purchase.
 
----
+### Haven't logged purchases for several days
+Open Impulse Control → Quick Log. Batch-add each purchase one by one. Approximate amounts if needed. Underreporting is worse than approximating — log it all.
 
-### Forgot to log purchases for the past few days
-- Open Impulse Control → Quick Log
-- Batch-add each purchase one by one
-- Use approximate amounts if you don't remember exactly
-- This isn't ideal, but underreporting is worse — log it all, mark it as a lesson
+### App feels wrong — bad totals, strange state
+1. Open Settings → Backup & Data → Download as file (backup current state).
+2. If the issue is clearly a data entry error, fix it directly in Setup & Salary or Budget.
+3. If the app state is deeply broken, restore from a recent backup via Settings → Import backup.
 
----
+Your cloud-synced data is also recoverable — sign out and back in to force a fresh cloud load.
 
-### App feels broken — wrong totals, blank screens, weird state
-1. **First**: Open Rules tab and click "Download as file" to back up current state
-2. Open browser DevTools (F12) → Application → Local Storage
-3. Find your storage key, delete it
-4. Refresh the app — onboarding will appear
-5. Skip onboarding, then go to Rules → "Import backup" → select your backup
-6. App should restore to working state
+### Sync failed warning in Settings
+1. Check your internet connection.
+2. Click Retry in the Settings sync section.
+3. If "Sync failed — permission error" appears, sign out and sign back in.
+4. Your data has been saved locally — nothing is lost. Sync will resume when the auth issue clears.
 
-If that doesn't work, the backup JSON itself can be opened in any text editor — your data is recoverable.
-
----
-
-### Down trading day + urge to spend
-1. **Stop**. Don't open the spending gate yet.
-2. Open Trading P&L tab
-3. Read your drawdown zone
-4. If Caution or worse: position sizes need to come down, not lifestyle expenses
-5. Wait 24 hours minimum
-6. If still want to buy after 24 hours, run the gate normally
-7. Read the History & Triggers chart — bad day → bored/stressed → spending is a known pattern
-
-The pattern of "lose money trading → spend money to feel better" loses you twice. The 24-hour pause exists specifically for this scenario.
+### Lost / forgot your PIN
+On the PIN entry screen, click "Forgot your PIN?" → submit a reason → send request. An admin will approve it. You'll see a prompt to set a new PIN on your next login.
 
 ---
 
-### Wife asks "How are we doing?"
-- Open Command tab, show her these three numbers:
-  - **Buffer balance** — months of expenses covered
-  - **Total remaining for the month** (from Budget tab) — what we have left to spend
-  - **Buffer growth this month** (from Review tab) — how much we added
+## 7. Common Mistakes
 
-Three numbers in 30 seconds. If she wants more detail, the Review tab is the full picture. Total transparency builds trust faster than any explanation.
+**1. Entering profit instead of total balance in Trading Capital.**
+The Capital field is your full broker account balance, not the month's P&L. Entering profit here breaks the high water mark and all drawdown calculations.
+
+**2. Not updating Trading Capital weekly.**
+The Drawdown Protocol requires current numbers. Monthly updates mean you're flying blind for most of the month.
+
+**3. Setting unrealistic spending budgets.**
+A budget below what you actually spend means every envelope blocks you constantly. Look at three months of bank statements and enter what you actually spend. Tighten over 3–6 months as habits change.
+
+**4. Bypassing the Spending Gate regularly.**
+"Just this once" is how the habit breaks. If a purchase is at or above your gate threshold, gate it every time.
+
+**5. Setting all envelopes to Soft warning.**
+Soft warning everywhere is no system at all. Discretionary envelopes need Hard block or PIN Override.
+
+**6. Resetting high water to hide a drawdown.**
+Reset is only for intentional capital withdrawals — when you physically moved money out on purpose. Resetting after a bad run removes the protection the protocol exists to provide.
+
+**7. Forgetting to apply rollover.**
+Set a calendar reminder for the 28th of every month. Without rollover, Sweep envelopes don't sweep and buffer doesn't grow from your discipline.
+
+**8. Not taking snapshots.**
+No snapshots = no History chart = no buffer-change metric in Review. Take one every month-end at minimum.
+
+**9. Lying about triggers.**
+The Trigger field is the most underrated input. Your aggregated trigger breakdown is only useful if it's honest. "I spend most when I've lost a trade and I'm stressed" is a fixable pattern — but only if you logged it accurately.
+
+**10. Changing stage rules during a bad month.**
+Editing your stage allocation percentages to release more lifestyle money during a drawdown is impulse spending wearing a different mask. Set rules once when calm, then leave them alone.
 
 ---
 
-## 6. Success Metrics (check monthly)
+## 8. Success Metrics
+
+Check these monthly. If three or more are off-target for two consecutive months, something needs adjusting.
 
 | Metric | Target | Where to find |
-|--------|--------|---------------|
-| Impulse spending vs budget | < 80% of cap | Budget tab — envelope progress |
-| Buffer growth | +R1,500/month minimum | Review tab — buffer change |
-| Gate usage rate | > 90% of purchases ≥ R100 | Compare gate logs to bank statement |
-| Override frequency | < 2 per month | Track manually for now |
-| App opens per week | > 5 | Habit indicator |
+|---|---|---|
+| Impulse spending vs budget | < 80% of total cap | Budget tab — Total Spent vs Total Allocated |
+| Buffer growth | Positive every month | Review tab — Buffer Change |
+| Gate usage | > 90% of purchases ≥ threshold | Compare Impulse history to bank statement |
+| PIN override frequency | < 2 per month | History & Triggers |
 | Envelopes on target | All of them | Review tab — envelope performance |
-| Months to fortified | Trending down | Review tab — pace |
+| Drawdown zone | Normal | Trading P&L — Zone display |
+| Cloud sync | Synced | Settings — sync status |
 
-If three or more metrics are off-target for two consecutive months, something in the system needs adjustment. Go to Setup & Salary or Budget and tighten — don't loosen.
+If buffer growth is flat for two months: either Spending Budget is too high (tighten envelopes) or Buffer Reserve is too low (increase it in Setup & Salary).
 
----
-
-## 7. Quick Reference Card
-
-### 5 tabs you use daily
-1. **Command** — 30-second state check
-2. **Impulse Control** — every purchase ≥ R100
-3. **Budget** — envelope progress
-4. **Trading P&L** — drawdown zone
-5. **Review** — month-end ritual
-
-### 3 numbers that matter most
-1. **Buffer balance** — your family's protection
-2. **Months covered** — your buffer in time
-3. **This month's spending vs budget** — your discipline today
-
-### 1 rule you never break
-**Every purchase ≥ R100 goes through the Spending Gate.**
-
-The discipline isn't in saying no. The discipline is in always asking the question.
+If PIN override is above 2/month: your envelope caps don't match your life. Adjust the caps, not the habit of overriding.
 
 ---
 

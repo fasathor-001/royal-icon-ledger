@@ -1,114 +1,91 @@
-# The Open Ledger — Deployment Guide
+# Royal Ledger
 
-Your personal finance dashboard, ready to deploy on Cloudflare Pages.
+Personal finance OS for variable-income earners, freelancers, and traders. Invite-only PWA deployed at [royalledger.app](https://royalledger.app).
 
-## What you have
+---
 
-- `App.jsx` — Main component, with `localStorage` already wired up
-- `main.jsx` — React entry point
-- `index.html` — HTML shell
-- `index.css` — Tailwind imports
-- `tailwind.config.js` — Tailwind config
+## Developer docs
 
-## Step 1: Install Node.js (if you don't have it)
+| Document | Purpose |
+|---|---|
+| `DEVELOPMENT_NOTES.md` | Architecture, data model, critical patterns, historical bugs, tech debt. **Read this before touching the code.** |
+| `RELEASE_CHECKLIST.md` | Pre-deploy checklist. Run through it before every production push. |
+| `INTEGRATION.md` | Supabase table schema and setup SQL. |
+| `USER_GUIDE.md` | End-user feature documentation. |
 
-Download the LTS version from https://nodejs.org. After install, verify in Terminal/PowerShell:
+---
+
+## Local development
+
+### Prerequisites
+
+- Node.js 18+
+- A Supabase project (free tier works)
+
+### Setup
 
 ```bash
-node --version
-```
-
-## Step 2: Create the Vite project
-
-In your Terminal/PowerShell:
-
-```bash
-npm create vite@latest my-finance-app -- --template react
-cd my-finance-app
 npm install
-npm install lucide-react recharts
-npm install -D tailwindcss@3 postcss autoprefixer
-npx tailwindcss init -p
 ```
 
-## Step 3: Replace the default files
+Create `.env.local` in the project root:
 
-Copy these files from this download into your project, replacing what's there:
+```
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
 
-| Copy this file       | Into this location in your project |
-|----------------------|-----------------------------------|
-| `App.jsx`            | `src/App.jsx`                     |
-| `main.jsx`           | `src/main.jsx`                    |
-| `index.css`          | `src/index.css`                   |
-| `index.html`         | `index.html` (root)               |
-| `tailwind.config.js` | `tailwind.config.js` (root)       |
-
-## Step 4: Test locally
+Without these, the app runs in local-only mode — no auth, no cloud sync. A warning is printed to the console.
 
 ```bash
-npm run dev
+npm run dev       # dev server at http://localhost:5173
+npm run build     # production build → dist/
+npm run preview   # preview the dist/ build locally
 ```
 
-Open the URL it prints (usually http://localhost:5173). Confirm the app loads, you can add expenses, take snapshots, etc.
-
-## Step 5: Build for production
+### Release check
 
 ```bash
-npm run build
+npm run release:check   # build + reminder to run RELEASE_CHECKLIST.md
 ```
 
-This creates a `dist/` folder. That's what you deploy.
+---
 
-## Step 6: Deploy to Cloudflare Pages
+## Stack
 
-### Option A — Drag and drop (quickest)
+- **React 19** — UI
+- **Vite 7** — build tool
+- **Supabase** — auth (PKCE) + Postgres (single-table JSONB strategy)
+- **Tailwind CSS 3** — utility classes via global stylesheet
+- **vite-plugin-pwa** — service worker, installable PWA
+- **recharts** — charts
+- **lucide-react** — icons
 
-1. Go to https://dash.cloudflare.com and sign up (free)
-2. Sidebar → **Workers & Pages** → **Create** → **Pages** → **Upload assets**
-3. Name your project (e.g., `my-ledger`)
-4. Drag your `dist/` folder onto the upload area
-5. Click **Deploy site**
-6. You'll get a URL like `my-ledger.pages.dev`
+---
 
-### Option B — GitHub auto-deploy (best for ongoing updates)
+## Deployment
 
-1. Create a free GitHub account if needed
-2. Create a new empty repo on github.com
-3. In your project folder:
+Deployed on **Cloudflare Pages**. Every push to `main` auto-deploys.
 
-```bash
-git init
-git add .
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/my-finance-app.git
-git push -u origin main
+Build settings:
+- Build command: `npm run build`
+- Build output: `dist`
+- Environment variables: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
+
+The app subdomain (`my.royalledger.app`) must be configured as a Cloudflare Pages custom domain. See `INTEGRATION.md` for Supabase URL allowlist and redirect URL configuration required for auth to work correctly in production.
+
+---
+
+## Architecture in 30 seconds
+
+```
+index.html
+  └─ src/main_v2.jsx        ← active entry point (BrowserRouter)
+       ├─ /app  → App_v2.jsx  ← auth wrapper + cloud sync
+       │            └─ App.jsx  ← all app logic and tab components
+       └─ /*   → MarketingSite ← public marketing site
 ```
 
-4. In Cloudflare → Workers & Pages → Create → Pages → **Connect to Git**
-5. Authorize GitHub, pick your repo
-6. Build settings:
-   - Framework preset: **Vite**
-   - Build command: `npm run build`
-   - Build output directory: `dist`
-7. **Save and Deploy**
+Data lives in `localStorage` under key `open-trader-finance-v2` (do not rename — users have data there) and is synced to Supabase `user_data` table (one row per user, JSONB `data` column).
 
-Every `git push` from now on auto-deploys in 1–2 minutes.
-
-## Important notes
-
-**Privacy.** Your data lives only in your browser's localStorage. Nothing goes to Cloudflare or any server. Use the same browser/device to maintain continuity. Clearing browser data wipes your records.
-
-**Custom domain.** Free `*.pages.dev` URL forever. To use your own domain, buy one from Cloudflare Registrar (no markup) and add it in your project's Custom Domains tab.
-
-**Cost.** Free tier: 500 builds/month, unlimited bandwidth. You will not hit limits.
-
-**Backups.** Since data is browser-local, consider exporting periodically. (Future addition: an export-to-JSON button.)
-
-## Troubleshooting
-
-**Tailwind classes not applying:** Make sure `tailwind.config.js` content array points to `./src/**/*.{js,jsx}`.
-
-**Build fails on Cloudflare:** Check that `lucide-react` and `recharts` are in your package.json dependencies, not devDependencies.
-
-**Blank screen after deploy:** Open browser DevTools console. Most likely a missing import or wrong file path.
+For everything else, see `DEVELOPMENT_NOTES.md`.

@@ -11,6 +11,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { loadData, saveData, saveDataVersioned, classifyError, validateAndClaimInviteCode, submitAccessRequest } from './lib/dataLayer';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
+import { logEvent } from './lib/analytics';
 import MigrationModal from './components/MigrationModal';
 import OpenFinanceApp from './App';
 
@@ -761,6 +762,26 @@ function AuthenticatedApp() {
     });
   }, [user?.id]);
 
+  // Activity ping — fires every 60s when tab is visible and user interacted recently.
+  // Interaction listeners (click/keypress/touchstart/pointerdown) track last active time.
+  // Ping is skipped if no interaction in the last 60 seconds (prevents background inflation).
+  useEffect(() => {
+    if (!user) return;
+    let lastInteractionAt = 0;
+    const handleInteraction = () => { lastInteractionAt = Date.now(); };
+    const INTERACTION_EVENTS = ['click', 'keypress', 'touchstart', 'pointerdown'];
+    INTERACTION_EVENTS.forEach(ev => window.addEventListener(ev, handleInteraction, { passive: true }));
+    const interval = setInterval(() => {
+      if (document.visibilityState !== 'visible') return;
+      if (Date.now() - lastInteractionAt > 60_000) return;
+      logEvent('activity_ping');
+    }, 60_000);
+    return () => {
+      clearInterval(interval);
+      INTERACTION_EVENTS.forEach(ev => window.removeEventListener(ev, handleInteraction));
+    };
+  }, [user?.id]);
+
   // Core save function: version-aware, retry with exponential backoff, error classification
   const doSave = useCallback(async (data) => {
     if (!user) return;
@@ -937,6 +958,30 @@ function AuthenticatedApp() {
 // ─────────────── ROOT ───────────────
 function AppRouter() {
   const { user, authLoading, isPasswordRecovery } = useAuth();
+  const prevUserRef = useRef(null);
+
+  // Login + app_open tracking.
+  // Fires when user transitions null → authenticated (fresh login or session restore).
+  // sessionStorage keys deduplicate within the same browser session.
+  // Clears both keys on logout so they fire again on the next login.
+  useEffect(() => {
+    if (user && !prevUserRef.current) {
+      if (!sessionStorage.getItem('royal_ledger_login_logged')) {
+        logEvent('login');
+        sessionStorage.setItem('royal_ledger_login_logged', '1');
+      }
+      if (!sessionStorage.getItem('royal_ledger_app_open_logged')) {
+        logEvent('app_open');
+        sessionStorage.setItem('royal_ledger_app_open_logged', '1');
+      }
+    }
+    if (!user && prevUserRef.current) {
+      sessionStorage.removeItem('royal_ledger_login_logged');
+      sessionStorage.removeItem('royal_ledger_app_open_logged');
+    }
+    prevUserRef.current = user;
+  }, [user]);
+
   if (authLoading) return <SkeletonLoader />;
   if (isPasswordRecovery) return <SetNewPasswordPage />;
   if (!user) return <LoginPage />;
