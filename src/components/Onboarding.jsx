@@ -604,7 +604,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
               How does <span style={{ fontStyle: 'italic', color: '#D97757' }}>income</span> reach you?
             </h1>
             <p style={{ color: '#B0A898', marginBottom: '32px', fontSize: '15px' }}>
-              This shapes how the system works for you — buffer targets, allocator rules, and which features show up. You can ask support to change it later.
+              This shapes how Royal Ledger protects, allocates, and manages your money. Pick what matches your reality today. We'll tailor the rest around it.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '40px' }}>
