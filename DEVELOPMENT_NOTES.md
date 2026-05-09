@@ -87,6 +87,8 @@ Run these once in Supabase SQL Editor in the order listed. Safe to re-run — mo
 | `auth-user-sync-trigger.sql` | Trigger that syncs new `auth.users` rows into `early_access_leads`. |
 | `sync-users-from-auth.sql` | One-time backfill to sync existing auth users into `early_access_leads`. |
 | `admin-reset-user-data.sql` | Admin utility — wipes a user's `user_data` row (support use only). |
+| `notification-queue-migration.sql` | Creates `notification_queue` table used by `queueNotification()` in `dataLayer.js`. **Required for PIN override / stage change / drawdown notifications.** Without it, those POSTs return CORS-failed errors. Created retroactively on 2026-05-09 — see F023. |
+| `admin-patch-user-data.sql` | `admin_patch_user_data(p_email, p_currency, p_income_type)` RPC — admin override for user currency / income profile. |
 
 ---
 
@@ -201,6 +203,31 @@ All fields live in a single JSON object (stored in localStorage and Supabase JSO
 ---
 
 ## 4. Critical Patterns and Conventions
+
+### Pattern: Foundation stage uses defensive `Math.max` denominator
+
+**Rule:** When deriving `foundationMonths` (and therefore `foundationStage`), the divisor is `Math.max(stats.salary, envelopeTotal + bufferReserve)` — NOT `stats.salary` alone.
+
+**Why:** `stats.salary` is computed from the Setup-tab `data.expenses[]` array plus `spendingBudget` plus `bufferReserve`. Envelope caps (Budget tab) are NOT included. If a Foundation user has populated envelopes but not Setup expenses (or has deleted them post-onboarding, or migrated from an older app version with no expense data), `stats.salary` evaluates to a tiny number — making `data.buffer / stats.salary` artificially large. Without the defensive `Math.max`, the user could trigger Foundation Complete stage at a fraction of the real buffer coverage. See F019/F022 in Bug Log.
+
+**Implementation pattern (Foundation-only):**
+
+```js
+const envelopeTotal = (data.envelopes || []).reduce((s, e) => s + (Number(e.cap) || 0), 0);
+const foundationMonthlyNeeds = Math.max(
+  stats.salary,
+  envelopeTotal + (Number(data.bufferReserve) || 0)
+);
+const foundationMonths = isFoundation
+  ? (foundationMonthlyNeeds > 0 ? data.buffer / foundationMonthlyNeeds : 0)
+  : (stats.salary > 0 ? data.buffer / stats.salary : 0);
+```
+
+**Important:** This pattern applies ONLY to `foundationMonths` (used in Foundation stage derivation, Journey subtitle, banner copy). Do NOT apply it to `stats.monthsCovered` — that field is consumed only by non-Foundation profiles (Command stage card and ProfitAllocator stage info card, both gated by `!isFoundation`). Modifying `stats.monthsCovered` would scope-creep the fix and risk regressing non-Foundation drawdown calculations.
+
+**How it gets reintroduced:** Anyone simplifying the Foundation stage logic and reverting to `data.buffer / stats.salary` directly. The `Math.max` is the entire defence — if it's removed, false-trigger risk returns. The pattern note in this section + the Bug Log entry exist to make the rationale discoverable before someone "cleans up" what looks like an unnecessary `Math.max`.
+
+---
 
 ### Pattern: Untagged impulses route to Discretionary
 
@@ -352,6 +379,45 @@ This is checked in both `MobileBottomNav` and the desktop nav. See §10 for the 
 ---
 
 ## 5. Historical Bug Log
+
+### Bug: Foundation Complete banner triggered prematurely on incomplete Setup data (F019/F022, 2026-05-09)
+
+**Symptom:** Test account with R 24,000 buffer (~1.6 months actual coverage) showed "Foundation Complete" banner. Expected stage was 'starter'.
+
+**Location:** `src/App.jsx` — Command component, `foundationMonths` and `foundationStage` derivation around line 1527.
+
+**Root cause:** `foundationMonths = data.buffer / stats.salary`. When `data.expenses` is empty and `spendingBudget` is small, `stats.salary` falls to a tiny number (~R 1,500), inflating the ratio. The system was mathematically correct given its inputs but the inputs didn't reflect actual monthly outgoings — Foundation users tend to track via envelopes, not Setup-tab expenses.
+
+**Why production wasn't broken (but could break later):** Onboarding requires `expenseTotal > 0` at Step 5, so all newly-onboarded users have at least minimal Setup expenses. The bug surfaces for:
+- Test accounts created via direct DB seeding
+- Users who delete their Setup expenses post-onboarding
+- Users who migrated from older app versions
+- Users switched to Foundation profile via admin override
+
+**Fix applied:** Defensive denominator `Math.max(stats.salary, envelopeTotal + bufferReserve)` for Foundation users only. Non-Foundation profiles preserve the original `stats.salary` divisor. See Section 4 pattern note for the full pattern.
+
+**How it could regress:** Removal of the `Math.max` when refactoring the stage derivation — looks like dead-code at first glance but it's the entire defence. Always grep for `foundationMonthlyNeeds` and `Math.max` callers in this file before simplifying.
+
+**One-time cleanup needed:** Any account that hit the false trigger and clicked "Stay on Foundation" wrote `'complete'` to `data.foundationStageBannersDismissed`. The corrected banner won't surface for them until that entry is cleared. Manual snippet documented in CHANGELOG (F022 entry).
+
+---
+
+### Process: CORS errors — always check Network tab before diagnosing (2026-05-09)
+
+**Symptom:** Firefox console showed `Cross-Origin Request Blocked: ... status code (null)` for `supabase.co/rest/v1/...` URL. Initial diagnosis from console alone assumed domain-wide block (Enhanced Tracking Protection, paused project, extension, etc.) and produced a five-step diagnostic priority list — all of which were wrong.
+
+**Diagnosis correction:** When the user opened the Network tab, it showed five other Supabase requests succeeding (`user_data`, `early_access_leads`, `pin_reset_requests`, `user_activity_events`) — only one endpoint (`notification_queue`) failed with CORS. The block was per-table, not domain-wide.
+
+**Root cause was a missing table:** PostgREST returns malformed/missing CORS headers when the requested table doesn't exist. Firefox interprets this as "CORS Failed" rather than the underlying 404. Fix was creating `supabase/notification-queue-migration.sql` and running it once.
+
+**Diagnostic rule:** Console-only CORS errors are ambiguous. Always demand the Network tab view before proposing a cause. Look for:
+1. **Multiple requests to the same domain** — if some succeed, it's per-endpoint, not network/extension/project-paused
+2. **Status code column** — `(null)` with `0 B` transferred = blocked before headers; an actual status code (e.g. 404, 401) = request reached server, response was just rejected by browser CORS policy
+3. **Type column** — `xhr` / `fetch` rather than `document` confirms it's a programmatic request, not a navigation
+
+**Why this matters:** Misdiagnosing CORS issues sends owners on wild-goose chases (disabling extensions, switching browsers, restarting Supabase) when the fix is a one-line migration.
+
+---
 
 ### Process: Stale-bundle false positive when diagnosing runtime errors (2026-05-09)
 

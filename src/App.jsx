@@ -1524,8 +1524,21 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   //   complete    — buffer ≥ 12 months (Foundation Complete)        50  / 30 / 20  + stay-or-unlock
   //
   // null = not Foundation, or too early (day-0 guard via hasLoggedExpense).
-  const foundationMonths = stats.salary > 0 ? data.buffer / stats.salary : 0;
-  const foundationStage = (!isFoundation || !hasLoggedExpense || stats.salary === 0)
+  // Foundation-specific monthly-needs estimate.
+  // Falls back to envelope totals if Setup expenses are missing/incomplete —
+  // prevents premature stage advancement when the user tracks via envelopes only,
+  // or migrates an account where data.expenses is empty.
+  // See DEVELOPMENT_NOTES Section 4 / Section 5: F022 — Foundation stage defensive denominator.
+  const envelopeTotal = (data.envelopes || []).reduce((s, e) => s + (Number(e.cap) || 0), 0);
+  const foundationMonthlyNeeds = Math.max(
+    stats.salary,
+    envelopeTotal + (Number(data.bufferReserve) || 0)
+  );
+  const foundationMonths = isFoundation
+    ? (foundationMonthlyNeeds > 0 ? data.buffer / foundationMonthlyNeeds : 0)
+    : (stats.salary > 0 ? data.buffer / stats.salary : 0);
+
+  const foundationStage = (!isFoundation || !hasLoggedExpense || foundationMonthlyNeeds === 0)
     ? null
     : foundationMonths >= 12 ? 'complete'
     : foundationMonths >= 6  ? 'stable'
