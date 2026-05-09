@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Wallet, Shield, TrendingUp, TrendingDown, Lock, Unlock, Clock, Brain,
-  Sparkles, Flame, Coffee, ShoppingBag, Smartphone, Package,
+  Sparkles, Flame, Smartphone,
   Calendar, Check, X, Plus, AlertTriangle, Briefcase, PiggyBank,
   ArrowRight, Activity, Heart, Users, Home, Camera, Edit2, Save, Award, KeyRound,
   MoreHorizontal, LayoutGrid, BookOpen, History as HistoryIcon, Settings as SettingsIcon, Info, Mail,
@@ -25,7 +25,7 @@ import { usePinGate, usePinRowGate, useSectionPin } from './components/PinGate';
 import { PinContext, usePinVerify, usePinActive } from './components/PinContext';
 import { hashPin } from './lib/pinHash';
 import { supabase } from './lib/supabase';
-import { CURRENCIES, getCurrency, makeFmt } from './lib/currency';
+import { CURRENCIES, getCurrency, makeFmt, flagUrl } from './lib/currency';
 import { getInviteCodes, createInviteCode, deleteInviteCode, resetInviteCode, getAccessRequests, approveAccessRequest, rejectAccessRequest, queueNotification, loadData, importLocalToCloud } from './lib/dataLayer';
 
 const STORAGE_KEY = 'open-trader-finance-v2';
@@ -115,21 +115,21 @@ const defaultData = {
   // null = not yet initialised (first load for this user). Used by the cap-sync effect to
   // compute a delta so rollover balances are preserved when the budget changes.
   lastSyncedSpendingBudget: null,
+
+  // Foundation Arc — persistent record of which stage milestone banners the user has dismissed.
+  // Keys: 'established' (3-mo), 'stable' (6-mo), 'complete' (12-mo stay choice).
+  // Written on "Remind me later" and "Stay on Foundation" — survives refresh / cloud sync.
+  foundationStageBannersDismissed: [],
+
+  // Set to true when a Foundation user confirms graduation to an advanced profile.
+  // Used to gate the post-graduation welcome banner and admin reporting.
+  graduatedFromFoundation: false,
 };
 
 const EXPENSE_CATEGORIES = [
   'Housing', 'Utilities', 'Food', 'Transportation', 'Childcare/Kids',
   'Family support', 'Insurance', 'Healthcare', 'Subscriptions', 'Other'
 ];
-
-const CATEGORIES = {
-  food: { label: 'Food / Dining', icon: Coffee, color: '#D97757' },
-  clothes: { label: 'Clothes', icon: ShoppingBag, color: '#A06B8C' },
-  tech: { label: 'Tech', icon: Smartphone, color: '#5B7FB8' },
-  online: { label: 'Online Shopping', icon: Package, color: '#7FA068' },
-  family: { label: 'Family / Kids', icon: Users, color: '#B89968' },
-  other: { label: 'Other', icon: Sparkles, color: '#B0A898' },
-};
 
 const TRIGGERS = ['Bored', 'Stressed', 'Tired', 'Won a trade', 'Lost a trade', 'Family pressure', 'Scrolling', 'Saw an ad'];
 
@@ -1182,7 +1182,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
         {tab === 'history' && <History data={data} stats={stats} setData={setData} />}
 		{tab === 'review' && <MonthlyReview data={data} setData={setData} stats={stats} mode="tab" />}
         {tab === 'rules' && <Rules data={data} stats={stats} setData={setData} user={user} />}
-        {tab === 'settings' && <AccountSettings user={user} onLogout={onLogout} onChangePassword={onChangePassword} onSignOutOthers={onSignOutOthers} data={data} setData={setData} syncStatus={syncStatus} isOnline={isOnline} lastSyncedAt={lastSyncedAt} onRetrySync={onRetrySync} />}
+        {tab === 'settings' && <AccountSettings user={user} onLogout={onLogout} onChangePassword={onChangePassword} onSignOutOthers={onSignOutOthers} data={data} setData={setData} syncStatus={syncStatus} isOnline={isOnline} lastSyncedAt={lastSyncedAt} onRetrySync={onRetrySync} onRequestGraduate={() => setShowGraduationModal(true)} />}
         {tab === 'admin' && <AdminDashboard user={user} />}
         </main>
       </div>
@@ -1284,12 +1284,12 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
                     fontSize: '21px', fontWeight: 300,
                     color: '#E8E2D5', lineHeight: 1.2,
                   }}>
-                    You built a real foundation.
+                    Unlock advanced income systems
                   </div>
                 </div>
 
                 <p style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.65, marginBottom: '20px' }}>
-                  You've shown real discipline. The full system is ready for you — deeper income planning, full allocation tools, and complete financial structure.
+                  Choose how your income arrives and Royal Ledger configures the right system for you — deeper income planning, full allocation tools, and complete financial structure.
                 </p>
 
                 {/* Profile picker */}
@@ -1371,7 +1371,9 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
             onClose={() => setShowGraduationModal(false)}
             onConfirm={(incomeType) => {
               setShowGraduationModal(false);
-              setData(d => ({ ...d, mode: 'standard', incomeType }));
+              // graduatedFromFoundation: true flags this user for admin reporting
+              // and gates the post-graduation welcome banner.
+              setData(d => ({ ...d, mode: 'standard', incomeType, graduatedFromFoundation: true }));
               sessionStorage.setItem('rl_grad_modal', '1');
               if (!localStorage.getItem('rl_welcome_dismissed')) {
                 sessionStorage.setItem('rl_just_graduated', '1');
@@ -1424,7 +1426,9 @@ function getFoundationNudge({ hasLoggedExpense, hasSavingsGoal, savingsProgress 
 /* ─────────────── COMMAND ─────────────── */
 function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, setShowWeeklyPulse, onRequestGraduate, userId }) {
   const fmt = makeFmt(data.currency);
-  const isFoundation = data?.mode === 'foundation';
+  // Guard on BOTH mode AND incomeType: new accounts set incomeType='foundation' without
+  // writing mode (mode was the legacy field). Checking only one leaves new users undetected.
+  const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
   const hasPinProtection = !!(data.pinHash || data.overridePin);
   const [balancesLocked, setBalancesLocked] = useState(hasPinProtection);
   const [goalEditing, setGoalEditing] = useState(false);
@@ -1508,22 +1512,36 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
     ? getFoundationNudge({ hasLoggedExpense, hasSavingsGoal, savingsProgress })
     : null;
 
-  // ── Foundation staged milestone system ───────────────────────────────────
-  // Foundation progresses through 3 → 6 → 12 month buffer milestones.
-  // Each milestone banner gives the user a clear next action:
-  //   3-month hit → "Advance to 6 months" (updates bufferTargetMonths, banner disappears)
-  //   6-month hit → "Keep going to 12 months" OR "Graduate now" (opens profile picker)
-  //   12-month hit → graduation modal fires automatically
+  // ── Foundation Arc — stage system ────────────────────────────────────────
+  // Stage is derived from the ratio of actual buffer to monthly salary.
+  // This replaces the old bufferTargetMonths-based f3Hit/f6Hit/f12Hit booleans:
+  // deriving from the ratio is continuous (no manual threshold bookkeeping)
+  // and immune to the <=  bug where multiple flags fired simultaneously.
   //
-  // hasLoggedExpense guards against day-0 false positives where the starting
-  // balance entered during onboarding already exceeds the target.
-  const f3Hit  = isFoundation && stats.salary > 0 && data.bufferTargetMonths <= 3  && data.buffer >= stats.salary * 3  && hasLoggedExpense;
-  const f6Hit  = isFoundation && stats.salary > 0 && data.bufferTargetMonths <= 6  && data.buffer >= stats.salary * 6  && hasLoggedExpense;
-  const f12Hit = isFoundation && stats.salary > 0 && data.bufferTargetMonths <= 12 && data.buffer >= stats.salary * 12 && hasLoggedExpense;
-  // showUpgradePrompt now only fires from the 12-month milestone for Foundation.
-  // For non-Foundation profiles the old goal-reached logic is kept.
+  //   starter     — buffer < 3 months  (Building Foundation)        100 / 0  / 0
+  //   established — buffer ≥ 3 months  (Financially Established)    70  / 20 / 10
+  //   stable      — buffer ≥ 6 months  (Financially Stable)         50  / 30 / 20
+  //   complete    — buffer ≥ 12 months (Foundation Complete)        50  / 30 / 20  + stay-or-unlock
+  //
+  // null = not Foundation, or too early (day-0 guard via hasLoggedExpense).
+  const foundationMonths = stats.salary > 0 ? data.buffer / stats.salary : 0;
+  const foundationStage = (!isFoundation || !hasLoggedExpense || stats.salary === 0)
+    ? null
+    : foundationMonths >= 12 ? 'complete'
+    : foundationMonths >= 6  ? 'stable'
+    : foundationMonths >= 3  ? 'established'
+    : 'starter';
+
+  // Persistent dismissal helpers — writes to data so choices survive refresh / sync
+  const fDismissed = new Set(data.foundationStageBannersDismissed || []);
+  const fDismiss = (stage) => setData(d => ({
+    ...d,
+    foundationStageBannersDismissed: [...(d.foundationStageBannersDismissed || []), stage],
+  }));
+
+  // Non-Foundation upgrade prompt (goal-reached path — unchanged)
   const goalReached = !isFoundation && hasSavingsGoal && savingsProgress >= 1 && hasLoggedExpense;
-  const showUpgradePrompt = isFoundation ? f12Hit : goalReached;
+  const showUpgradePrompt = goalReached;
 
   const stageInfo = {
     1: { name: 'Stage 1', title: 'Build the Floor', color: '#C56B5A', desc: data.incomeType === 'fixed' ? '100% of surplus to buffer.' : '100% of profits to buffer.' },
@@ -1569,12 +1587,16 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
     // so it works on every profile (fixed, foundation, variable, mixed)
     if (showWeeklyPulse) return 'weekly-pulse';
     if (stats.isSetup && data.incomeType !== 'fixed' && !isFoundation && stats.drawdownZone !== 'normal' && data.tradingCapital > 0) return 'drawdown';
-    // Foundation staged milestones outrank backup — one-time progression events.
-    // f12Hit → upgrade modal (profile picker). f6Hit / f3Hit → inline advance banners.
-    // Banners disappear naturally when bufferTargetMonths is updated; no dismiss needed.
-    if (showUpgradePrompt && !upgradeDismissed) return 'upgrade';   // 12-month → graduate
-    if (f6Hit) return 'foundation-6mo';                              // 6-month milestone
-    if (f3Hit) return 'foundation-3mo';                              // 3-month milestone
+    // Foundation Arc staged milestones outrank backup — they are one-time progression events.
+    // complete → stay-or-unlock banner (persistent dismiss via foundationStageBannersDismissed).
+    // stable / established → advance banners with Remind-me-later persistent dismiss.
+    // Non-Foundation showUpgradePrompt (goal-reached) keeps the old session-dismiss path.
+    if (isFoundation
+      ? (foundationStage === 'complete' && !fDismissed.has('complete'))
+      : (showUpgradePrompt && !upgradeDismissed)
+    ) return 'upgrade';
+    if (foundationStage === 'stable'      && !fDismissed.has('stable'))      return 'foundation-6mo';
+    if (foundationStage === 'established' && !fDismissed.has('established')) return 'foundation-3mo';
     if (stats.isSetup && needsBackup) return 'backup';
     if (isFoundation && foundationNudge) return 'nudge';
     if (showGraduationWelcome) return 'graduation';
@@ -2064,7 +2086,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
 		</button>
 	  </div>
 	)}
-      {/* Foundation graduation prompt */}
+      {/* Foundation Complete / non-Foundation goal-reached upgrade banner */}
       {primaryBannerKey === 'upgrade' && (
         <div style={{
           background: '#0F1209',
@@ -2076,10 +2098,14 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             <Sparkles size={16} style={{ color: '#7FA068', flexShrink: 0, marginTop: '2px' }} />
             <div>
               <div style={{ fontSize: '15px', fontWeight: 600, color: '#E8E2D5', marginBottom: '4px' }}>
-                You've built a strong foundation.
+                {isFoundation
+                  ? 'You\'ve built strong financial stability.'
+                  : 'You\'ve reached your savings goal.'}
               </div>
               <p style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.6, margin: 0 }}>
-                Ready for more control over your money? The full system unlocks income structuring, advanced planning, and the full Royal Ledger dashboard.
+                {isFoundation
+                  ? `${fmt(data.buffer)} saved — ${Math.floor(foundationMonths)} months of financial security. You can stay on Foundation or unlock advanced income systems.`
+                  : 'Ready for more control over your money? The full system unlocks income structuring, advanced planning, and the complete Royal Ledger dashboard.'}
               </p>
             </div>
           </div>
@@ -2093,10 +2119,18 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 fontFamily: 'Inter, sans-serif',
               }}
             >
-              Continue with full system →
+              {isFoundation ? 'Unlock advanced systems →' : 'Continue with full system →'}
             </button>
             <button
-              onClick={() => { console.log('[rl] banner_dismissed upgrade'); setUpgradeDismissed(true); }}
+              onClick={() => {
+                if (isFoundation) {
+                  console.log('[rl] foundation_stay complete');
+                  fDismiss('complete');
+                } else {
+                  console.log('[rl] banner_dismissed upgrade');
+                  setUpgradeDismissed(true);
+                }
+              }}
               style={{
                 background: 'transparent', color: '#8B8478',
                 border: '1px solid #26221C', borderRadius: '3px',
@@ -2104,67 +2138,82 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 fontFamily: 'Inter, sans-serif',
               }}
             >
-              Stay in Foundation
+              Stay on Foundation
             </button>
           </div>
         </div>
       )}
 
-      {/* ── Foundation 3-month milestone ─────────────────────────────────────
-          Fires when buffer ≥ 3 × monthly salary and bufferTargetMonths is 3.
-          Advancing updates bufferTargetMonths → 6; banner disappears naturally. */}
+      {/* ── Foundation Arc: Financially Established (3-month milestone) ────────
+          Fires when foundationStage === 'established' (buffer ≥ 3× salary).
+          "Aim for 6 months" updates bufferTargetMonths + dismisses permanently.
+          "Remind me later" dismisses persistently — banner resurfaces only if
+          stage drops (buffer dips below threshold), which resets fDismissed check. */}
       {primaryBannerKey === 'foundation-3mo' && (
         <div style={{ background: '#0F1A0E', border: '1px solid #3A5A2A', borderRadius: '6px', padding: '18px 20px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '14px' }}>
             <span style={{ fontSize: '20px', flexShrink: 0 }}>🎉</span>
             <div>
               <div style={{ fontSize: '15px', fontWeight: 600, color: '#E8E2D5', marginBottom: '4px' }}>
-                3-month milestone reached!
+                Financially Established — 3 months saved!
               </div>
               <p style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.6, margin: 0 }}>
-                You've built a real cushion — {fmt(stats.salary * 3)} saved. Ready to aim for 6 months?
+                {fmt(data.buffer)} in savings — a real cushion. Your next milestone: 6 months ({fmt(stats.salary * 6)}).
               </p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button
-              onClick={() => setData(d => ({ ...d, bufferTargetMonths: 6, bufferProtectMonths: Math.max(1, 6 - 2) }))}
+              onClick={() => {
+                setData(d => ({ ...d, bufferTargetMonths: 6, bufferProtectMonths: Math.max(1, 6 - 2) }));
+                fDismiss('established');
+              }}
               style={{ background: '#7FA068', color: '#0A0908', border: 'none', borderRadius: '3px', padding: '9px 18px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
             >
-              Advance to 6-month goal →
+              Aim for 6 months →
+            </button>
+            <button
+              onClick={() => fDismiss('established')}
+              style={{ background: 'transparent', color: '#8B8478', border: '1px solid #26221C', borderRadius: '3px', padding: '9px 16px', fontSize: '13px', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+            >
+              Remind me later
             </button>
           </div>
         </div>
       )}
 
-      {/* ── Foundation 6-month milestone ─────────────────────────────────────
-          Fires when buffer ≥ 6 × monthly salary and bufferTargetMonths is 6.
-          User can advance to 12 months OR graduate to the full system now.   */}
+      {/* ── Foundation Arc: Financially Stable (6-month milestone) ─────────────
+          Fires when foundationStage === 'stable' (buffer ≥ 6× salary).
+          "Aim for 12 months" updates target + dismisses. "Remind me later"
+          dismisses persistently. No graduation CTA here — that lives at 'complete'. */}
       {primaryBannerKey === 'foundation-6mo' && (
         <div style={{ background: '#0F1A0E', border: '1px solid #3A5A2A', borderRadius: '6px', padding: '18px 20px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '14px' }}>
             <span style={{ fontSize: '20px', flexShrink: 0 }}>🏆</span>
             <div>
               <div style={{ fontSize: '15px', fontWeight: 600, color: '#E8E2D5', marginBottom: '4px' }}>
-                6-month milestone reached!
+                Financially Stable — 6 months saved!
               </div>
               <p style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.6, margin: 0 }}>
-                {fmt(stats.salary * 6)} saved — a solid emergency fund. Keep going to 12 months, or graduate to the full Royal Ledger system now.
+                {fmt(data.buffer)} saved — a solid emergency fund. Keep building to 12 months ({fmt(stats.salary * 12)}) to reach Foundation Complete.
               </p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button
-              onClick={() => setData(d => ({ ...d, bufferTargetMonths: 12, bufferProtectMonths: Math.max(1, 12 - 2) }))}
+              onClick={() => {
+                setData(d => ({ ...d, bufferTargetMonths: 12, bufferProtectMonths: Math.max(1, 12 - 2) }));
+                fDismiss('stable');
+              }}
               style={{ background: '#7FA068', color: '#0A0908', border: 'none', borderRadius: '3px', padding: '9px 18px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
             >
               Aim for 12 months →
             </button>
             <button
-              onClick={onRequestGraduate}
-              style={{ background: 'transparent', color: '#D97757', border: '1px solid #3A2A1E', borderRadius: '3px', padding: '9px 16px', fontSize: '13px', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+              onClick={() => fDismiss('stable')}
+              style={{ background: 'transparent', color: '#8B8478', border: '1px solid #26221C', borderRadius: '3px', padding: '9px 16px', fontSize: '13px', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
             >
-              Graduate to full system →
+              Remind me later
             </button>
           </div>
         </div>
@@ -2457,57 +2506,88 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         </div>
       </section>
 
-      {/* Foundation milestone progression — shown instead of generic stages */}
+      {/* Foundation Arc: milestone progression — shown instead of generic stages */}
       {isFoundation && stats.isSetup && stats.salary > 0 && (
         <section className="card rl-cp">
           <h2 className="display text-2xl mb-2" style={{ display: 'flex', alignItems: 'center' }}>
             Your Journey
             <HelpTip title="Foundation Journey">
-              Foundation progresses through three savings milestones. Hit each target and the system advances you automatically. After 6 months you can graduate to the full Royal Ledger system, or keep building to 12 months first.
+              Foundation progresses through four stages based on your savings buffer. Each milestone unlocks a more balanced money allocation. At 12 months you can unlock advanced income systems — or stay on Foundation indefinitely.
             </HelpTip>
           </h2>
           <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
-            Savings {fmt(data.buffer)} · Target {data.bufferTargetMonths} months ({fmt(stats.bufferTarget)})
+            Savings {fmt(data.buffer)} · {(Math.floor(foundationMonths * 10) / 10).toFixed(1)} months covered
           </p>
           <div className="space-y-3">
-            {[
-              { months: 3,  label: 'First cushion',    desc: '3 months saved — a real safety net.',         threshold: stats.salary * 3  },
-              { months: 6,  label: 'Emergency fund',   desc: '6 months saved — the international standard.', threshold: stats.salary * 6  },
-              { months: 12, label: 'Solid foundation', desc: '12 months saved — ready to graduate.',         threshold: stats.salary * 12 },
-            ].map(row => {
-              const done    = data.buffer >= row.threshold;
-              const current = data.bufferTargetMonths === row.months;
-              const locked  = !done && !current && data.bufferTargetMonths < row.months;
-              return (
-                <div key={row.months} style={{
-                  display: 'flex', alignItems: 'center', gap: '16px',
-                  padding: '14px 16px', borderRadius: '6px',
-                  background: current ? '#1A1410' : 'transparent',
-                  border: `1px solid ${current ? '#3A2A1E' : done ? '#2A3A2A' : '#1E1C18'}`,
-                  opacity: locked ? 0.45 : 1,
-                }}>
-                  <div style={{
-                    width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
-                    background: done ? '#2A4A2A' : current ? '#3A2A1E' : '#1A1A1A',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '14px',
+            {(() => {
+              // Map foundationStage to an index so we can drive done/current/locked purely
+              // from the derived stage — no bufferTargetMonths comparisons needed.
+              const stageOrder = ['starter', 'established', 'stable', 'complete'];
+              const stageIdx = foundationStage ? stageOrder.indexOf(foundationStage) : 0;
+              return [
+                {
+                  months: 3,
+                  label: 'Financially Established',
+                  allocation: '100% savings',
+                  desc: '3 months saved — a real safety net.',
+                  threshold: stats.salary * 3,
+                  doneAtIdx: 1,    // done when stageIdx ≥ 1 (established+)
+                  currentAtIdx: 0, // current when stageIdx === 0 (starter)
+                },
+                {
+                  months: 6,
+                  label: 'Financially Stable',
+                  allocation: '70% savings · 20% goals · 10% lifestyle',
+                  desc: '6 months saved — the international standard.',
+                  threshold: stats.salary * 6,
+                  doneAtIdx: 2,
+                  currentAtIdx: 1,
+                },
+                {
+                  months: 12,
+                  label: 'Foundation Complete',
+                  allocation: '50% savings · 30% goals · 20% lifestyle',
+                  desc: '12 months saved — stay or unlock advanced systems.',
+                  threshold: stats.salary * 12,
+                  doneAtIdx: 3,
+                  currentAtIdx: 2,
+                },
+              ].map(row => {
+                const done    = stageIdx >= row.doneAtIdx;
+                const current = stageIdx === row.currentAtIdx;
+                const locked  = stageIdx < row.currentAtIdx;
+                return (
+                  <div key={row.months} style={{
+                    display: 'flex', alignItems: 'center', gap: '16px',
+                    padding: '14px 16px', borderRadius: '6px',
+                    background: current ? '#1A1410' : 'transparent',
+                    border: `1px solid ${current ? '#3A2A1E' : done ? '#2A3A2A' : '#1E1C18'}`,
+                    opacity: locked ? 0.45 : 1,
                   }}>
-                    {done ? '✓' : current ? '→' : '·'}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap', marginBottom: '2px' }}>
-                      <span style={{ fontSize: '14px', fontWeight: 600, color: done ? '#7FA068' : current ? '#D97757' : '#8B8478' }}>
-                        {row.months} months
-                      </span>
-                      <span className="mono" style={{ fontSize: '12px', color: '#5C5648' }}>{fmt(row.threshold)}</span>
-                      {current && !done && <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', color: '#D97757', background: 'rgba(217,119,87,0.12)', padding: '2px 7px', borderRadius: '999px' }}>CURRENT</span>}
-                      {done && <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', color: '#7FA068', background: 'rgba(127,160,104,0.12)', padding: '2px 7px', borderRadius: '999px' }}>DONE</span>}
+                    <div style={{
+                      width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+                      background: done ? '#2A4A2A' : current ? '#3A2A1E' : '#1A1A1A',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '14px',
+                    }}>
+                      {done ? '✓' : current ? '→' : '·'}
                     </div>
-                    <div style={{ fontSize: '12px', color: '#5C5648' }}>{row.desc}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap', marginBottom: '2px' }}>
+                        <span style={{ fontSize: '14px', fontWeight: 600, color: done ? '#7FA068' : current ? '#D97757' : '#8B8478' }}>
+                          {row.label}
+                        </span>
+                        <span className="mono" style={{ fontSize: '11px', color: '#5C5648' }}>{fmt(row.threshold)}</span>
+                        {current && !done && <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', color: '#D97757', background: 'rgba(217,119,87,0.12)', padding: '2px 7px', borderRadius: '999px' }}>CURRENT</span>}
+                        {done && <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', color: '#7FA068', background: 'rgba(127,160,104,0.12)', padding: '2px 7px', borderRadius: '999px' }}>DONE</span>}
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '1px' }}>{row.desc}</div>
+                      <div style={{ fontSize: '10px', color: '#3A3830', letterSpacing: '0.05em' }}>{row.allocation}</div>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              });
+            })()}
           </div>
         </section>
       )}
@@ -2728,7 +2808,7 @@ function PendingRow({ item, setData, currency }) {
             setTimeout(() => setData(d => ({
               ...d,
               pending: d.pending.map(i => i.id === item.id ? { ...i, status: 'bought' } : i),
-              impulses: [...d.impulses, { id: Date.now(), name: item.name, amount: item.amount, category: item.category, envelopeId: item.envelopeId || (d.envelopes || []).find(e => e.isDiscretionary)?.id || null, timestamp: Date.now(), wasGated: true }],
+              impulses: [...d.impulses, { id: Date.now(), name: item.name, amount: item.amount, envelopeId: item.envelopeId || (d.envelopes || []).find(e => e.isDiscretionary)?.id || null, timestamp: Date.now(), wasGated: true }],
             })), 1200);
           }}>
           Buy
@@ -2784,7 +2864,7 @@ function InfoPopover({ label, children, align = 'right' }) {
 function Setup({ data, stats, setData }) {
   const fmt = makeFmt(data.currency);
   const { symbol: currencySymbol } = getCurrency(data.currency);
-  const isFoundation = data?.mode === 'foundation';
+  const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
   const [newExpense, setNewExpense] = useState({ name: '', amount: '', category: 'Housing' });
   const { locked, requestUnlock, gate } = useSectionPin();
 
@@ -3166,7 +3246,7 @@ function Setup({ data, stats, setData }) {
 /* ─────────────── PROFIT / MONEY ALLOCATOR ─────────────── */
 function ProfitAllocator({ data, stats, setData }) {
   const fmt = makeFmt(data.currency);
-  const isFoundation = data?.mode === 'foundation';
+  const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
   const [profit, setProfit] = useState('');
   const [step, setStep] = useState('input');
   const [allocation, setAllocation] = useState(null);
@@ -3760,13 +3840,12 @@ function DrawdownProtocol({ data, stats, setData, onResetHwm, hwmGate }) {
 function ImpulseTab({ data, stats, setData, user }) {
   const fmt = makeFmt(data.currency);
   const { symbol: currencySymbol } = getCurrency(data.currency);
-  const isFoundation = data?.mode === 'foundation';
+  const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
   const verifyEnvPin = usePinVerify();   // async (entered) => boolean
   const hasPinProtection = usePinActive();
   const [view, setView] = useState('gate');
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('');
   const [trigger, setTrigger] = useState('');
   const [envelopeId, setEnvelopeId] = useState('');
   const [step, setStep] = useState('input');
@@ -3788,7 +3867,7 @@ function ImpulseTab({ data, stats, setData, user }) {
   const guardActive = data.tradingGuardUntil && Date.now() < data.tradingGuardUntil;
 
   const reset = () => {
-    setName(''); setAmount(''); setCategory(''); setTrigger('');
+    setName(''); setAmount(''); setTrigger('');
     setEnvelopeId('');
     setStep('input'); setDecision(null);
     setBlockedEnv(null); setPinEntry(''); setPinError(false); setPinStep(false); setOverrideUsed(false);
@@ -3824,7 +3903,6 @@ function ImpulseTab({ data, stats, setData, user }) {
         id: Date.now(),
         name,
         amount: amt,
-        category: category || 'other',
         envelopeId: resolvedEnvelopeId,
         trigger,
         timestamp: Date.now(),
@@ -3847,7 +3925,6 @@ function ImpulseTab({ data, stats, setData, user }) {
       id: Date.now(),
       name,
       amount: amt,
-      category: category || 'other',
       envelopeId: resolvedEnvelopeId,
       timestamp: Date.now(),
       status: 'pending',
@@ -3946,13 +4023,6 @@ function ImpulseTab({ data, stats, setData, user }) {
 				</select>
 			  </div>
 			)}
-            <div>
-              <div className="label mb-2" style={{ color: '#8B8478' }}>Category</div>
-              <select className="input-text" value={category} onChange={(e) => setCategory(e.target.value)}>
-                <option value="">Select…</option>
-                {Object.entries(CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
-              </select>
-            </div>
           </div>
           <button className="btn btn-primary w-full" onClick={runGate} disabled={!name || !amt}>Run through the gate →</button>
         </div>
@@ -4119,7 +4189,6 @@ function QuickLog({ data, setData }) {
   const fmt = makeFmt(data.currency);
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('');
   const [trigger, setTrigger] = useState('');
   const [logged, setLogged] = useState(null); // { name, amount } of last entry
 
@@ -4129,10 +4198,10 @@ function QuickLog({ data, setData }) {
     // in ImpulseTab (DEVELOPMENT_NOTES §4). Stamps envelopeId so the stats filter
     // counts this entry correctly (null is the legacy fallback; explicit id is preferred).
     const discId = (data.envelopes || []).find(e => e.isDiscretionary)?.id ?? null;
-    const entry = { id: Date.now(), name, amount: Number(amount), category: category || 'other', envelopeId: discId, trigger, timestamp: Date.now() };
+    const entry = { id: Date.now(), name, amount: Number(amount), envelopeId: discId, trigger, timestamp: Date.now() };
     setData(d => ({ ...d, impulses: [...d.impulses, entry] }));
     setLogged({ name, amount: Number(amount) });
-    setName(''); setAmount(''); setCategory(''); setTrigger('');
+    setName(''); setAmount(''); setTrigger('');
     setTimeout(() => setLogged(null), 3000);
   };
 
@@ -4143,18 +4212,9 @@ function QuickLog({ data, setData }) {
         <div className="label mb-2" style={{ color: '#8B8478' }}>What did you buy?</div>
         <input className="input-text" value={name} onChange={(e) => setName(e.target.value)} />
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <div className="label mb-2" style={{ color: '#8B8478' }}>Amount</div>
-          <input type="number" className="input" value={amount} onChange={(e) => setAmount(e.target.value)} />
-        </div>
-        <div>
-          <div className="label mb-2" style={{ color: '#8B8478' }}>Category</div>
-          <select className="input-text" value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="">Select…</option>
-            {Object.entries(CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
-          </select>
-        </div>
+      <div>
+        <div className="label mb-2" style={{ color: '#8B8478' }}>Amount</div>
+        <input type="number" className="input" value={amount} onChange={(e) => setAmount(e.target.value)} />
       </div>
       <div>
         <div className="label mb-2" style={{ color: '#8B8478' }}>Trigger</div>
@@ -4282,11 +4342,15 @@ function ImpulseHistory({ data, stats, setData }) {
           )}
         </div>
         <div className="text-xs" style={{ color: '#8B8478', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {(CATEGORIES[i.category] || CATEGORIES.other).label}
-          {envName && (
-            <span style={{ color: '#5C7A5C' }}>{` · ${envName}`}</span>
-          )}
-          {i.trigger && ` · ${i.trigger}`}
+          {(() => {
+            // Build meta line from envelope + trigger only. Legacy `category` field is ignored.
+            // Falls back to em-dash when both are absent so the row doesn't look broken.
+            const parts = [];
+            if (envName) parts.push(<span key="env" style={{ color: '#5C7A5C' }}>{envName}</span>);
+            if (i.trigger) parts.push(<span key="trg">{i.trigger}</span>);
+            if (parts.length === 0) return <span>—</span>;
+            return parts.reduce((acc, el, idx) => idx === 0 ? [el] : [...acc, ' · ', el], []);
+          })()}
           {i.overrideUsed && i.overrideAt && (
             <span style={{ color: '#8B8478' }}> · overridden {new Date(i.overrideAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
           )}
@@ -5057,7 +5121,7 @@ function PinCard({ user, data, setData }) {
 /* ─────────────── ACCOUNT SETTINGS ─────────────── */
 const APP_VERSION = '1.0.0';
 
-function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, data, setData, syncStatus = 'idle', isOnline = true, lastSyncedAt = null, onRetrySync = null }) {
+function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, data, setData, syncStatus = 'idle', isOnline = true, lastSyncedAt = null, onRetrySync = null, onRequestGraduate = null }) {
   const fmt = makeFmt(data.currency);
   const [sTab, setSTab] = useState('account'); // 'account' | 'sessions' | 'access' | 'setup' | 'danger'
   const [newPassword, setNewPassword] = useState('');
@@ -5341,7 +5405,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                       background: '#1E1A10', border: '1px solid #D97757',
                       borderRadius: '6px', padding: '14px 16px', maxWidth: '320px',
                     }}>
-                      <div style={{ fontSize: 28, lineHeight: 1, flexShrink: 0 }}>{curr.flag}</div>
+                      <img src={flagUrl(curr.cc)} alt={curr.name} style={{ width: '36px', height: '27px', objectFit: 'cover', borderRadius: '3px', flexShrink: 0 }} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{
                           fontSize: '15px', fontWeight: 700, color: '#D97757',
@@ -5415,6 +5479,43 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                     support@royalledger.app
                   </a>
                 </p>
+
+                {/* Foundation Complete — graduation always accessible regardless of banner dismissal */}
+                {(data.mode === 'foundation' || data.incomeType === 'foundation') && (() => {
+                  const salary = (data.expenses || []).reduce((s, e) => s + (Number(e.amount) || 0), 0)
+                    + (Number(data.spendingBudget) || 0) + (Number(data.bufferReserve) || 0);
+                  const fMo = salary > 0 ? data.buffer / salary : 0;
+                  if (fMo < 12) return null;
+                  return (
+                    <div style={{
+                      marginTop: '16px',
+                      background: '#0F1A0E',
+                      border: '1px solid #3A5A2A',
+                      borderRadius: '6px',
+                      padding: '16px 18px',
+                    }}>
+                      <div style={{ fontSize: '13px', fontWeight: 600, color: '#A8C49A', marginBottom: '6px' }}>
+                        Foundation Complete ✓
+                      </div>
+                      <p style={{ fontSize: '12px', color: '#8B8478', lineHeight: 1.65, marginBottom: '12px', margin: '0 0 12px' }}>
+                        You've built {Math.floor(fMo)} months of financial security. You can unlock advanced income systems whenever you're ready — or stay on Foundation indefinitely.
+                      </p>
+                      {onRequestGraduate && (
+                        <button
+                          onClick={onRequestGraduate}
+                          style={{
+                            background: '#7FA068', color: '#0A0908', border: 'none',
+                            borderRadius: '3px', padding: '9px 18px',
+                            fontSize: '13px', fontWeight: 700, cursor: 'pointer',
+                            fontFamily: 'Inter, sans-serif',
+                          }}
+                        >
+                          Unlock advanced systems →
+                        </button>
+                      )}
+                    </div>
+                  );
+                })()}
               </section>
             </div>
           </div>
@@ -5616,7 +5717,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
 
 function Rules({ data, stats, setData, user }) {
   const fmt = makeFmt(data.currency);
-  const isFoundation = data?.mode === 'foundation';
+  const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
   const { locked, requestUnlock, gate: fieldGate } = useSectionPin();
 
   const updateRule = (stage, field, value) => {

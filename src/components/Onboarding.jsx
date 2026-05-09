@@ -9,7 +9,7 @@ import {
   Heart, ArrowRight, Check, X, Plus, Wallet, Shield,
   Briefcase, Sparkles, Users, Bell, Lock, TrendingUp, Landmark, Info, Mail,
 } from 'lucide-react';
-import { CURRENCIES, makeFmt, getCurrency } from '../lib/currency';
+import { CURRENCIES, makeFmt, getCurrency, flagUrl } from '../lib/currency';
 import { TIMEZONES, offsetLabel, normalizeTimezone } from '../lib/timezones';
 import { hashPin } from '../lib/pinHash';
 
@@ -416,7 +416,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
               All amounts and symbols will use this currency. Choose carefully — this is locked after setup.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px', marginBottom: '40px' }}>
-              {CURRENCIES.map(({ code, symbol, name, flag }) => {
+              {CURRENCIES.map(({ code, symbol, name, cc }) => {
                 const active = selectedCurrency === code;
                 return (
                   <button
@@ -432,7 +432,11 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                       transition: 'all 150ms',
                     }}
                   >
-                    <div style={{ fontSize: '24px', marginBottom: '6px' }}>{flag}</div>
+                    <img
+                      src={flagUrl(cc)}
+                      alt={name}
+                      style={{ width: '36px', height: '27px', objectFit: 'cover', borderRadius: '3px', marginBottom: '8px', display: 'block' }}
+                    />
                     <div style={{ fontSize: '16px', fontWeight: 700, color: active ? '#D97757' : '#E8E2D5', fontFamily: 'JetBrains Mono, monospace' }}>{symbol} {code}</div>
                     <div style={{ fontSize: '11px', color: '#8B8478', marginTop: '3px' }}>{name}</div>
                     {active && <div style={{ marginTop: '8px' }}><Check size={13} style={{ color: '#D97757' }} /></div>}

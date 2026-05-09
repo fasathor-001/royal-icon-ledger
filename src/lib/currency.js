@@ -1,15 +1,21 @@
 export const CURRENCIES = [
-  { code: 'ZAR', symbol: 'R',    name: 'South African Rand', flag: '🇿🇦' },
-  { code: 'USD', symbol: '$',    name: 'US Dollar',          flag: '🇺🇸' },
-  { code: 'GBP', symbol: '£',   name: 'British Pound',       flag: '🇬🇧' },
-  { code: 'EUR', symbol: '€',   name: 'Euro',                flag: '🇪🇺' },
-  { code: 'NGN', symbol: '₦',   name: 'Nigerian Naira',      flag: '🇳🇬' },
-  { code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar',     flag: '🇨🇦' },
-  { code: 'AUD', symbol: 'A$',  name: 'Australian Dollar',   flag: '🇦🇺' },
-  { code: 'SGD', symbol: 'S$',  name: 'Singapore Dollar',    flag: '🇸🇬' },
-  { code: 'AED', symbol: 'AED', name: 'UAE Dirham',          flag: '🇦🇪' },
-  { code: 'JPY', symbol: '¥',   name: 'Japanese Yen',        flag: '🇯🇵' },
+  { code: 'ZAR', symbol: 'R',    name: 'South African Rand', flag: '🇿🇦', cc: 'za' },
+  { code: 'USD', symbol: '$',    name: 'US Dollar',          flag: '🇺🇸', cc: 'us' },
+  { code: 'GBP', symbol: '£',   name: 'British Pound',       flag: '🇬🇧', cc: 'gb' },
+  { code: 'EUR', symbol: '€',   name: 'Euro',                flag: '🇪🇺', cc: 'eu' },
+  { code: 'NGN', symbol: '₦',   name: 'Nigerian Naira',      flag: '🇳🇬', cc: 'ng' },
+  { code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar',     flag: '🇨🇦', cc: 'ca' },
+  { code: 'AUD', symbol: 'A$',  name: 'Australian Dollar',   flag: '🇦🇺', cc: 'au' },
+  { code: 'SGD', symbol: 'S$',  name: 'Singapore Dollar',    flag: '🇸🇬', cc: 'sg' },
+  { code: 'AED', symbol: 'AED', name: 'UAE Dirham',          flag: '🇦🇪', cc: 'ae' },
+  { code: 'JPY', symbol: '¥',   name: 'Japanese Yen',        flag: '🇯🇵', cc: 'jp' },
 ];
+
+// Returns a flag image URL from flagcdn.com (40px wide PNG).
+// Works on all platforms including Windows, which does not render flag emoji.
+export function flagUrl(cc) {
+  return `https://flagcdn.com/w40/${cc}.png`;
+}
 
 export function getCurrency(code) {
   return CURRENCIES.find(c => c.code === code) ?? CURRENCIES[0];

@@ -161,7 +161,9 @@ All fields live in a single JSON object (stored in localStorage and Supabase JSO
   id: number,              // Date.now() at log time
   name: string,
   amount: number,
-  category: string,        // Key into CATEGORIES in App.jsx
+  // category: string,     // DEPRECATED 2026-05-09 — no longer written by any path.
+                           //   Legacy entries may still have it; readers MUST ignore it.
+                           //   See CHANGELOG: "Impulse Category Removal".
   envelopeId: string|null, // null = legacy entry; treated as Discretionary in all read paths
   trigger: string|null,
   timestamp: number,       // Unix ms
@@ -178,7 +180,7 @@ All fields live in a single JSON object (stored in localStorage and Supabase JSO
   id: number,
   name: string,
   amount: number,
-  category: string,
+  // category: string,     // DEPRECATED 2026-05-09 — see impulse shape note above
   envelopeId: string|null, // Already resolved to Discretionary at write time (see §4)
   timestamp: number,
   status: 'pending'|'bought'|'cancelled',
@@ -350,6 +352,60 @@ This is checked in both `MobileBottomNav` and the desktop nav. See §10 for the 
 ---
 
 ## 5. Historical Bug Log
+
+### Process: Stale-bundle false positive when diagnosing runtime errors (2026-05-09)
+
+**Symptom:** Owner reported a runtime error with stack trace `at reset (App.jsx:6986:5) ... at onClick (App.jsx:7127:13)` for `setCategory is not defined`. This was the same error the previous Bug Log entry had already fixed.
+
+**Diagnosis:** Source file `src/App.jsx` is ~5,300 lines. Stack trace referenced lines 6986 and 7127. **Bundled output line numbers do not map to source line numbers.** Lines that exceed the source file's total length are a strong signal that the browser is running a stale cached bundle, not that there's a new bug at those locations.
+
+**Prevention rule:** Before re-fixing any reported runtime error:
+1. Compare the maximum line number in the stack trace against `wc -l src/App.jsx`. If trace lines > source lines, the user is on a stale bundle.
+2. Run `Grep` for the missing identifier across `src/`. Zero matches confirms the source is clean.
+3. Check the latest build's bundle hash. If the user's browser console reports a hash that doesn't match the latest `dist/assets/index-*.js`, they're stale.
+4. If all three indicate stale cache, do not re-fix. Instead: instruct the user to hard refresh, unregister service worker, clear site data, or reinstall the PWA.
+
+**Why this matters:** Re-fixing already-fixed bugs wastes time, churns CHANGELOG/feedback log entries, and can introduce new regressions if the "fix" overcorrects.
+
+---
+
+### Bug: ImpulseTab `reset()` ghost setter reference after state hook removal (2026-05-09)
+
+**Symptom:** Spending Gate crashed silently after every Skip / Sleep / Buy decision. Component disappeared from DOM; user had to reload to recover.
+
+**Location:** `src/App.jsx` — `ImpulseTab.reset()`.
+
+**Root cause:** The "Impulse Category Removal" change (same date) deleted the `const [category, setCategory] = useState('')` hook from `ImpulseTab` and removed `setCategory` calls from the write paths (`logImpulse`, `sleep`). A leftover `setCategory('')` call inside `reset()` was missed. Every gate decision finishes by calling `reset()`, which threw `ReferenceError: setCategory is not defined`.
+
+**Why the build didn't catch it:** Vite/ESBuild only fails on syntax errors and import-time issues. Undefined identifiers inside function bodies are runtime errors, not compile errors. `npx vite build` returned green despite the bug. ESLint with `no-undef` would have caught it; current config does not enforce this.
+
+**Fix applied:** Removed the `setCategory('')` call from `reset()`. Build verified.
+
+**How it could be reintroduced:** Any future refactor that removes a `useState` hook from a component without searching the rest of the component for setter references. Specifically: setters can hide in `reset()` functions, `useEffect` cleanup callbacks, dependency arrays, and event handlers.
+
+**Prevention rule:** When deleting a `useState` hook, always run `Grep` for the setter name across the entire component file before claiming the refactor is complete. This is a 5-second check that catches the entire class of bug.
+
+---
+
+### Change: Removed impulse `category` field (2026-05-09)
+
+**Background:** Pre-defined six-bucket category list (food / clothes / tech / online / family / other) was attached to every impulse via Spending Gate and QuickLog forms. Audit confirmed it was write-once, display-only — no analytics, no filtering, no charts, no exports depended on it.
+
+**Why removed:** Redundant with the envelope tag (which actually drives budget enforcement) and the trigger field (which feeds `triggerStats` analytics in History tab). Tester feedback flagged the closed list as feeling unprofessional. Form simplification reduces friction on every impulse log.
+
+**What changed:**
+- `CATEGORIES` constant deleted from `src/App.jsx`
+- `category` removed from impulse and pending-item write paths in `confirmPending`, `ImpulseTab.logImpulse`, `ImpulseTab.sleep`, and `QuickLog.log`
+- `category` `<select>` removed from Spending Gate input form and QuickLog form
+- `category` state hook (`useState`) removed from `ImpulseTab` and `QuickLog`
+- `ImpulseTab.renderRow()` meta line rebuilt to render `[envelope] · [trigger]` only with em-dash fallback when both absent
+- Lucide imports `Coffee`, `ShoppingBag`, `Package` removed (only used by the deleted constant)
+
+**Backward compatibility:** Legacy entries with `category` populated continue to load. The field is harmlessly retained in the JSONB blob. No migration script — readers ignore it.
+
+**How it could regress:** If a future feature tries to filter or chart by category, it would need to reintroduce the form input. Rebuild deliberately if needed; do not bring back the field for cosmetic reasons alone.
+
+---
 
 ### Bug: RolloverModal — null envelopeId entries silently excluded from Discretionary spend (QA Issue #1)
 
@@ -614,6 +670,14 @@ npm run release:check  # build + reminder to work through RELEASE_CHECKLIST.md
 ```
 
 Deploys to Cloudflare Pages. The marketing site is at `royalledger.app`; the dashboard is at `my.royalledger.app`. PWA `start_url` is `/app?source=pwa`.
+
+Pre-deploy checklist:
+1. npm run build passes
+2. Tested locally before push
+3. CHANGELOG.md updated
+4. TESTER_FEEDBACK_HANDBOOK.md updated (if feedback-driven)
+5. DEVELOPMENT_NOTES.md updated (if patterns/architecture changed)
+6. Tester notified (if their feedback was acted on)
 
 ### Required environment variables
 

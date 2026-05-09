@@ -190,7 +190,7 @@ The Command tab shows a warning banner when you cross into Caution or worse.
 
 **Spending Gate** (before any planned purchase ≥ your gate threshold):
 
-1. Enter: What is it / Amount / Category / Envelope / Trigger.
+1. Enter: What is it / Amount / Envelope / Trigger.
 2. The gate checks envelope rules first:
    - Hard block envelope over cap → blocked, no purchase.
    - PIN override envelope over cap → PIN prompt.
@@ -199,7 +199,7 @@ The Command tab shows a warning banner when you cross into Caution or worse.
 4. Choose: **Skip it** (log nothing) / **Sleep on it** (add to pending list) / **Buy now** (log and record to envelope).
 
 **Quick Log** (for purchases already made):
-Same fields (What / Amount / Category / Trigger) but no gate and no envelope blocking — just records the purchase retroactively. Use it for honest catch-up, not as a way to bypass the gate.
+Same fields (What / Amount / Trigger) but no gate and no envelope blocking — just records the purchase retroactively against your Discretionary envelope. Use it for honest catch-up, not as a way to bypass the gate.
 
 **History & Triggers**:
 - Current month and past months of logged impulses, each showing name, amount, envelope, and date.
@@ -426,7 +426,7 @@ The Profit Allocator routes a Goals % allocation here based on your stage rule. 
 
 ### Before any purchase ≥ gate threshold
 - [ ] Open Impulse Control → Spending Gate.
-- [ ] Enter: What / Amount / Category / Envelope / Trigger.
+- [ ] Enter: What / Amount / Envelope / Trigger.
 - [ ] Read Hours of work / Left this month / 30-year value.
 - [ ] Choose: Skip / Sleep / Buy.
 
