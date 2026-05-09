@@ -214,7 +214,7 @@ const eid = i.envelopeId ?? discId;
 return eid === env.id;
 ```
 
-**Form B — explicit OR** (used in `App.jsx` stats):
+**Form B — explicit OR** (used in `App.jsx` stats for Discretionary-only paths):
 ```js
 if (discretionaryEnv)
   return i.envelopeId === discretionaryEnv.id || i.envelopeId == null;
@@ -224,10 +224,39 @@ return !i.envelopeId;
 **Do NOT use:** `i.envelopeId === env.id` alone — this silently drops all legacy null entries.
 
 **Used in:**
-- `App.jsx` — `stats.thisMonthImpulses` filter (~line 728)
-- `App.jsx` — `lastSpent` calculation in Command tab "Last month" IIFE (~line 1474)
+- `App.jsx` — `stats.thisMonthImpulses` filter (~line 786) — Discretionary-only, drives `spendingLeft`
+- `App.jsx` — `lastSpent` calculation in Command tab "Last month" IIFE — Discretionary rollover context
+- `App.jsx` — `stats.envelopeBreakdown` computation — uses Form A to cover all envelopes
 - `Budget.jsx` — `envelopeSpending` useMemo (~line 228)
 - `RolloverModal.jsx` — `rolloverItems` useMemo (~line 26)
+
+---
+
+### Pattern: Total-spend vs Discretionary-spend — two separate stats
+
+**Rule:** The Command tab "This Month" card shows total spending across ALL envelopes. Other parts of the codebase (Impulse Control tab gate threshold, `spendingLeft` maths) still use Discretionary-only spend. Do not conflate the two.
+
+| Stat | Covers | Used for |
+|---|---|---|
+| `stats.thisMonthSpend` | Discretionary envelope only (+ legacy nulls) | `spendingLeft`, impulse gate remaining-budget warning |
+| `stats.totalMonthSpend` | All envelopes, all impulses this month | Command tab primary number, compact Spending card |
+| `stats.totalBudgetAllEnvelopes` | Sum of all envelope caps | Command tab "of R X budgeted" label and progress bar |
+| `stats.envelopeBreakdown` | Per-envelope array sorted by spent desc | Command tab "This month by envelope" rows |
+
+**Rule:** All Command tab spending display references must read from `stats.totalMonthSpend` and `stats.envelopeBreakdown`. Any new spending display added to Command must follow the same pattern or the displays will diverge (see Bug Log §5 — Multiple spending displays out of sync).
+
+**`envelopeBreakdown` shape** (set in `stats` useMemo, `App.jsx`):
+```js
+{
+  id: string,
+  name: string,
+  cap: number,
+  spent: number,
+  isDiscretionary: boolean,
+  isOver: boolean,  // true when spent > cap && cap > 0
+}
+```
+Sorted by `spent` descending. Includes envelopes with `cap > 0 || spent > 0`. Top 5 shown in UI; remainder indicated by "+N more" link.
 
 ### Pattern: Income-type-aware UI
 

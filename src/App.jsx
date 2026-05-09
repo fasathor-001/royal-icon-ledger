@@ -805,23 +805,35 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     const allMonthImpulses = data.impulses.filter(i => i.timestamp >= monthStart);
     const totalMonthSpend = allMonthImpulses.reduce((s, i) => s + i.amount, 0);
 
-    // Per-envelope breakdown: spent vs cap, only envelopes with activity this month.
+    // Total budget across all envelopes (sum of caps).
+    const totalBudgetAllEnvelopes = (data.envelopes || []).reduce((s, e) => s + (e.cap || 0), 0);
+
+    // Per-envelope breakdown using Form A pattern (DEVELOPMENT_NOTES §4):
+    //   discId resolves null envelopeId entries → Discretionary
+    //   eid = imp.envelopeId ?? discId; return eid === env.id
+    // Includes envelopes with cap > 0 OR spent > 0 (covers zero-spend and over-spend).
+    // Sorted by spent descending for the Command tab display.
+    const discId = discretionaryEnv?.id ?? null;
     const envelopeBreakdown = (data.envelopes || [])
       .map(env => {
         const spent = allMonthImpulses
-          .filter(i => env.isDiscretionary
-            ? (i.envelopeId === env.id || i.envelopeId == null)
-            : i.envelopeId === env.id)
+          .filter(i => {
+            const eid = i.envelopeId ?? discId;
+            return eid === env.id;
+          })
           .reduce((s, i) => s + i.amount, 0);
+        const cap = env.cap || 0;
         return {
           id: env.id,
           name: env.name,
-          cap: env.cap || 0,
+          cap,
           spent,
           isDiscretionary: env.isDiscretionary || false,
+          isOver: cap > 0 && spent > cap,
         };
       })
-      .filter(e => e.spent > 0); // only show envelopes that have been used this month
+      .filter(e => e.cap > 0 || e.spent > 0)  // include budgeted envelopes even if unspent
+      .sort((a, b) => b.spent - a.spent);       // highest spenders first
 
     const totalAssets = data.buffer + data.tradingCapital + data.longTerm + (data.futureGoals || 0);
     const ytdPnL = data.tradingPnLHistory.reduce((s, h) => s + h.pnl, 0);
@@ -841,7 +853,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
       stage1End, stage15End, stage2End, stage, progressStage,
       monthsCovered, nextThreshold, progressPct,
       thisMonthSpend, thisMonthImpulses, spendingLeft, discCap,
-      totalMonthSpend, envelopeBreakdown,
+      totalMonthSpend, totalBudgetAllEnvelopes, envelopeBreakdown,
       totalAssets, ytdPnL,
 	  highWater, drawdownPct, drawdownZone,
       isSetup: data.expenses.length > 0 && data.spendingBudget > 0,
@@ -1474,12 +1486,17 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
   return (
     <div className="space-y-6">
 
-      {/* ── This month — spending control point ───────────────────────────────
-          Shown whenever the system is set up and a spending budget exists.
-          The large coloured number is the primary signal: how much is left.   */}
+      {/* ── This month — total spending snapshot ─────────────────────────────
+          Primary number: total spent across ALL envelopes this month.
+          Breakdown: per-envelope rows sorted by spending, top 5 shown.      */}
       {stats.isSetup && data.spendingBudget > 0 && (() => {
-        const pctUsed = stats.discCap > 0 ? Math.min(1, stats.thisMonthSpend / stats.discCap) : 0;
-        const leftColor = pctUsed >= 0.9 ? '#C56B5A' : pctUsed >= 0.7 ? '#D97757' : '#7FA068';
+        const totalSpent  = stats.totalMonthSpend;
+        const totalBudget = stats.totalBudgetAllEnvelopes;
+        const pctUsed     = totalBudget > 0 ? Math.min(1, totalSpent / totalBudget) : 0;
+        const spendColor  = pctUsed >= 0.9 ? '#C56B5A' : pctUsed >= 0.7 ? '#D97757' : '#7FA068';
+        const displayRows = stats.envelopeBreakdown.slice(0, 5);
+        const hiddenCount = stats.envelopeBreakdown.length - displayRows.length;
+        const hasEnvelopes = (data.envelopes || []).length > 0;
         return (
           <div className="rl-this-month" style={{
             background: '#0F0D0A',
@@ -1492,11 +1509,8 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               display: 'flex', alignItems: 'center',
             }}>
               This month
-              <HelpTip title="Spending Budget">
-                {isFoundation
-                  ? 'Your lifestyle spending allowance for the month — money set aside for day-to-day living outside of your fixed costs. Once it runs out, spending stops. Keeping within it each month is how discipline compounds over time.'
-                  : 'Your discretionary budget for the month — money you can spend freely on anything not in your fixed expenses. Once it runs out, spending stops. Unspent balance carries forward or sweeps to your buffer at month end, depending on your rollover setting.'
-                }
+              <HelpTip title="Monthly Spending">
+                Your total spending this month across all envelopes and categories. Each row below shows how one budget category is tracking against its cap. Green = on track, amber = approaching limit, red = over.
               </HelpTip>
             </div>
 
@@ -1514,7 +1528,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 gap: '12px',
               }}>
                 <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.65, margin: 0 }}>
-                  You're set up. This is what you have left to spend this month. When it runs out, spending stops.
+                  You're set up. Track your spending here across all your budget categories.
                 </p>
                 <button
                   onClick={() => setShowDashWelcome(false)}
@@ -1528,35 +1542,25 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               </div>
             )}
 
-            {/* Primary number */}
-            {(() => {
-              const overspend = Math.max(0, stats.thisMonthSpend - stats.discCap);
-              return (
-                <div style={{ marginBottom: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px' }}>
-                    <div style={{
-                      fontSize: 'clamp(36px, 8vw, 52px)',
-                      fontWeight: 300,
-                      color: leftColor,
-                      fontFamily: "'Fraunces', Georgia, serif",
-                      lineHeight: 1,
-                    }}>
-                      {fmt(stats.spendingLeft)}
-                    </div>
-                    <div style={{ fontSize: '13px', color: '#5C5648', paddingBottom: '6px' }}>
-                      left to spend
-                    </div>
-                  </div>
-                  {overspend > 0 && (
-                    <div style={{ fontSize: '12px', color: '#C56B5A', marginTop: '4px' }}>
-                      {fmt(overspend)} over budget
-                    </div>
-                  )}
+            {/* Primary number — total spent this month across all envelopes */}
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', flexWrap: 'wrap' }}>
+                <div style={{
+                  fontSize: 'clamp(36px, 8vw, 52px)',
+                  fontWeight: 300,
+                  color: spendColor,
+                  fontFamily: "'Fraunces', Georgia, serif",
+                  lineHeight: 1,
+                }}>
+                  {fmt(totalSpent)}
                 </div>
-              );
-            })()}
+                <div style={{ fontSize: '13px', color: '#5C5648', paddingBottom: '6px' }}>
+                  {totalBudget > 0 ? `spent of ${fmt(totalBudget)} budgeted` : 'spent this month'}
+                </div>
+              </div>
+            </div>
 
-            {/* Last month summary — reads from rollover history if available */}
+            {/* Last month Discretionary carry-forward — still relevant as rollover context */}
             {(() => {
               const now = new Date();
               const thisMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -1606,70 +1610,65 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               );
             })()}
 
-            {/* Progress bar */}
-            <div style={{
-              height: '3px', background: '#1A1610', borderRadius: '2px',
-              marginBottom: '16px', overflow: 'hidden',
-            }}>
-              <div style={{
-                height: '100%',
-                width: `${pctUsed * 100}%`,
-                background: leftColor,
-                borderRadius: '2px',
-                transition: 'width 0.4s ease',
-              }} />
+            {/* Progress bar — total spent vs total budgeted */}
+            <div style={{ height: '3px', background: '#1A1610', borderRadius: '2px', marginBottom: '16px', overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${pctUsed * 100}%`, background: spendColor, borderRadius: '2px', transition: 'width 0.4s ease' }} />
             </div>
 
-            {/* Spent / Budget summary row */}
-            <div style={{ display: 'flex', gap: '28px', flexWrap: 'wrap', marginBottom: stats.envelopeBreakdown.length > 1 ? '16px' : '0' }}>
-              <div>
-                <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '3px' }}>Spent (all)</div>
-                <div style={{ fontSize: '15px', color: '#B0A898', fontFamily: 'JetBrains Mono, monospace' }}>
-                  {fmt(stats.totalMonthSpend)}
-                </div>
+            {/* Per-envelope breakdown — always shown */}
+            <div style={{ borderTop: '1px solid #1A1610', paddingTop: '14px' }}>
+              <div style={{ fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '10px', fontWeight: 600 }}>
+                This month by envelope
               </div>
-              <div>
-                <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '3px' }}>Discretionary budget</div>
-                <div style={{ fontSize: '15px', color: '#8B8478', fontFamily: 'JetBrains Mono, monospace' }}>
-                  {fmt(stats.discCap)}
-                </div>
-              </div>
-            </div>
 
-            {/* Per-envelope breakdown — only shown when spending spans multiple envelopes */}
-            {stats.envelopeBreakdown.length > 1 && (
-              <div style={{ borderTop: '1px solid #1A1610', paddingTop: '14px' }}>
-                <div style={{ fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '10px', fontWeight: 600 }}>
-                  By envelope
-                </div>
+              {/* Empty state — no envelopes set up yet */}
+              {!hasEnvelopes ? (
+                <p style={{ fontSize: '12px', color: '#5C5648', fontStyle: 'italic', margin: 0 }}>
+                  Add envelopes in the Budget tab to track spending by category.
+                </p>
+              ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {stats.envelopeBreakdown.map(env => {
-                    const pct = env.cap > 0 ? Math.min(1, env.spent / env.cap) : 0;
-                    const barColor = pct >= 0.9 ? '#C56B5A' : pct >= 0.7 ? '#D97757' : '#7FA068';
+                  {displayRows.map(env => {
+                    const pct      = env.cap > 0 ? Math.min(1, env.spent / env.cap) : 0;
+                    const rowColor = env.isOver ? '#C56B5A' : pct >= 0.9 ? '#C56B5A' : pct >= 0.7 ? '#D97757' : '#7FA068';
                     return (
                       <div key={env.id}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
-                          <span style={{ fontSize: '12px', color: '#8B8478' }}>
-                            {env.name}{env.isDiscretionary ? ' (discretionary)' : ''}
-                          </span>
-                          <span style={{ fontSize: '12px', fontFamily: 'JetBrains Mono, monospace', color: '#B0A898' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+                            <span style={{ fontSize: '12px', color: '#8B8478', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {env.name}
+                            </span>
+                            {env.isOver && (
+                              <span style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.08em', color: '#C56B5A', background: 'rgba(197,107,90,0.12)', borderRadius: '3px', padding: '1px 4px', flexShrink: 0 }}>
+                                OVER
+                              </span>
+                            )}
+                          </div>
+                          <span style={{ fontSize: '12px', fontFamily: 'JetBrains Mono, monospace', color: env.isOver ? '#C56B5A' : '#B0A898', flexShrink: 0, marginLeft: '8px' }}>
                             {fmt(env.spent)}{env.cap > 0 ? ` / ${fmt(env.cap)}` : ''}
                           </span>
                         </div>
                         {env.cap > 0 && (
                           <div style={{ height: '3px', background: '#1A1610', borderRadius: '2px', overflow: 'hidden' }}>
-                            <div style={{ height: '100%', width: `${pct * 100}%`, background: barColor, borderRadius: '2px', transition: 'width 0.4s ease' }} />
+                            <div style={{ height: '100%', width: `${Math.min(100, pct * 100)}%`, background: rowColor, borderRadius: '2px', transition: 'width 0.4s ease' }} />
                           </div>
                         )}
                       </div>
                     );
                   })}
+
+                  {/* "+N more" when >5 envelopes */}
+                  {hiddenCount > 0 && (
+                    <div style={{ fontSize: '11px', color: '#5C5648', fontStyle: 'italic' }}>
+                      +{hiddenCount} more — see Budget tab
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
             <div style={{ marginTop: '16px', fontSize: '12px', color: '#5C5648', fontStyle: 'italic' }}>
-              This is your control point. When it runs out, spending stops.
+              Your monthly spending snapshot across all categories.
             </div>
           </div>
         );
