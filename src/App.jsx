@@ -182,8 +182,7 @@ function MobileBottomNav({ tab, setTab, user, data }) {
 
   return (
     <>
-      {/* Backdrop — deliberately stops above the nav bar so primary buttons
-          remain directly tappable while the More sheet is open.            */}
+      {/* Backdrop — dims the content behind the More sheet */}
       {showMore && (
         <div
           onClick={() => setShowMore(false)}
@@ -192,13 +191,14 @@ function MobileBottomNav({ tab, setTab, user, data }) {
             top: 0, left: 0, right: 0,
             bottom: 'calc(64px + env(safe-area-inset-bottom))',
             zIndex: 998,
+            background: 'rgba(10,9,8,0.55)',
           }}
         />
       )}
 
-      {/* More sheet */}
+      {/* More sheet — slides up from the nav bar */}
       {showMore && (
-        <div style={{
+        <div className="more-sheet-enter" style={{
           position: 'fixed',
           bottom: 'calc(64px + env(safe-area-inset-bottom))',
           left: 0, right: 0,
@@ -247,9 +247,13 @@ function MobileBottomNav({ tab, setTab, user, data }) {
                 alignItems: 'center', justifyContent: 'center', gap: 3,
                 background: 'none', border: 'none', cursor: 'pointer',
                 color: active ? '#D97757' : '#8B8478',
-                transition: 'color 150ms',
+                transition: 'color 150ms, opacity 80ms',
                 minWidth: 0,
+                WebkitTapHighlightColor: 'transparent',
               }}
+              onPointerDown={e => { e.currentTarget.style.opacity = '0.55'; }}
+              onPointerUp={e => { e.currentTarget.style.opacity = '1'; }}
+              onPointerLeave={e => { e.currentTarget.style.opacity = '1'; }}
             >
               <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
               <span style={{
@@ -271,9 +275,13 @@ function MobileBottomNav({ tab, setTab, user, data }) {
             alignItems: 'center', justifyContent: 'center', gap: 3,
             background: 'none', border: 'none', cursor: 'pointer',
             color: (showMore || isSecondaryActive) ? '#D97757' : '#8B8478',
-            transition: 'color 150ms',
+            transition: 'color 150ms, opacity 80ms',
             minWidth: 0,
+            WebkitTapHighlightColor: 'transparent',
           }}
+          onPointerDown={e => { e.currentTarget.style.opacity = '0.55'; }}
+          onPointerUp={e => { e.currentTarget.style.opacity = '1'; }}
+          onPointerLeave={e => { e.currentTarget.style.opacity = '1'; }}
         >
           <MoreHorizontal size={20} strokeWidth={(showMore || isSecondaryActive) ? 2.2 : 1.8} />
           <span style={{
@@ -1035,8 +1043,10 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
         .stab-danger.stab-active { color: #C56B5A; border-bottom-color: #C56B5A; }
         .progress { height: 6px; background: #26221C; border-radius: 999px; overflow: hidden; }
         .progress-fill { height: 100%; transition: width 800ms cubic-bezier(0.4, 0, 0.2, 1); border-radius: 999px; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-        .slide-up { animation: slideUp 400ms ease both; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .slide-up { animation: slideUp 250ms ease both; }
+        @keyframes moreSheetIn { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: translateY(0); } }
+        .more-sheet-enter { animation: moreSheetIn 200ms cubic-bezier(0.22, 1, 0.36, 1) both; }
         .glow-warm { box-shadow: 0 0 0 1px #D9775740, 0 12px 40px #D9775720; }
         .app-shell { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
         .main-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }

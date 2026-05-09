@@ -90,7 +90,8 @@ function ConflictModal({ localVersion, cloudVersion, localTs, cloudTs, onKeepLoc
       backdropFilter: 'blur(6px)', zIndex: 99999,
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
     }}>
-      <div style={{
+      <style>{`@media(max-width:480px){.rl-conflict-card{padding:24px 20px!important;}}`}</style>
+      <div className="rl-conflict-card" style={{
         background: '#0A0908', border: '1px solid #3A2A1E',
         borderRadius: '6px', maxWidth: '500px', width: '100%', padding: '36px',
         fontFamily: 'Inter, system-ui, sans-serif', color: '#E8E2D5',

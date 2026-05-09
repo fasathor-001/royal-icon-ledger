@@ -350,6 +350,10 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
         .ob-btn-ghost:hover { color: #E8E2D5; }
         .ob-progress-dot { width: 8px; height: 8px; border-radius: 50%; transition: all 200ms; }
         .ob-input.ob-amount-input { width: 110px; text-align: right; }
+        @keyframes obStepIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        .ob-step { animation: obStepIn 280ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+        .ob-btn-primary { -webkit-tap-highlight-color: transparent; }
+        .ob-btn-ghost { -webkit-tap-highlight-color: transparent; }
         @media (max-width: 480px) {
           .ob-input.ob-amount-input { width: 72px; }
           .ob-exp-name { min-width: 0; }
@@ -357,7 +361,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
         }
       `}</style>
 
-      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '40px 24px 80px' }}>
+      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '40px 24px', paddingBottom: 'calc(80px + env(safe-area-inset-bottom))' }}>
         {/* Progress dots — auto-scales with totalSteps */}
         <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '48px' }}>
           {Array.from({ length: totalSteps }).map((_, i) => (
@@ -368,6 +372,9 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             />
           ))}
         </div>
+
+        {/* Step content — keyed on step so the slide-in animation fires on every advance */}
+        <div key={step} className="ob-step">
 
         {/* ── STEP 1: WELCOME ──────────────────────────────────────────────── */}
         {step === 1 && (
@@ -1332,6 +1339,8 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
             </button>
           </div>
         )}
+
+        </div>{/* /ob-step keyed wrapper */}
       </div>
     </div>
   );
