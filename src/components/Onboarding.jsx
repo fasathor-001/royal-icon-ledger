@@ -616,7 +616,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                 { id: 'foundation', emoji: '🌱', title: 'Building from zero', desc: 'For people starting savings from scratch.',          defaultMonths: 3 },
                 { id: 'fixed',      emoji: '💼', title: 'Salary',             desc: 'Steady paycheck every month.',                       defaultMonths: 6 },
                 { id: 'variable',   emoji: '📈', title: 'Trading / Self-employed', desc: 'Income changes month to month.',                defaultMonths: 18 },
-                { id: 'mixed',      emoji: '⚡', title: 'Mix',                desc: 'Steady salary, plus side income or trading on top.', defaultMonths: 9 },
+                { id: 'mixed',      emoji: '⚡', title: 'Mix',                desc: 'Steady salary, plus business or side income.', defaultMonths: 9 },
               ].map(opt => {
                 const selected = incomeType === opt.id;
                 return (
@@ -1566,7 +1566,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                 <span style={{ fontSize: '20px', flexShrink: 0 }} aria-hidden="true">⚡</span>
                 <div>
                   <div style={{ fontSize: '14px', fontWeight: 600, color: '#E8E2D5' }}>Mix</div>
-                  <div style={{ fontSize: '12px', color: '#8B8478' }}>Steady salary, plus side income or trading on top</div>
+                  <div style={{ fontSize: '12px', color: '#8B8478' }}>Steady salary, plus business or side income</div>
                 </div>
               </button>
             </div>

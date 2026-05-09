@@ -1254,7 +1254,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
               id: 'mixed',
               label: 'Mix',
               icon: '⚡',
-              desc: 'Steady salary, plus side income or trading on top.',
+              desc: 'Steady salary, plus business or side income.',
             },
           ];
           return (
@@ -1595,7 +1595,7 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
     1: { name: 'Stage 1', title: 'Build the Floor', color: '#C56B5A', desc: data.incomeType === 'fixed' ? '100% of surplus to buffer.' : '100% of profits to buffer.' },
     1.5: { name: 'Stage 1.5', title: 'Grow the Cushion', color: '#D97757', desc: 'Long-term investing begins — split by your stage rules.' },
     2: { name: 'Stage 2', title: 'Reach Fortified', color: '#B89968', desc: 'Buffer priority — final push to target.' },
-    3: { name: 'Stage 3', title: 'Full Waterfall', color: '#7FA068', desc: isFoundation ? 'Lifestyle & goals fully unlocked — your foundation is solid.' : 'Full waterfall unlocked — trading, lifestyle, goals.' },
+    3: { name: 'Stage 3', title: 'Full Waterfall', color: '#7FA068', desc: isFoundation ? 'Lifestyle & goals fully unlocked — your foundation is solid.' : data.incomeType === 'variable' ? 'Full waterfall unlocked — trading, lifestyle, goals.' : 'Full waterfall unlocked — lifestyle and goals fully active.' },
     'protect': { name: 'Protect Mode', title: 'Buffer Rebuilding', color: '#C56B5A', desc: '100% to buffer until rebuilt.' },
   }[stats.stage];
 
@@ -3889,6 +3889,7 @@ function ImpulseTab({ data, stats, setData, user }) {
   const fmt = makeFmt(data.currency);
   const { symbol: currencySymbol } = getCurrency(data.currency);
   const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
+  const showTrading  = data?.incomeType === 'variable';
   const verifyEnvPin = usePinVerify();   // async (entered) => boolean
   const hasPinProtection = usePinActive();
   const [view, setView] = useState('gate');
@@ -4022,7 +4023,9 @@ function ImpulseTab({ data, stats, setData, user }) {
         <p style={{ color: '#B0A898', fontSize: '15px', maxWidth: '650px' }}>
           {isFoundation
             ? 'Pause before you spend. Every unplanned purchase runs through the gate first.'
-            : "Same rules whether you're up or down. Your family's life shouldn't ride your trading P&L."}
+            : showTrading
+              ? "Same rules whether you're up or down. Your family's life shouldn't ride your trading P&L."
+              : 'Pause before every unplanned purchase. The gate creates friction between impulse and action.'}
         </p>
       </div>
 
@@ -4098,7 +4101,7 @@ function ImpulseTab({ data, stats, setData, user }) {
             {guardActive && amt >= data.spendingGateThreshold && !envelopeStatus?.wouldBeOver && (
               <div className="flex items-center gap-2 mt-3 text-sm" style={{ color: '#D97757' }}>
                 <AlertTriangle size={13} />
-                <span>Trading guard active — sleep on it is recommended.</span>
+                <span>{showTrading ? 'Trading guard active' : 'Emotional guard active'} — sleep on it is recommended.</span>
               </div>
             )}
           </div>
@@ -4267,7 +4270,7 @@ function QuickLog({ data, setData }) {
       <div>
         <div className="label mb-2" style={{ color: '#8B8478' }}>Trigger</div>
         <div className="flex flex-wrap gap-2">
-          {TRIGGERS.map(t => (
+          {(showTrading ? TRIGGERS : TRIGGERS.filter(t => t !== 'Won a trade' && t !== 'Lost a trade')).map(t => (
             <button key={t} onClick={() => setTrigger(trigger === t ? '' : t)} className="pill btn"
               style={{
                 background: trigger === t ? '#D97757' : '#0A0908',
@@ -5487,7 +5490,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                     <strong style={{ color: '#E8E2D5' }}>🌱 Building from zero</strong> — for savings from scratch. Simplified Money Allocator, no trading features.<br />
                     <strong style={{ color: '#E8E2D5' }}>💼 Salary</strong> — for a steady monthly paycheck. No Trading P&L tab; Surplus Allocator replaces Profit Allocator.<br />
                     <strong style={{ color: '#E8E2D5' }}>📈 Trading / Self-employed</strong> — for income that changes month to month. Includes Trading P&L tab and full Profit Allocator.<br />
-                    <strong style={{ color: '#E8E2D5' }}>⚡ Mix</strong> — for a steady salary with side income or trading on top. Profit Allocator with full rules; no Trading P&L tab.<br /><br />
+                    <strong style={{ color: '#E8E2D5' }}>⚡ Mix</strong> — for a salary earner with a business or side income. Profit Allocator with full rules; no Trading P&L tab.<br /><br />
                     This is set during onboarding and cannot be changed without assisted re-onboarding.
                   </HelpTip>
                 </h2>
@@ -5502,7 +5505,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                     { id: 'foundation', emoji: '🌱', title: 'Building from zero',         desc: 'For people starting savings from scratch.' },
                     { id: 'fixed',      emoji: '💼', title: 'Salary',                     desc: 'Steady paycheck every month.' },
                     { id: 'variable',   emoji: '📈', title: 'Trading / Self-employed',    desc: 'Income changes month to month.' },
-                    { id: 'mixed',      emoji: '⚡', title: 'Mix',                        desc: 'Steady salary, plus side income or trading on top.' },
+                    { id: 'mixed',      emoji: '⚡', title: 'Mix',                        desc: 'Steady salary, plus business or side income.' },
                   ].map(({ id, emoji, title, desc }) => {
                     const isFoundationAccount = data.mode === 'foundation' || data.incomeType === 'foundation';
                     const active = isFoundationAccount ? id === 'foundation' : (data.incomeType ?? 'variable') === id;
@@ -5829,10 +5832,10 @@ function Rules({ data, stats, setData, user }) {
         <h2 className="display text-2xl mb-3" style={{ display: 'flex', alignItems: 'center' }}>
           {data.incomeType === 'fixed' ? 'Surplus allocation by stage' : 'Profit allocation by stage'}
           <HelpTip title="Allocation by Stage">
-            Each row defines how your net {data.incomeType === 'fixed' ? 'surplus' : 'profit'} (after taxes) is split across buffer, long-term savings, trading capital, goals, and lifestyle — depending on which stage you're currently in. Percentages in each row must add up to 100%. The app warns you if they don't.
+            Each row defines how your net {data.incomeType === 'fixed' ? 'surplus' : 'profit'} (after taxes) is split across buffer, long-term savings, {data.incomeType === 'variable' ? 'trading capital' : 'capital'}, goals, and lifestyle — depending on which stage you're currently in. Percentages in each row must add up to 100%. The app warns you if they don't.
           </HelpTip>
         </h2>
-        <p className="text-sm mb-5" style={{ color: '#B0A898' }}>How net trading profit (after taxes) is split based on which stage you're in. Each row should add to 100%.</p>
+        <p className="text-sm mb-5" style={{ color: '#B0A898' }}>How net {data.incomeType === 'variable' ? 'trading profit' : data.incomeType === 'fixed' ? 'surplus' : 'profit'} (after taxes) is split based on which stage you're in. Each row should add to 100%.</p>
         {[
           { key: 'stage1', label: 'Stage 1 (building floor)', desc: 'Below crisis floor — protect family first' },
           { key: 'stage15', label: 'Stage 1.5 (growing cushion)', desc: 'Floor reached — start long-term investing' },
@@ -5851,7 +5854,7 @@ function Rules({ data, stats, setData, user }) {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 <RuleInput label="Buffer %" value={rule.bufferPct} onChange={(v) => updateRule(s.key, 'bufferPct', v)} color="#D97757" locked={locked} onClickLocked={requestUnlock} />
                 <RuleInput label="Long-term %" value={rule.longTermPct} onChange={(v) => updateRule(s.key, 'longTermPct', v)} color="#7FA068" locked={locked} onClickLocked={requestUnlock} />
-                <RuleInput label="Trading %" value={rule.tradingPct} onChange={(v) => updateRule(s.key, 'tradingPct', v)} color="#5B7FB8" locked={locked} onClickLocked={requestUnlock} />
+                <RuleInput label={data.incomeType === 'variable' ? 'Trading %' : 'Capital %'} value={rule.tradingPct} onChange={(v) => updateRule(s.key, 'tradingPct', v)} color="#5B7FB8" locked={locked} onClickLocked={requestUnlock} />
                 <RuleInput label="Goals %" value={rule.goalsPct ?? 0} onChange={(v) => updateRule(s.key, 'goalsPct', v)} color="#A06B8C" locked={locked} onClickLocked={requestUnlock} />
                 <RuleInput label="Lifestyle %" value={rule.lifestylePct} onChange={(v) => updateRule(s.key, 'lifestylePct', v)} color="#B89968" locked={locked} onClickLocked={requestUnlock} />
               </div>
