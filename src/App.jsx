@@ -1447,6 +1447,7 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   // Guard on BOTH mode AND incomeType: new accounts set incomeType='foundation' without
   // writing mode (mode was the legacy field). Checking only one leaves new users undetected.
   const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
+  const showTrading  = data?.incomeType === 'variable';
   const hasPinProtection = !!(data.pinHash || data.overridePin);
   const [balancesLocked, setBalancesLocked] = useState(hasPinProtection);
   const [goalEditing, setGoalEditing] = useState(false);
@@ -2477,7 +2478,9 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 ? 'Your live account totals — savings, money available, long-term savings, and future goals. Update these whenever your balances change, then hit Save snapshot to record the moment. Your net worth in the header is the sum of all of these.'
                 : data.incomeType === 'fixed'
                   ? 'Your live account totals — family buffer, monthly salary account, long-term savings, and future goals. Update these whenever your balances change, then hit Save snapshot to record the moment. Your net worth in the header is the sum of all of these.'
-                  : 'Your live account totals — trading capital, family buffer, monthly salary account, long-term savings, and future goals. Update these whenever your balances change, then hit Save snapshot to record the moment. Your net worth in the header is the sum of all of these.'
+                  : showTrading
+                    ? 'Your live account totals — trading capital, family buffer, monthly salary account, long-term savings, and future goals. Update these whenever your balances change, then hit Save snapshot to record the moment. Your net worth in the header is the sum of all of these.'
+                    : 'Your live account totals — capital, family buffer, monthly salary account, long-term savings, and future goals. Update these whenever your balances change, then hit Save snapshot to record the moment. Your net worth in the header is the sum of all of these.'
               }
             </HelpTip>
           </h2>
@@ -2913,6 +2916,7 @@ function Setup({ data, stats, setData }) {
   const fmt = makeFmt(data.currency);
   const { symbol: currencySymbol } = getCurrency(data.currency);
   const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
+  const showTrading  = data?.incomeType === 'variable';
   const [newExpense, setNewExpense] = useState({ name: '', amount: '', category: 'Housing' });
   const { locked, requestUnlock, gate } = useSectionPin();
 
@@ -3224,7 +3228,7 @@ function Setup({ data, stats, setData }) {
           <HelpTip title={isFoundation ? 'Spending & Savings' : 'Spending & Buffer Reserve'}>
             {isFoundation
               ? <><strong style={{ color: '#E8E2D5' }}>Monthly spending budget</strong> — the amount you allow yourself to spend freely each month on day-to-day life outside fixed costs.<br /><br /><strong style={{ color: '#E8E2D5' }}>Monthly savings contribution</strong> — a fixed amount automatically directed to your savings every month, independent of what you earn.</>
-              : <><strong style={{ color: '#E8E2D5' }}>Monthly spending budget</strong> — the discretionary amount you allow yourself each month. Unused balance rolls forward or sweeps to your buffer at month end.<br /><br /><strong style={{ color: '#E8E2D5' }}>Buffer reserve from salary</strong> — a fixed monthly amount that feeds your buffer in addition to trading profits. Useful for steady accumulation between trading months.</>
+              : <><strong style={{ color: '#E8E2D5' }}>Monthly spending budget</strong> — the discretionary amount you allow yourself each month. Unused balance rolls forward or sweeps to your buffer at month end.<br /><br /><strong style={{ color: '#E8E2D5' }}>Buffer reserve from salary</strong> — a fixed monthly amount that feeds your buffer in addition to {showTrading ? 'trading profits' : 'income'}. Useful for steady accumulation between {showTrading ? 'trading months' : 'income months'}.</>
             }
           </HelpTip>
         </h2>
@@ -3246,7 +3250,7 @@ function Setup({ data, stats, setData }) {
             <p className="text-xs mt-2" style={{ color: '#8B8478' }}>
               {isFoundation
                 ? 'How much you set aside each month to build your savings.'
-                : 'How much each month auto-feeds the buffer (in addition to trading profits).'}
+                : `How much each month auto-feeds the buffer (in addition to ${showTrading ? 'trading profits' : 'income'}).`}
             </p>
           </div>
         </div>
@@ -3295,6 +3299,7 @@ function Setup({ data, stats, setData }) {
 function ProfitAllocator({ data, stats, setData }) {
   const fmt = makeFmt(data.currency);
   const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
+  const showTrading  = data?.incomeType === 'variable';
   const [profit, setProfit] = useState('');
   const [step, setStep] = useState('input');
   const [allocation, setAllocation] = useState(null);
@@ -3386,7 +3391,9 @@ function ProfitAllocator({ data, stats, setData }) {
               ? 'Enter any extra money you have available this month. The system routes it in order: savings target first, then long-term savings, and future goals. Each allocation follows rules you configured — nothing is decided in the moment.'
               : data.incomeType === 'fixed'
                 ? 'Enter your extra income or surplus this month. Taxes are deducted first, then the remainder flows through a fixed waterfall: buffer gets priority until rebuilt, followed by long-term savings, future goals, and other allocations. Rules run automatically every time.'
-                : 'Enter your gross trading profit. Taxes are deducted first, then the remainder flows through a fixed waterfall: buffer gets priority until rebuilt, then long-term savings, future goals, and trading capital each receive their configured share. Nothing is allocated ad hoc — the rules run automatically every time.'
+                : showTrading
+                  ? 'Enter your gross trading profit. Taxes are deducted first, then the remainder flows through a fixed waterfall: buffer gets priority until rebuilt, then long-term savings, future goals, and trading capital each receive their configured share. Nothing is allocated ad hoc — the rules run automatically every time.'
+                  : 'Enter your gross profit this month. Taxes are deducted first, then the remainder flows through a fixed waterfall: buffer gets priority until rebuilt, then long-term savings, future goals, and capital each receive their configured share. Nothing is allocated ad hoc — the rules run automatically every time.'
             }
           </HelpTip>
         </h1>
@@ -3395,7 +3402,9 @@ function ProfitAllocator({ data, stats, setData }) {
             ? 'Decide where extra money should go before you spend it.'
             : data.incomeType === 'fixed'
               ? 'Enter your extra income this month. The system reserves taxes first, then routes the rest based on your current stage.'
-              : 'Enter your gross trading profit. The system reserves taxes first, then routes the rest based on your current stage.'}
+              : showTrading
+                ? 'Enter your gross trading profit. The system reserves taxes first, then routes the rest based on your current stage.'
+                : 'Enter your gross profit this month. The system reserves taxes first, then routes the rest based on your current stage.'}
         </p>
       </div>
 
@@ -3435,7 +3444,7 @@ function ProfitAllocator({ data, stats, setData }) {
         return (
           <div className="card-warm rl-cp">
             <div className="label mb-3" style={{ color: isFoundation ? '#7FA068' : '#D97757' }}>
-              {isFoundation ? 'Extra money received' : data.incomeType === 'fixed' ? 'Extra income this month' : 'Gross trading profit this month'}
+              {isFoundation ? 'Extra money received' : data.incomeType === 'fixed' ? 'Extra income this month' : showTrading ? 'Gross trading profit this month' : 'Gross profit this month'}
             </div>
             <div className="flex gap-3 items-end">
               <div className="flex-1">
@@ -4601,7 +4610,7 @@ function History({ data, stats, setData }) {
             <h2 className="display text-2xl mb-5" style={{ display: 'flex', alignItems: 'center' }}>
               All snapshots
               <HelpTip title="All Snapshots">
-                Every snapshot you've saved, most recent first. Each one records your exact balances at that moment — buffer, trading capital, long-term savings, and total net worth. Green/red arrows show the change since the previous snapshot. Use these to review your progress and spot trends.
+                Every snapshot you've saved, most recent first. Each one records your exact balances at that moment — buffer, {showTrading ? 'trading capital' : 'capital'}, long-term savings, and total net worth. Green/red arrows show the change since the previous snapshot. Use these to review your progress and spot trends.
               </HelpTip>
             </h2>
             <div className="space-y-3">
@@ -5772,6 +5781,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
 function Rules({ data, stats, setData, user }) {
   const fmt = makeFmt(data.currency);
   const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
+  const showTrading  = data?.incomeType === 'variable';
   const { locked, requestUnlock, gate: fieldGate } = useSectionPin();
 
   const updateRule = (stage, field, value) => {
@@ -5812,10 +5822,10 @@ function Rules({ data, stats, setData, user }) {
         <h2 className="display text-2xl mb-3" style={{ display: 'flex', alignItems: 'center' }}>
           Tax reserve
           <HelpTip title="Tax Reserve">
-            The percentage withheld from gross {data.incomeType === 'fixed' ? 'surplus' : 'trading profit'} before any allocation happens. This money is ring-fenced — it never reaches your buffer, trading capital, or goals. Consult a tax advisor for your actual rate. Default is 25%.
+            The percentage withheld from gross {data.incomeType === 'fixed' ? 'surplus' : showTrading ? 'trading profit' : 'profit'} before any allocation happens. This money is ring-fenced — it never reaches your buffer, {showTrading ? 'trading capital' : 'capital'}, or goals. Consult a tax advisor for your actual rate. Default is 25%.
           </HelpTip>
         </h2>
-        <p className="text-sm mb-4" style={{ color: '#B0A898' }}>Percentage of gross trading profit set aside for taxes before allocation. Talk to a tax advisor for your real rate.</p>
+        <p className="text-sm mb-4" style={{ color: '#B0A898' }}>Percentage of gross {showTrading ? 'trading profit' : 'profit'} set aside for taxes before allocation. Talk to a tax advisor for your real rate.</p>
         <div className="grid md:grid-cols-3 gap-3 items-end">
           <div>
             <div className="label mb-2" style={{ color: '#8B8478' }}>Tax reserve %</div>
