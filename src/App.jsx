@@ -2324,7 +2324,11 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         <div className="space-y-3">
           <StageRow label="Stage 1" target={`${fmt(0)} → ${fmt(stats.stage1End)}`} subtitle="Crisis floor — 6 months · 100% to buffer" done={data.buffer >= stats.stage1End} active={stats.progressStage === 1} />
           <StageRow label="Stage 1.5" target={`${fmt(stats.stage1End)} → ${fmt(stats.stage15End)}`} subtitle="Comfort zone — long-term investing begins" done={data.buffer >= stats.stage15End} active={stats.progressStage === 1.5} />
-          <StageRow label="Stage 2" target={`${fmt(stats.stage15End)} → ${fmt(stats.bufferTarget)}`} subtitle={`Fortified — ${data.bufferTargetMonths} months · buffer priority`} done={data.buffer >= stats.bufferTarget} active={stats.progressStage === 2} />
+          {/* Stage 2 only shown when the user's buffer target is meaningfully above Stage 1.5.
+              If bufferTarget ≤ stage15End the range would display backwards (higher → lower). */}
+          {stats.bufferTarget > stats.stage15End && (
+            <StageRow label="Stage 2" target={`${fmt(stats.stage15End)} → ${fmt(stats.bufferTarget)}`} subtitle={`Fortified — ${data.bufferTargetMonths} months · buffer priority`} done={data.buffer >= stats.bufferTarget} active={stats.progressStage === 2} />
+          )}
           <StageRow label="Stage 3" target="Full waterfall" subtitle={isFoundation ? "Lifestyle · goals all active" : "Trading · lifestyle · goals all active"} done={false} active={stats.progressStage === 3} />
         </div>
       </section>}
@@ -2392,7 +2396,9 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               </div>
             </div>
             <p className="text-xs" style={{ color: '#B0A898' }}>
-              {data.tradingPnLHistory.length === 0 ? 'Log monthly P&L to track over time.' : `Across ${data.tradingPnLHistory.length} months.`}
+              {data.tradingPnLHistory.length === 0
+                ? 'No entries yet — go to the Trading P&L tab to log your first month\'s profit or loss.'
+                : `Across ${data.tradingPnLHistory.length} month${data.tradingPnLHistory.length === 1 ? '' : 's'}.`}
             </p>
           </section>
         )}
