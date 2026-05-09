@@ -1440,7 +1440,7 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
     1: { name: 'Stage 1', title: 'Build the Floor', color: '#C56B5A', desc: data.incomeType === 'fixed' ? '100% of surplus to buffer.' : '100% of profits to buffer.' },
     1.5: { name: 'Stage 1.5', title: 'Grow the Cushion', color: '#D97757', desc: 'Long-term investing begins — split by your stage rules.' },
     2: { name: 'Stage 2', title: 'Reach Fortified', color: '#B89968', desc: 'Buffer priority — final push to target.' },
-    3: { name: 'Stage 3', title: 'Full Waterfall', color: '#7FA068', desc: 'Full waterfall unlocked — trading, lifestyle, goals.' },
+    3: { name: 'Stage 3', title: 'Full Waterfall', color: '#7FA068', desc: isFoundation ? 'Lifestyle & goals fully unlocked — your foundation is solid.' : 'Full waterfall unlocked — trading, lifestyle, goals.' },
     'protect': { name: 'Protect Mode', title: 'Buffer Rebuilding', color: '#C56B5A', desc: '100% to buffer until rebuilt.' },
   }[stats.stage];
 
@@ -2325,7 +2325,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           <StageRow label="Stage 1" target={`${fmt(0)} → ${fmt(stats.stage1End)}`} subtitle="Crisis floor — 6 months · 100% to buffer" done={data.buffer >= stats.stage1End} active={stats.progressStage === 1} />
           <StageRow label="Stage 1.5" target={`${fmt(stats.stage1End)} → ${fmt(stats.stage15End)}`} subtitle="Comfort zone — long-term investing begins" done={data.buffer >= stats.stage15End} active={stats.progressStage === 1.5} />
           <StageRow label="Stage 2" target={`${fmt(stats.stage15End)} → ${fmt(stats.bufferTarget)}`} subtitle={`Fortified — ${data.bufferTargetMonths} months · buffer priority`} done={data.buffer >= stats.bufferTarget} active={stats.progressStage === 2} />
-          <StageRow label="Stage 3" target="Full waterfall" subtitle="Trading · lifestyle · goals all active" done={false} active={stats.progressStage === 3} />
+          <StageRow label="Stage 3" target="Full waterfall" subtitle={isFoundation ? "Lifestyle · goals all active" : "Trading · lifestyle · goals all active"} done={false} active={stats.progressStage === 3} />
         </div>
       </section>}
 
