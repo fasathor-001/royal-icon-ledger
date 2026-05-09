@@ -154,7 +154,7 @@ function MobileBottomNav({ tab, setTab, user, data }) {
   // Foundation check: guard on BOTH mode AND incomeType so old accounts
   // (incomeType='foundation' set before 'mode' field existed) behave correctly.
   const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
-  const showTrading  = !isFoundation && data?.incomeType !== 'fixed';
+  const showTrading  = data?.incomeType === 'variable';
   const isAdminUser  = ADMIN_MOBILE_EMAILS.includes(user?.email?.toLowerCase());
 
   const primary = [
@@ -504,7 +504,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
   // Guard on BOTH mode AND incomeType: legacy accounts set mode='foundation' before
   // incomeType existed. null incomeType = legacy user who sees all features.
   const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
-  const showTrading  = !isFoundation && data?.incomeType !== 'fixed';
+  const showTrading  = data?.incomeType === 'variable';
 
   // Derived: does this user have any PIN protection active?
   const hasPinProtection = !!(data.pinHash || data.overridePin);
@@ -1024,7 +1024,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
         // Foundation: guard on BOTH mode AND incomeType so legacy accounts
         // (incomeType='foundation' before 'mode' field was added) are handled.
         const isFoundationDesk = data.mode === 'foundation' || data.incomeType === 'foundation';
-        const showTradingDesk  = !isFoundationDesk && data.incomeType !== 'fixed';
+        const showTradingDesk  = data.incomeType === 'variable';
         return (
           <nav className="border-b hidden sm:block" style={{ borderColor: '#26221C', background: '#0A0908', flexShrink: 0 }}>
             <div className="max-w-6xl mx-auto px-5 flex gap-7 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
@@ -5038,7 +5038,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                     <strong style={{ color: '#E8E2D5' }}>Foundation</strong> — savings-focused. Simplified Money Allocator, no trading features.<br />
                     <strong style={{ color: '#E8E2D5' }}>Variable</strong> — trading, freelance, or business income. Includes Trading P&L tab and full Profit Allocator.<br />
                     <strong style={{ color: '#E8E2D5' }}>Fixed</strong> — salary or pension. No Trading P&L tab. Surplus Allocator replaces Profit Allocator.<br />
-                    <strong style={{ color: '#E8E2D5' }}>Mixed</strong> — salary plus side income or trading. All tabs active.<br /><br />
+                    <strong style={{ color: '#E8E2D5' }}>Mixed</strong> — salary plus side hustle or additional income. No Trading P&L tab.<br /><br />
                     This is set during onboarding and cannot be changed without assisted re-onboarding.
                   </HelpTip>
                 </h2>
@@ -5050,7 +5050,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                     { id: 'foundation', title: 'Foundation', desc: 'Savings-focused. Simplified Money Allocator. No trading features.', icon: Home },
                     { id: 'variable',   title: 'Variable',   desc: 'Trading, freelance, commissions, business. Includes Trading P&L tab.', icon: TrendingUp },
                     { id: 'fixed',      title: 'Fixed',      desc: 'Salary, pension, regular employment. Trading P&L tab hidden.', icon: Briefcase },
-                    { id: 'mixed',      title: 'Mixed',      desc: 'Salary plus side hustle or trading. Includes Trading P&L tab.', icon: Users },
+                    { id: 'mixed',      title: 'Mixed',      desc: 'Salary plus side hustle or additional income. No Trading P&L tab.', icon: Users },
                   ].map(({ id, title, desc, icon: Icon }) => {
                     const isFoundationAccount = data.mode === 'foundation' || data.incomeType === 'foundation';
                     const active = isFoundationAccount ? id === 'foundation' : (data.incomeType ?? 'variable') === id;
