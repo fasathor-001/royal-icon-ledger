@@ -2323,17 +2323,16 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             <h3 className="display text-xl" style={{ minWidth: 0, display: 'flex', alignItems: 'center' }}>
               Spending
               <HelpTip title="Monthly Spending">
-                How much of your discretionary budget you've used this month. The bar turns amber above 50% and red above 80%. When it hits 100% your spending limit is reached — any further purchases come out of next month's budget via the impulse gate.
+                Total spending this month across all budget envelopes. The bar shows total spent vs total budgeted. Green = on track, amber = above 50%, red = above 80%.
               </HelpTip>
             </h3>
-            <div className="mono text-sm" style={{ color: Math.max(0, stats.discCap - stats.totalMonthSpend) > 0 ? '#E8E2D5' : '#C56B5A', flexShrink: 0 }}>
-              {fmt(Math.max(0, stats.discCap - stats.totalMonthSpend))} left
+            <div className="mono text-sm" style={{ color: Math.max(0, stats.totalBudgetAllEnvelopes - stats.totalMonthSpend) > 0 ? '#E8E2D5' : '#C56B5A', flexShrink: 0 }}>
+              {fmt(Math.max(0, stats.totalBudgetAllEnvelopes - stats.totalMonthSpend))} left
             </div>
           </div>
           {(() => {
-            // Use totalMonthSpend (all envelopes) so spending logged to named envelopes
-            // (Groceries, Transport, etc.) is visible here, not just Discretionary.
-            const pct = stats.discCap > 0 ? stats.totalMonthSpend / stats.discCap : 0;
+            // Bar and percentage track total spending vs total budget across all envelopes.
+            const pct = stats.totalBudgetAllEnvelopes > 0 ? stats.totalMonthSpend / stats.totalBudgetAllEnvelopes : 0;
             const barColor = pct > 0.8 ? '#C56B5A' : pct > 0.5 ? '#D97757' : '#7FA068';
             const pctDisplay = Math.round(pct * 100);
             return (
@@ -2349,9 +2348,10 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                     {pctDisplay}%
                   </span>
                 </div>
-                <div className="flex justify-between text-xs mono" style={{ color: '#B0A898' }}>
-                  <span>{fmt(stats.totalMonthSpend)} spent</span>
-                  <span>Limit: {fmt(stats.discCap)}</span>
+                {/* "Limit" removed — it referred to Discretionary cap only, which
+                    is misleading now that spent reflects all envelopes.            */}
+                <div className="text-xs mono" style={{ color: '#B0A898' }}>
+                  {fmt(stats.totalMonthSpend)} spent
                 </div>
               </>
             );
