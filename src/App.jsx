@@ -110,6 +110,11 @@ const defaultData = {
   // Income profile — set during onboarding, adjusts which features are shown
   // 'variable' | 'fixed' | 'mixed' | null (null = legacy users, defaults to showing everything)
   incomeType: null,
+
+  // Tracks the last spendingBudget value that was synced to the Discretionary envelope cap.
+  // null = not yet initialised (first load for this user). Used by the cap-sync effect to
+  // compute a delta so rollover balances are preserved when the budget changes.
+  lastSyncedSpendingBudget: null,
 };
 
 const EXPENSE_CATEGORIES = [
@@ -682,6 +687,52 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     }
   }, [loading, data.setupComplete, data.spendingBudget]);
 
+  // Fix 2A — Sync spendingBudget changes to the Discretionary envelope cap.
+  //
+  // Problem: the Discretionary envelope cap is seeded from spendingBudget at creation
+  // time (above). If the user later raises or lowers spendingBudget in the Setup tab,
+  // the cap never updates — so the Command "Budget" line stays at the original figure.
+  //
+  // Solution: track lastSyncedSpendingBudget in data. On every budget change, apply
+  // the DELTA (new − old) to the cap rather than overwriting it. This preserves any
+  // rollover balance the user has accumulated (roll mode adds unspent money to the cap
+  // at month-end, so cap can legitimately exceed spendingBudget).
+  //
+  // First run (lastSyncedSpendingBudget === null): initialise the tracker to the
+  // current budget without touching the cap — handles existing users upgrading to this
+  // version who have never changed their budget.
+  //
+  // Does NOT fight the migration effect above: that effect only runs when the envelope
+  // doesn't exist yet; this one guards `if (!discEnv) return` so they are exclusive.
+  useEffect(() => {
+    if (loading || !data.setupComplete || !data.spendingBudget) return;
+    const discEnv = (data.envelopes || []).find(e => e.isDiscretionary);
+    if (!discEnv) return; // Migration effect above handles creation — nothing to sync yet
+
+    const currentBudget = Number(data.spendingBudget);
+
+    // First run for this data set — seed the tracker, leave cap untouched
+    if (data.lastSyncedSpendingBudget == null) {
+      setData(d => ({ ...d, lastSyncedSpendingBudget: currentBudget }));
+      return;
+    }
+
+    const lastSynced = Number(data.lastSyncedSpendingBudget);
+    if (lastSynced === currentBudget) return; // Budget unchanged — nothing to do
+
+    // Budget changed: apply the delta to preserve any accumulated rollover balance
+    const delta = currentBudget - lastSynced;
+    setData(d => ({
+      ...d,
+      lastSyncedSpendingBudget: currentBudget,
+      envelopes: d.envelopes.map(e =>
+        e.isDiscretionary
+          ? { ...e, cap: Math.max(0, (e.cap || 0) + delta) }
+          : e
+      ),
+    }));
+  }, [loading, data.setupComplete, data.spendingBudget, data.lastSyncedSpendingBudget]);
+
   // Feature 1: Weekly pulse via custom event (from RitualCard)
   useEffect(() => {
     const handler = () => setShowWeeklyPulse(true);
@@ -749,6 +800,29 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     const discCap = discretionaryEnv?.cap ?? (Number(data.spendingBudget) || 0);
     const spendingLeft = Math.max(0, discCap - thisMonthSpend);
 
+    // ── All-envelope spending breakdown for Command tab ───────────────────────
+    // Every impulse this month, regardless of which envelope it was tagged to.
+    const allMonthImpulses = data.impulses.filter(i => i.timestamp >= monthStart);
+    const totalMonthSpend = allMonthImpulses.reduce((s, i) => s + i.amount, 0);
+
+    // Per-envelope breakdown: spent vs cap, only envelopes with activity this month.
+    const envelopeBreakdown = (data.envelopes || [])
+      .map(env => {
+        const spent = allMonthImpulses
+          .filter(i => env.isDiscretionary
+            ? (i.envelopeId === env.id || i.envelopeId == null)
+            : i.envelopeId === env.id)
+          .reduce((s, i) => s + i.amount, 0);
+        return {
+          id: env.id,
+          name: env.name,
+          cap: env.cap || 0,
+          spent,
+          isDiscretionary: env.isDiscretionary || false,
+        };
+      })
+      .filter(e => e.spent > 0); // only show envelopes that have been used this month
+
     const totalAssets = data.buffer + data.tradingCapital + data.longTerm + (data.futureGoals || 0);
     const ytdPnL = data.tradingPnLHistory.reduce((s, h) => s + h.pnl, 0);
 	
@@ -767,6 +841,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
       stage1End, stage15End, stage2End, stage, progressStage,
       monthsCovered, nextThreshold, progressPct,
       thisMonthSpend, thisMonthImpulses, spendingLeft, discCap,
+      totalMonthSpend, envelopeBreakdown,
       totalAssets, ytdPnL,
 	  highWater, drawdownPct, drawdownZone,
       isSetup: data.expenses.length > 0 && data.spendingBudget > 0,
@@ -1545,21 +1620,53 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               }} />
             </div>
 
-            {/* Spent / Budget row */}
-            <div style={{ display: 'flex', gap: '28px', flexWrap: 'wrap' }}>
+            {/* Spent / Budget summary row */}
+            <div style={{ display: 'flex', gap: '28px', flexWrap: 'wrap', marginBottom: stats.envelopeBreakdown.length > 1 ? '16px' : '0' }}>
               <div>
-                <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '3px' }}>Spent</div>
+                <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '3px' }}>Spent (all)</div>
                 <div style={{ fontSize: '15px', color: '#B0A898', fontFamily: 'JetBrains Mono, monospace' }}>
-                  {fmt(stats.thisMonthSpend)}
+                  {fmt(stats.totalMonthSpend)}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '3px' }}>Budget</div>
+                <div style={{ fontSize: '11px', color: '#5C5648', marginBottom: '3px' }}>Discretionary budget</div>
                 <div style={{ fontSize: '15px', color: '#8B8478', fontFamily: 'JetBrains Mono, monospace' }}>
                   {fmt(stats.discCap)}
                 </div>
               </div>
             </div>
+
+            {/* Per-envelope breakdown — only shown when spending spans multiple envelopes */}
+            {stats.envelopeBreakdown.length > 1 && (
+              <div style={{ borderTop: '1px solid #1A1610', paddingTop: '14px' }}>
+                <div style={{ fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#5C5648', marginBottom: '10px', fontWeight: 600 }}>
+                  By envelope
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {stats.envelopeBreakdown.map(env => {
+                    const pct = env.cap > 0 ? Math.min(1, env.spent / env.cap) : 0;
+                    const barColor = pct >= 0.9 ? '#C56B5A' : pct >= 0.7 ? '#D97757' : '#7FA068';
+                    return (
+                      <div key={env.id}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
+                          <span style={{ fontSize: '12px', color: '#8B8478' }}>
+                            {env.name}{env.isDiscretionary ? ' (discretionary)' : ''}
+                          </span>
+                          <span style={{ fontSize: '12px', fontFamily: 'JetBrains Mono, monospace', color: '#B0A898' }}>
+                            {fmt(env.spent)}{env.cap > 0 ? ` / ${fmt(env.cap)}` : ''}
+                          </span>
+                        </div>
+                        {env.cap > 0 && (
+                          <div style={{ height: '3px', background: '#1A1610', borderRadius: '2px', overflow: 'hidden' }}>
+                            <div style={{ height: '100%', width: `${pct * 100}%`, background: barColor, borderRadius: '2px', transition: 'width 0.4s ease' }} />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <div style={{ marginTop: '16px', fontSize: '12px', color: '#5C5648', fontStyle: 'italic' }}>
               This is your control point. When it runs out, spending stops.
@@ -3792,7 +3899,11 @@ function QuickLog({ data, setData }) {
 
   const log = () => {
     if (!name || !amount) return;
-    const entry = { id: Date.now(), name, amount: Number(amount), category: category || 'other', trigger, timestamp: Date.now() };
+    // Resolve Discretionary envelope id at write time — matches the logImpulse pattern
+    // in ImpulseTab (DEVELOPMENT_NOTES §4). Stamps envelopeId so the stats filter
+    // counts this entry correctly (null is the legacy fallback; explicit id is preferred).
+    const discId = (data.envelopes || []).find(e => e.isDiscretionary)?.id ?? null;
+    const entry = { id: Date.now(), name, amount: Number(amount), category: category || 'other', envelopeId: discId, trigger, timestamp: Date.now() };
     setData(d => ({ ...d, impulses: [...d.impulses, entry] }));
     setLogged({ name, amount: Number(amount) });
     setName(''); setAmount(''); setCategory(''); setTrigger('');
