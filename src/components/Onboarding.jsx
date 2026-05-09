@@ -604,7 +604,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
               How does <span style={{ fontStyle: 'italic', color: '#D97757' }}>income</span> reach you?
             </h1>
             <p style={{ color: '#B0A898', marginBottom: '32px', fontSize: '15px' }}>
-              This adjusts the system's defaults. Variable income needs a bigger buffer; fixed income needs less. You can update this later in Settings.
+              This shapes how the system works for you — buffer targets, allocator rules, and which features show up. You can ask support to change it later.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '40px' }}>
@@ -1158,7 +1158,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                   {[
                     { months: 6,  label: '6 months',  amount: salary * 6,  desc: 'Standard emergency fund. Survives one bad quarter.', recommended: incomeType === 'fixed' },
                     { months: 12, label: '12 months', amount: salary * 12, desc: 'A whole year of runway. Comfortable for most situations.', recommended: incomeType === 'mixed' },
-                    { months: 18, label: '18 months', amount: salary * 18, desc: 'Sole earner with dependents. Variable income. The fortified position.', recommended: incomeType === 'variable' },
+                    { months: 18, label: '18 months', amount: salary * 18, desc: 'Sole earner with dependents, or income that changes month to month. The fortified position.', recommended: incomeType === 'variable' },
                   ].map(opt => (
                     <div
                       key={opt.months}

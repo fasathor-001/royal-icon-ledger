@@ -231,6 +231,10 @@ All fields live in a single JSON object (stored in localStorage and Supabase JSO
 
 **How it could regress:** A future agent simplifying the codebase might "normalise" the labels by renaming the internal values to match. This would be catastrophic — every existing user's `incomeType` field would no longer match any conditional. The `aria-hidden="true"` emoji + commented intent in each location is a defence against this.
 
+**Helper-copy rule (F026, 2026-05-09):** When writing helper text, HelpTip content, or descriptive copy that references a profile, use **conditional phrasing** ("for a steady monthly paycheck" / "if your income changes month to month") rather than **profile-named phrasing** ("Salary users have" / "Variable users see"). This avoids personifying income types, dignifies the reader, and keeps copy aligned with the new label system without forcing every reference to spell out an emoji+label combination.
+
+**Functional copy is NOT covered by this rule.** Branches like `data.incomeType === 'fixed' ? 'surplus' : 'profits'` are correct functional language — they describe what the *system* does, not what the *user* is. Don't rewrite "100% of surplus to buffer" to "100% of [Salary user's] surplus to buffer." Surplus / Profit / Money are functional names attached to allocator behavior, not profile identifiers.
+
 ---
 
 ### Pattern: Onboarding mismatch modal flow

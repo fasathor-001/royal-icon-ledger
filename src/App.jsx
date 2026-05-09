@@ -5484,10 +5484,10 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                   Income profile
                   <HelpTip title="Income Profile">
                     Your profile determines which features and tabs are available.<br /><br />
-                    <strong style={{ color: '#E8E2D5' }}>Foundation</strong> — savings-focused. Simplified Money Allocator, no trading features.<br />
-                    <strong style={{ color: '#E8E2D5' }}>Variable</strong> — trading, freelance, or business income. Includes Trading P&L tab and full Profit Allocator.<br />
-                    <strong style={{ color: '#E8E2D5' }}>Fixed</strong> — salary or pension. No Trading P&L tab. Surplus Allocator replaces Profit Allocator.<br />
-                    <strong style={{ color: '#E8E2D5' }}>Mixed</strong> — salary plus side hustle or additional income. No Trading P&L tab.<br /><br />
+                    <strong style={{ color: '#E8E2D5' }}>🌱 Building from zero</strong> — for savings from scratch. Simplified Money Allocator, no trading features.<br />
+                    <strong style={{ color: '#E8E2D5' }}>💼 Salary</strong> — for a steady monthly paycheck. No Trading P&L tab; Surplus Allocator replaces Profit Allocator.<br />
+                    <strong style={{ color: '#E8E2D5' }}>📈 Trading / Self-employed</strong> — for income that changes month to month. Includes Trading P&L tab and full Profit Allocator.<br />
+                    <strong style={{ color: '#E8E2D5' }}>⚡ Mix</strong> — for a steady salary with side income or trading on top. Profit Allocator with full rules; no Trading P&L tab.<br /><br />
                     This is set during onboarding and cannot be changed without assisted re-onboarding.
                   </HelpTip>
                 </h2>
