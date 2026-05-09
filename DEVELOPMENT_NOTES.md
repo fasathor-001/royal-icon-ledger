@@ -136,8 +136,12 @@ All fields live in a single JSON object (stored in localStorage and Supabase JSO
 | `tradingGuardUntil` | `number\|null` | Unix timestamp until which trading guard is active. Auto-expired by effect. |
 | `notificationPreferences` | `object` | `{dailyEnabled, weeklyEnabled, monthlyEnabled, preferredTime, timezoneIana}`. Synced to `push_subscriptions` table. |
 | `currency` | `string` | ISO 4217 code. Default: `'ZAR'`. Used by `makeFmt()` everywhere. |
-| `incomeType` | `'variable'\|'fixed'\|'mixed'\|'foundation'\|null` | Income profile. `null` = legacy user, defaults to showing all features. See §4. |
+| `incomeType` | `'variable'\|'fixed'\|'mixed'\|'foundation'\|null` | Income profile. `null` = legacy user, defaults to showing all features. See §4. **Display labels are decoupled** — see Section 4 pattern: "User-facing label vs internal `incomeType` value". |
 | `mode` | `'foundation'\|undefined` | **Legacy field**. Foundation mode was originally tracked here before `incomeType` existed. Check `data.mode === 'foundation' || data.incomeType === 'foundation'` — not just one or the other. |
+| `foundationStageBannersDismissed` | `Array<string>` | Persistent dismissal record for Foundation stage milestone banners. Keys: `'established'` (3-mo), `'stable'` (6-mo), `'complete'` (12-mo "Stay on Foundation" choice). Survives refresh / cloud sync. Added 2026-05-09 (Foundation Arc). |
+| `graduatedFromFoundation` | `boolean` | Set to `true` when a Foundation user confirms graduation to an advanced profile via the GraduationModal "Unlock advanced systems" path. Default `false`. Used for the post-graduation welcome banner and admin reporting. |
+| `setupCompleteAt` | `string\|null` (ISO 8601) | Set exactly once when onboarding `finish()` or `skip()` completes. Used by Foundation Arc time guards in `foundationStage` derivation. Legacy users (`null`) default to `Infinity` daysSinceSetup → all guards satisfied → no behavior change. **Never overwrite once set** — Onboarding writes use `d.setupCompleteAt || new Date().toISOString()` for re-run safety. See §7 for threshold table. Added 2026-05-09 (F024 Commit 2). |
+| `mismatchCheckShown` | `boolean` | Set to `true` when the Onboarding profile-mismatch modal has been resolved (any of: switched to Salary/Trading/Mix, or Stay on Foundation). Once `true`, modal never re-fires. Existing users get `false` via spread default but never see the modal — its trigger logic lives only in Onboarding `finish()`, which existing users don't re-enter. **Trigger condition:** `incomeType === 'foundation' && _monthsCovered >= 12` at end of onboarding. Added 2026-05-09 (F024 Commit 3). See §4 pattern: "Onboarding mismatch modal flow". |
 | `_version` | `number` | Auto-incremented on every data write. Used for conflict detection. Stripped before Supabase write (restored in-memory). |
 | `_localModifiedAt` | `number` | Unix timestamp of last local write. Used for conflict resolution. Stripped before Supabase write. |
 | `_syncedAt` | `string` | ISO timestamp from `user_data.updated_at` after a successful cloud load. Stripped before Supabase write. |
@@ -203,6 +207,53 @@ All fields live in a single JSON object (stored in localStorage and Supabase JSO
 ---
 
 ## 4. Critical Patterns and Conventions
+
+### Pattern: User-facing label vs internal `incomeType` value
+
+**Rule:** The display labels shown to users in the profile picker (Onboarding Step 4), Settings → Income Profile cards, and the GraduationModal profile picker are **decoupled from** the underlying `incomeType` field values stored in `data`. Never rename the internal values when changing display labels.
+
+**Mapping (as of 2026-05-09, F024 Commit 1):**
+
+| Display label | Descriptor | Internal `incomeType` value |
+|---|---|---|
+| 🌱 Building from zero | For people starting savings from scratch | `'foundation'` |
+| 💼 Salary | Steady paycheck every month | `'fixed'` |
+| 📈 Trading / Self-employed | Income changes month to month | `'variable'` |
+| ⚡ Mix | Steady salary, plus side income or trading on top | `'mixed'` |
+
+**Why this separation matters:**
+- All conditional logic in the codebase branches on `incomeType` value, not display label. Examples: `showTrading = data?.incomeType === 'variable'`, `isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation'`, allocator naming, stage rules, banner cascade, foundationStage derivation.
+- Renaming an `incomeType` value would silently break every existing user's data and every conditional in the codebase.
+- Display labels can be iterated freely (testing, localisation, copy refinement) without touching internal logic.
+- F015 admin RPC (`admin_patch_user_data`) writes the internal value, not the label.
+
+**When updating labels:** edit the three known locations only — Onboarding.jsx Step 4 picker array, App.jsx Settings income profile cards array, App.jsx GraduationModal `profiles` array. Confirm `id` field in all three is unchanged ('foundation' / 'fixed' / 'variable' / 'mixed'). Do not edit `defaultData.incomeType` or any branching condition that compares against these values.
+
+**How it could regress:** A future agent simplifying the codebase might "normalise" the labels by renaming the internal values to match. This would be catastrophic — every existing user's `incomeType` field would no longer match any conditional. The `aria-hidden="true"` emoji + commented intent in each location is a defence against this.
+
+---
+
+### Pattern: Onboarding mismatch modal flow
+
+**Rule:** The Foundation profile mismatch modal **must** render inside the Onboarding component, not in App.jsx. Triggering on `data` from any other location risks spurious firings for existing users.
+
+**Why this matters:** The mismatch trigger condition is `incomeType === 'foundation' && monthsCovered >= 12 && !mismatchCheckShown`. Existing users could satisfy this by editing their balances post-onboarding (e.g. correcting a Setup tab entry that pushed them above 12 months). If the modal logic ran on every Command tab load with a `useEffect`, those users would see the modal retroactively — which violates the once-per-account contract.
+
+**Implementation:**
+- Modal logic is computed in `Onboarding.finish()` — runs exactly once per onboarding session
+- `setupComplete: true` is written alongside all other onboarding fields (one atomic setData call)
+- Onboarding stays mounted because parent gates `showOnboarding` on local React state, not `data.setupComplete`
+- `setMismatchModalOpen(true)` triggers the overlay render
+- Modal handlers (`handleMismatchSwitchProfile`, `handleMismatchStayFoundation`) write `mismatchCheckShown: true` and call `onComplete()`
+- Existing users skip Onboarding entirely (parent's `showOnboarding` set false on app load when `data.setupComplete === true`)
+
+**Why placement inside Onboarding component matters for parent unmount timing:** `setupComplete: true` could in principle make the parent unmount Onboarding mid-flow. It does NOT because `showOnboarding` is local React state that only flips on `onComplete()` callback (App.jsx ~line 1016: `onComplete={() => { setShowOnboarding(false); setTab('command'); }}`). The modal blocks `onComplete()` until resolved.
+
+**How it could regress:** Anyone migrating the modal logic to App.jsx, or adding a `useEffect` that fires on `data.setupComplete && !data.mismatchCheckShown && data.incomeType === 'foundation' && ...` — this would fire for legacy users on app load. Don't do it.
+
+**Cleanup snippet (paste-only, not shipped):** Provided in CHANGELOG entry for F024 Commit 3. Sets `foundationStageBannersDismissed: []`, backdates `setupCompleteAt` 31 days, sets `mismatchCheckShown: true`. Used for the original F024 tester whose state predates this fix.
+
+---
 
 ### Pattern: Foundation stage uses defensive `Math.max` denominator
 
@@ -399,6 +450,41 @@ This is checked in both `MobileBottomNav` and the desktop nav. See §10 for the 
 **How it could regress:** Removal of the `Math.max` when refactoring the stage derivation — looks like dead-code at first glance but it's the entire defence. Always grep for `foundationMonthlyNeeds` and `Math.max` callers in this file before simplifying.
 
 **One-time cleanup needed:** Any account that hit the false trigger and clicked "Stay on Foundation" wrote `'complete'` to `data.foundationStageBannersDismissed`. The corrected banner won't surface for them until that entry is cleared. Manual snippet documented in CHANGELOG (F022 entry).
+
+---
+
+### Open design gap: Foundation Arc has no time / activity guard against day-0 stage progression (F024, 2026-05-09)
+
+**Status:** Unresolved. Owner has held on a code fix pending observation of real tester behaviour and a broader profile-routing review.
+
+**Symptom observed:** A new Foundation tester completed onboarding, logged a single spend to satisfy the `hasLoggedExpense` guard, and immediately saw the **Foundation Complete** banner ("You've built strong financial stability — R 5M saved, 13 months of financial security"). The math is internally correct: their entered buffer divided by entered monthly needs ≥ 12. The defect is conceptual, not computational.
+
+**Why this matters:**
+- "Foundation Complete" is meant to celebrate sustained accumulation, not validate onboarding inputs
+- Banner reads as the app praising the user for entering numbers, opposite of intended emotional effect
+- Destroys initial trust ("the app says I'm done already?")
+- Achievement inflation — the entire Foundation Arc loses meaning if the milestone is reachable on day 1
+
+**Two interlocking questions, neither resolved:**
+
+1. **Stage-progression guard (Priority 1, currently held):** Should Foundation Complete require `daysSinceSetup ≥ 30` (or some snapshot/engagement equivalent) before firing? Options A/B/C/D drafted in F024 entry — Option A (time-based, scoped to `complete` only) was the agent recommendation.
+
+2. **Profile-routing (Priority 2, broader):** Is Foundation the correct profile for a user who enters with R 5M+ in pre-existing savings? Foundation's value prop is "build from low-base." A user already past 12 months of buffer at signup may be better served by Variable / Mixed / Fixed profiles which assume "I have wealth, now allocate ongoing income." This points to a possible onboarding gap — wealth signals at Step 8 (starting balances) could trigger a profile-recommendation prompt.
+
+**Why we're not coding it yet:** Owner wants to (a) watch what the affected tester does next (graduate vs stay vs disengage), (b) collect more data points before locking in a guard mechanism, (c) think about whether the right fix is at the **stage** layer (gate Foundation Complete) or the **profile** layer (suggest a different profile during onboarding when wealth-at-signup detected). Premature implementation of Priority 1 would close the door on Priority 2.
+
+**Constraints any future fix must respect:**
+- Must not break the F022 defensive denominator pattern (still required for `foundationStage` derivation)
+- Must not regress legitimate Foundation users — someone with proper Setup data who genuinely builds 12 months of buffer over time should still see Foundation Complete with full dignity copy
+- Must not require a data migration — guard should be derivable from existing fields where possible (current candidates: `setupCompleteAt` would be a new field; `snapshots.length` already exists)
+- The `hasLoggedExpense` guard is necessary but insufficient — a user can satisfy it on day 1 with one spend log
+
+**Watching for:**
+- This tester's next action (graduate? stay on Foundation? disengage?)
+- Whether other testers report the same banner-on-day-1 sensation
+- Whether wealth-at-signup is a recurring pattern worth detecting
+
+**Will revisit when:** F024 status moves from Investigating → Acted On / Closed / Deferred. See feedback log for the decision tree (Options A/B/C/D) and full diagnostic.
 
 ---
 
@@ -696,6 +782,52 @@ const effectiveGoalsPct = (rule.goalsPct ?? 0) + (data.incomeType === 'fixed' ? 
 ```
 
 The stored `tradingPct` is not changed — only the computed allocation is adjusted. The "Trading Capital" line is hidden in the waterfall display for fixed-income users.
+
+---
+
+### Foundation Arc — separate stage system (Foundation profile only)
+
+Foundation profile uses its own staged progression that **runs in parallel** to the standard 1 / 1.5 / 2 / 3 stage system above. Standard stages still compute for Foundation users (they're in `stats`), but the Command tab Journey display reads from `foundationStage` instead.
+
+**Stage derivation** (App.jsx ~line 1540, current as of F024 Commit 2):
+
+```js
+const foundationMonths = foundationMonthlyNeeds > 0 ? data.buffer / foundationMonthlyNeeds : 0;
+const daysSinceSetup = data.setupCompleteAt
+  ? (Date.now() - new Date(data.setupCompleteAt).getTime()) / 86400000
+  : Infinity;
+
+const foundationStage = (!isFoundation || !hasLoggedExpense || foundationMonthlyNeeds === 0)
+  ? null
+  : foundationMonths >= 12 && daysSinceSetup >= 30 ? 'complete'
+  : foundationMonths >= 12 && daysSinceSetup >= 14 ? 'stable'
+  : foundationMonths >= 6  && daysSinceSetup >= 14 ? 'stable'
+  : foundationMonths >= 12 && daysSinceSetup >= 7  ? 'established'
+  : foundationMonths >= 6  && daysSinceSetup >= 7  ? 'established'
+  : foundationMonths >= 3  && daysSinceSetup >= 7  ? 'established'
+  : 'starter';
+```
+
+**`foundationMonthlyNeeds`** is computed via the F022 defensive denominator: `Math.max(stats.salary, envelopeTotal + bufferReserve)`. See Section 4 pattern: "Foundation stage uses defensive `Math.max` denominator".
+
+**Threshold table:**
+
+| Stage | Display label | Buffer coverage | Min days since setup | Allocation rule (when active) |
+|---|---|---|---|---|
+| `starter` | Building Foundation | < 3 months | n/a | 100% savings |
+| `established` | Financially Established | ≥ 3 months | ≥ 7 days | 70% savings · 20% goals · 10% lifestyle |
+| `stable` | Financially Stable | ≥ 6 months | ≥ 14 days | 50% savings · 30% goals · 20% lifestyle |
+| `complete` | Foundation Complete | ≥ 12 months | ≥ 30 days | 50/30/20 + Stay-or-Unlock graduation option |
+
+**Why the time guards (F024 Commit 2):** A user who enters R 5M in starting buffer at onboarding and logs one spend on day 1 mathematically satisfies all four buffer-coverage thresholds. Without time guards, "Foundation Complete" banner fires on day 1 — destroys initial trust, undermines the staged-progression value prop. The 7/14/30 day thresholds force time-in-app before the celebration banner copy fires. Numbers chosen to feel like "real Foundation building" (week → fortnight → month) rather than arbitrary.
+
+**The two intermediate fall-through cases** (`foundationMonths >= 12 && daysSinceSetup >= 14 → 'stable'` and `foundationMonths >= 12 && daysSinceSetup >= 7 → 'established'`) hold time-gated wealthy users at the highest stage they qualify for by **time**, not the highest stage they qualify for by **math**. A day-15 user with 12+ months covered shows as `'stable'` (qualifies for time gate of stable but not complete), even though their math threshold says complete. They advance naturally on day 30.
+
+**Backward compatibility:** Existing users have `setupCompleteAt: null` (defaults from spread). The `null → Infinity` fallback means all time guards are satisfied — their stage derives identically to pre-Commit-2 behavior. Only new users completing onboarding from 2026-05-09 onwards experience the time gate.
+
+**Cosmetic note for time-gated wealthy users:** A Foundation user with R 5M+ buffer who deliberately stayed on Foundation (via the mismatch modal once shipped, or directly via picker choice) will see `'starter'` → "Building Foundation" copy in the Journey section during their first 7 days. This is **intentional** — the time guard treats every Foundation account uniformly. The user has agency to graduate via Settings → Income Profile → "Unlock advanced systems" if the dissonance bothers them. Documented as artifact of explicit choice, not a bug.
+
+**Allocation rules per stage** are documented in F022 / F024 Foundation Arc spec; they're consumed by ProfitAllocator's Foundation branch (see ~line 3260 in App.jsx).
 
 ---
 

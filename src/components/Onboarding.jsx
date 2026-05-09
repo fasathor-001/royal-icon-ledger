@@ -120,6 +120,14 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
   // ── Notification permission state (Step 10: Summary) ────────────────────
   const [notifStatus, setNotifStatus] = useState('idle'); // 'idle' | 'granted' | 'denied'
 
+  // ── F024 Commit 3: Foundation profile mismatch modal state ──────────────
+  // Modal renders as a full-screen overlay AFTER finish() writes the user's data
+  // but BEFORE onComplete() routes them to the main app. This keeps Onboarding
+  // mounted until the user resolves the modal. mismatchMonthsCovered is captured
+  // at the moment of the check so the modal copy shows the actual computed number.
+  const [mismatchModalOpen, setMismatchModalOpen] = useState(false);
+  const [mismatchMonthsCovered, setMismatchMonthsCovered] = useState(0);
+
   // ── User-testing telemetry (console only, no external deps) ─────────────
   React.useEffect(() => { console.log('[rl] onboarding_start'); }, []);
   React.useEffect(() => { if (step === 5) console.log('[rl] step_5_enter'); }, [step]);
@@ -225,11 +233,30 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
     // Hash PIN before calling setData (await cannot be inside the updater callback)
     const newPinHash = await hashPin(pinValue.trim(), userEmail);
 
+    // ── F024 Commit 3: Foundation profile mismatch detection ─────────────────
+    // Compute monthly needs and starting buffer coverage from local onboarding state.
+    // Uses the simple denominator (totalExpenses + spendingBudget + bufferReserve) —
+    // not the F022 Math.max defensive form — because at onboarding time, envelopes
+    // are about to be created from this very same data, so envelope total ≤ this sum.
+    // Trigger condition: user picked Foundation AND their starting buffer covers ≥ 12
+    // months of monthly needs. 12 months matches the Foundation Complete threshold
+    // in foundationStage derivation; less than that is plausible mid-progression.
+    const _totalExpensesAmount = expenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+    const _monthlyNeeds = _totalExpensesAmount + (Number(spendingBudget) || 0) + (Number(bufferReserve) || 0);
+    const _startingBufferNum = Number(startingBuffer) || 0;
+    const _monthsCovered = _monthlyNeeds > 0 ? _startingBufferNum / _monthlyNeeds : 0;
+    const _showMismatchModal = incomeType === 'foundation' && _monthsCovered >= 12;
+
     setData(d => ({
       ...d,
       // ── Onboarding timestamp — written once, never overwritten ──
       // Used for time-based nudges and graduation timing.
       createdAt: d.createdAt || new Date().toISOString(),
+      // ── Foundation Arc time-guard timestamp (F024 Commit 2) ──
+      // Written exactly once. The `|| now` pattern preserves the original value if
+      // finish() were ever called twice — protects daysSinceSetup math from being
+      // reset to 0 on a re-run. Used by foundationStage derivation in App.jsx.
+      setupCompleteAt: d.setupCompleteAt || new Date().toISOString(),
       // ── Existing fields (unchanged) ──
       expenses,
       envelopes: [...(d.envelopes || []), ...newEnvelopes],
@@ -263,14 +290,61 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
       // ── New fields (Step 9: PIN — hashed, user-owned) ──
       pinHash: newPinHash,
       overridePin: '', // clear any legacy plain-text PIN
+      // ── F024 Commit 3: mismatch flag ──
+      // For non-mismatch users, set to true immediately (they passed the check).
+      // For mismatch users, modal handler sets to true on dismissal.
+      // Either way, the flag reaches `true` before the user lands on Command tab —
+      // ensures the modal can never re-fire later.
+      mismatchCheckShown: _showMismatchModal ? false : true,
     }));
     console.log('[rl] onboarding_complete');
+
+    if (_showMismatchModal) {
+      // Stay in Onboarding — render mismatch modal. onComplete() is called by
+      // the modal's button handlers, not here.
+      console.log('[rl] mismatch_modal_shown', { monthsCovered: _monthsCovered });
+      setMismatchMonthsCovered(_monthsCovered);
+      setMismatchModalOpen(true);
+    } else {
+      onComplete();
+    }
+  };
+
+  // ── F024 Commit 3: Mismatch modal handlers ─────────────────────────────────
+  // Both paths set mismatchCheckShown:true so the modal can never re-fire.
+  // Switching profile updates incomeType + mode together so the resulting account
+  // is consistent (mode='foundation' is only for Foundation profile).
+  const handleMismatchSwitchProfile = (newType) => {
+    console.log('[rl] mismatch_switched_to', newType);
+    setData(d => ({
+      ...d,
+      incomeType: newType,
+      mode: 'standard',
+      mismatchCheckShown: true,
+    }));
+    setMismatchModalOpen(false);
     onComplete();
   };
 
-  // ── skip() — unchanged ────────────────────────────────────────────────────
+  const handleMismatchStayFoundation = () => {
+    console.log('[rl] mismatch_stayed_on_foundation');
+    setData(d => ({
+      ...d,
+      mismatchCheckShown: true,
+    }));
+    setMismatchModalOpen(false);
+    onComplete();
+  };
+
+  // ── skip() — minimal completion path ──────────────────────────────────────
+  // Same time-guard timestamp as finish() so users who skip onboarding still
+  // get the Foundation Arc time guard protection (F024 Commit 2).
   const skip = () => {
-    setData(d => ({ ...d, setupComplete: true }));
+    setData(d => ({
+      ...d,
+      setupComplete: true,
+      setupCompleteAt: d.setupCompleteAt || new Date().toISOString(),
+    }));
     onComplete();
   };
 
@@ -535,12 +609,15 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '40px' }}>
               {[
-                { id: 'foundation', icon: Sparkles, title: 'Foundation', desc: 'Allowance, student income, small gigs, or irregular money you\'re still learning to manage.', defaultMonths: 3,  badge: 'New to budgeting?' },
-                { id: 'variable',   icon: Briefcase, title: 'Variable',   desc: 'Trading, freelance, commissions, business ownership. Some months great, some months tough.', defaultMonths: 18 },
-                { id: 'fixed',      icon: Wallet,    title: 'Fixed',      desc: 'Salary, pension, regular employment. Same amount every month.', defaultMonths: 6 },
-                { id: 'mixed',      icon: Users,     title: 'Mixed',      desc: 'Salary plus side hustle, or one partner stable + one variable.', defaultMonths: 9 },
+                // Display labels are situation-based, not jargon. Underlying incomeType values
+                // are unchanged ('foundation' / 'variable' / 'fixed' / 'mixed') so all internal
+                // logic, tab visibility, and existing user data stay intact. See DEVELOPMENT_NOTES
+                // Section 4 — pattern: "User-facing label vs internal incomeType value".
+                { id: 'foundation', emoji: '🌱', title: 'Building from zero', desc: 'For people starting savings from scratch.',          defaultMonths: 3 },
+                { id: 'fixed',      emoji: '💼', title: 'Salary',             desc: 'Steady paycheck every month.',                       defaultMonths: 6 },
+                { id: 'variable',   emoji: '📈', title: 'Trading / Self-employed', desc: 'Income changes month to month.',                defaultMonths: 18 },
+                { id: 'mixed',      emoji: '⚡', title: 'Mix',                desc: 'Steady salary, plus side income or trading on top.', defaultMonths: 9 },
               ].map(opt => {
-                const Icon = opt.icon;
                 const selected = incomeType === opt.id;
                 return (
                   <div
@@ -552,15 +629,10 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
                     className={`ob-card ${selected ? 'ob-card-selected' : ''}`}
                   >
                     <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                      <Icon size={20} style={{ color: selected ? '#D97757' : '#B0A898', marginTop: '2px', flexShrink: 0 }} />
+                      <span style={{ fontSize: '24px', lineHeight: 1, marginTop: '1px', flexShrink: 0 }} aria-hidden="true">{opt.emoji}</span>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                          <span style={{ fontWeight: 500, fontSize: '16px' }}>{opt.title}</span>
-                          {opt.badge && (
-                            <span style={{ fontSize: '9px', color: '#7FA068', background: '#1A2A1E', border: '1px solid #2A4A2A', borderRadius: '999px', padding: '2px 7px', fontWeight: 600, letterSpacing: '0.06em' }}>
-                              {opt.badge}
-                            </span>
-                          )}
+                          <span style={{ fontWeight: 600, fontSize: '16px', color: selected ? '#E8E2D5' : '#E8E2D5' }}>{opt.title}</span>
                         </div>
                         <div style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.5 }}>{opt.desc}</div>
                       </div>
@@ -1382,6 +1454,148 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
 
         </div>{/* /ob-step keyed wrapper */}
       </div>
+
+      {/* ── F024 Commit 3: Foundation profile mismatch modal ───────────────────
+          Renders ONLY when finish() detected a Foundation pick with ≥12 months
+          of buffer coverage. Mounts on top of the onboarding tree (z-index high).
+          Until the user resolves it via one of the four buttons, onComplete() is
+          NOT called — Onboarding stays mounted because parent's showOnboarding
+          state only flips on onComplete(). The user cannot close this modal via
+          backdrop click — they must make a choice. */}
+      {mismatchModalOpen && (
+        <div
+          style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(10,9,8,0.92)',
+            zIndex: 2000,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '20px',
+          }}
+        >
+          <div
+            style={{
+              background: '#0F1209',
+              border: '1px solid #3A5A2A',
+              borderRadius: '8px',
+              maxWidth: '480px',
+              width: '100%',
+              padding: '28px 28px 24px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+              <span style={{ fontSize: '24px' }} aria-hidden="true">🌱</span>
+              <div style={{
+                fontFamily: "'Fraunces', Georgia, serif",
+                fontSize: '21px', fontWeight: 300,
+                color: '#E8E2D5', lineHeight: 1.2,
+              }}>
+                Looks like Foundation may not fit
+              </div>
+            </div>
+
+            <p style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.65, marginBottom: '14px' }}>
+              You picked <strong style={{ color: '#E8E2D5' }}>Building from zero</strong> but entered savings that already cover <strong style={{ color: '#E8E2D5' }}>{Math.floor(mismatchMonthsCovered)}+ months</strong> of expenses.
+            </p>
+
+            <p style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.65, marginBottom: '20px' }}>
+              Foundation is designed for people starting savings from scratch. Based on your numbers, you might fit better with one of these:
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+              <button
+                onClick={() => handleMismatchSwitchProfile('fixed')}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '12px',
+                  background: '#0A0D0A',
+                  border: '1px solid #26221C',
+                  borderRadius: '6px',
+                  padding: '14px 16px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  width: '100%',
+                  WebkitTapHighlightColor: 'transparent',
+                  transition: 'border-color 150ms, background 150ms',
+                }}
+              >
+                <span style={{ fontSize: '20px', flexShrink: 0 }} aria-hidden="true">💼</span>
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#E8E2D5' }}>Salary</div>
+                  <div style={{ fontSize: '12px', color: '#8B8478' }}>Steady paycheck every month</div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleMismatchSwitchProfile('variable')}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '12px',
+                  background: '#0A0D0A',
+                  border: '1px solid #26221C',
+                  borderRadius: '6px',
+                  padding: '14px 16px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  width: '100%',
+                  WebkitTapHighlightColor: 'transparent',
+                  transition: 'border-color 150ms, background 150ms',
+                }}
+              >
+                <span style={{ fontSize: '20px', flexShrink: 0 }} aria-hidden="true">📈</span>
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#E8E2D5' }}>Trading / Self-employed</div>
+                  <div style={{ fontSize: '12px', color: '#8B8478' }}>Income changes month to month</div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleMismatchSwitchProfile('mixed')}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '12px',
+                  background: '#0A0D0A',
+                  border: '1px solid #26221C',
+                  borderRadius: '6px',
+                  padding: '14px 16px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  width: '100%',
+                  WebkitTapHighlightColor: 'transparent',
+                  transition: 'border-color 150ms, background 150ms',
+                }}
+              >
+                <span style={{ fontSize: '20px', flexShrink: 0 }} aria-hidden="true">⚡</span>
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#E8E2D5' }}>Mix</div>
+                  <div style={{ fontSize: '12px', color: '#8B8478' }}>Steady salary, plus side income or trading on top</div>
+                </div>
+              </button>
+            </div>
+
+            <div style={{ borderTop: '1px solid #1A1A14', paddingTop: '14px' }}>
+              <p style={{ fontSize: '11px', color: '#5C5648', textAlign: 'center', marginBottom: '10px' }}>
+                Or:
+              </p>
+              <button
+                onClick={handleMismatchStayFoundation}
+                style={{
+                  width: '100%',
+                  background: 'transparent',
+                  color: '#B0A898',
+                  border: '1px solid #26221C',
+                  borderRadius: '4px',
+                  padding: '11px 16px',
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  fontFamily: 'Inter, sans-serif',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+              >
+                Stay on Foundation
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

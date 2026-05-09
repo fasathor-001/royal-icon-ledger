@@ -55,14 +55,18 @@ The setup wizard walks you through adding your monthly expenses, setting your sp
 
 ### Income profiles
 
-During onboarding you'll choose an income type. This changes what the app shows:
+During onboarding you'll pick the situation that best describes how money reaches you. The picker is **situation-based, not experience-level based** — there are no "beginner" or "advanced" options. Pick the one that matches your real income pattern:
 
-| Profile | What changes |
-|---|---|
-| **Variable** (default) | Full feature set — trading, profit allocator, drawdown protocol |
-| **Fixed salary** | Trading tab hidden; Profit Allocator relabeled "Surplus Allocator"; trading allocation automatically redirected to goals |
-| **Mixed** | Same as Variable |
-| **Foundation** | Simplified language throughout ("Savings" instead of "Buffer", "Money Allocator" instead of "Profit Allocator"); trading hidden |
+| Display label | Who it's for | What changes in the app |
+|---|---|---|
+| 🌱 **Building from zero** | People starting savings from scratch — students, allowance recipients, irregular gigs, or anyone whose buffer is below 3 months of expenses | Simplified language ("Savings" instead of "Buffer", "Money Allocator" instead of "Profit Allocator"); trading features hidden; Foundation Arc staged milestones (Building Foundation → Financially Established → Financially Stable → Foundation Complete) |
+| 💼 **Salary** | Steady paycheck every month — salaried employees, pensioners, regular contractors with fixed monthly amounts | Trading tab hidden; "Profit Allocator" renamed to "Surplus Allocator"; the trading allocation percentage is automatically redirected to Goals |
+| 📈 **Trading / Self-employed** | Income changes month to month — traders, freelancers, commission earners, business owners | Full feature set — Trading P&L tab, Profit Allocator with stage-based rules, drawdown protocol |
+| ⚡ **Mix** | Steady salary, plus side income or trading on top | Profit Allocator with full rules, but Trading P&L tab is hidden by default |
+
+**Picking the right profile:** focus on **how income reaches you**, not on your experience or wealth level. A self-employed lawyer with R 5M in savings and a trader earning R 200/month both pick "📈 Trading / Self-employed" because their income pattern is the same.
+
+**Changing it later:** the profile is set at onboarding. To change it, contact `support@royalledger.app` — admin can switch profiles via the override RPC.
 
 ---
 

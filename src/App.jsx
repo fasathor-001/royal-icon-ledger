@@ -124,6 +124,21 @@ const defaultData = {
   // Set to true when a Foundation user confirms graduation to an advanced profile.
   // Used to gate the post-graduation welcome banner and admin reporting.
   graduatedFromFoundation: false,
+
+  // ISO timestamp set exactly once when onboarding finish() (or skip()) completes.
+  // Used by Foundation Arc time guards (F024 Commit 2) to prevent celebratory stage
+  // banners from firing on day 1 for users who enter pre-existing wealth at signup.
+  // Legacy users with `null` default to `Infinity` daysSinceSetup — guards always satisfied
+  // for them, so no behavior change. See DEVELOPMENT_NOTES Section 7 for the threshold table.
+  setupCompleteAt: null,
+
+  // Foundation profile mismatch modal (F024 Commit 3): set to `true` when the modal
+  // has been resolved (either by switching to a non-Foundation profile or staying on
+  // Foundation). Once true, the modal never re-fires — even if the user later edits
+  // balances to satisfy the mismatch condition again. Existing users (legacy, predates
+  // this field) get `false` via the spread default; the modal logic only runs in
+  // Onboarding finish(), never on subsequent app loads, so legacy users never see it.
+  mismatchCheckShown: false,
 };
 
 const EXPENSE_CATEGORIES = [
@@ -1219,24 +1234,27 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
         // Local state via a self-contained component so hooks are legal here
         function GraduationModal({ onClose, onConfirm }) {
           const [picked, setPicked] = React.useState(null);
+          // Labels match the onboarding picker and Settings cards (see DEVELOPMENT_NOTES
+          // Section 4 — pattern: "User-facing label vs internal incomeType value").
+          // Underlying ids are unchanged so on-graduate setData writes correct values.
           const profiles = [
             {
               id: 'fixed',
-              label: 'Fixed salary',
+              label: 'Salary',
               icon: '💼',
-              desc: 'You receive a regular monthly salary. Best for salaried employees.',
+              desc: 'Steady paycheck every month.',
             },
             {
               id: 'variable',
-              label: 'Variable / trading',
+              label: 'Trading / Self-employed',
               icon: '📈',
-              desc: 'Income varies by month — freelancers, traders, commission earners.',
+              desc: 'Income changes month to month.',
             },
             {
               id: 'mixed',
-              label: 'Mixed',
-              icon: '⚖️',
-              desc: 'Stable salary plus side income or trading on top.',
+              label: 'Mix',
+              icon: '⚡',
+              desc: 'Steady salary, plus side income or trading on top.',
             },
           ];
           return (
@@ -1538,11 +1556,28 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
     ? (foundationMonthlyNeeds > 0 ? data.buffer / foundationMonthlyNeeds : 0)
     : (stats.salary > 0 ? data.buffer / stats.salary : 0);
 
+  // Foundation Arc time guards (F024 Commit 2).
+  // Prevents day-1 celebratory banners for users who enter pre-existing wealth at signup.
+  // Each stage requires both buffer-coverage AND minimum days since onboarding completion:
+  //   established (3-mo coverage) → ≥ 7 days
+  //   stable (6-mo coverage)      → ≥ 14 days
+  //   complete (12-mo coverage)   → ≥ 30 days
+  // Legacy users with setupCompleteAt: null get Infinity → guards always satisfied → no behavior change.
+  // The two intermediate fall-through cases hold time-gated wealthy users at the highest
+  // stage they qualify for by time (e.g. day-10 user with 12+ months covered shows as 'established',
+  // not 'complete'). See DEVELOPMENT_NOTES Section 7 for the rationale.
+  const daysSinceSetup = data.setupCompleteAt
+    ? (Date.now() - new Date(data.setupCompleteAt).getTime()) / 86400000
+    : Infinity;
+
   const foundationStage = (!isFoundation || !hasLoggedExpense || foundationMonthlyNeeds === 0)
     ? null
-    : foundationMonths >= 12 ? 'complete'
-    : foundationMonths >= 6  ? 'stable'
-    : foundationMonths >= 3  ? 'established'
+    : foundationMonths >= 12 && daysSinceSetup >= 30 ? 'complete'
+    : foundationMonths >= 12 && daysSinceSetup >= 14 ? 'stable'
+    : foundationMonths >= 6  && daysSinceSetup >= 14 ? 'stable'
+    : foundationMonths >= 12 && daysSinceSetup >= 7  ? 'established'
+    : foundationMonths >= 6  && daysSinceSetup >= 7  ? 'established'
+    : foundationMonths >= 3  && daysSinceSetup >= 7  ? 'established'
     : 'starter';
 
   // Persistent dismissal helpers — writes to data so choices survive refresh / sync
@@ -5461,11 +5496,14 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '480px' }}>
                   {[
-                    { id: 'foundation', title: 'Foundation', desc: 'Savings-focused. Simplified Money Allocator. No trading features.', icon: Home },
-                    { id: 'variable',   title: 'Variable',   desc: 'Trading, freelance, commissions, business. Includes Trading P&L tab.', icon: TrendingUp },
-                    { id: 'fixed',      title: 'Fixed',      desc: 'Salary, pension, regular employment. Trading P&L tab hidden.', icon: Briefcase },
-                    { id: 'mixed',      title: 'Mixed',      desc: 'Salary plus side hustle or additional income. No Trading P&L tab.', icon: Users },
-                  ].map(({ id, title, desc, icon: Icon }) => {
+                    // Display labels are situation-based; underlying incomeType ids unchanged.
+                    // Order kept for visual consistency: Foundation first, then Salary, Trading/Self-employed, Mix.
+                    // See DEVELOPMENT_NOTES Section 4 — pattern: "User-facing label vs internal incomeType value".
+                    { id: 'foundation', emoji: '🌱', title: 'Building from zero',         desc: 'For people starting savings from scratch.' },
+                    { id: 'fixed',      emoji: '💼', title: 'Salary',                     desc: 'Steady paycheck every month.' },
+                    { id: 'variable',   emoji: '📈', title: 'Trading / Self-employed',    desc: 'Income changes month to month.' },
+                    { id: 'mixed',      emoji: '⚡', title: 'Mix',                        desc: 'Steady salary, plus side income or trading on top.' },
+                  ].map(({ id, emoji, title, desc }) => {
                     const isFoundationAccount = data.mode === 'foundation' || data.incomeType === 'foundation';
                     const active = isFoundationAccount ? id === 'foundation' : (data.incomeType ?? 'variable') === id;
                     return (
@@ -5476,7 +5514,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                         borderRadius: '6px', padding: '14px 16px',
                         opacity: active ? 1 : 0.35,
                       }}>
-                        <Icon size={18} style={{ color: active ? '#D97757' : '#8B8478', marginTop: '2px', flexShrink: 0 }} />
+                        <span style={{ fontSize: '20px', lineHeight: 1, marginTop: '1px', flexShrink: 0 }} aria-hidden="true">{emoji}</span>
                         <div>
                           <div style={{ fontSize: '14px', fontWeight: 600, color: active ? '#E8E2D5' : '#B0A898', marginBottom: '3px' }}>{title}</div>
                           <div style={{ fontSize: '12px', color: '#8B8478', lineHeight: 1.5 }}>{desc}</div>
