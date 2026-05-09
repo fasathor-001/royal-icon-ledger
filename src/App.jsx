@@ -1470,8 +1470,11 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
     // so it works on every profile (fixed, foundation, variable, mixed)
     if (showWeeklyPulse) return 'weekly-pulse';
     if (stats.isSetup && data.incomeType !== 'fixed' && !isFoundation && stats.drawdownZone !== 'normal' && data.tradingCapital > 0) return 'drawdown';
-    if (stats.isSetup && needsBackup) return 'backup';
+    // upgrade (Foundation graduation) outranks backup — it's a one-time milestone
+    // event. On fresh devices needsBackup is always true (no prior backup) which
+    // was silently blocking the graduation prompt on mobile / new browsers.
     if (showUpgradePrompt && !upgradeDismissed) return 'upgrade';
+    if (stats.isSetup && needsBackup) return 'backup';
     if (isFoundation && foundationNudge) return 'nudge';
     if (showGraduationWelcome) return 'graduation';
     if (showStabilizeMessage) return 'stabilize';
