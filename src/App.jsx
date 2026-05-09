@@ -1227,7 +1227,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
         Uses createPortal to render directly into document.body — completely
         outside any CSS stacking context in the app tree.
         Step 1: user reads what's unlocked.
-        Step 2: user picks their income profile (Fixed / Variable / Mixed).
+        Step 2: user picks their income profile (Fixed / Variable / Hybrid).
         Profile is written together with mode:'standard' on confirm.         */}
     {showGraduationModal && createPortal(
       (() => {
@@ -1252,7 +1252,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
             },
             {
               id: 'mixed',
-              label: 'Mix',
+              label: 'Hybrid',
               icon: '⚡',
               desc: 'Steady salary, plus business or side income.',
             },
@@ -5490,7 +5490,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                     <strong style={{ color: '#E8E2D5' }}>🌱 Building from zero</strong> — for savings from scratch. Simplified Money Allocator, no trading features.<br />
                     <strong style={{ color: '#E8E2D5' }}>💼 Salary</strong> — for a steady monthly paycheck. No Trading P&L tab; Surplus Allocator replaces Profit Allocator.<br />
                     <strong style={{ color: '#E8E2D5' }}>📈 Trading / Self-employed</strong> — for income that changes month to month. Includes Trading P&L tab and full Profit Allocator.<br />
-                    <strong style={{ color: '#E8E2D5' }}>⚡ Mix</strong> — for a salary earner with a business or side income. Profit Allocator with full rules; no Trading P&L tab.<br /><br />
+                    <strong style={{ color: '#E8E2D5' }}>⚡ Hybrid</strong> — for a salary earner with a business or side income. Profit Allocator with full rules; no Trading P&L tab.<br /><br />
                     This is set during onboarding and cannot be changed without assisted re-onboarding.
                   </HelpTip>
                 </h2>
@@ -5500,12 +5500,12 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '480px' }}>
                   {[
                     // Display labels are situation-based; underlying incomeType ids unchanged.
-                    // Order kept for visual consistency: Foundation first, then Salary, Trading/Self-employed, Mix.
+                    // Order kept for visual consistency: Foundation first, then Salary, Trading/Self-employed, Hybrid.
                     // See DEVELOPMENT_NOTES Section 4 — pattern: "User-facing label vs internal incomeType value".
                     { id: 'foundation', emoji: '🌱', title: 'Building from zero',         desc: 'For people starting savings from scratch.' },
                     { id: 'fixed',      emoji: '💼', title: 'Salary',                     desc: 'Steady paycheck every month.' },
                     { id: 'variable',   emoji: '📈', title: 'Trading / Self-employed',    desc: 'Income changes month to month.' },
-                    { id: 'mixed',      emoji: '⚡', title: 'Mix',                        desc: 'Steady salary, plus business or side income.' },
+                    { id: 'mixed',      emoji: '⚡', title: 'Hybrid',                     desc: 'Steady salary, plus business or side income.' },
                   ].map(({ id, emoji, title, desc }) => {
                     const isFoundationAccount = data.mode === 'foundation' || data.incomeType === 'foundation';
                     const active = isFoundationAccount ? id === 'foundation' : (data.incomeType ?? 'variable') === id;
