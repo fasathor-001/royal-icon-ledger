@@ -2327,12 +2327,14 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 How much of your discretionary budget you've used this month. The bar turns amber above 50% and red above 80%. When it hits 100% your spending limit is reached — any further purchases come out of next month's budget via the impulse gate.
               </HelpTip>
             </h3>
-            <div className="mono text-sm" style={{ color: stats.spendingLeft > 0 ? '#E8E2D5' : '#C56B5A', flexShrink: 0 }}>
-              {fmt(stats.spendingLeft)} left
+            <div className="mono text-sm" style={{ color: Math.max(0, stats.discCap - stats.totalMonthSpend) > 0 ? '#E8E2D5' : '#C56B5A', flexShrink: 0 }}>
+              {fmt(Math.max(0, stats.discCap - stats.totalMonthSpend))} left
             </div>
           </div>
           {(() => {
-            const pct = stats.discCap > 0 ? stats.thisMonthSpend / stats.discCap : 0;
+            // Use totalMonthSpend (all envelopes) so spending logged to named envelopes
+            // (Groceries, Transport, etc.) is visible here, not just Discretionary.
+            const pct = stats.discCap > 0 ? stats.totalMonthSpend / stats.discCap : 0;
             const barColor = pct > 0.8 ? '#C56B5A' : pct > 0.5 ? '#D97757' : '#7FA068';
             const pctDisplay = Math.round(pct * 100);
             return (
@@ -2349,7 +2351,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                   </span>
                 </div>
                 <div className="flex justify-between text-xs mono" style={{ color: '#B0A898' }}>
-                  <span>{fmt(stats.thisMonthSpend)} spent</span>
+                  <span>{fmt(stats.totalMonthSpend)} spent</span>
                   <span>Limit: {fmt(stats.discCap)}</span>
                 </div>
               </>
