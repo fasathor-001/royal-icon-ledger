@@ -454,6 +454,27 @@ All downstream code (`confirm`, `actionLabel`, category buckets) reads `effectiv
 
 ---
 
+### Bug: Multiple spending displays out of sync (2026-05-09)
+
+**Symptom:** Command tab showed inconsistent spending numbers between the large "This Month" card and the compact "Spending" mini-card. Impulses logged to named envelopes (Groceries, Transport, etc.) appeared in one display but not the other.
+
+**Location:** `src/App.jsx` — two separate UI blocks in the Command tab:
+1. Large "This month" card (~line 1405) — the primary spending control point
+2. Compact "Spending" mini-card (~line 2322) — 2-column grid section below stages
+
+**Root cause:** Both blocks rendered spending data independently. When `totalMonthSpend` was introduced to show all-envelope spend, only the large card was updated to use it. The mini-card continued reading `stats.thisMonthSpend` (Discretionary-only), causing visible inconsistency.
+
+**Fix applied:** Mini-card updated so all three references use `totalMonthSpend`:
+- Progress bar: `totalMonthSpend / discCap`
+- "X spent" label: `totalMonthSpend`
+- "X left" header: `Math.max(0, discCap - totalMonthSpend)`
+
+**How it gets reintroduced:** Adding a third spending display anywhere in Command tab without using `stats.totalMonthSpend`.
+
+**Rule:** All Command tab spending references must read from `stats.totalMonthSpend` (total across all envelopes). `stats.thisMonthSpend` is Discretionary-only and is only valid as the numerator for the main "left to spend" control number in the large card.
+
+---
+
 ## 6. Authentication and Cloud Sync
 
 ### PIN authentication
