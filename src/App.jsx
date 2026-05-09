@@ -1189,115 +1189,176 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
 
     {/* ── Foundation graduation modal ────────────────────────────────────────
         Uses createPortal to render directly into document.body — completely
-        outside any CSS stacking context in the app tree.                    */}
+        outside any CSS stacking context in the app tree.
+        Step 1: user reads what's unlocked.
+        Step 2: user picks their income profile (Fixed / Variable / Mixed).
+        Profile is written together with mode:'standard' on confirm.         */}
     {showGraduationModal && createPortal(
-      <div
-        onClick={() => setShowGraduationModal(false)}
-        style={{
-          position: 'fixed', inset: 0,
-          background: 'rgba(10,9,8,0.88)',
-          zIndex: 1000,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '24px',
-        }}
-      >
-        <div
-          onClick={e => e.stopPropagation()}
-          style={{
-            background: '#0F1209',
-            border: '1px solid #3A5A2A',
-            borderRadius: '8px',
-            maxWidth: '480px',
-            width: '100%',
-            padding: '32px',
-            position: 'relative',
-          }}
-        >
-          {/* Dismiss */}
-          <button
-            onClick={() => setShowGraduationModal(false)}
-            style={{
-              position: 'absolute', top: '16px', right: '16px',
-              background: 'none', border: 'none', cursor: 'pointer',
-              color: '#8B8478', padding: '4px',
-            }}
-          >
-            <X size={16} />
-          </button>
+      (() => {
+        // Local state via a self-contained component so hooks are legal here
+        function GraduationModal({ onClose, onConfirm }) {
+          const [picked, setPicked] = React.useState(null);
+          const profiles = [
+            {
+              id: 'fixed',
+              label: 'Fixed salary',
+              icon: '💼',
+              desc: 'You receive a regular monthly salary. Best for salaried employees.',
+            },
+            {
+              id: 'variable',
+              label: 'Variable / trading',
+              icon: '📈',
+              desc: 'Income varies by month — freelancers, traders, commission earners.',
+            },
+            {
+              id: 'mixed',
+              label: 'Mixed',
+              icon: '⚖️',
+              desc: 'Stable salary plus side income or trading on top.',
+            },
+          ];
+          return (
+            <div
+              onClick={onClose}
+              style={{
+                position: 'fixed', inset: 0,
+                background: 'rgba(10,9,8,0.88)',
+                zIndex: 1000,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                padding: '20px',
+              }}
+            >
+              <div
+                onClick={e => e.stopPropagation()}
+                style={{
+                  background: '#0F1209',
+                  border: '1px solid #3A5A2A',
+                  borderRadius: '8px',
+                  maxWidth: '480px',
+                  width: '100%',
+                  padding: '28px 28px 24px',
+                  position: 'relative',
+                  maxHeight: '90vh',
+                  overflowY: 'auto',
+                }}
+              >
+                {/* Dismiss */}
+                <button
+                  onClick={onClose}
+                  style={{
+                    position: 'absolute', top: '14px', right: '14px',
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    color: '#8B8478', padding: '4px',
+                  }}
+                >
+                  <X size={16} />
+                </button>
 
-          {/* Icon + headline */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-            <Sparkles size={18} style={{ color: '#7FA068', flexShrink: 0 }} />
-            <div style={{
-              fontFamily: "'Fraunces', Georgia, serif",
-              fontSize: '22px', fontWeight: 300,
-              color: '#E8E2D5', lineHeight: 1.2,
-            }}>
-              You built a real foundation.
-            </div>
-          </div>
+                {/* Icon + headline */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                  <Sparkles size={18} style={{ color: '#7FA068', flexShrink: 0 }} />
+                  <div style={{
+                    fontFamily: "'Fraunces', Georgia, serif",
+                    fontSize: '21px', fontWeight: 300,
+                    color: '#E8E2D5', lineHeight: 1.2,
+                  }}>
+                    You built a real foundation.
+                  </div>
+                </div>
 
-          {/* Body */}
-          <p style={{ fontSize: '14px', color: '#B0A898', lineHeight: 1.65, marginBottom: '20px' }}>
-            You've shown discipline by saving and building control. You're ready for the full Royal Ledger system.
-          </p>
+                <p style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.65, marginBottom: '20px' }}>
+                  You've shown real discipline. The full system is ready for you — deeper income planning, full allocation tools, and complete financial structure.
+                </p>
 
-          {/* What's unlocked */}
-          <div style={{
-            background: '#0A0D0A',
-            border: '1px solid #26221C',
-            borderRadius: '6px',
-            padding: '16px 18px',
-            marginBottom: '24px',
-          }}>
-            <div style={{
-              fontSize: '11px', color: '#8B8478',
-              fontWeight: 600, letterSpacing: '0.1em',
-              textTransform: 'uppercase', marginBottom: '12px',
-            }}>
-              You now have access to
-            </div>
-            {[
-              'Deeper income planning',
-              'Full money allocation tools',
-              'Long-term savings and buffer structure',
-              'Complete Royal Ledger dashboard',
-            ].map(item => (
-              <div key={item} style={{
-                display: 'flex', alignItems: 'center', gap: '8px',
-                fontSize: '13px', color: '#A8C49A',
-                marginBottom: '8px', lineHeight: 1.4,
-              }}>
-                <span style={{ color: '#7FA068', fontSize: '11px', flexShrink: 0 }}>✦</span>
-                {item}
+                {/* Profile picker */}
+                <div style={{
+                  fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase',
+                  fontWeight: 600, color: '#8B8478', marginBottom: '10px',
+                }}>
+                  How does your income arrive?
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+                  {profiles.map(p => (
+                    <button
+                      key={p.id}
+                      onClick={() => setPicked(p.id)}
+                      style={{
+                        display: 'flex', alignItems: 'flex-start', gap: '12px',
+                        background: picked === p.id ? '#0A1A0A' : '#0A0D0A',
+                        border: `1px solid ${picked === p.id ? '#7FA068' : '#26221C'}`,
+                        borderRadius: '6px',
+                        padding: '12px 14px',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'border-color 150ms, background 150ms',
+                        width: '100%',
+                        WebkitTapHighlightColor: 'transparent',
+                      }}
+                    >
+                      <span style={{ fontSize: '18px', flexShrink: 0, lineHeight: 1.3 }}>{p.icon}</span>
+                      <div>
+                        <div style={{
+                          fontSize: '13px', fontWeight: 600,
+                          color: picked === p.id ? '#A8C49A' : '#E8E2D5',
+                          marginBottom: '2px',
+                        }}>
+                          {p.label}
+                          {picked === p.id && (
+                            <span style={{ marginLeft: '8px', color: '#7FA068', fontSize: '11px' }}>✓</span>
+                          )}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#8B8478', lineHeight: 1.5 }}>
+                          {p.desc}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                {/* CTA */}
+                <button
+                  disabled={!picked}
+                  onClick={() => picked && onConfirm(picked)}
+                  style={{
+                    width: '100%',
+                    background: picked ? '#7FA068' : '#1A2A1A',
+                    color: picked ? '#0A0908' : '#4A6A4A',
+                    border: 'none', borderRadius: '4px',
+                    padding: '13px 20px',
+                    fontSize: '14px', fontWeight: 700,
+                    cursor: picked ? 'pointer' : 'not-allowed',
+                    fontFamily: 'Inter, sans-serif',
+                    transition: 'background 200ms, color 200ms',
+                  }}
+                >
+                  {picked
+                    ? `Continue with ${profiles.find(p => p.id === picked)?.label} →`
+                    : 'Choose your income type above'}
+                </button>
+
+                <p style={{ fontSize: '11px', color: '#5C5648', textAlign: 'center', marginTop: '10px', lineHeight: 1.5 }}>
+                  You can change this later in Settings → Income Profile.
+                </p>
               </div>
-            ))}
-          </div>
-
-          {/* CTA — mode switch happens here, after user reads the modal */}
-          <button
-            onClick={() => {
+            </div>
+          );
+        }
+        return (
+          <GraduationModal
+            onClose={() => setShowGraduationModal(false)}
+            onConfirm={(incomeType) => {
               setShowGraduationModal(false);
-              setData(d => ({ ...d, mode: 'standard' }));
+              setData(d => ({ ...d, mode: 'standard', incomeType }));
               sessionStorage.setItem('rl_grad_modal', '1');
               if (!localStorage.getItem('rl_welcome_dismissed')) {
                 sessionStorage.setItem('rl_just_graduated', '1');
               }
             }}
-            style={{
-              width: '100%',
-              background: '#7FA068', color: '#0A0908',
-              border: 'none', borderRadius: '4px',
-              padding: '13px 20px',
-              fontSize: '14px', fontWeight: 700,
-              cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-              letterSpacing: '0.01em',
-            }}
-          >
-            Explore Royal Ledger →
-          </button>
-        </div>
-      </div>,
+          />
+        );
+      })(),
       document.body
     )}
   </div>
