@@ -153,7 +153,7 @@ const foundationCopy = {
 // ── Mobile bottom navigation ──────────────────────────────────────────────────
 const ADMIN_MOBILE_EMAILS = ['support@royalledger.app', 'fasathor@gmail.com'];
 
-function MobileBottomNav({ tab, setTab, user, data }) {
+function MobileBottomNav({ tab, setTab, user, data, onLogout }) {
   const [showMore, setShowMore] = useState(false);
 
   // Foundation check: guard on BOTH mode AND incomeType so old accounts
@@ -217,11 +217,32 @@ function MobileBottomNav({ tab, setTab, user, data }) {
                 background: 'none', border: 'none', cursor: 'pointer',
                 color: tab === id ? '#D97757' : '#B0A898',
                 borderLeft: tab === id ? '3px solid #D97757' : '3px solid transparent',
+                WebkitTapHighlightColor: 'transparent',
               }}
             >
               {label}
             </button>
           ))}
+
+          {/* Sign out — separated from nav items so it's visible but not confused with tabs */}
+          {user && onLogout && (
+            <>
+              <div style={{ margin: '6px 24px 2px', borderTop: '1px solid #26221C' }} />
+              <button
+                onClick={() => { setShowMore(false); onLogout(); }}
+                style={{
+                  display: 'block', width: '100%', textAlign: 'left',
+                  padding: '13px 24px', fontSize: 14,
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  color: '#C56B5A',
+                  borderLeft: '3px solid transparent',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+              >
+                Sign out
+              </button>
+            </>
+          )}
         </div>
       )}
 
@@ -1167,7 +1188,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
       </div>
 
       {/* Mobile bottom nav — only visible on small screens */}
-      <MobileBottomNav tab={tab} setTab={setTab} user={user} data={data} />
+      <MobileBottomNav tab={tab} setTab={setTab} user={user} data={data} onLogout={onLogout} />
 
     {showReviewModal && (
       <MonthlyReview
