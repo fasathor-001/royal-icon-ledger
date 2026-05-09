@@ -212,14 +212,14 @@ All fields live in a single JSON object (stored in localStorage and Supabase JSO
 
 **Rule:** The display labels shown to users in the profile picker (Onboarding Step 4), Settings → Income Profile cards, and the GraduationModal profile picker are **decoupled from** the underlying `incomeType` field values stored in `data`. Never rename the internal values when changing display labels.
 
-**Mapping (as of 2026-05-09, F024 Commit 1):**
+**Mapping (updated 2026-05-10, F028 + F030):**
 
 | Display label | Descriptor | Internal `incomeType` value |
 |---|---|---|
 | 🌱 Building from zero | For people starting savings from scratch | `'foundation'` |
 | 💼 Salary | Steady paycheck every month | `'fixed'` |
 | 📈 Trading / Self-employed | Income changes month to month | `'variable'` |
-| ⚡ Mix | Steady salary, plus side income or trading on top | `'mixed'` |
+| ⚡ Hybrid | Steady salary, plus business or side income | `'mixed'` |
 
 **Why this separation matters:**
 - All conditional logic in the codebase branches on `incomeType` value, not display label. Examples: `showTrading = data?.incomeType === 'variable'`, `isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation'`, allocator naming, stage rules, banner cascade, foundationStage derivation.
@@ -234,6 +234,8 @@ All fields live in a single JSON object (stored in localStorage and Supabase JSO
 **Helper-copy rule (F026, 2026-05-09):** When writing helper text, HelpTip content, or descriptive copy that references a profile, use **conditional phrasing** ("for a steady monthly paycheck" / "if your income changes month to month") rather than **profile-named phrasing** ("Salary users have" / "Variable users see"). This avoids personifying income types, dignifies the reader, and keeps copy aligned with the new label system without forcing every reference to spell out an emoji+label combination.
 
 **Functional copy is NOT covered by this rule.** Branches like `data.incomeType === 'fixed' ? 'surplus' : 'profits'` are correct functional language — they describe what the *system* does, not what the *user* is. Don't rewrite "100% of surplus to buffer" to "100% of [Salary user's] surplus to buffer." Surplus / Profit / Money are functional names attached to allocator behavior, not profile identifiers.
+
+**Trading-copy scope rule (F028, 2026-05-10):** Copy referencing "trading profit", "trading capital", "trading months", "Won/Lost a trade", or any trading-specific concept must be gated to `showTrading` (`data?.incomeType === 'variable'`), never to `!isFixed` or `!isFoundation`. Hybrid (`incomeType === 'mixed'`) is NOT a trading profile — it has the capital pool and full allocation rules, but no Trading P&L tab, no drawdown protocol, and no emotional trading guard. A user who derives `showTrading` as `!isFoundation && data.incomeType !== 'fixed'` would incorrectly include Hybrid. Always derive it as `data?.incomeType === 'variable'` explicitly. Every component that renders profile-conditional copy must declare its own `const showTrading = data?.incomeType === 'variable';` — it is not inherited from a parent component.
 
 ---
 
