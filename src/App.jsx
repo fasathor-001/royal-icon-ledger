@@ -1508,15 +1508,22 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
     ? getFoundationNudge({ hasLoggedExpense, hasSavingsGoal, savingsProgress })
     : null;
 
-  // ── Foundation graduation trigger ─────────────────────────────────────────
-  // Fires when user has meaningfully used the system. Two signals (either is enough):
-  // 1. Savings goal reached AND the user has actually engaged (logged an expense / used an
-  //    envelope) — guards against day-0 false positives where the onboarding starting balance
-  //    already exceeds a goal set too low.
-  // 2. No goal set but has saved at least half a month's money available (organic growth).
-  const goalReached = hasSavingsGoal && savingsProgress >= 1 && hasLoggedExpense;
-  const hasBuiltSavings = !hasSavingsGoal && hasLoggedExpense && stats.salary > 0 && data.buffer >= stats.salary * 0.5;
-  const showUpgradePrompt = isFoundation && (goalReached || hasBuiltSavings);
+  // ── Foundation staged milestone system ───────────────────────────────────
+  // Foundation progresses through 3 → 6 → 12 month buffer milestones.
+  // Each milestone banner gives the user a clear next action:
+  //   3-month hit → "Advance to 6 months" (updates bufferTargetMonths, banner disappears)
+  //   6-month hit → "Keep going to 12 months" OR "Graduate now" (opens profile picker)
+  //   12-month hit → graduation modal fires automatically
+  //
+  // hasLoggedExpense guards against day-0 false positives where the starting
+  // balance entered during onboarding already exceeds the target.
+  const f3Hit  = isFoundation && stats.salary > 0 && data.bufferTargetMonths <= 3  && data.buffer >= stats.salary * 3  && hasLoggedExpense;
+  const f6Hit  = isFoundation && stats.salary > 0 && data.bufferTargetMonths <= 6  && data.buffer >= stats.salary * 6  && hasLoggedExpense;
+  const f12Hit = isFoundation && stats.salary > 0 && data.bufferTargetMonths <= 12 && data.buffer >= stats.salary * 12 && hasLoggedExpense;
+  // showUpgradePrompt now only fires from the 12-month milestone for Foundation.
+  // For non-Foundation profiles the old goal-reached logic is kept.
+  const goalReached = !isFoundation && hasSavingsGoal && savingsProgress >= 1 && hasLoggedExpense;
+  const showUpgradePrompt = isFoundation ? f12Hit : goalReached;
 
   const stageInfo = {
     1: { name: 'Stage 1', title: 'Build the Floor', color: '#C56B5A', desc: data.incomeType === 'fixed' ? '100% of surplus to buffer.' : '100% of profits to buffer.' },
@@ -1562,10 +1569,12 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
     // so it works on every profile (fixed, foundation, variable, mixed)
     if (showWeeklyPulse) return 'weekly-pulse';
     if (stats.isSetup && data.incomeType !== 'fixed' && !isFoundation && stats.drawdownZone !== 'normal' && data.tradingCapital > 0) return 'drawdown';
-    // upgrade (Foundation graduation) outranks backup — it's a one-time milestone
-    // event. On fresh devices needsBackup is always true (no prior backup) which
-    // was silently blocking the graduation prompt on mobile / new browsers.
-    if (showUpgradePrompt && !upgradeDismissed) return 'upgrade';
+    // Foundation staged milestones outrank backup — one-time progression events.
+    // f12Hit → upgrade modal (profile picker). f6Hit / f3Hit → inline advance banners.
+    // Banners disappear naturally when bufferTargetMonths is updated; no dismiss needed.
+    if (showUpgradePrompt && !upgradeDismissed) return 'upgrade';   // 12-month → graduate
+    if (f6Hit) return 'foundation-6mo';                              // 6-month milestone
+    if (f3Hit) return 'foundation-3mo';                              // 3-month milestone
     if (stats.isSetup && needsBackup) return 'backup';
     if (isFoundation && foundationNudge) return 'nudge';
     if (showGraduationWelcome) return 'graduation';
@@ -2101,6 +2110,66 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         </div>
       )}
 
+      {/* ── Foundation 3-month milestone ─────────────────────────────────────
+          Fires when buffer ≥ 3 × monthly salary and bufferTargetMonths is 3.
+          Advancing updates bufferTargetMonths → 6; banner disappears naturally. */}
+      {primaryBannerKey === 'foundation-3mo' && (
+        <div style={{ background: '#0F1A0E', border: '1px solid #3A5A2A', borderRadius: '6px', padding: '18px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '14px' }}>
+            <span style={{ fontSize: '20px', flexShrink: 0 }}>🎉</span>
+            <div>
+              <div style={{ fontSize: '15px', fontWeight: 600, color: '#E8E2D5', marginBottom: '4px' }}>
+                3-month milestone reached!
+              </div>
+              <p style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.6, margin: 0 }}>
+                You've built a real cushion — {fmt(stats.salary * 3)} saved. Ready to aim for 6 months?
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setData(d => ({ ...d, bufferTargetMonths: 6, bufferProtectMonths: Math.max(1, 6 - 2) }))}
+              style={{ background: '#7FA068', color: '#0A0908', border: 'none', borderRadius: '3px', padding: '9px 18px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+            >
+              Advance to 6-month goal →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Foundation 6-month milestone ─────────────────────────────────────
+          Fires when buffer ≥ 6 × monthly salary and bufferTargetMonths is 6.
+          User can advance to 12 months OR graduate to the full system now.   */}
+      {primaryBannerKey === 'foundation-6mo' && (
+        <div style={{ background: '#0F1A0E', border: '1px solid #3A5A2A', borderRadius: '6px', padding: '18px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '14px' }}>
+            <span style={{ fontSize: '20px', flexShrink: 0 }}>🏆</span>
+            <div>
+              <div style={{ fontSize: '15px', fontWeight: 600, color: '#E8E2D5', marginBottom: '4px' }}>
+                6-month milestone reached!
+              </div>
+              <p style={{ fontSize: '13px', color: '#B0A898', lineHeight: 1.6, margin: 0 }}>
+                {fmt(stats.salary * 6)} saved — a solid emergency fund. Keep going to 12 months, or graduate to the full Royal Ledger system now.
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setData(d => ({ ...d, bufferTargetMonths: 12, bufferProtectMonths: Math.max(1, 12 - 2) }))}
+              style={{ background: '#7FA068', color: '#0A0908', border: 'none', borderRadius: '3px', padding: '9px 18px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+            >
+              Aim for 12 months →
+            </button>
+            <button
+              onClick={onRequestGraduate}
+              style={{ background: 'transparent', color: '#D97757', border: '1px solid #3A2A1E', borderRadius: '3px', padding: '9px 16px', fontSize: '13px', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+            >
+              Graduate to full system →
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Foundation behavioural nudge — one message, calm, no pressure */}
       {primaryBannerKey === 'nudge' && foundationNudge && (
         <div style={{
@@ -2387,6 +2456,61 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           />
         </div>
       </section>
+
+      {/* Foundation milestone progression — shown instead of generic stages */}
+      {isFoundation && stats.isSetup && stats.salary > 0 && (
+        <section className="card rl-cp">
+          <h2 className="display text-2xl mb-2" style={{ display: 'flex', alignItems: 'center' }}>
+            Your Journey
+            <HelpTip title="Foundation Journey">
+              Foundation progresses through three savings milestones. Hit each target and the system advances you automatically. After 6 months you can graduate to the full Royal Ledger system, or keep building to 12 months first.
+            </HelpTip>
+          </h2>
+          <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
+            Savings {fmt(data.buffer)} · Target {data.bufferTargetMonths} months ({fmt(stats.bufferTarget)})
+          </p>
+          <div className="space-y-3">
+            {[
+              { months: 3,  label: 'First cushion',    desc: '3 months saved — a real safety net.',         threshold: stats.salary * 3  },
+              { months: 6,  label: 'Emergency fund',   desc: '6 months saved — the international standard.', threshold: stats.salary * 6  },
+              { months: 12, label: 'Solid foundation', desc: '12 months saved — ready to graduate.',         threshold: stats.salary * 12 },
+            ].map(row => {
+              const done    = data.buffer >= row.threshold;
+              const current = data.bufferTargetMonths === row.months;
+              const locked  = !done && !current && data.bufferTargetMonths < row.months;
+              return (
+                <div key={row.months} style={{
+                  display: 'flex', alignItems: 'center', gap: '16px',
+                  padding: '14px 16px', borderRadius: '6px',
+                  background: current ? '#1A1410' : 'transparent',
+                  border: `1px solid ${current ? '#3A2A1E' : done ? '#2A3A2A' : '#1E1C18'}`,
+                  opacity: locked ? 0.45 : 1,
+                }}>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+                    background: done ? '#2A4A2A' : current ? '#3A2A1E' : '#1A1A1A',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '14px',
+                  }}>
+                    {done ? '✓' : current ? '→' : '·'}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap', marginBottom: '2px' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: done ? '#7FA068' : current ? '#D97757' : '#8B8478' }}>
+                        {row.months} months
+                      </span>
+                      <span className="mono" style={{ fontSize: '12px', color: '#5C5648' }}>{fmt(row.threshold)}</span>
+                      {current && !done && <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', color: '#D97757', background: 'rgba(217,119,87,0.12)', padding: '2px 7px', borderRadius: '999px' }}>CURRENT</span>}
+                      {done && <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', color: '#7FA068', background: 'rgba(127,160,104,0.12)', padding: '2px 7px', borderRadius: '999px' }}>DONE</span>}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#5C5648' }}>{row.desc}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* Stage progression visual — hidden for Foundation */}
       {!isFoundation && <section className="card rl-cp">

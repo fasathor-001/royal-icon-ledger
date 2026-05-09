@@ -311,7 +311,7 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
     if (step === 4)  return incomeType !== null;
     if (step === 5)  return expenseTotal > 0;
     if (step === 6)  return Number(spendingBudget) > 0;
-    if (step === 7)  return bufferMonths !== null;
+    if (step === 7)  return incomeType === 'foundation' || bufferMonths !== null; // Foundation uses staged milestones, no picker needed
     if (step === 8)  return true;                          // starting balances — always ok
     if (step === 9)  return pinIsValid;                    // mandatory: 4–6 digits, must match confirm
     if (step === 10) return true;                          // summary
@@ -1017,60 +1017,96 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
         {step === 7 && (
           <div>
             <div className="ob-label" style={{ color: '#D97757', marginBottom: '12px' }}>Step {step} of {totalSteps}</div>
-            <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
-              {incomeType === 'foundation'
-                ? <>How much do you want to <span style={{ fontStyle: 'italic', color: '#D97757' }}>save</span>?</>
-                : <>How big should your <span style={{ fontStyle: 'italic', color: '#D97757' }}>buffer</span> be?</>}
-            </h1>
-            <p style={{ color: '#B0A898', marginBottom: '32px', fontSize: '15px' }}>
-              {incomeType === 'foundation'
-                ? 'Pick a savings target in months. Start with something achievable — you can always grow it.'
-                : 'The buffer is months of full salary, stored in cash. More buffer means more peace of mind, less trading desperation. Bigger buffer = more protection for the people who depend on you.'}
-            </p>
 
-            <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.65, marginBottom: '20px' }}>
-              You can change this later as your situation evolves.
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
-              {[
-                {
-                  months: 6,  label: '6 months',  amount: salary * 6,
-                  desc: incomeType === 'foundation' ? 'A solid starting point. Builds a real cushion.' : 'Standard emergency fund. Survives one bad quarter.',
-                  recommended: incomeType === 'fixed' || incomeType === 'foundation',
-                },
-                {
-                  months: 12, label: '12 months', amount: salary * 12,
-                  desc: incomeType === 'foundation' ? 'A full year of coverage. Worth growing toward.' : 'A whole year of runway. Comfortable for most situations.',
-                  recommended: incomeType === 'mixed',
-                },
-                {
-                  months: 18, label: '18 months', amount: salary * 18,
-                  desc: incomeType === 'foundation' ? 'Long-term security — set this as your ultimate goal.' : 'Sole earner with dependents. Variable income. The fortified position.',
-                  recommended: incomeType === 'variable',
-                },
-              ].map(opt => (
-                <div
-                  key={opt.months}
-                  onClick={() => setBufferMonths(opt.months)}
-                  className={`ob-card ${bufferMonths === opt.months ? 'ob-card-selected' : ''}`}
-                >
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                    <Shield size={20} style={{ color: bufferMonths === opt.months ? '#D97757' : '#B0A898', marginTop: '2px', flexShrink: 0 }} />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '4px' }}>
-                        <div style={{ fontWeight: 500, fontSize: '16px' }}>{opt.label}</div>
-                        <div className="ob-mono" style={{ fontSize: '13px', color: '#B0A898' }}>{fmt(opt.amount)}</div>
-                        {opt.recommended && <span style={{ background: '#1A2A14', color: '#7FA068', padding: '2px 8px', borderRadius: '999px', fontSize: '10px', fontWeight: 600, letterSpacing: '0.05em' }}>RECOMMENDED</span>}
+            {incomeType === 'foundation' ? (
+              /* Foundation: staged journey — no picker, system advances the target automatically */
+              <>
+                <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
+                  Your <span style={{ fontStyle: 'italic', color: '#D97757' }}>savings journey</span> starts here.
+                </h1>
+                <p style={{ color: '#B0A898', marginBottom: '28px', fontSize: '15px', lineHeight: 1.7 }}>
+                  Foundation works in milestones. You start with a 3-month goal — the system guides you to 6 months, then 12, then beyond.
+                </p>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '32px' }}>
+                  {[
+                    { months: 3,  label: 'Start here',       desc: `Build ${fmt(salary * 3)} — your first real cushion.`,           active: true  },
+                    { months: 6,  label: 'Then this',        desc: `Grow to ${fmt(salary * 6)} — a solid emergency fund.`,           active: false },
+                    { months: 12, label: 'Then graduate',    desc: `Reach ${fmt(salary * 12)} — unlock the full Royal Ledger system.`, active: false },
+                  ].map((row, i) => (
+                    <div key={row.months} style={{
+                      display: 'flex', alignItems: 'flex-start', gap: '16px',
+                      background: row.active ? '#1A1410' : '#0F0D0A',
+                      border: `1px solid ${row.active ? '#D97757' : '#1E1C18'}`,
+                      borderRadius: '6px', padding: '14px 16px',
+                      opacity: row.active ? 1 : 0.6,
+                    }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+                        background: row.active ? '#D97757' : '#26221C',
+                        color: row.active ? '#0A0908' : '#5C5648',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '12px', fontWeight: 700,
+                      }}>
+                        {i + 1}
                       </div>
-                      <div style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.5 }}>{opt.desc}</div>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: 600, color: row.active ? '#E8E2D5' : '#8B8478', marginBottom: '2px' }}>
+                          {row.months} months — {row.label}
+                        </div>
+                        <div style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.5 }}>{row.desc}</div>
+                      </div>
                     </div>
-                    {bufferMonths === opt.months && <Check size={18} style={{ color: '#D97757' }} />}
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            <NavRow back={back} next={next} canAdvance={canAdvance()} hint={!canAdvance() ? 'Choose a buffer size to continue' : null} />
+                <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '12px 16px', marginBottom: '28px', fontSize: '12px', color: '#8B8478', lineHeight: 1.6 }}>
+                  The app will automatically advance your target as you hit each milestone — no manual changes needed.
+                </div>
+
+                <NavRow back={back} next={next} canAdvance={true} />
+              </>
+            ) : (
+              /* Non-Foundation: manual picker for buffer size */
+              <>
+                <h1 className="ob-display" style={{ fontSize: '36px', lineHeight: 1.2, marginBottom: '12px', fontWeight: 300 }}>
+                  How big should your <span style={{ fontStyle: 'italic', color: '#D97757' }}>buffer</span> be?
+                </h1>
+                <p style={{ color: '#B0A898', marginBottom: '32px', fontSize: '15px' }}>
+                  The buffer is months of full salary, stored in cash. More buffer means more peace of mind, less trading desperation. Bigger buffer = more protection for the people who depend on you.
+                </p>
+                <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.65, marginBottom: '20px' }}>
+                  You can change this later as your situation evolves.
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
+                  {[
+                    { months: 6,  label: '6 months',  amount: salary * 6,  desc: 'Standard emergency fund. Survives one bad quarter.', recommended: incomeType === 'fixed' },
+                    { months: 12, label: '12 months', amount: salary * 12, desc: 'A whole year of runway. Comfortable for most situations.', recommended: incomeType === 'mixed' },
+                    { months: 18, label: '18 months', amount: salary * 18, desc: 'Sole earner with dependents. Variable income. The fortified position.', recommended: incomeType === 'variable' },
+                  ].map(opt => (
+                    <div
+                      key={opt.months}
+                      onClick={() => setBufferMonths(opt.months)}
+                      className={`ob-card ${bufferMonths === opt.months ? 'ob-card-selected' : ''}`}
+                    >
+                      <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                        <Shield size={20} style={{ color: bufferMonths === opt.months ? '#D97757' : '#B0A898', marginTop: '2px', flexShrink: 0 }} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '4px' }}>
+                            <div style={{ fontWeight: 500, fontSize: '16px' }}>{opt.label}</div>
+                            <div className="ob-mono" style={{ fontSize: '13px', color: '#B0A898' }}>{fmt(opt.amount)}</div>
+                            {opt.recommended && <span style={{ background: '#1A2A14', color: '#7FA068', padding: '2px 8px', borderRadius: '999px', fontSize: '10px', fontWeight: 600, letterSpacing: '0.05em' }}>RECOMMENDED</span>}
+                          </div>
+                          <div style={{ color: '#B0A898', fontSize: '14px', lineHeight: 1.5 }}>{opt.desc}</div>
+                        </div>
+                        {bufferMonths === opt.months && <Check size={18} style={{ color: '#D97757' }} />}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <NavRow back={back} next={next} canAdvance={canAdvance()} hint={!canAdvance() ? 'Choose a buffer size to continue' : null} />
+              </>
+            )}
           </div>
         )}
 
