@@ -2665,17 +2665,24 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         <div className="space-y-3">
           <StageRow label="Stage 1" target={`${fmt(0)} → ${fmt(stats.stage1End)}`} subtitle="Crisis floor — 6 months · 100% to buffer" done={data.buffer >= stats.stage1End} active={stats.progressStage === 1} />
           <StageRow label="Stage 1.5" target={`${fmt(stats.stage1End)} → ${fmt(stats.stage15End)}`} subtitle="Comfort zone — long-term investing begins" done={data.buffer >= stats.stage15End} active={stats.progressStage === 1.5} />
-          {/* Stage 2 only shown when the user's buffer target is meaningfully above Stage 1.5.
-              If bufferTarget ≤ stage15End the range would display backwards (higher → lower). */}
-          {stats.bufferTarget > stats.stage15End && (
-            <StageRow label="Stage 2" target={`${fmt(stats.stage15End)} → ${fmt(stats.bufferTarget)}`} subtitle={`Fortified — ${data.bufferTargetMonths} months · buffer priority`} done={data.buffer >= stats.bufferTarget} active={stats.progressStage === 2} />
-          )}
-          <StageRow label="Stage 3" target="Full waterfall" subtitle={isFoundation ? "Lifestyle · goals all active" : "Trading · lifestyle · goals all active"} done={false} active={stats.progressStage === 3} />
+          {/* Stage 2: always shown. When bufferTarget ≤ stage15End the user's target sits below
+              Stage 1.5, so Stage 2 is unreachable at current settings — display a prompt instead
+              of a backwards range. */}
+          <StageRow
+            label="Stage 2"
+            target={stats.bufferTarget > stats.stage15End
+              ? `${fmt(stats.stage15End)} → ${fmt(stats.bufferTarget)}`
+              : `Raise buffer target above ${fmt(stats.stage15End)} to unlock`}
+            subtitle={`Fortified — ${data.bufferTargetMonths} months · buffer priority`}
+            done={stats.bufferTarget > stats.stage15End && data.buffer >= stats.bufferTarget}
+            active={stats.progressStage === 2}
+          />
+          <StageRow label="Stage 3" target="Full waterfall" subtitle={showTrading ? "Trading · lifestyle · goals all active" : "Lifestyle · goals all active"} done={false} active={stats.progressStage === 3} />
         </div>
       </section>}
 
-      {/* Spending and trading */}
-      <div className="grid md:grid-cols-2 gap-3">
+      {/* Spending and trading — second card only for Foundation tip or Trading P&L */}
+      <div className={`grid gap-3${isFoundation || showTrading ? ' md:grid-cols-2' : ''}`}>
         <section className="card p-6">
           <div className="rl-mini-hdr flex items-baseline justify-between mb-3">
             <h3 className="display text-xl" style={{ minWidth: 0, display: 'flex', alignItems: 'center' }}>
@@ -2723,7 +2730,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               Use the <strong style={{ color: '#E8E2D5' }}>Budget</strong> tab to set spending envelopes for groceries, transport, and fun money. When you stick to them, the unspent rand sweeps into your Savings automatically at month-end.
             </p>
           </section>
-        ) : (
+        ) : showTrading ? (
           <section className="card p-6">
             <div className="flex items-baseline justify-between mb-3">
               <h3 className="display text-xl" style={{ display: 'flex', alignItems: 'center' }}>
@@ -2742,7 +2749,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 : `Across ${data.tradingPnLHistory.length} month${data.tradingPnLHistory.length === 1 ? '' : 's'}.`}
             </p>
           </section>
-        )}
+        ) : null}
       </div>
 
       {/* Pending decisions */}
@@ -4540,6 +4547,7 @@ function ImpulseHistory({ data, stats, setData }) {
 /* ─────────────── HISTORY ─────────────── */
 function History({ data, stats, setData }) {
   const fmt = makeFmt(data.currency);
+  const showTrading = data?.incomeType === 'variable';
   const sortedSnapshots = [...data.snapshots].sort((a, b) => a.date.localeCompare(b.date));
   const { attemptRow: attemptSnapshotRow, gateFor: snapshotGateFor } = usePinRowGate();
 
@@ -4626,7 +4634,7 @@ function History({ data, stats, setData }) {
                     <div>
                       <div className="font-medium text-sm">{new Date(s.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                       <div className="text-xs mt-1" style={{ color: '#B0A898' }}>
-                        Buffer {fmt(s.buffer)} · Trading {fmt(s.tradingCapital)} · LT {fmt(s.longTerm)}
+                        Buffer {fmt(s.buffer)} · {showTrading ? 'Trading' : 'Capital'} {fmt(s.tradingCapital)} · LT {fmt(s.longTerm)}
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
