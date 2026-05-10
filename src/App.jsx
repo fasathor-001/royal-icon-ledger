@@ -1537,14 +1537,14 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
     (data.envelopes || []).some(e => (e.spent || 0) > 0);
   const primaryGoal = (data.goals || [])[0];
   const hasSavingsGoal = !!(primaryGoal?.name && primaryGoal?.target > 0);
-  // Stage 1 Foundation: all money routes to buffer — measure goal progress against
-  // buffer so the bar actually moves as the user saves. Stage 2+: the waterfall
-  // feeds the dedicated futureGoals pool, so switch to that for goal tracking.
-  // Non-Foundation profiles always use futureGoals (they have the full waterfall).
+  // Foundation goal progress: use futureGoals if it has ever been funded (> 0),
+  // otherwise fall back to buffer. This prevents the bar resetting to $0 the moment
+  // the user crosses into Stage 2 but hasn't yet run the allocator in Stage 2 mode.
+  // Non-Foundation profiles always use futureGoals (full waterfall from day 1).
   const _goalSaved = isFoundation
-    ? (stats.progressStage < 2
-        ? (data.buffer || 0)          // Stage 1 / 1.5 — buffer is all they have
-        : (data.futureGoals || 0))    // Stage 2+ — dedicated goals pool
+    ? ((data.futureGoals || 0) > 0
+        ? (data.futureGoals || 0)   // Goals pool has been funded — track that
+        : (data.buffer || 0))       // Not yet funded — use buffer as proxy
     : (data.futureGoals || 0);
   const savingsProgress = primaryGoal?.target > 0
     ? _goalSaved / primaryGoal.target
