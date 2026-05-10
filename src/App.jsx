@@ -1142,7 +1142,9 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
                   ? 'The sum of all your tracked balances: trading capital, family buffer, monthly salary account, long-term savings, and future goal funds. Updated each time you save a snapshot. It reflects your real financial position — not income, not budget, but what you actually hold.'
                   : isFoundation
                     ? 'The sum of your tracked balances: savings, money available, long-term savings, and future goal funds. Updated each time you save a snapshot. It reflects your real financial position — not income, not budget, but what you actually hold.'
-                    : 'The sum of your tracked balances: family buffer, monthly salary account, long-term savings, and future goal funds. Updated each time you save a snapshot. It reflects your real financial position — not income, not budget, but what you actually hold.'
+                    : data.incomeType === 'mixed'
+                      ? 'The sum of your tracked balances: business capital, family buffer, monthly salary account, long-term savings, and future goal funds. Updated each time you save a snapshot. It reflects your real financial position — not income, not budget, but what you actually hold.'
+                      : 'The sum of your tracked balances: family buffer, monthly salary account, long-term savings, and future goal funds. Updated each time you save a snapshot. It reflects your real financial position — not income, not budget, but what you actually hold.'
                 }
               </HelpTip>
               <div>
@@ -2484,7 +2486,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                   ? 'Your live account totals — family buffer, monthly salary account, long-term savings, and future goals. Update these whenever your balances change, then hit Save snapshot to record the moment. Your net worth in the header is the sum of all of these.'
                   : showTrading
                     ? 'Your live account totals — trading capital, family buffer, monthly salary account, long-term savings, and future goals. Update these whenever your balances change, then hit Save snapshot to record the moment. Your net worth in the header is the sum of all of these.'
-                    : 'Your live account totals — capital, family buffer, monthly salary account, long-term savings, and future goals. Update these whenever your balances change, then hit Save snapshot to record the moment. Your net worth in the header is the sum of all of these.'
+                    : 'Your live account totals — business capital, family buffer, monthly salary account, long-term savings, and future goals. Update these whenever your balances change, then hit Save snapshot to record the moment. Your net worth in the header is the sum of all of these.'
               }
             </HelpTip>
           </h2>
@@ -2512,7 +2514,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         <div className={`grid md:grid-cols-2 ${data.incomeType === 'fixed' || isFoundation ? 'lg:grid-cols-4' : 'lg:grid-cols-5'} gap-3`}>
           {data.incomeType !== 'fixed' && !isFoundation && (
             <BalanceInput
-              label="Trading Capital"
+              label={showTrading ? 'Trading Capital' : 'Business Capital'}
               icon={Briefcase}
               color="#5B7FB8"
               value={data.tradingCapital}
@@ -3447,7 +3449,7 @@ function ProfitAllocator({ data, stats, setData }) {
           { label: 'Tax reserve',       pct: data.taxReservePct,          amt: liveTax,                                        color: '#B0A898' },
           { label: 'Family Buffer',     pct: liveRule.bufferPct,          amt: liveNet * (liveRule.bufferPct / 100),            color: '#D97757' },
           { label: 'Long-term',         pct: liveRule.longTermPct,        amt: liveNet * (liveRule.longTermPct / 100),          color: '#7FA068' },
-          ...(data.incomeType !== 'fixed' ? [{ label: 'Trading Capital', pct: liveRule.tradingPct, amt: liveNet * (liveRule.tradingPct / 100), color: '#5B7FB8' }] : []),
+          ...(data.incomeType !== 'fixed' ? [{ label: showTrading ? 'Trading Capital' : 'Business Capital', pct: liveRule.tradingPct, amt: liveNet * (liveRule.tradingPct / 100), color: '#5B7FB8' }] : []),
           { label: 'Goals',             pct: (liveRule.goalsPct ?? 0) + (data.incomeType === 'fixed' ? (liveRule.tradingPct ?? 0) : 0), amt: liveNet * (((liveRule.goalsPct ?? 0) + (data.incomeType === 'fixed' ? (liveRule.tradingPct ?? 0) : 0)) / 100), color: '#A06B8C' },
           { label: 'Lifestyle',         pct: liveRule.lifestylePct,       amt: liveNet * (liveRule.lifestylePct / 100),         color: '#B89968' },
         ].filter(r => r.pct > 0);
@@ -3511,7 +3513,7 @@ function ProfitAllocator({ data, stats, setData }) {
           {!isFoundation && <AllocationBlock label="Tax Reserve" amount={allocation.taxReserve} color="#B0A898" icon={Lock} note={`${data.taxReservePct}% set aside. Move to a separate savings account for quarterly estimated taxes.`} isReserve currency={data.currency} />}
           {allocation.toBuffer > 0 && <AllocationBlock label={isFoundation ? 'To Savings' : 'To Family Buffer'} amount={allocation.toBuffer} color={isFoundation ? '#7FA068' : '#D97757'} icon={Shield} note={isFoundation ? 'Goes straight into your Savings balance.' : 'Protects family from trading volatility.'} currency={data.currency} />}
           {allocation.toLongTerm > 0 && <AllocationBlock label="Long-term Investing" amount={allocation.toLongTerm} color="#7FA068" icon={PiggyBank} note="Index funds / long-term investments. Family's future independence." currency={data.currency} />}
-          {allocation.toTrading > 0 && data.incomeType !== 'fixed' && !isFoundation && <AllocationBlock label="Trading Capital" amount={allocation.toTrading} color="#5B7FB8" icon={Briefcase} note="Compound your edge." currency={data.currency} />}
+          {allocation.toTrading > 0 && data.incomeType !== 'fixed' && !isFoundation && <AllocationBlock label={showTrading ? 'Trading Capital' : 'Business Capital'} amount={allocation.toTrading} color="#5B7FB8" icon={Briefcase} note={showTrading ? 'Compound your edge.' : 'Grows your business or side income capital.'} currency={data.currency} />}
           {allocation.toGoals > 0 && (
             <AllocationBlock
               label="To Future Goals"
