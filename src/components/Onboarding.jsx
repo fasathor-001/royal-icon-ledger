@@ -102,6 +102,12 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
   const [pinValue, setPinValue] = useState('');
   const [pinConfirm, setPinConfirm] = useState('');
 
+  // ── Foundation onboarding goal (Step 7, Foundation branch only) ──────────
+  // Optional — user can leave blank and skip. If provided, written to data.goals
+  // on finish() so YOUR SAVINGS card auto-populates on first launch.
+  const [onboardingGoalName, setOnboardingGoalName] = useState('');
+  const [onboardingGoalTarget, setOnboardingGoalTarget] = useState('');
+
   // ── Envelope tracking (Step 5) ───────────────────────────────────────────
   // keyed by suggested expense name; value: true/false
   // Initialised with smart defaults — variable categories pre-toggled on.
@@ -290,6 +296,26 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
       // ── New fields (Step 9: PIN — hashed, user-owned) ──
       pinHash: newPinHash,
       overridePin: '', // clear any legacy plain-text PIN
+      // ── Foundation onboarding goal (Step 7) ──
+      // If the user named a goal during onboarding, seed data.goals so YOUR SAVINGS
+      // card auto-populates on first launch. Only written for Foundation profile.
+      // Standard profiles (fixed/variable/mixed) are not affected — their goals
+      // array is only populated via Setup → Goals after onboarding.
+      // If a goal already exists (e.g. data was pre-loaded) we prepend; otherwise
+      // we create fresh. No-op if name was left blank.
+      ...(incomeType === 'foundation' && onboardingGoalName.trim() ? {
+        goals: (() => {
+          const existing = d.goals || [];
+          const newGoal = {
+            id: Date.now(),
+            name: onboardingGoalName.trim(),
+            target: Number(onboardingGoalTarget) || 0,
+            createdAt: Date.now(),
+          };
+          // Prepend so it becomes goals[0] — the slot YOUR SAVINGS card reads.
+          return [newGoal, ...existing];
+        })(),
+      } : {}),
       // ── F024 Commit 3: mismatch flag ──
       // For non-mismatch users, set to true immediately (they passed the check).
       // For mismatch users, modal handler sets to true on dismissal.
@@ -1138,6 +1164,46 @@ export default function Onboarding({ data, setData, onComplete, userEmail = '' }
 
                 <div style={{ background: '#14110E', border: '1px solid #26221C', borderRadius: '4px', padding: '12px 16px', marginBottom: '28px', fontSize: '12px', color: '#8B8478', lineHeight: 1.6 }}>
                   The app will automatically advance your target as you hit each milestone — no manual changes needed.
+                </div>
+
+                {/* ── Foundation goal (optional) ───────────────────────── */}
+                <div style={{ borderTop: '1px solid #1E1C18', paddingTop: '24px', marginBottom: '28px' }}>
+                  <div className="ob-label" style={{ color: '#7FA068', marginBottom: '6px' }}>What are you saving toward? <span style={{ color: '#3A4A3A', fontWeight: 400, letterSpacing: 0, textTransform: 'none', fontSize: '11px' }}>Optional</span></div>
+                  <p style={{ fontSize: '13px', color: '#8B8478', lineHeight: 1.65, marginBottom: '16px' }}>
+                    Give your savings a name — a laptop, a course, a safety net, a trip. This appears on your dashboard so the discipline has something to aim at.
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div>
+                      <div className="ob-label" style={{ color: '#5C5648', marginBottom: '6px' }}>Goal name</div>
+                      <input
+                        type="text"
+                        placeholder="e.g. Laptop, Emergency fund, Course"
+                        value={onboardingGoalName}
+                        onChange={e => setOnboardingGoalName(e.target.value)}
+                        className="ob-input-text"
+                        style={{ fontSize: '14px' }}
+                      />
+                    </div>
+                    {onboardingGoalName.trim() && (
+                      <div>
+                        <div className="ob-label" style={{ color: '#5C5648', marginBottom: '6px' }}>Target amount <span style={{ color: '#3A4A3A', fontWeight: 400, letterSpacing: 0, textTransform: 'none', fontSize: '11px' }}>Optional</span></div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span className="ob-mono" style={{ fontSize: '16px', color: '#5C5648' }}>{currencySymbol}</span>
+                          <input
+                            type="number"
+                            placeholder="0"
+                            value={onboardingGoalTarget}
+                            onChange={e => setOnboardingGoalTarget(e.target.value)}
+                            className="ob-input"
+                            style={{ fontSize: '16px' }}
+                          />
+                        </div>
+                        <p style={{ fontSize: '11px', color: '#5C5648', marginTop: '6px' }}>
+                          You can always add or change this later in your savings dashboard.
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <NavRow back={back} next={next} canAdvance={true} />

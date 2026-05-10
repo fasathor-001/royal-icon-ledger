@@ -1501,9 +1501,10 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   const _prevBannerKeyRef = React.useRef(null);
 
   const openGoalEditor = () => {
+    const existingGoal = (data.goals || [])[0];
     setGoalDraft({
-      name: data.savingsGoal?.name || '',
-      target: data.savingsGoal?.target || '',
+      name: existingGoal?.name || '',
+      target: existingGoal?.target || '',
     });
     setGoalError('');
     setGoalEditing(true);
@@ -1514,11 +1515,16 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
     const target = Number(goalDraft.target);
     if (!name) { setGoalError('Goal name cannot be empty.'); return; }
     if (!target || target <= 0) { setGoalError('Target must be greater than 0.'); return; }
-    if (target <= data.buffer) {
-      setGoalError(`You already have more saved (${makeFmt(data.currency)(data.buffer)}) than this target. Set a higher goal to track real progress.`);
-      return;
-    }
-    setData(d => ({ ...d, savingsGoal: { name, target } }));
+    setData(d => {
+      const existing = d.goals || [];
+      if (existing.length > 0) {
+        // Update the primary (first) goal in the shared array
+        return { ...d, goals: existing.map((g, i) => i === 0 ? { ...g, name, target } : g) };
+      } else {
+        // Create the first goal in the shared array
+        return { ...d, goals: [{ id: Date.now(), name, target, createdAt: Date.now() }] };
+      }
+    });
     setGoalEditing(false);
     setGoalError('');
   };
@@ -1528,9 +1534,11 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   const hasLoggedExpense =
     (data.impulses?.length > 0) ||
     (data.envelopes || []).some(e => (e.spent || 0) > 0);
-  const hasSavingsGoal = !!data.savingsGoal?.name;
-  const savingsProgress =
-    data.savingsGoal?.target > 0 ? data.buffer / data.savingsGoal.target : 0;
+  const primaryGoal = (data.goals || [])[0];
+  const hasSavingsGoal = !!(primaryGoal?.name && primaryGoal?.target > 0);
+  const savingsProgress = primaryGoal?.target > 0
+    ? (data.futureGoals || 0) / primaryGoal.target
+    : 0;
   const foundationNudge = isFoundation
     ? getFoundationNudge({ hasLoggedExpense, hasSavingsGoal, savingsProgress })
     : null;
@@ -2331,7 +2339,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           {goalEditing ? (
             <div style={{ borderTop: '1px solid #2A3E2A', paddingTop: '20px', marginTop: '4px' }}>
               <div className="label mb-3" style={{ color: '#8B8478' }}>
-                {data.savingsGoal ? 'Edit goal' : 'Set a goal'}
+                {(data.goals || [])[0] ? 'Edit goal' : 'Set a goal'}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '12px' }}>
                 <input
@@ -2387,13 +2395,13 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 </button>
               </div>
             </div>
-          ) : data.savingsGoal?.name ? (
-            /* Goal exists — show progress */
+          ) : primaryGoal?.name ? (
+            /* Goal exists — show progress against futureGoals pool */
             <div style={{ borderTop: '1px solid #2A3E2A', paddingTop: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <div>
                   <div className="label" style={{ color: '#8B8478', marginBottom: '2px' }}>Savings Goal</div>
-                  <div style={{ fontSize: '15px', fontWeight: 500, color: '#E8E2D5' }}>{data.savingsGoal.name}</div>
+                  <div style={{ fontSize: '15px', fontWeight: 500, color: '#E8E2D5' }}>{primaryGoal.name}</div>
                 </div>
                 <button
                   onClick={openGoalEditor}
@@ -2407,16 +2415,24 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 </button>
               </div>
               {(() => {
-                const pct = Math.min(100, Math.round((data.buffer / data.savingsGoal.target) * 100));
+                const saved = data.futureGoals || 0;
+                const pct = primaryGoal.target > 0
+                  ? Math.min(100, Math.round((saved / primaryGoal.target) * 100))
+                  : 0;
                 return (
                   <>
                     <div className="progress mb-2">
-                      <div className="progress-fill" style={{ width: pct + '%', background: '#7FA068' }} />
+                      <div className="progress-fill" style={{ width: pct + '%', background: '#7FA068', transition: 'width 0.4s ease' }} />
                     </div>
                     <div className="flex justify-between text-xs mono" style={{ color: '#B0A898' }}>
-                      <span>{fmt(data.buffer)} of {fmt(data.savingsGoal.target)} · {pct}%</span>
-                      <span>{data.buffer >= data.savingsGoal.target ? '🎉 Goal reached!' : `${fmt(data.savingsGoal.target - data.buffer)} to go`}</span>
+                      <span>{fmt(saved)} of {fmt(primaryGoal.target)} · {pct}%</span>
+                      <span>{saved >= primaryGoal.target ? '🎉 Goal reached!' : `${fmt(primaryGoal.target - saved)} to go`}</span>
                     </div>
+                    {stats.progressStage < 2 && saved === 0 && (
+                      <p style={{ fontSize: '11px', color: '#5C5648', marginTop: '8px' }}>
+                        Goal funding starts at Stage 2 — keep building your buffer first.
+                      </p>
+                    )}
                   </>
                 );
               })()}
@@ -2425,7 +2441,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             /* No goal yet */
             <div style={{ borderTop: '1px solid #2A3E2A', paddingTop: '16px' }}>
               <p style={{ fontSize: '14px', color: '#8B8478', lineHeight: 1.6, marginBottom: '12px' }}>
-                Set a goal for your savings — a laptop, emergency fund, or anything worth working toward.
+                Set a goal for your savings — a laptop, course, trip, or anything worth working toward.
               </p>
               <button
                 onClick={openGoalEditor}
@@ -2727,10 +2743,47 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
 
         {isFoundation ? (
           <section className="card p-6">
-            <div className="label mb-3" style={{ color: '#7FA068' }}>Foundation tip</div>
-            <p className="text-sm" style={{ color: '#B0A898', lineHeight: 1.7 }}>
-              Use the <strong style={{ color: '#E8E2D5' }}>Budget</strong> tab to set spending envelopes for groceries, transport, and fun money. When you stick to them, the unspent rand sweeps into your Savings automatically at month-end.
-            </p>
+            {(data.goals || []).length === 0 ? (
+              <>
+                <div className="label mb-3" style={{ color: '#7FA068' }}>Set your first goal</div>
+                <p className="text-sm" style={{ color: '#B0A898', lineHeight: 1.7 }}>
+                  Give your savings a purpose. What are you building toward — a laptop, a course, a trip, a safety net for family? Go to{' '}
+                  <strong style={{ color: '#E8E2D5' }}>Setup → Goals</strong> to name it. A goal makes the discipline feel real.
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="label mb-1" style={{ color: '#7FA068' }}>
+                  {data.goals[0].name || 'Your goal'}
+                </div>
+                {data.goals[0].target > 0 ? (
+                  <>
+                    <div className="flex justify-between text-xs mb-2" style={{ color: '#B0A898' }}>
+                      <span>{fmt(data.futureGoals || 0)} saved</span>
+                      <span>{fmt(data.goals[0].target)} target</span>
+                    </div>
+                    <div className="h-1.5 rounded-full mb-3" style={{ background: '#2A2520' }}>
+                      <div
+                        className="h-1.5 rounded-full"
+                        style={{
+                          width: `${Math.min(100, ((data.futureGoals || 0) / data.goals[0].target) * 100)}%`,
+                          background: '#7FA068',
+                          transition: 'width 0.4s ease'
+                        }}
+                      />
+                    </div>
+                    <p className="text-xs" style={{ color: '#5C5648' }}>
+                      {Math.min(100, (((data.futureGoals || 0) / data.goals[0].target) * 100)).toFixed(0)}% of target
+                      {data.goals.length > 1 ? ` · ${data.goals.length - 1} more goal${data.goals.length > 2 ? 's' : ''} in Setup` : ''}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm mt-2" style={{ color: '#B0A898', lineHeight: 1.7 }}>
+                    Add a target amount in <strong style={{ color: '#E8E2D5' }}>Setup → Goals</strong> to track your progress here.
+                  </p>
+                )}
+              </>
+            )}
           </section>
         ) : showTrading ? (
           <section className="card p-6">

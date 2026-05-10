@@ -4,6 +4,59 @@ All changes are listed newest-first. Each entry records the **user/tester feedba
 
 ---
 
+## Session — 2026-05-10 (F034 + F035: Goal system consolidation + Foundation onboarding goal step)
+
+---
+
+### [Feature] F034 — Goal system consolidated: YOUR SAVINGS card now reads/writes data.goals; progress tracks data.futureGoals
+
+**Trigger:** Owner identified that the YOUR SAVINGS "Set Goal" editor wrote to `data.savingsGoal` (an orphan field), while progress was incorrectly measured as `data.buffer / target` (emergency fund vs goal target). Separately, `data.goals` (the array used by Setup → Goals) and `data.futureGoals` (the actual savings pool fed by the waterfall allocator) were disconnected from the savings card entirely.
+
+**Root cause:** Three separate goal systems existed with no wiring between them:
+1. `data.savingsGoal` `{ name, target }` — written only by the YOUR SAVINGS editor, never read by anything else
+2. `data.futureGoals` (number) — the actual money in the goals account, accumulated via the Profit Allocator waterfall
+3. `data.goals` `[{ id, name, target }]` — named targets managed in Setup → Goals
+
+Progress calculation used `data.buffer / target` — comparing the emergency fund balance against a goal target. This caused the "$7.1M savings goal" bug where a previously stored large buffer value appeared as savings progress.
+
+**Changes — `src/App.jsx`:**
+| Location | Change |
+|---|---|
+| `openGoalEditor` | Now reads from `data.goals[0]` instead of `data.savingsGoal` |
+| `saveGoal` | Writes to `data.goals` array (updates `goals[0]` or creates new entry); removed incorrect `target <= data.buffer` validation |
+| `primaryGoal` derived variable | Introduced as `(data.goals \|\| [])[0]` — single source of truth for the Foundation savings card |
+| `hasSavingsGoal` | Now `!!(primaryGoal?.name && primaryGoal?.target > 0)` |
+| `savingsProgress` | Now `(data.futureGoals \|\| 0) / primaryGoal.target` — correct pool vs target |
+| Goal editor button label | `{(data.goals \|\| [])[0] ? 'Edit goal' : 'Set a goal'}` |
+| Goal display block | Full replacement — shows `primaryGoal.name`, progress against `data.futureGoals`, Stage 1 note ("Goal funding starts at Stage 2") |
+
+**Migration note:** Existing users with `data.savingsGoal` stored in Supabase will not see their old goal automatically — `data.savingsGoal` is now effectively deprecated. They will see "Set a goal" and can re-enter via the updated editor, which writes to `data.goals`.
+
+**Build:** Verified clean.
+
+---
+
+### [Feature] F035 — Foundation onboarding Step 7 now collects a savings goal; auto-populates YOUR SAVINGS card on first launch
+
+**Trigger:** Owner observation: Foundation users exit onboarding with `data.goals` empty, so YOUR SAVINGS card shows "Set a goal" on first launch despite the user having a savings intent. Proposal: collect the goal during onboarding so the card is pre-populated at setup completion.
+
+**Root cause:** Foundation onboarding had no goal step. `data.goals` was only populated via Setup → Goals after onboarding. Standard profiles were unaffected (they have no savings goal card), but Foundation users had to navigate to a separate Setup section before their savings dashboard became meaningful.
+
+**Changes — `src/components/Onboarding.jsx`:**
+| Location | Change |
+|---|---|
+| State | Added `onboardingGoalName` and `onboardingGoalTarget` local state |
+| Step 7 Foundation branch | Added optional goal section below milestone cards: goal name input (always shown), target amount input (shown only once name is entered) |
+| `finish()` | If `incomeType === 'foundation'` and goal name provided, writes `[{ id, name, target, createdAt }]` prepended to `data.goals` |
+
+**Standard profiles unaffected:** Goal section is inside the `incomeType === 'foundation'` branch of Step 7. Fixed/Variable/Hybrid users never see this step. Their `data.goals` continues to be populated exclusively via Setup → Goals.
+
+**Goal is optional:** Both name and target can be left blank — no validation added to Step 7. If blank, no goal is written. User can always set or change via YOUR SAVINGS card or Setup → Goals post-onboarding.
+
+**Build:** Verified clean.
+
+---
+
 ## Session — 2026-05-10 (F032 + F033: Profile descriptor fix + Drawdown Protocol gate)
 
 ---

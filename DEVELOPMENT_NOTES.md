@@ -863,6 +863,25 @@ const foundationStage = (!isFoundation || !hasLoggedExpense || foundationMonthly
 
 **Goals share a single balance (`futureGoals`).** There is no per-goal tracking. `data.goals` is an array of `{id, name, target}` and the progress bar for each goal shows `futureGoals / goal.target`. This is not a bug — it's a deliberate simplification.
 
+**Goal system — three fields, one source of truth (F034):**
+- `data.futureGoals` (number) — the actual money balance in the goals savings pool, fed by the Profit Allocator waterfall. This is the only number used for progress calculations.
+- `data.goals` (array) — named goal targets `{id, name, target, createdAt}`. Managed in Setup → Goals and via the YOUR SAVINGS card editor. `goals[0]` is always the primary goal shown in the Foundation savings card.
+- `data.savingsGoal` — **deprecated orphan field.** Was previously written by the YOUR SAVINGS editor but never read by anything else. Do not write to it. Existing Supabase users who have it will simply not see their old goal — they set a new one via the editor.
+
+**YOUR SAVINGS card goal editor (Foundation, `src/App.jsx`):**
+- `openGoalEditor` reads from `data.goals[0]`
+- `saveGoal` writes to `data.goals`: updates `goals[0]` if it exists, otherwise creates a new entry at `goals[0]` (prepended)
+- `primaryGoal = (data.goals || [])[0]` — derived variable used throughout the Foundation savings card
+- Progress: `(data.futureGoals || 0) / primaryGoal.target`
+- Stage 1 note displayed when `stats.progressStage < 2 && data.futureGoals === 0` — correct because the waterfall sends 100% to buffer in Stage 1; goal funding begins at Stage 2
+
+**Foundation onboarding goal step (F035, `src/components/Onboarding.jsx`):**
+- Step 7 (Foundation branch only) includes an optional goal name + target section below the milestone roadmap cards
+- State: `onboardingGoalName`, `onboardingGoalTarget` — local to the Onboarding component
+- On `finish()`: if `incomeType === 'foundation'` and `onboardingGoalName.trim()` is non-empty, a goal object is prepended to `data.goals`
+- Standard profiles (Salary/Trading/Hybrid): completely unaffected — no goal step in their onboarding path, `data.goals` only populated via Setup → Goals
+- The goal section is fully optional — no validation is added to Step 7; blank name = no goal written
+
 ---
 
 ## 9. Build and Deploy
