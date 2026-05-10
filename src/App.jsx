@@ -915,10 +915,12 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     else if (shouldDeactivate) setData(d => ({ ...d, bufferProtectActive: false }));
   }, [data.buffer, stats.salary, loading]);
   
-  // Auto-update high water mark when trading capital reaches a new peak (skip for fixed-income users)
+  // Auto-update high water mark when trading capital reaches a new peak.
+  // Only Trading/Self-employed ('variable') — Hybrid has a Capital Pool but no
+  // Drawdown Protocol, so tracking its high water mark would cause false alerts.
   useEffect(() => {
     if (loading) return;
-    if (data.incomeType === 'fixed') return;
+    if (data.incomeType !== 'variable') return;
     if (data.tradingCapital > (data.tradingCapitalHighWater || 0)) {
       setData(d => ({ ...d, tradingCapitalHighWater: d.tradingCapital }));
     }
@@ -1635,7 +1637,9 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
     // weekly-pulse is user-triggered — give it priority over all passive banners
     // so it works on every profile (fixed, foundation, variable, mixed)
     if (showWeeklyPulse) return 'weekly-pulse';
-    if (stats.isSetup && data.incomeType !== 'fixed' && !isFoundation && stats.drawdownZone !== 'normal' && data.tradingCapital > 0) return 'drawdown';
+    // Drawdown banner: Trading/Self-employed only. Hybrid has a Capital Pool but
+    // not the Drawdown Protocol — gate strictly on 'variable' to avoid leakage.
+    if (stats.isSetup && data.incomeType === 'variable' && stats.drawdownZone !== 'normal' && data.tradingCapital > 0) return 'drawdown';
     // Foundation Arc staged milestones outrank backup — they are one-time progression events.
     // complete → stay-or-unlock banner (persistent dismiss via foundationStageBannersDismissed).
     // stable / established → advance banners with Remind-me-later persistent dismiss.

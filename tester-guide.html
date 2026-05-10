@@ -1,1511 +1,1326 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Royal Ledger — Tester User Guide v2</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royal Ledger — Beta Tester Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0A0908;
+    --bg2: #14110E;
+    --bg3: #1A1610;
+    --border: #26221C;
+    --border2: #3A3028;
+    --subtle: #5C5648;
+    --dim: #8B8478;
+    --body: #C8C2B8;
+    --bright: #E8E2D5;
+    --orange: #D97757;
+    --orange2: #C56B5A;
+    --green: #7FA068;
+    --blue: #5B7FB8;
+    --gold: #B89968;
+    --purple: #A06B8C;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Georgia', serif;
-    font-size: 11pt;
-    line-height: 1.68;
-    color: #1a1a1a;
-    background: #fff;
+    background: var(--bg);
+    color: var(--body);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.7;
+    font-size: 15px;
   }
 
-  .page {
-    max-width: 740px;
-    margin: 0 auto;
-    padding: 48px 52px;
-  }
-
-  /* ── Cover ── */
+  /* COVER */
   .cover {
+    background: #0A0908;
+    border-bottom: 1px solid var(--border);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 80px 52px 60px;
-    border-bottom: 3px solid #1a1a1a;
-    page-break-after: always;
+    padding: 80px;
+    position: relative;
   }
+
   .cover-eyebrow {
-    font-family: 'Arial', sans-serif;
-    font-size: 9pt;
-    font-weight: 700;
-    letter-spacing: 0.25em;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #888;
-    margin-bottom: 24px;
+    color: var(--orange);
+    margin-bottom: 40px;
   }
+
   .cover-title {
-    font-family: 'Georgia', serif;
-    font-size: 42pt;
-    font-weight: 400;
+    font-family: 'Fraunces', serif;
+    font-size: clamp(42px, 6vw, 72px);
+    font-weight: 300;
+    color: var(--bright);
     line-height: 1.1;
     margin-bottom: 12px;
-    color: #111;
   }
-  .cover-title em { font-style: italic; color: #c0540a; }
-  .cover-sub {
-    font-family: 'Arial', sans-serif;
-    font-size: 13pt;
-    color: #555;
-    margin-bottom: 48px;
-    line-height: 1.5;
-  }
-  .cover-divider { width: 60px; height: 2px; background: #c0540a; margin-bottom: 40px; }
-  .cover-meta {
-    font-family: 'Arial', sans-serif;
-    font-size: 9pt;
-    color: #888;
-    line-height: 2.1;
-  }
-  .cover-meta strong { color: #444; }
 
-  /* ── Quick Start ── */
-  .qs-page {
-    page-break-after: always;
-    background: #fdf6f0;
-    border-left: 6px solid #c0540a;
-    padding: 48px 52px 48px 46px;
-    max-width: 740px;
-    margin: 0 auto;
+  .cover-title em {
+    font-style: italic;
+    color: var(--gold);
   }
-  .qs-eyebrow {
-    font-family: 'Arial', sans-serif;
-    font-size: 8pt;
-    font-weight: 700;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: #c0540a;
-    margin-bottom: 10px;
-  }
-  .qs-title {
-    font-family: 'Georgia', serif;
-    font-size: 22pt;
+
+  .cover-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
     font-weight: 400;
-    margin-bottom: 6px;
-    color: #111;
-  }
-  .qs-sub {
-    font-family: 'Arial', sans-serif;
-    font-size: 10pt;
-    color: #666;
-    margin-bottom: 28px;
-  }
-  .qs-step {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 18px;
-    align-items: flex-start;
-  }
-  .qs-num {
-    flex-shrink: 0;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #c0540a;
-    color: #fff;
-    font-family: 'Arial', sans-serif;
-    font-size: 13pt;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 2px;
-  }
-  .qs-body { flex: 1; }
-  .qs-body strong { font-size: 11.5pt; }
-  .qs-body p {
-    font-family: 'Arial', sans-serif;
-    font-size: 10pt;
-    color: #444;
-    margin-top: 2px;
-    line-height: 1.5;
-  }
-  .qs-note {
-    font-family: 'Arial', sans-serif;
-    font-size: 9.5pt;
-    color: #666;
-    border-top: 1px solid #e8d8c8;
-    margin-top: 24px;
-    padding-top: 16px;
-    line-height: 1.6;
+    color: var(--dim);
+    margin-bottom: 60px;
+    letter-spacing: 0.01em;
   }
 
-  /* ── TOC ── */
-  .toc-page { page-break-after: always; }
-  .toc-title {
-    font-family: 'Arial', sans-serif;
-    font-size: 9pt;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #888;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #e0e0e0;
-  }
-  .toc-section { margin-bottom: 2px; }
-  .toc-section a {
-    display: flex;
-    justify-content: space-between;
-    text-decoration: none;
-    color: #1a1a1a;
-    font-family: 'Georgia', serif;
-    font-size: 10.5pt;
-    padding: 4px 0;
-    border-bottom: 1px dotted #ddd;
-  }
-  .toc-section a .toc-num {
-    color: #aaa;
-    font-size: 8.5pt;
-    font-family: 'Arial', sans-serif;
-    font-weight: 700;
-    align-self: flex-end;
-    white-space: nowrap;
-    padding-left: 8px;
-  }
-  .toc-group {
-    font-family: 'Arial', sans-serif;
-    font-size: 8pt;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: #c0540a;
-    margin: 14px 0 3px;
+  .cover-divider {
+    width: 80px;
+    height: 1px;
+    background: var(--border2);
+    margin-bottom: 40px;
   }
 
-  /* ── Section headings ── */
-  .section-eyebrow {
-    font-family: 'Arial', sans-serif;
-    font-size: 8pt;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #c0540a;
-    margin-bottom: 8px;
-  }
-  h1.section-title {
-    font-family: 'Georgia', serif;
-    font-size: 26pt;
-    font-weight: 400;
-    line-height: 1.15;
-    color: #111;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #1a1a1a;
-  }
-  h2.sub-title {
-    font-family: 'Georgia', serif;
-    font-size: 15pt;
-    font-weight: 400;
-    color: #111;
-    margin: 28px 0 10px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #ddd;
-  }
-  h3.sub-sub-title {
-    font-family: 'Arial', sans-serif;
-    font-size: 9.5pt;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #444;
-    margin: 18px 0 6px;
-  }
+  .cover-meta { display: flex; flex-direction: column; gap: 8px; }
 
-  /* ── Body text ── */
-  p { margin-bottom: 10px; }
-  ul, ol { margin: 8px 0 12px 20px; }
-  li { margin-bottom: 4px; }
-  strong { font-weight: bold; color: #111; }
-  em { font-style: italic; }
-  code {
-    font-family: 'Courier New', monospace;
-    font-size: 9.5pt;
-    background: #f2f2f2;
-    padding: 1px 5px;
-    border-radius: 2px;
-    color: #333;
-  }
-
-  /* ── Info boxes ── */
-  .box {
-    border-left: 3px solid #c0540a;
-    background: #fdf6f0;
-    padding: 10px 14px;
-    margin: 14px 0;
-    font-family: 'Arial', sans-serif;
-    font-size: 10pt;
-    line-height: 1.6;
-  }
-  .box.blue  { border-color: #2a5a8c; background: #f0f4f9; }
-  .box.green { border-color: #3a7a38; background: #f0f7f0; }
-  .box.red   { border-color: #a0302a; background: #fdf0f0; }
-  .box.grey  { border-color: #888;    background: #f7f7f7; }
-  .box .box-label {
-    font-weight: 700;
-    font-size: 8pt;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-    display: block;
-  }
-
-  /* ── Tables ── */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 12px 0 18px;
-    font-family: 'Arial', sans-serif;
-    font-size: 9.5pt;
-  }
-  thead tr { background: #1a1a1a; color: #fff; }
-  thead th {
-    padding: 7px 10px;
-    text-align: left;
-    font-weight: 700;
-    font-size: 8.5pt;
+  .cover-meta-row {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--subtle);
     letter-spacing: 0.04em;
   }
-  tbody tr:nth-child(even) { background: #f7f7f7; }
-  tbody td {
-    padding: 6px 10px;
-    border-bottom: 1px solid #e8e8e8;
-    vertical-align: top;
-  }
-  .tag {
-    display: inline-block;
-    font-family: 'Arial', sans-serif;
-    font-size: 7.5pt;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 2px 6px;
-    border-radius: 2px;
-    line-height: 1.4;
-  }
-  .tag-orange { background: #fde8d4; color: #a0400a; }
-  .tag-blue   { background: #d4e4f7; color: #1a3a6a; }
-  .tag-green  { background: #d4edd4; color: #1a4a1a; }
-  .tag-grey   { background: #ebebeb; color: #555; }
 
-  /* ── Step list ── */
-  .step-list { list-style: none; margin: 12px 0; padding: 0; }
-  .step-list li { display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
-  .step-num {
-    flex-shrink: 0;
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    background: #1a1a1a;
-    color: #fff;
-    font-family: 'Arial', sans-serif;
-    font-size: 8.5pt;
-    font-weight: 700;
+  .cover-meta-row span { color: var(--dim); }
+
+  .cover-accent {
+    position: absolute;
+    bottom: 80px;
+    right: 80px;
+    font-family: 'Fraunces', serif;
+    font-size: 11px;
+    font-style: italic;
+    color: var(--subtle);
+    letter-spacing: 0.06em;
+  }
+
+  /* LAYOUT */
+  .page { max-width: 820px; margin: 0 auto; padding: 80px 40px; }
+  .page-break { page-break-before: always; }
+
+  /* SECTION HEADERS */
+  .section-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin-top: 2px;
+    gap: 12px;
   }
-  .step-body { flex: 1; }
 
-  /* ── Checklist ── */
-  .checklist { list-style: none; margin: 10px 0; padding: 0; }
-  .checklist li {
-    padding: 5px 0 5px 24px;
-    position: relative;
-    border-bottom: 1px solid #f0f0f0;
-    font-family: 'Arial', sans-serif;
-    font-size: 10pt;
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
   }
-  .checklist li::before {
+
+  .section-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--subtle);
+    letter-spacing: 0.06em;
+    margin-right: 4px;
+  }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 300;
+    color: var(--bright);
+    line-height: 1.2;
+    margin-bottom: 32px;
+  }
+
+  .section-title em { font-style: italic; color: var(--gold); }
+
+  /* CARDS */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--bright);
+    margin-bottom: 14px;
+  }
+
+  .card-title em { font-style: italic; color: var(--gold); }
+  .card-body { color: var(--body); line-height: 1.75; }
+  .card-body p + p { margin-top: 14px; }
+
+  /* CALLOUTS */
+  .callout {
+    border-radius: 0 6px 6px 0;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .callout-orange {
+    background: rgba(217, 119, 87, 0.06);
+    border: 1px solid rgba(217, 119, 87, 0.2);
+    border-left: 3px solid var(--orange);
+    color: var(--body);
+  }
+  .callout-orange strong { color: var(--orange); }
+
+  .callout-green {
+    background: rgba(127, 160, 104, 0.06);
+    border: 1px solid rgba(127, 160, 104, 0.2);
+    border-left: 3px solid var(--green);
+    color: var(--body);
+  }
+  .callout-green strong { color: var(--green); }
+
+  .callout-gold {
+    background: rgba(184, 153, 104, 0.06);
+    border: 1px solid rgba(184, 153, 104, 0.2);
+    border-left: 3px solid var(--gold);
+    color: var(--body);
+  }
+  .callout-gold strong { color: var(--gold); }
+
+  /* PROFILE CARDS */
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .profile-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 22px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-card::before {
     content: '';
     position: absolute;
-    left: 0; top: 8px;
-    width: 14px; height: 14px;
-    border: 1.5px solid #aaa;
-    border-radius: 2px;
+    top: 0; left: 0; right: 0;
+    height: 2px;
   }
 
-  /* ── Profile badges ── */
-  .profile-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 16px; }
-  .profile-badge {
-    font-family: 'Arial', sans-serif;
-    font-size: 8pt;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 3px 10px;
-    border-radius: 20px;
-    border: 1.5px solid;
-  }
-  .pb-all { border-color: #1a1a1a; color: #1a1a1a; }
-  .pb-var { border-color: #2a5a8c; color: #2a5a8c; }
-  .pb-fix { border-color: #3a7a38; color: #3a7a38; }
-  .pb-mix { border-color: #7a3a8c; color: #7a3a8c; }
-  .pb-fnd { border-color: #a06020; color: #a06020; }
+  .profile-card.foundation::before { background: var(--green); }
+  .profile-card.salary::before { background: var(--blue); }
+  .profile-card.trading::before { background: var(--orange); }
+  .profile-card.hybrid::before { background: var(--purple); }
 
-  /* ── Two-col ── */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0; }
-  .col-card { border: 1px solid #ddd; border-radius: 4px; padding: 12px 14px; }
-  .col-card-title {
-    font-family: 'Arial', sans-serif;
-    font-size: 8.5pt;
+  .profile-emoji { font-size: 24px; margin-bottom: 10px; display: block; }
+
+  .profile-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
     font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #c0540a;
     margin-bottom: 6px;
   }
 
-  /* ── Gate buttons visual ── */
-  .gate-buttons {
-    display: flex;
-    gap: 10px;
-    margin: 14px 0;
-    flex-wrap: wrap;
-  }
-  .gate-btn {
-    border: 1.5px solid #ccc;
-    border-radius: 4px;
-    padding: 8px 14px;
-    font-family: 'Arial', sans-serif;
-    text-align: center;
-    min-width: 110px;
-  }
-  .gate-btn .gb-label {
-    font-weight: 700;
-    font-size: 10pt;
-    display: block;
-    margin-bottom: 2px;
-  }
-  .gate-btn .gb-sub {
-    font-size: 8pt;
-    color: #666;
-    display: block;
-    line-height: 1.4;
-  }
-  .gate-btn.gb-skip  { border-color: #aaa; }
-  .gate-btn.gb-sleep { border-color: #2a5a8c; background: #f0f4f9; }
-  .gate-btn.gb-buy   { border-color: #c0540a; background: #fdf6f0; }
+  .profile-card.foundation .profile-label { color: var(--green); }
+  .profile-card.salary .profile-label { color: var(--blue); }
+  .profile-card.trading .profile-label { color: var(--orange); }
+  .profile-card.hybrid .profile-label { color: var(--purple); }
 
-  /* ── Priority badges ── */
-  .priority-badge {
-    display: inline-block;
-    font-family: 'Arial', sans-serif;
-    font-size: 8pt;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 2px;
-    margin-right: 6px;
+  .profile-name {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--bright);
+    margin-bottom: 10px;
+  }
+
+  .profile-desc {
+    font-size: 13px;
+    color: var(--body);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+
+  .profile-best {
+    font-size: 12px;
+    color: var(--dim);
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    line-height: 1.55;
+  }
+
+  .profile-best strong { color: var(--body); font-weight: 600; }
+
+  .profile-internal {
+    position: absolute;
+    top: 18px; right: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--subtle);
     letter-spacing: 0.06em;
-    text-transform: uppercase;
   }
-  .p-critical { background: #fde8e8; color: #a00; }
-  .p-important { background: #fde8d4; color: #a0400a; }
-  .p-note { background: #ebebeb; color: #555; }
 
-  /* ── FAQ ── */
-  .faq-item { margin-bottom: 18px; }
-  .faq-q {
-    font-family: 'Arial', sans-serif;
-    font-weight: 700;
-    font-size: 10.5pt;
-    color: #111;
+  /* STEPS */
+  .step-list { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+
+  .step-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 20px 22px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .step-number {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(217, 119, 87, 0.1);
+    border: 1px solid rgba(217, 119, 87, 0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 500;
+    color: var(--orange);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .step-content { flex: 1; }
+  .step-title { font-size: 15px; font-weight: 600; color: var(--bright); margin-bottom: 6px; }
+  .step-body { font-size: 14px; color: var(--body); line-height: 1.65; }
+
+  /* FEATURES */
+  .feature-list { display: flex; flex-direction: column; gap: 0; }
+
+  .feature-item {
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .feature-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .feature-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--subtle);
+    letter-spacing: 0.06em;
     margin-bottom: 4px;
   }
-  .faq-q::before { content: 'Q  '; color: #c0540a; }
-  .faq-a {
-    font-family: 'Georgia', serif;
-    font-size: 10.5pt;
-    color: #333;
-    padding-left: 18px;
-    line-height: 1.6;
+
+  .feature-name {
+    font-family: 'Fraunces', serif;
+    font-size: 17px; font-weight: 400;
+    color: var(--bright);
+    line-height: 1.3; margin-bottom: 8px;
   }
 
-  /* ── Footer ── */
-  .footer {
-    margin-top: 40px;
-    padding-top: 14px;
-    border-top: 1px solid #ddd;
-    font-family: 'Arial', sans-serif;
-    font-size: 8.5pt;
-    color: #aaa;
-    display: flex;
-    justify-content: space-between;
+  .feature-name em { font-style: italic; color: var(--gold); }
+
+  .feature-tab {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--orange);
+    background: rgba(217, 119, 87, 0.1);
+    border: 1px solid rgba(217, 119, 87, 0.2);
+    border-radius: 3px;
+    padding: 2px 8px;
+    display: inline-block;
+    letter-spacing: 0.05em;
   }
 
-  /* ── Misc ── */
-  .page-break { page-break-before: always; }
-  .avoid-break { page-break-inside: avoid; }
-  .dimmed { color: #888; font-style: italic; }
+  .feature-body { font-size: 14px; color: var(--body); line-height: 1.7; }
+  .feature-body p + p { margin-top: 10px; }
 
+  .look-for {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: rgba(127, 160, 104, 0.06);
+    border: 1px solid rgba(127, 160, 104, 0.18);
+    border-radius: 5px;
+  }
+
+  .look-for-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--green); margin-bottom: 8px;
+  }
+
+  .look-for ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+
+  .look-for ul li {
+    font-size: 13px; color: var(--body);
+    padding-left: 16px; position: relative;
+    line-height: 1.5;
+  }
+
+  .look-for ul li::before {
+    content: '→';
+    position: absolute; left: 0;
+    color: var(--green); font-size: 11px;
+  }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; }
+  thead tr { border-bottom: 1px solid var(--border2); }
+  th {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--dim); padding: 10px 14px; text-align: left;
+  }
+  td {
+    padding: 14px 14px; vertical-align: top;
+    border-bottom: 1px solid var(--border);
+    color: var(--body); line-height: 1.6; font-size: 13.5px;
+  }
+  tr:last-child td { border-bottom: none; }
+  .td-bad { color: var(--orange2); }
+  .td-good { color: var(--green); }
+
+  /* LIMITATIONS */
+  .limit-list { list-style: none; display: flex; flex-direction: column; gap: 10px; padding: 0; }
+
+  .limit-item {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 14px 16px;
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
+    font-size: 14px; line-height: 1.6;
+  }
+
+  .limit-icon {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--gold);
+    background: rgba(184, 153, 104, 0.1);
+    border: 1px solid rgba(184, 153, 104, 0.2);
+    border-radius: 3px; padding: 2px 7px;
+    white-space: nowrap; margin-top: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  .limit-text { color: var(--body); }
+  .limit-text strong { color: var(--bright); }
+
+  /* FAQ */
+  .faq-list { display: flex; flex-direction: column; gap: 0; }
+
+  .faq-item { padding: 20px 0; border-bottom: 1px solid var(--border); }
+  .faq-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .faq-q { font-size: 15px; font-weight: 600; color: var(--bright); margin-bottom: 8px; line-height: 1.4; }
+  .faq-a { font-size: 14px; color: var(--body); line-height: 1.7; }
+
+  /* QUICK REFERENCE */
+  .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  .ref-card {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 6px; padding: 18px 20px;
+  }
+
+  .ref-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 12px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border);
+  }
+
+  .ref-row {
+    display: flex; gap: 8px; align-items: baseline;
+    padding: 5px 0; font-size: 13px;
+    border-bottom: 1px solid rgba(38, 34, 28, 0.5);
+  }
+  .ref-row:last-child { border-bottom: none; }
+
+  .ref-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    color: var(--orange); min-width: 80px; flex-shrink: 0;
+  }
+
+  .ref-val { color: var(--body); line-height: 1.4; }
+
+  .ref-profile-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 7px 0; border-bottom: 1px solid rgba(38, 34, 28, 0.5);
+    font-size: 13px;
+  }
+  .ref-profile-row:last-child { border-bottom: none; }
+
+  .ref-emoji { font-size: 16px; flex-shrink: 0; }
+  .ref-profile-name { color: var(--bright); font-weight: 500; font-size: 13px; }
+  .ref-profile-sub { color: var(--dim); font-size: 12px; }
+
+  /* CRITERIA */
+  .criteria-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px; margin-top: 8px;
+  }
+
+  .criteria-item {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 6px; padding: 16px; text-align: center;
+  }
+
+  .criteria-number {
+    font-family: 'Fraunces', serif;
+    font-size: 32px; font-weight: 300;
+    color: var(--orange); display: block;
+    line-height: 1; margin-bottom: 8px;
+  }
+
+  .criteria-label { font-size: 12px; color: var(--body); line-height: 1.4; }
+
+  /* VOUCHER */
+  .voucher-box {
+    background: rgba(184, 153, 104, 0.07);
+    border: 1px solid rgba(184, 153, 104, 0.25);
+    border-radius: 8px; padding: 24px 28px; margin-bottom: 20px;
+    display: flex; align-items: flex-start; gap: 20px;
+  }
+
+  .voucher-amount {
+    font-family: 'Fraunces', serif;
+    font-size: 48px; font-weight: 300;
+    color: var(--gold); line-height: 1; flex-shrink: 0;
+  }
+
+  .voucher-detail { flex: 1; padding-top: 4px; }
+
+  .voucher-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 6px;
+  }
+
+  .voucher-desc { font-size: 14px; color: var(--body); line-height: 1.6; margin-bottom: 12px; }
+
+  /* UTILITY */
+  strong { color: var(--bright); font-weight: 600; }
+  em { font-style: italic; }
+  .spacer { height: 48px; }
+  .spacer-sm { height: 24px; }
+
+  ul.standard {
+    list-style: none; padding: 0;
+    display: flex; flex-direction: column; gap: 6px; margin-top: 8px;
+  }
+
+  ul.standard li {
+    font-size: 14px; color: var(--body);
+    padding-left: 18px; position: relative; line-height: 1.55;
+  }
+
+  ul.standard li::before {
+    content: '·'; position: absolute; left: 4px;
+    color: var(--orange); font-weight: 700;
+  }
+
+  /* PRINT */
   @media print {
-    @page { size: A4; margin: 16mm 16mm 18mm; }
-    body { font-size: 10pt; }
-    .cover { min-height: auto; padding-top: 60px; }
-    .page, .qs-page { padding: 0; max-width: 100%; }
-    a { color: inherit !important; text-decoration: none; }
-    .no-print { display: none; }
+    body { background: #fff !important; color: #1a1a1a !important; font-size: 13px; }
+
+    .cover { background: #1a1a1a !important; min-height: auto; padding: 60px; page-break-after: always; }
+    .cover * { color: #fff !important; }
+    .cover-eyebrow { color: #D97757 !important; }
+    .cover-title { color: #fff !important; }
+    .cover-title em { color: #B89968 !important; }
+    .cover-subtitle { color: #aaa !important; }
+    .cover-meta-row { color: #888 !important; }
+    .cover-meta-row span { color: #bbb !important; }
+    .cover-accent { color: #666 !important; }
+
+    .section-label { color: #D97757 !important; }
+    .section-label::after { background: #ddd !important; }
+    .section-title { color: #1a1a1a !important; }
+    .section-title em { color: #8B6A3A !important; }
+
+    .card { background: #fafafa !important; border: 1px solid #ddd !important; }
+    .card-title { color: #1a1a1a !important; }
+    .card-title em { color: #8B6A3A !important; }
+    .card-body { color: #333 !important; }
+
+    .callout-orange { background: #fff3ee !important; border-color: #D97757 !important; color: #333 !important; }
+    .callout-orange strong { color: #D97757 !important; }
+    .callout-green { background: #f0f8ee !important; border-color: #7FA068 !important; color: #333 !important; }
+    .callout-green strong { color: #4a7a38 !important; }
+    .callout-gold { background: #fff8ee !important; border-color: #B89968 !important; color: #333 !important; }
+    .callout-gold strong { color: #8B6A3A !important; }
+
+    .profile-card { background: #fafafa !important; border: 1px solid #ddd !important; }
+    .profile-name { color: #1a1a1a !important; }
+    .profile-desc { color: #333 !important; }
+    .profile-best { color: #555 !important; border-top-color: #ddd !important; }
+    .profile-best strong { color: #333 !important; }
+    .profile-internal { color: #aaa !important; }
+    .profile-card.foundation .profile-label { color: #4a7a38 !important; }
+    .profile-card.salary .profile-label { color: #3a5a8a !important; }
+    .profile-card.trading .profile-label { color: #D97757 !important; }
+    .profile-card.hybrid .profile-label { color: #8B5E80 !important; }
+    .profile-card.foundation::before { background: #4a7a38 !important; }
+    .profile-card.salary::before { background: #3a5a8a !important; }
+    .profile-card.trading::before { background: #D97757 !important; }
+    .profile-card.hybrid::before { background: #8B5E80 !important; }
+
+    .step-item { background: #fafafa !important; border: 1px solid #ddd !important; }
+    .step-number { background: #fff3ee !important; border-color: #D97757 !important; color: #D97757 !important; }
+    .step-title { color: #1a1a1a !important; }
+    .step-body { color: #333 !important; }
+
+    .feature-item { border-bottom-color: #eee !important; }
+    .feature-name { color: #1a1a1a !important; }
+    .feature-tab { background: #fff3ee !important; border-color: #D97757 !important; color: #D97757 !important; }
+    .feature-body { color: #333 !important; }
+    .look-for { background: #f0f8ee !important; border-color: #7FA068 !important; }
+    .look-for-label { color: #4a7a38 !important; }
+    .look-for ul li { color: #333 !important; }
+    .look-for ul li::before { color: #4a7a38 !important; }
+
+    th { color: #666 !important; }
+    td { color: #333 !important; border-bottom-color: #eee !important; }
+    thead tr { border-bottom-color: #ddd !important; }
+    .td-bad { color: #aa4422 !important; }
+    .td-good { color: #3a7a28 !important; }
+
+    .limit-item { background: #f5f5f5 !important; border-color: #ddd !important; }
+    .limit-icon { background: #fff8ee !important; border-color: #d4b07a !important; color: #8B6A3A !important; }
+    .limit-text { color: #333 !important; }
+    .limit-text strong { color: #1a1a1a !important; }
+
+    .faq-q { color: #1a1a1a !important; }
+    .faq-a { color: #333 !important; }
+    .faq-item { border-bottom-color: #eee !important; }
+
+    .ref-card { background: #f5f5f5 !important; border-color: #ddd !important; }
+    .ref-label { color: #8B6A3A !important; border-bottom-color: #ddd !important; }
+    .ref-key { color: #D97757 !important; }
+    .ref-val { color: #333 !important; }
+    .ref-row { border-bottom-color: #eee !important; }
+    .ref-profile-name { color: #1a1a1a !important; }
+    .ref-profile-sub { color: #666 !important; }
+    .ref-profile-row { border-bottom-color: #eee !important; }
+
+    .criteria-item { background: #fafafa !important; border-color: #ddd !important; }
+    .criteria-number { color: #D97757 !important; }
+    .criteria-label { color: #333 !important; }
+
+    .voucher-box { background: #fff8ee !important; border-color: #d4b07a !important; }
+    .voucher-amount { color: #8B6A3A !important; }
+    .voucher-label { color: #8B6A3A !important; }
+    .voucher-desc { color: #333 !important; }
+
+    ul.standard li { color: #333 !important; }
+    ul.standard li::before { color: #D97757 !important; }
+
+    strong { color: #1a1a1a !important; }
+    .page { padding: 40px 20px; }
+    .page-break { page-break-before: always; }
   }
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════ COVER -->
-<div class="cover page">
-  <div class="cover-eyebrow">Royal Ledger · Confidential · Do not distribute</div>
-  <div class="cover-title">Tester<br><em>User Guide</em></div>
-  <div class="cover-sub">
-    Everything you need to test, explore, and give meaningful feedback<br>
-    on the Royal Ledger financial discipline app.
-  </div>
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-eyebrow">Royal Ledger · Closed Beta · Tester Documentation</div>
+  <h1 class="cover-title">Beta <em>Tester</em><br>Guide</h1>
+  <p class="cover-subtitle">Everything you need to know to test effectively</p>
   <div class="cover-divider"></div>
   <div class="cover-meta">
-    <strong>Version</strong> &nbsp;&nbsp; v2 — Beta · Early Access Tester Edition<br>
-    <strong>Date</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; May 2026<br>
-    <strong>Testing period</strong> &nbsp; 30 days from your activation date<br>
-    <strong>Support</strong> &nbsp;&nbsp;&nbsp;&nbsp; support@royalledger.app · replied within 24 h<br>
-    <strong>Access</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; By invite code only · closed beta
+    <div class="cover-meta-row">Version &nbsp;&nbsp;<span>2.0 — May 2026</span></div>
+    <div class="cover-meta-row">Updated &nbsp;<span>10 May 2026</span></div>
+    <div class="cover-meta-row">Stage &nbsp;&nbsp;&nbsp;&nbsp;<span>Closed Beta — Invite Only</span></div>
+    <div class="cover-meta-row">Status &nbsp;&nbsp;&nbsp;&nbsp;<span>Confidential</span></div>
+  </div>
+  <div class="cover-accent">Royal-Icon Ledger · Personal Finance OS</div>
+</div>
+
+<!-- SECTION 1: WELCOME -->
+<div class="page page-break">
+  <div class="section-label"><span class="section-number">01</span> Welcome</div>
+  <h2 class="section-title">Welcome &amp; <em>Purpose</em></h2>
+
+  <div class="card">
+    <div class="card-title">What this beta is for</div>
+    <div class="card-body">
+      <p>Royal Ledger is a personal finance operating system. Not a budgeting app, not a spending tracker — a structured decision-making system for people who want real control over their money. It has rules, gates, and deliberate friction built in, because that is the point. This beta is about finding out whether that philosophy works in practice, for real people, in real financial situations.</p>
+      <p>You are here because you were selected. This is a closed beta — voucher-compensated, invite-only, and deliberately small. We want depth of feedback, not breadth of users. Your experience as a tester is more valuable than a thousand installs from people who tap through an app once and forget it exists.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">What we are testing</div>
+    <div class="card-body">
+      <ul class="standard">
+        <li>Whether the four profiles are clearly differentiated and correctly matched to real income situations</li>
+        <li>Whether the Spending Gate (Impulse Control) actually changes financial decisions, or just adds friction for friction's sake</li>
+        <li>Whether the Allocator logic makes sense to real users, or requires more explanation</li>
+        <li>Whether Envelope Budgeting, Daily Checkpoints, and Weekly Pulse are used consistently — and if not, why not</li>
+        <li>Whether the app's language, labels, and navigation are clear enough to use without a manual</li>
+        <li>Whether cloud sync, snapshots, and backup/restore work reliably across devices</li>
+        <li>Whether Royal Ledger feels like a system people want to return to, or a novelty they abandon after a week</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">What we are <em>not</em> testing yet</div>
+    <div class="card-body">
+      <p>Some features are intentionally absent from this build. Do not report the following as bugs — they are planned for a later build and are noted as known limitations in Section 8:</p>
+      <ul class="standard" style="margin-top: 12px;">
+        <li>In-app push notifications and reminders</li>
+        <li>Bank statement or transaction import</li>
+        <li>Shared household or multi-user mode</li>
+        <li>In-app subscription management or billing</li>
+        <li>Analytics and historical spending trend charts</li>
+      </ul>
+    </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════ QUICK START -->
-<div class="qs-page">
-  <div class="qs-eyebrow">If you read nothing else, read this</div>
-  <div class="qs-title">5-Minute Quick Start</div>
-  <div class="qs-sub">Five steps to get from sign-in to your first real action in the app.</div>
+<!-- SECTION 2: COMPENSATION -->
+<div class="page page-break">
+  <div class="section-label"><span class="section-number">02</span> Compensation</div>
+  <h2 class="section-title">What you are <em>compensated</em> for</h2>
 
-  <div class="qs-step">
-    <div class="qs-num">1</div>
-    <div class="qs-body">
-      <strong>Open the app and sign in.</strong>
-      <p>Go to <strong>royalledger.app</strong>. Use the email address your invite code was sent to — the code is tied to that email and won't work on another. If your code has expired (30-day limit), email support@royalledger.app.</p>
+  <div class="voucher-box">
+    <div class="voucher-amount">R200</div>
+    <div class="voucher-detail">
+      <div class="voucher-label">Beta Tester Voucher</div>
+      <div class="voucher-desc">Every active tester who meets the minimum activity criteria below receives a R200 voucher. This is not tied to whether you liked the app — it is tied to whether you used it meaningfully and shared feedback.</div>
     </div>
   </div>
 
-  <div class="qs-step">
-    <div class="qs-num">2</div>
-    <div class="qs-body">
-      <strong>Complete onboarding — choose your profile and currency carefully.</strong>
-      <p>You'll be asked for your income profile (Foundation, Variable, Fixed, or Mixed), your currency, your salary, your fixed monthly expenses, and your current buffer balance. Both profile and currency are <strong>locked</strong> after setup — they cannot be self-changed.</p>
+  <div class="card">
+    <div class="card-title">Minimum activity criteria</div>
+    <div class="card-body">
+      <p style="margin-bottom: 20px;">To qualify for the voucher, you need to complete all four of the following during the beta period:</p>
+      <div class="criteria-grid">
+        <div class="criteria-item">
+          <span class="criteria-number">5+</span>
+          <div class="criteria-label">Items logged through the Spending Gate</div>
+        </div>
+        <div class="criteria-item">
+          <span class="criteria-number">3+</span>
+          <div class="criteria-label">Balance snapshots taken</div>
+        </div>
+        <div class="criteria-item">
+          <span class="criteria-number">2+</span>
+          <div class="criteria-label">Weekly Pulse check-ins completed</div>
+        </div>
+        <div class="criteria-item">
+          <span class="criteria-number">1+</span>
+          <div class="criteria-label">Pieces of structured feedback submitted</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="qs-step">
-    <div class="qs-num">3</div>
-    <div class="qs-body">
-      <strong>Check your stage on the Command tab.</strong>
-      <p>After onboarding the app places you in a buffer stage (1, 1.5, 2, or 3) based on your buffer vs. your target. Confirm the stage shown makes sense for your numbers.</p>
-    </div>
+  <div class="callout callout-gold">
+    <strong>Important:</strong> Logging five impulses through the Spending Gate means actually using the feature — not creating five items and immediately approving them all. The point is to run real spending decisions through the 24-hour wait process. We can see usage patterns in the data and will verify authentically.
   </div>
 
-  <div class="qs-step">
-    <div class="qs-num">4</div>
-    <div class="qs-body">
-      <strong>Run the Spending Gate on a real or test purchase.</strong>
-      <p>Open the Budget tab and tap the gate. Enter an amount above 50 (your currency). Work through all three decisions — Skip it, Sleep on it, or Buy now. This is the app's core daily action and the most important feature to test.</p>
+  <div class="card" style="margin-top: 20px;">
+    <div class="card-title">What counts as feedback</div>
+    <div class="card-body">
+      <ul class="standard">
+        <li>Answering any week's Q&A questions from the Tester Q&A Programme document</li>
+        <li>Responding to 3 or more of the 2–3 day pulse check-in messages</li>
+        <li>Sending a detailed WhatsApp message describing a bug, confusion, or suggestion (must be specific — see Section 7 for what qualifies)</li>
+        <li>A voice note with substantive feedback (transcribed by the owner)</li>
+      </ul>
     </div>
-  </div>
-
-  <div class="qs-step">
-    <div class="qs-num">5</div>
-    <div class="qs-body">
-      <strong>Take your first snapshot.</strong>
-      <p>Go to the History tab and take a monthly snapshot. This records your current balances as your starting point. At the end of the testing period, your second snapshot will show measurable change.</p>
-    </div>
-  </div>
-
-  <div class="qs-note">
-    <strong>Install to your home screen for the full experience.</strong> On iOS: open in Safari → tap Share → Add to Home Screen. On Android: open in Chrome → tap the menu (⋮) → Install app. Push notifications only work when installed. &nbsp;|&nbsp; Full guide starts on the next page.
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════ TABLE OF CONTENTS -->
-<div class="page toc-page" style="padding-top:40px;">
-  <div class="toc-title">Contents</div>
+<!-- SECTION 3: PROFILE GUIDE -->
+<div class="page page-break">
+  <div class="section-label"><span class="section-number">03</span> Profile Guide</div>
+  <h2 class="section-title">Choosing your <em>profile</em></h2>
 
-  <div class="toc-group">Expectations &amp; Setup</div>
-  <div class="toc-section"><a href="#sec-what">1. What is Royal Ledger? <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-expectations">2. Tester Expectations <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-before">3. Before You Start <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-profiles">4. Income Profiles <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-onboarding">5. Getting Started — Onboarding <span class="toc-num">—</span></a></div>
+  <div class="card">
+    <div class="card-body">
+      <p>Royal Ledger has four profiles. Your profile determines which features are available to you, how the Allocator works, and what the app expects of your income situation. Pick the one that honestly reflects how your money arrives — not what you wish it looked like.</p>
+      <p style="margin-top: 14px;">If you are genuinely unsure between two profiles, pick the simpler one. You can change your profile by contacting the owner — it is not a permanent decision, but it does reset some of your configuration.</p>
+    </div>
+  </div>
 
-  <div class="toc-group">Tabs &amp; Features</div>
-  <div class="toc-section"><a href="#sec-command">6. Command Tab (Dashboard) <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-setup">7. Setup &amp; Salary Tab <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-budget">8. Budget Tab &amp; Spending Gate <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-history">9. History Tab <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-trading">10. Trading P&amp;L Tab <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-rules">11. Rules Tab <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-settings">12. Settings Tab <span class="toc-num">—</span></a></div>
+  <div class="spacer-sm"></div>
 
-  <div class="toc-group">Routines &amp; Concepts</div>
-  <div class="toc-section"><a href="#sec-checkpoints">13. Daily Checkpoints <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-pulse">14. Weekly Pulse &amp; Monthly Review <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-concepts">15. Key Concepts Glossary <span class="toc-num">—</span></a></div>
+  <div class="profile-grid">
+    <div class="profile-card foundation">
+      <div class="profile-internal">foundation</div>
+      <span class="profile-emoji">🌱</span>
+      <div class="profile-label">Building from Zero</div>
+      <div class="profile-name">Foundation</div>
+      <div class="profile-desc">For people starting from scratch — building the habit of saving before worrying about investment or income optimisation. Includes the Foundation Arc: a four-stage progression from Starter through to Complete. Simplified Money Allocator. No trading features.</div>
+      <div class="profile-best"><strong>Best for you if:</strong> You don't currently have 3 months of expenses saved, or you're rebuilding after a financial reset and want to build discipline before complexity.</div>
+    </div>
 
-  <div class="toc-group">Reference</div>
-  <div class="toc-section"><a href="#sec-limits">16. Known Limitations <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-faq">17. Frequently Asked Questions <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-testing">18. What to Test &amp; How to Report <span class="toc-num">—</span></a></div>
-  <div class="toc-section"><a href="#sec-checklist">19. Tester Checklist <span class="toc-num">—</span></a></div>
+    <div class="profile-card salary">
+      <div class="profile-internal">fixed</div>
+      <span class="profile-emoji">💼</span>
+      <div class="profile-label">Salary</div>
+      <div class="profile-name">Salary</div>
+      <div class="profile-desc">For people on a steady monthly paycheck. Income is predictable, so the focus is on surplus allocation — where the money left after expenses goes. Includes the Surplus Allocator (buffer → long-term savings → goals → lifestyle). No Trading P&L tab.</div>
+      <div class="profile-best"><strong>Best for you if:</strong> You receive a consistent salary every month and your income doesn't fluctuate significantly. You want to systematise where your surplus goes.</div>
+    </div>
 
-  <div style="margin-top: 32px; padding: 14px 16px; background: #fdf6f0; border-left: 3px solid #c0540a; font-family: 'Arial', sans-serif; font-size: 9.5pt; color: #555; line-height: 1.6;">
-    <strong style="color: #c0540a; font-size: 8pt; letter-spacing: 0.12em; text-transform: uppercase; display: block; margin-bottom: 4px;">Confidentiality</strong>
-    This document is shared under a closed beta agreement. Please do not forward it, post screenshots on social media, or share access with others. The app, this guide, and all content within are confidential until public launch.
+    <div class="profile-card trading">
+      <div class="profile-internal">variable</div>
+      <span class="profile-emoji">📈</span>
+      <div class="profile-label">Trading / Self-Employed</div>
+      <div class="profile-name">Trading / Self-Employed</div>
+      <div class="profile-desc">For people whose income changes month to month — traders, freelancers, contractors. Full feature set: Trading P&L tab, Drawdown Protocol (Normal / Caution / Defensive / Stop zones), Emotional Trading Guard (24h cool-down on loss days), and Profit Allocator with tax reserve first.</div>
+      <div class="profile-best"><strong>Best for you if:</strong> Your income varies significantly month to month, you trade or run a business, and you need rules around both income variability and emotional decision-making.</div>
+    </div>
+
+    <div class="profile-card hybrid">
+      <div class="profile-internal">mixed</div>
+      <span class="profile-emoji">⚡</span>
+      <div class="profile-label">Hybrid</div>
+      <div class="profile-name">Hybrid</div>
+      <div class="profile-desc">For people with a steady salary plus business or side income. Tracks both income streams separately. Profit Allocator with full stage rules and a capital allocation pool for business reinvestment. No Trading P&L tab — "capital" replaces "trading capital" in the waterfall.</div>
+      <div class="profile-best"><strong>Best for you if:</strong> You have a day job AND a side business, freelance income, or rental income that you also want to systematically allocate.</div>
+    </div>
+  </div>
+
+  <div class="callout callout-orange" style="margin-top: 8px;">
+    <strong>Foundation Arc note:</strong> If you choose the Foundation profile, you will progress through four stages as your savings build: Starter → Established → Stable → Complete. When you reach Complete (12+ months of expenses saved), you can graduate to any other profile. This progression is tracked automatically based on your balance inputs.
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════ §1 WHAT IS ROYAL LEDGER -->
-<div class="page page-break" id="sec-what">
-  <div class="section-eyebrow">Section 1</div>
-  <h1 class="section-title">What is Royal Ledger?</h1>
+<!-- SECTION 4: GETTING STARTED -->
+<div class="page page-break">
+  <div class="section-label"><span class="section-number">04</span> Getting Started</div>
+  <h2 class="section-title">Four steps to <em>get going</em></h2>
 
-  <p>Royal Ledger is a <strong>financial discipline app</strong> — not a bank, not a budgeting spreadsheet, and not a subscription tracker. It is a structured system that helps you build a financial buffer, control impulse spending, allocate income intelligently, and develop consistent money habits over time.</p>
-
-  <p>The app is built around one central belief: <em>financial freedom comes from discipline, not income size.</em> It uses a stage-based buffer system, envelope budgeting, impulse gates, and daily checkpoints to give you the infrastructure to reach and maintain financial stability.</p>
-
-  <h2 class="sub-title">The core loop</h2>
-  <ol>
-    <li><strong>Set up</strong> your income, expenses, and buffer target during onboarding.</li>
-    <li><strong>Gate purchases</strong> using the Spending Gate before you spend, and log them after.</li>
-    <li><strong>Allocate income</strong> when it arrives — split it by stage rules to buffer, savings, trading capital, and lifestyle.</li>
-    <li><strong>Check in daily</strong> using the Command tab and Daily Checkpoints.</li>
-    <li><strong>Review weekly and monthly</strong> to close envelopes, take snapshots, and assess progress.</li>
-  </ol>
-
-  <h2 class="sub-title">How it differs from other finance apps</h2>
-  <table class="avoid-break">
-    <thead><tr><th>Other apps</th><th>Royal Ledger</th></tr></thead>
-    <tbody>
-      <tr><td>Connect to your bank, auto-import transactions</td><td>Manual entry — intentional by design, no bank credentials ever requested</td></tr>
-      <tr><td>Track what you spent after the fact</td><td>Gate purchases <em>before</em> they happen with a friction step</td></tr>
-      <tr><td>Show categories and pie charts</td><td>Show your stage, buffer progress, and whether you're on track structurally</td></tr>
-      <tr><td>Recommend stocks or investments</td><td>Never — discipline system only, no financial advice given</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- ══════════════════════════════════════════════════ §2 TESTER EXPECTATIONS -->
-<div class="page page-break" id="sec-expectations">
-  <div class="section-eyebrow">Section 2</div>
-  <h1 class="section-title">Tester Expectations</h1>
-
-  <h2 class="sub-title">Testing period</h2>
-  <p><strong>30 days</strong> from the date you first sign in. Use the app consistently throughout this period — occasional use produces weak feedback. Daily use produces useful feedback.</p>
-
-  <h2 class="sub-title">Time commitment</h2>
-  <table class="avoid-break">
-    <thead><tr><th>Activity</th><th>Time</th><th>Frequency</th></tr></thead>
-    <tbody>
-      <tr><td>Initial setup (onboarding + first explore)</td><td>30–45 minutes</td><td>Once</td></tr>
-      <tr><td>Daily check-in (Command tab glance)</td><td>1–2 minutes</td><td>Daily</td></tr>
-      <tr><td>Spending Gate (before/after purchases)</td><td>1–3 minutes</td><td>As purchases happen</td></tr>
-      <tr><td>Weekly Pulse review</td><td>5–10 minutes</td><td>Weekly (Sunday)</td></tr>
-      <tr><td>Month-end review + snapshot</td><td>15–20 minutes</td><td>Once (end of period)</td></tr>
-      <tr><td>Bug and feedback reporting</td><td>5 minutes per issue</td><td>As found</td></tr>
-    </tbody>
-  </table>
-
-  <h2 class="sub-title">Compensation</h2>
-  <p>You will receive a <strong>R200 voucher</strong> at the end of your 30-day testing period, conditional on reasonable usage of the app (daily check-ins, at least one Spending Gate run, at least one snapshot, and at least one bug or feedback report submitted). The voucher is issued within 7 days of the testing period closing.</p>
-
-  <h2 class="sub-title">What we want from you</h2>
-  <ul>
-    <li><strong>Bugs:</strong> Anything that is broken, crashes, shows wrong numbers, or doesn't work as described in this guide.</li>
-    <li><strong>Confusion:</strong> Anything that was hard to understand, a label that meant nothing to you, a step that felt unclear. <em>These are as valuable as bug reports.</em></li>
-    <li><strong>Gaps:</strong> Features or information you expected to find but didn't. "I wanted to do X but couldn't figure out how."</li>
-    <li><strong>"I forgot to use it" moments:</strong> If you skipped the app for a week, note why. Was the app not sticky enough? Was the daily habit unclear? That feedback shapes the onboarding and reminders.</li>
-  </ul>
-
-  <h2 class="sub-title">Confidentiality</h2>
-  <div class="box red">
-    <span class="box-label">Please read</span>
-    This is a <strong>closed beta</strong>. Please do not share screenshots publicly, post on social media, forward this guide, or invite others. Do not share your invite code — codes are email-bound and cannot be used by a different address, but sharing the code itself creates confusion. If someone you know wants access, direct them to the waiting list.
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-title">Register and sign in</div>
+        <div class="step-body">Open the app and create your account using your email address. You'll receive a verification link — click it to confirm your account. Once verified, sign in. Your data will sync to the cloud automatically from this point forward. If you plan to test on multiple devices, sign in with the same account on each device to verify sync works correctly.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-title">Complete onboarding</div>
+        <div class="step-body">After sign-in, you'll be taken through onboarding. Select your profile (see Section 3), choose your currency, and enter your current financial starting position — existing savings, monthly income, and any existing long-term savings or goals. Do this honestly. The Allocator and stage progress only make sense if your starting numbers are real. Don't skip this step or enter placeholder values.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-title">Set up your spending envelopes</div>
+        <div class="step-body">Go to the Budget tab and add your regular monthly expenses as envelopes. Name them with categories that match your real spending: Groceries, Fuel, Eating Out, Clothing, Entertainment — whatever applies to your life. Set realistic monthly caps for each. This is what the Spending Gate and block system use to evaluate purchases. If your envelopes don't reflect reality, the blocks won't make sense. Take 10–15 minutes to do this properly before testing other features.</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <div class="step-title">Log your first snapshot</div>
+        <div class="step-body">Go to the Command tab and take your first balance snapshot. Enter your current balances across all fields shown — Buffer/Savings, Salary or Money Available, Long-term savings, and any Goals. This establishes your starting net worth. From this point on, you have a baseline to compare against. Take a snapshot at least once a week throughout the beta — this is one of the four criteria for your voucher and one of the most important habits the app is designed to build.</div>
+      </div>
+    </div>
   </div>
 
-  <h2 class="sub-title">Privacy — activity tracking</h2>
-  <div class="box grey">
-    <span class="box-label">Transparency note</span>
-    To verify testing participation during the beta period, the app records <strong>anonymised activity events</strong> — logins, app opens, and periodic 60-second activity pings. This data is stored in a private database accessible only to the Royal Ledger founder. <strong>No keystroke logging. No purchase content. No analytics sent to third parties.</strong> This tracking exists solely to confirm testers are actively using the app before issuing compensation, and will be removed before public launch.
+  <div class="callout callout-green" style="margin-top: 24px;">
+    <strong>First use tip:</strong> After completing these four steps, open the Impulse Control tab and add one item — even a small, hypothetical purchase — just to see how the Spending Gate works before you need it for a real decision. Understanding the flow in advance makes it much more likely you'll actually use it when an impulse arrives.
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════ §3 BEFORE YOU START -->
-<div class="page page-break" id="sec-before">
-  <div class="section-eyebrow">Section 3</div>
-  <h1 class="section-title">Before You Start</h1>
+<!-- SECTION 5: FEATURES -->
+<div class="page page-break">
+  <div class="section-label"><span class="section-number">05</span> Features</div>
+  <h2 class="section-title">Core features to <em>test</em></h2>
 
-  <h2 class="sub-title">Where to find the app</h2>
-  <p>Open your browser and go to: <strong>royalledger.app</strong></p>
-  <p>The app works in any modern browser. For the best experience we recommend:</p>
-  <table class="avoid-break">
-    <thead><tr><th>Device</th><th>Recommended browser</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td>iPhone / iPad</td><td>Safari</td><td>Required for PWA install and push notifications on iOS</td></tr>
-      <tr><td>Android</td><td>Chrome</td><td>Best PWA support on Android</td></tr>
-      <tr><td>Windows / Mac desktop</td><td>Chrome or Edge</td><td>Firefox also works; Safari on Mac works</td></tr>
-    </tbody>
-  </table>
-
-  <h2 class="sub-title">Installing as a PWA (Progressive Web App)</h2>
-  <p>Royal Ledger is not in the App Store or Play Store — it is a web app you install directly from the browser. Installing it gives you a home screen icon, full-screen experience, and push notifications.</p>
-
-  <div class="two-col avoid-break" style="margin-top:12px;">
-    <div class="col-card">
-      <div class="col-card-title">iOS — Safari</div>
-      <ol style="margin-left:16px; font-family:'Arial',sans-serif; font-size:10pt; line-height:1.7;">
-        <li>Open royalledger.app in Safari</li>
-        <li>Tap the <strong>Share</strong> button (□↑)</li>
-        <li>Scroll down and tap <strong>Add to Home Screen</strong></li>
-        <li>Tap <strong>Add</strong> in the top right</li>
-        <li>Open from your home screen going forward</li>
-      </ol>
-    </div>
-    <div class="col-card">
-      <div class="col-card-title">Android — Chrome</div>
-      <ol style="margin-left:16px; font-family:'Arial',sans-serif; font-size:10pt; line-height:1.7;">
-        <li>Open royalledger.app in Chrome</li>
-        <li>Tap the menu (<strong>⋮</strong>) in the top right</li>
-        <li>Tap <strong>Install app</strong> or <strong>Add to Home Screen</strong></li>
-        <li>Tap <strong>Install</strong> on the prompt</li>
-        <li>Open from your home screen going forward</li>
-      </ol>
+  <div class="card">
+    <div class="card-body">
+      <p>The following features represent the core of Royal Ledger's value proposition. For each one, we've noted what we need you to specifically look for and report on. You don't need to test everything on day one — work through features over the four-week period as they become relevant to your actual financial decisions.</p>
     </div>
   </div>
 
-  <h2 class="sub-title">If your invite code doesn't work</h2>
-  <ul>
-    <li>Make sure you are signing in with the <strong>exact email address</strong> your invite was sent to.</li>
-    <li>Invite codes expire <strong>30 days</strong> after they are issued. If yours has expired, email support@royalledger.app and a new one will be issued within 24 hours.</li>
-    <li>If the sign-in page says "Invalid code" even with the correct email, email support immediately — this is a bug.</li>
-  </ul>
+  <div class="spacer-sm"></div>
 
-  <h2 class="sub-title">What data to use during testing</h2>
-  <p>You can use real financial numbers if you are comfortable — the app stores data only on your device and in your private cloud account. Alternatively, use realistic test numbers:</p>
-  <ul>
-    <li>Monthly salary: R 25,000 (or your actual currency equivalent)</li>
-    <li>Fixed expenses: R 8,000</li>
-    <li>Current buffer balance: R 50,000</li>
-    <li>Buffer target: 18 months</li>
-  </ul>
-  <p>The app behaves identically regardless of which you use. Real numbers give more meaningful feedback on whether the system works for your actual life.</p>
+  <div class="card" style="padding: 12px 20px;">
+    <div class="feature-list">
 
-  <h2 class="sub-title">Exporting a backup before testing edge cases</h2>
-  <p>Before testing destructive features (Danger Zone, data reset, importing a backup), always export your data first: <strong>Settings → Data &amp; Sync → Backup &amp; Restore → Download as file.</strong> This protects your real data if you accidentally overwrite it during testing.</p>
+      <div class="feature-item">
+        <div class="feature-meta">
+          <div class="feature-num">Feature 01</div>
+          <div class="feature-name">Spending Gate<br><em>(Impulse Control)</em></div>
+          <div style="margin-top: 8px;"><div class="feature-tab">Impulse Control tab</div></div>
+        </div>
+        <div class="feature-body">
+          <p>The Spending Gate is the core behavioural friction feature. When you feel an impulse to buy something unplanned, you log it here: name the item, enter the amount, and select your emotional trigger (Bored, Stressed, Tired, Scrolling, Saw an ad, Family pressure — plus Won a trade / Lost a trade for Variable profile). The app shows you the cost in hours of work and the 30-year investment value of that money. A 24-hour waiting period then begins. After 24 hours, you decide: approve or abandon.</p>
+          <div class="look-for">
+            <div class="look-for-label">What to look for</div>
+            <ul>
+              <li>Does the trigger list feel accurate and complete, or are options missing?</li>
+              <li>Did the "hours of work" or "30-year value" numbers change how you felt about the purchase?</li>
+              <li>Is the 24-hour wait enforced correctly — and does it count from when you log it?</li>
+              <li>After you make a decision (buy / abandon), does it feel resolved?</li>
+              <li>Does anything in the flow feel like an annoying obstacle rather than useful friction?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-meta">
+          <div class="feature-num">Feature 02</div>
+          <div class="feature-name">Envelope<br><em>Budgeting</em></div>
+          <div style="margin-top: 8px;"><div class="feature-tab">Budget tab</div></div>
+        </div>
+        <div class="feature-body">
+          <p>Envelopes are named spending categories with monthly caps. Each envelope tracks spending against its limit. When you reach the cap, the envelope can either hard-block the expense or allow a PIN override (depending on your configuration). At month end, you can roll over remaining budget, sweep it to savings, or reset to zero.</p>
+          <div class="look-for">
+            <div class="look-for-label">What to look for</div>
+            <ul>
+              <li>Is envelope creation clear — naming, limit-setting, mode selection (hard block vs PIN override)?</li>
+              <li>If you hit a hard block, does it feel like it worked — or like an error message?</li>
+              <li>If you used the PIN override, did entering the PIN make you reconsider?</li>
+              <li>Are the month-end rollover and sweep options clear and easy to action?</li>
+              <li>Does the budget overview give you a clear picture of where you are vs. your limits?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-meta">
+          <div class="feature-num">Feature 03</div>
+          <div class="feature-name">Allocator</div>
+          <div style="margin-top: 8px;"><div class="feature-tab">Allocator tab</div></div>
+        </div>
+        <div class="feature-body">
+          <p>The Allocator routes your surplus or profit to the right financial buckets in the right order. Foundation uses the Money Allocator (simplified). Salary uses the Surplus Allocator (buffer → long-term → goals → lifestyle). Trading/Self-employed and Hybrid use the Profit Allocator (tax reserve → buffer → long-term → capital → goals → lifestyle). The waterfall fills each bucket to its configured level before moving to the next.</p>
+          <div class="look-for">
+            <div class="look-for-label">What to look for</div>
+            <ul>
+              <li>Does the waterfall logic match your mental model of how money should flow?</li>
+              <li>Is it clear what each stage is doing and why — or does the output feel like a black box?</li>
+              <li>When you run the allocator, does the result feel correct for your situation?</li>
+              <li>Can you adjust the parameters (buffer target, long-term contribution, etc.) easily?</li>
+              <li>Foundation only: does the stage progression feel motivating or arbitrary?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-meta">
+          <div class="feature-num">Feature 04</div>
+          <div class="feature-name">Daily<br><em>Checkpoints</em></div>
+          <div style="margin-top: 8px;"><div class="feature-tab">Ritual card</div></div>
+        </div>
+        <div class="feature-body">
+          <p>Five daily financial habits presented as a ritual card. Designed to take 2–3 minutes to complete. The checkpoints build the micro-habits that support the larger system — reviewing your balances, checking your envelopes, logging any spending decisions, confirming your daily impulse state. Completing all five marks the day as done.</p>
+          <div class="look-for">
+            <div class="look-for-label">What to look for</div>
+            <ul>
+              <li>Do the five habits feel meaningful or like arbitrary box-ticking?</li>
+              <li>Are any habits confusing — unclear what "completing" them actually means?</li>
+              <li>How long does the full ritual actually take you?</li>
+              <li>Do you feel any different after completing the checkpoints, or is it purely mechanical?</li>
+              <li>What would make you more likely to remember to do this every day?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-meta">
+          <div class="feature-num">Feature 05</div>
+          <div class="feature-name">Weekly <em>Pulse</em></div>
+          <div style="margin-top: 8px;"><div class="feature-tab">Weekly Pulse</div></div>
+        </div>
+        <div class="feature-body">
+          <p>A weekly financial check-in covering income received, expenses logged, financial mood, and a short reflection. Designed to take 5–10 minutes. The Pulse creates a structured weekly review rhythm — the equivalent of a weekly financial meeting with yourself. Includes a mood indicator and a space for written reflection.</p>
+          <div class="look-for">
+            <div class="look-for-label">What to look for</div>
+            <ul>
+              <li>Does the Weekly Pulse feel like it belongs in a finance app, or does the mood/reflection component feel out of place?</li>
+              <li>Are the questions asked during the Pulse relevant to your real week?</li>
+              <li>How long does it actually take to complete?</li>
+              <li>After completing a Pulse, do you feel like you have a clearer picture of your week?</li>
+              <li>Is the trigger to do the Pulse obvious — do you know when and how to access it?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-meta">
+          <div class="feature-num">Feature 06</div>
+          <div class="feature-name">Snapshot &amp;<br><em>Net Worth</em></div>
+          <div style="margin-top: 8px;"><div class="feature-tab">Command tab</div></div>
+        </div>
+        <div class="feature-body">
+          <p>The snapshot system captures a point-in-time record of all your balances and calculates net worth as the sum. Snapshots build a history over time so you can see financial progress. The Command tab shows current balances, snapshot history, and stage progress for your profile.</p>
+          <div class="look-for">
+            <div class="look-for-label">What to look for</div>
+            <ul>
+              <li>Is the net worth calculation clear — do you understand what's included and how it's summed?</li>
+              <li>Does entering your balances feel intuitive, or are the field labels confusing?</li>
+              <li>After taking multiple snapshots, does the history view show progress meaningfully?</li>
+              <li>Does seeing your net worth number motivate you or feel irrelevant?</li>
+              <li>Is the snapshot something you would naturally do weekly without being reminded?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-meta">
+          <div class="feature-num">Feature 07</div>
+          <div class="feature-name">Cloud Sync<br><em>(Multi-device)</em></div>
+          <div style="margin-top: 8px;"><div class="feature-tab">All tabs</div></div>
+        </div>
+        <div class="feature-body">
+          <p>Royal Ledger syncs your data in real time via Supabase. Sign in on a second device using the same account and your data should appear immediately. This feature is critical infrastructure — if sync breaks, the whole app is fragile. We need to know if anything fails to appear on the second device, appears with a delay, or shows conflicting data.</p>
+          <div class="look-for">
+            <div class="look-for-label">What to look for</div>
+            <ul>
+              <li>Sign in on a second device (phone + tablet, or phone + computer browser). Does your data appear?</li>
+              <li>Make a change on one device — add a Spending Gate item, take a snapshot — and check if it appears on the other device within 30 seconds.</li>
+              <li>Are there any data fields that don't sync or show old values on the second device?</li>
+              <li>Does signing out and back in correctly restore your data?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════ §4 INCOME PROFILES -->
-<div class="page page-break" id="sec-profiles">
-  <div class="section-eyebrow">Section 4</div>
-  <h1 class="section-title">Income Profiles</h1>
+<!-- SECTION 6: SUBMITTING FEEDBACK -->
+<div class="page page-break">
+  <div class="section-label"><span class="section-number">06</span> Feedback</div>
+  <h2 class="section-title">How to <em>submit</em> feedback</h2>
 
-  <p>During onboarding you choose an <strong>income profile</strong>. This is <strong>locked after setup</strong> — it shapes which tabs you see, how income is allocated, and what language the app uses. There are four profiles:</p>
-
-  <div class="two-col" style="margin-top:16px;">
-    <div class="col-card avoid-break">
-      <div class="col-card-title">Foundation</div>
-      <p>For people who are <strong>starting from zero</strong> — building savings habits before income is significant. Simplified Money Allocator. No trading features. No Trading P&amp;L tab.</p>
-      <p><em>Best for: students, first-time earners, those starting from scratch.</em></p>
-    </div>
-    <div class="col-card avoid-break">
-      <div class="col-card-title">Variable</div>
-      <p>For <strong>traders, freelancers, commission earners, and business owners</strong> whose income changes month to month. Includes full Profit Allocator and Trading P&amp;L tab.</p>
-      <p><em>Best for: self-employed, day traders, contractors.</em></p>
-    </div>
-    <div class="col-card avoid-break">
-      <div class="col-card-title">Fixed</div>
-      <p>For people on a <strong>salary or pension</strong> — predictable income each month. Uses Surplus Allocator. No Trading P&amp;L tab.</p>
-      <p><em>Best for: employees, pensioners, anyone with a stable paycheck.</em></p>
-    </div>
-    <div class="col-card avoid-break">
-      <div class="col-card-title">Mixed</div>
-      <p>For people with <strong>both a salary and additional income</strong> — side hustle, freelance, or rental income on top of employment. No Trading P&amp;L tab.</p>
-      <p><em>Best for: salaried employees with a side hustle or secondary income source.</em></p>
+  <div class="card">
+    <div class="card-title">The feedback channel</div>
+    <div class="card-body">
+      <p>All feedback goes via WhatsApp to the owner. This is intentional — it keeps the feedback loop direct, fast, and personal. There is no ticketing system, no feedback form, no intermediary. You message, it gets read, it gets acted on.</p>
+      <p style="margin-top: 14px;">There are two types of feedback messages:</p>
+      <ul class="standard" style="margin-top: 12px;">
+        <li><strong>Structured:</strong> Your responses to the weekly Q&A questions and pulse check-ins (see the Tester Q&A Programme document). These are sent on a schedule.</li>
+        <li><strong>Ad hoc:</strong> Any bug, confusion, suggestion, or reaction you want to share in the moment. Send these as they happen — don't queue them up for later.</li>
+      </ul>
     </div>
   </div>
 
-  <h2 class="sub-title">Tabs available by profile</h2>
-  <table>
-    <thead>
-      <tr><th>Tab</th><th>Foundation</th><th>Variable</th><th>Fixed</th><th>Mixed</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>Command (Dashboard)</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
-      <tr><td>Setup &amp; Salary / Income</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
-      <tr><td>Budget &amp; Spending Gate</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
-      <tr><td>History &amp; Snapshots</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
-      <tr><td>Money / Profit / Surplus Allocator</td><td>✓ Money</td><td>✓ Profit</td><td>✓ Surplus</td><td>✓ Surplus</td></tr>
-      <tr><td>Rules</td><td>✓ limited</td><td>✓ full</td><td>✓ full</td><td>✓ full</td></tr>
-      <tr><td>Settings</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
-      <tr><td><strong>Trading P&amp;L</strong></td><td>✗ hidden</td><td>✓</td><td>✗ hidden</td><td>✗ hidden</td></tr>
-    </tbody>
-  </table>
+  <div class="card">
+    <div class="card-title">What to include in an ad hoc message</div>
+    <div class="card-body">
+      <p>For any issue or observation, include the following in your message:</p>
+      <ul class="standard" style="margin-top: 10px;">
+        <li><strong>Which tab or screen</strong> you were on (e.g. "Budget tab", "Impulse Control", "Command")</li>
+        <li><strong>What you were trying to do</strong> (e.g. "I was trying to add a new envelope")</li>
+        <li><strong>What you expected to happen</strong> (e.g. "I expected it to save and show in the list")</li>
+        <li><strong>What actually happened</strong> (e.g. "It showed a blank screen and the envelope didn't appear")</li>
+        <li><strong>Your profile</strong> if relevant (Foundation, Salary, Trading/Self-employed, Hybrid)</li>
+      </ul>
+      <p style="margin-top: 14px;">Screenshots are always welcome and often more useful than descriptions. If something looks wrong visually, screenshot it immediately.</p>
+    </div>
+  </div>
 
-  <div class="box">
-    <span class="box-label">Locked after onboarding</span>
-    Income profile cannot be self-changed after setup. If you chose the wrong profile, email support@royalledger.app — admin can change it remotely without data loss.
+  <div class="callout callout-orange">
+    <strong>Please keep feedback separate from general questions.</strong> If you have a question about how a feature works, ask it — but start with "Quick question:" so it's flagged differently from bug reports. Mixing support questions and feedback reports in the same message makes it harder to triage.
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════ §5 ONBOARDING -->
-<div class="page page-break" id="sec-onboarding">
-  <div class="section-eyebrow">Section 5</div>
-  <h1 class="section-title">Getting Started — Onboarding</h1>
+<!-- SECTION 7: GOOD FEEDBACK -->
+<div class="page page-break">
+  <div class="section-label"><span class="section-number">07</span> Quality</div>
+  <h2 class="section-title">What makes <em>good</em> feedback</h2>
 
-  <p>When you first sign in, the app walks you through a one-time setup wizard. Complete every step carefully — most values can be adjusted later in Settings or Rules, but your <strong>income profile</strong> and <strong>currency</strong> are locked after setup.</p>
+  <div class="card">
+    <div class="card-body">
+      <p>Good feedback is specific, contextual, and honest. It tells us exactly what happened, where it happened, and what you felt about it. The table below shows examples of the difference between useful and not useful feedback across common categories.</p>
+    </div>
+  </div>
 
-  <ul class="step-list">
-    <li>
-      <div class="step-num">1</div>
-      <div class="step-body"><strong>Sign in with your invite code.</strong> Your code is tied to your email address. It expires 30 days after it is issued — use it promptly.</div>
+  <div class="spacer-sm"></div>
+
+  <div class="card" style="padding: 8px 0; overflow: hidden;">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 38%;">Not useful</th>
+          <th style="width: 42%;">Useful</th>
+          <th style="width: 20%;">Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-bad">"The app is confusing."</td>
+          <td class="td-good">"The Allocator output shows three numbers but I don't know which one is the action I need to take — the labels aren't clear enough."</td>
+          <td>Specific screen, specific problem, actionable.</td>
+        </tr>
+        <tr>
+          <td class="td-bad">"The Spending Gate doesn't work."</td>
+          <td class="td-good">"I logged an impulse on Tuesday evening and on Wednesday morning the 24h timer had reset to zero. I have a screenshot."</td>
+          <td>Reproducible, with evidence.</td>
+        </tr>
+        <tr>
+          <td class="td-bad">"I like it."</td>
+          <td class="td-good">"After running the allocator for the first time, I actually moved money to long-term savings the same day — which I haven't done in months. The waterfall made it feel obvious."</td>
+          <td>Positive feedback with a specific behavioural result is just as useful.</td>
+        </tr>
+        <tr>
+          <td class="td-bad">"Add dark mode."</td>
+          <td class="td-good">"The envelope list in the Budget tab is hard to read in direct sunlight — the contrast on the balance numbers feels too low."</td>
+          <td>Describes an actual problem rather than assuming a solution.</td>
+        </tr>
+        <tr>
+          <td class="td-bad">"The numbers are wrong."</td>
+          <td class="td-good">"My net worth shows R45,000 but when I add up the individual balances manually it comes to R48,500. I think the goals balance isn't being included."</td>
+          <td>Gives us the data we need to reproduce and fix it.</td>
+        </tr>
+        <tr>
+          <td class="td-bad">"I don't use that feature."</td>
+          <td class="td-good">"I haven't used the Daily Checkpoints because I open the app at night before bed, and by then the habit tracking feels pointless — I want to do it in the morning but I keep forgetting."</td>
+          <td>Non-use with a reason is just as valuable as use with feedback.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-green" style="margin-top: 20px;">
+    <strong>Rule of thumb:</strong> If your feedback could apply to any app — not just Royal Ledger specifically — it's probably not specific enough. "It's slow" could mean anything. "The snapshot save takes about 4 seconds and shows a blank screen while waiting, which made me think it had crashed" is specific enough to act on.
+  </div>
+</div>
+
+<!-- SECTION 8: KNOWN LIMITATIONS -->
+<div class="page page-break">
+  <div class="section-label"><span class="section-number">08</span> Limitations</div>
+  <h2 class="section-title">Known <em>limitations</em> — not bugs</h2>
+
+  <div class="card">
+    <div class="card-body">
+      <p>The following are intentional gaps in this version of Royal Ledger. They are on the product roadmap but not yet built. Please do not report these as bugs — if you would like to express a priority preference for any of them, you are welcome to include that in your feedback, but know that they are already known and planned.</p>
+    </div>
+  </div>
+
+  <div class="spacer-sm"></div>
+
+  <ul class="limit-list">
+    <li class="limit-item">
+      <div class="limit-icon">NOT YET</div>
+      <div class="limit-text"><strong>In-app push notifications and reminders.</strong> The app cannot currently send you a notification to complete your daily checkpoints, remind you to log a snapshot, or alert you when a 24-hour Spending Gate wait has ended. Reminders must be set manually in your phone's calendar or alarm for now.</div>
     </li>
-    <li>
-      <div class="step-num">2</div>
-      <div class="step-body"><strong>Choose your currency.</strong> Controls how all amounts are displayed — symbol, formatting, separators. Does <em>not</em> convert values. <strong>Choose carefully: locked after setup.</strong></div>
+    <li class="limit-item">
+      <div class="limit-icon">NOT YET</div>
+      <div class="limit-text"><strong>Bank statement or transaction import.</strong> There is no way to import transactions from your bank, upload a statement, or connect to a banking API. All entries are manual. This is intentional in the first version — automated import can create a passive relationship with money that works against the app's purpose — but it is under review for future builds.</div>
     </li>
-    <li>
-      <div class="step-num">3</div>
-      <div class="step-body"><strong>Choose your income profile.</strong> Foundation, Variable, Fixed, or Mixed. See Section 4 for the full comparison. <strong>Locked after setup.</strong></div>
+    <li class="limit-item">
+      <div class="limit-icon">NOT YET</div>
+      <div class="limit-text"><strong>Shared household or multi-user mode.</strong> Royal Ledger currently supports one user per account. There is no way to link two accounts as a household, share envelopes with a partner, or view combined net worth across two users. Household mode is planned for a later version.</div>
     </li>
-    <li>
-      <div class="step-num">4</div>
-      <div class="step-body"><strong>Enter your monthly income / salary.</strong> Variable users enter an average or expected figure. Foundation users enter income or allowance. This is the reference number for all stage threshold calculations.</div>
+    <li class="limit-item">
+      <div class="limit-icon">NOT YET</div>
+      <div class="limit-text"><strong>Recurring expense automation.</strong> Envelopes must be manually reset and managed each month. The app does not automatically deduct recurring bills from envelopes, schedule recurring entries, or auto-reset caps at month-end. Month-end actions are currently user-initiated.</div>
     </li>
-    <li>
-      <div class="step-num">5</div>
-      <div class="step-body"><strong>Enter your monthly fixed expenses.</strong> Rent, insurance, subscriptions, phone, bond — any committed cost that leaves your account every month regardless of your choices.</div>
+    <li class="limit-item">
+      <div class="limit-icon">NOT YET</div>
+      <div class="limit-text"><strong>Analytics and spending trend charts.</strong> There are no charts, graphs, or historical spending trend visualisations in this version. The snapshot history shows net worth over time, but there is no spending category breakdown, income trend line, or envelope spend history view yet.</div>
     </li>
-    <li>
-      <div class="step-num">6</div>
-      <div class="step-body"><strong>Set your buffer target.</strong> How many months of salary you want in your financial buffer. Default is <strong>18 months.</strong> The system builds to this target step by step through the stages.</div>
-    </li>
-    <li>
-      <div class="step-num">7</div>
-      <div class="step-body"><strong>Enter your current buffer balance.</strong> What you actually have right now. This places you in the correct stage immediately.</div>
-    </li>
-    <li>
-      <div class="step-num">8</div>
-      <div class="step-body"><strong>Set a Security PIN.</strong> 4–6 digits. Protects structural settings from accidental changes. Optional but strongly recommended.</div>
-    </li>
-    <li>
-      <div class="step-num">9</div>
-      <div class="step-body"><strong>Done.</strong> The app calculates your stage and opens the Command tab.</div>
+    <li class="limit-item">
+      <div class="limit-icon">NOT YET</div>
+      <div class="limit-text"><strong>In-app subscription or payment management.</strong> There is no billing system inside the app. Beta access is granted manually by the owner. Post-beta pricing, subscription management, and payment processing are not yet built.</div>
     </li>
   </ul>
-
-  <div class="box green">
-    <span class="box-label">Tester tip</span>
-    Try completing onboarding as different profiles in different browsers or private windows. Pay attention to whether each step is clear, whether the defaults make sense for each profile type, and whether error states (blank fields, invalid numbers) are handled gracefully.
-  </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════ §6 COMMAND TAB -->
-<div class="page page-break" id="sec-command">
-  <div class="section-eyebrow">Section 6</div>
-  <h1 class="section-title">Command Tab</h1>
-  <div class="profile-row"><span class="profile-badge pb-all">All profiles</span></div>
+<!-- SECTION 9: FAQ -->
+<div class="page page-break">
+  <div class="section-label"><span class="section-number">09</span> FAQ</div>
+  <h2 class="section-title">Frequently asked <em>questions</em></h2>
 
-  <p>The Command tab is your <strong>daily financial dashboard</strong> — the first screen you see when you open the app. It shows your current position, stage, active alerts, and daily checkpoints.</p>
+  <div class="card" style="padding: 8px 20px;">
+    <div class="faq-list">
 
-  <h2 class="sub-title">Buffer stages</h2>
-  <table class="avoid-break">
-    <thead><tr><th>Stage</th><th>Name</th><th>Condition</th><th>What happens to income</th></tr></thead>
-    <tbody>
-      <tr>
-        <td><strong>Stage 1</strong></td>
-        <td>Build the Floor</td>
-        <td>Buffer below 6× monthly salary</td>
-        <td>100% goes to buffer — no split</td>
-      </tr>
-      <tr>
-        <td><strong>Stage 1.5</strong></td>
-        <td>Grow the Cushion</td>
-        <td>Buffer between 6× and target</td>
-        <td>Buffer 55%, Long-term 30%, Goals 15%</td>
-      </tr>
-      <tr>
-        <td><strong>Stage 2</strong></td>
-        <td>Reach Fortified</td>
-        <td>Approaching buffer target</td>
-        <td>Buffer 65%, Long-term 20%, Goals 15%</td>
-      </tr>
-      <tr>
-        <td><strong>Stage 3</strong></td>
-        <td>Full Waterfall</td>
-        <td>Buffer fully funded at target</td>
-        <td>Long-term 30%, Trading 30%, Goals 20%, Lifestyle 20%</td>
-      </tr>
-      <tr>
-        <td><strong>Protect</strong></td>
-        <td>Buffer Rebuilding</td>
-        <td>Buffer drops below 16× salary</td>
-        <td>100% redirected to buffer rebuild</td>
-      </tr>
-    </tbody>
-  </table>
+      <div class="faq-item">
+        <div class="faq-q">Can I change my profile after I've set up the app?</div>
+        <div class="faq-a">Yes, but not from inside the app in this version — contact the owner via WhatsApp. Changing profiles may affect your Allocator settings and Foundation Arc stage progress. Your snapshot history and envelope data are preserved.</div>
+      </div>
 
-  <div class="box avoid-break">
-    <span class="box-label">Default thresholds</span>
-    Crisis floor: <strong>6 months</strong> salary &nbsp;·&nbsp; Buffer target: <strong>18 months</strong> salary &nbsp;·&nbsp; Protect mode triggers below: <strong>16 months</strong> salary. All are adjustable in Rules.
-  </div>
+      <div class="faq-item">
+        <div class="faq-q">What currency should I use?</div>
+        <div class="faq-a">Use whatever currency you actually transact in. Royal Ledger supports ZAR, USD, GBP, EUR, and others. Select your currency during onboarding. Currency is locked after onboarding — if you need to change it, contact the owner. All numbers in the app will display in your chosen currency.</div>
+      </div>
 
-  <h2 class="sub-title">Current Balances</h2>
-  <p>Live view of all your financial buckets: Buffer, Trading Capital, Long-Term Savings, Future Goals, and Lifestyle. To edit balances, click the <strong>"Unlock to edit"</strong> button on the balances card — this toggles edit mode on all fields simultaneously.</p>
+      <div class="faq-item">
+        <div class="faq-q">What happens to my data at the end of the beta?</div>
+        <div class="faq-a">Your data is not deleted at the end of the beta period. The intention is that beta accounts will convert to regular accounts when the app launches publicly. You will not need to start over. If anything changes about this, you will be notified before it happens.</div>
+      </div>
 
-  <h2 class="sub-title">This Month</h2>
-  <p>A running summary of the current calendar month — income logged, expenses, surplus or profit, and amounts allocated. Resets on the first of each month.</p>
+      <div class="faq-item">
+        <div class="faq-q">I found a bug. How urgently should I report it?</div>
+        <div class="faq-a">Report it as soon as you notice it. Don't queue bugs — fresh context makes them much easier to reproduce. If it's something that blocks you from using the app at all, start your message with "BLOCKER:" to flag it as high priority. If it's a visual glitch or minor issue, a regular message is fine.</div>
+      </div>
 
-  <h2 class="sub-title">Net Worth</h2>
-  <p>The sum of all balances. Tracks your overall financial trajectory across snapshots.</p>
+      <div class="faq-item">
+        <div class="faq-q">The 24-hour Spending Gate wait seems too long. Can I skip it?</div>
+        <div class="faq-a">The 24-hour wait is intentional and is core to the feature's purpose. There is no skip — that would defeat the point. If you feel 24 hours is the wrong duration for a particular type of purchase, that is exactly the kind of feedback we want. Tell us what the item was, what the amount was, and why the wait felt wrong for that situation.</div>
+      </div>
 
-  <h2 class="sub-title">Spending card</h2>
-  <p>Discretionary spending this month vs. your envelope cap. Shows how much of your monthly allowance remains.</p>
+      <div class="faq-item">
+        <div class="faq-q">Do I need to log every single purchase through the Spending Gate?</div>
+        <div class="faq-a">No. The Spending Gate is for unplanned, impulse-driven purchases — things that weren't in your envelopes or budget. Regular, planned expenses go through your envelopes in the Budget tab. Think of the Gate as a filter for spending decisions that would normally happen on impulse without a second thought.</div>
+      </div>
 
-  <h2 class="sub-title">Active banners</h2>
-  <p>One contextual banner displays at a time based on priority. Examples:</p>
-  <table class="avoid-break">
-    <thead><tr><th>Banner</th><th>What it means</th><th>Profiles</th></tr></thead>
-    <tbody>
-      <tr><td>Trading Guard active</td><td>Loss logged — all purchases above threshold require 24-hour sleep</td><td>Variable</td></tr>
-      <tr><td>Weekly Pulse</td><td>Time for your weekly financial review</td><td>All</td></tr>
-      <tr><td>Backup reminder</td><td>No backup exported recently</td><td>All</td></tr>
-      <tr><td>Drawdown warning</td><td>Buffer has dropped — review position</td><td>Variable, Mixed</td></tr>
-      <tr><td>Foundation nudge</td><td>Encouragement to stay consistent</td><td>Foundation</td></tr>
-    </tbody>
-  </table>
+      <div class="faq-item">
+        <div class="faq-q">What if I genuinely can't complete the minimum activity criteria this month?</div>
+        <div class="faq-a">Life happens. If you're unable to complete the criteria due to circumstances — illness, travel, a difficult month — message the owner and let us know. We will not automatically disqualify anyone who communicates proactively. What we can't accommodate is silence — if you go quiet for the full beta period with no activity and no communication, the voucher won't be issued.</div>
+      </div>
 
-  <h2 class="sub-title">Progression &amp; Daily Checkpoints</h2>
-  <p>Below the balances, the Command tab shows your stage progression timeline and the Daily Checkpoints card. See Section 13 for the full Checkpoints guide.</p>
-</div>
+      <div class="faq-item">
+        <div class="faq-q">Can I invite someone else to join the beta?</div>
+        <div class="faq-a">Not without checking first. This is a closed beta and the number of testers is deliberately managed. If you know someone who would be an excellent tester — particularly someone with a genuinely different income profile or situation than yours — mention their name to the owner. They may be considered for a future cohort.</div>
+      </div>
 
-<!-- ══════════════════════════════════════════════════ §7 SETUP & SALARY -->
-<div class="page page-break" id="sec-setup">
-  <div class="section-eyebrow">Section 7</div>
-  <h1 class="section-title">Setup &amp; Salary Tab</h1>
-  <div class="profile-row"><span class="profile-badge pb-all">All profiles</span></div>
+      <div class="faq-item">
+        <div class="faq-q">I'm on Foundation. When do I graduate to another profile?</div>
+        <div class="faq-a">The Foundation Arc reaches "Complete" status when you have 12 or more months of expenses saved and have been using the app for at least 30 days. At that point, you'll see a graduation option in the app to move to Salary, Trading/Self-employed, or Hybrid. Graduation is voluntary — you are not forced to leave Foundation.</div>
+      </div>
 
-  <p>This tab holds the <strong>structural numbers</strong> that drive the entire system. Changes here affect all stage calculations immediately.</p>
+      <div class="faq-item">
+        <div class="faq-q">How is my net worth calculated?</div>
+        <div class="faq-a">Net worth in Royal Ledger is the sum of all the balance fields you enter in a snapshot: Buffer/Savings + Monthly Salary or Money Available + Long-term savings + Future Goals (combined) + Capital (for Hybrid and Trading profiles). It is a simple sum of what you've declared — the app does not connect to your bank and does not know about liabilities or debts unless you represent them as negative values in a balance field.</div>
+      </div>
 
-  <h3 class="sub-sub-title">Income / Salary</h3>
-  <p>Your monthly income reference. For Variable users this is an average or expected figure. For Fixed users it is your take-home salary. The system uses this to calculate stage thresholds — for example, 6× salary = the crisis floor that triggers Stage 1.</p>
-
-  <h3 class="sub-sub-title">Monthly fixed expenses</h3>
-  <p>Committed costs that leave your account every month regardless of choice: rent, bond, insurance, medical aid, subscriptions, data, phone. These are excluded from your discretionary spending envelope.</p>
-
-  <h3 class="sub-sub-title">Buffer target</h3>
-  <p>How many months of salary you want in your financial buffer. Default: 18 months. Adjustable in Rules.</p>
-
-  <h3 class="sub-sub-title">Current balances</h3>
-  <p>Your actual current balances for Buffer, Trading Capital, Long-Term Savings, Future Goals, and Lifestyle. Update these whenever your real balances change. Always update your buffer balance after adding money to it.</p>
-
-  <div class="box">
-    <span class="box-label">See also</span>
-    Discretionary spending categories (envelopes) are managed in the <strong>Budget tab — see Section 8</strong>. The Setup tab handles structural income and balance figures only.
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════ §8 BUDGET TAB -->
-<div class="page page-break" id="sec-budget">
-  <div class="section-eyebrow">Section 8</div>
-  <h1 class="section-title">Budget Tab &amp; Spending Gate</h1>
-  <div class="profile-row"><span class="profile-badge pb-all">All profiles</span></div>
-
-  <p>The Budget tab combines two systems: <strong>envelope budgeting</strong> (how you manage categories) and the <strong>Spending Gate</strong> (how you control impulse decisions at the point of purchase).</p>
-
-  <h2 class="sub-title">Envelopes</h2>
-  <p>Create named spending categories — Groceries, Fuel, Entertainment, Clothing, Eating Out. Each envelope has a monthly cap, an enforcement mode, and a rollover rule.</p>
-
-  <h3 class="sub-sub-title">Block Mode — enforcement when the cap is reached</h3>
-  <table class="avoid-break">
-    <thead><tr><th>Mode</th><th>What happens when you hit the cap</th></tr></thead>
-    <tbody>
-      <tr><td><strong>Soft</strong></td><td>App warns you but still allows the purchase. You decide.</td></tr>
-      <tr><td><strong>Hard</strong></td><td>Purchase is refused. Cannot proceed until cap is increased or next month begins.</td></tr>
-      <tr><td><strong>PIN override</strong></td><td>Hard block, but you can bypass by entering your Security PIN. Forces a conscious, deliberate decision.</td></tr>
-    </tbody>
-  </table>
-
-  <h3 class="sub-sub-title">Rollover Mode — what happens to unspent balance at month-end</h3>
-  <table class="avoid-break">
-    <thead><tr><th>Mode</th><th>What happens at the end of the month</th></tr></thead>
-    <tbody>
-      <tr><td><strong>Reset</strong></td><td>Use it or lose it. Unspent balance disappears; cap resets to full next month.</td></tr>
-      <tr><td><strong>Rollover</strong></td><td>Unspent balance carries forward, increasing next month's available cap.</td></tr>
-      <tr><td><strong>Sweep</strong></td><td>Unspent balance moves to your buffer at month-end. Cap resets to full.</td></tr>
-    </tbody>
-  </table>
-
-  <h2 class="sub-title">The Spending Gate</h2>
-  <p>The Spending Gate is the app's core impulse-control mechanism. Any purchase <strong>at or above the gate threshold</strong> (default: <strong>50</strong> in your currency) triggers a structured decision flow before the purchase is logged. Purchases <em>below</em> the threshold skip the gate and are logged directly.</p>
-
-  <h3 class="sub-sub-title">The gate flow — step by step</h3>
-  <ul class="step-list">
-    <li><div class="step-num">1</div><div class="step-body"><strong>Name the item and enter the amount.</strong> What do you want to buy? How much does it cost?</div></li>
-    <li><div class="step-num">2</div><div class="step-body"><strong>Identify the emotional trigger.</strong> Why do you want it right now? Boredom? Stress? Reward? FOMO? Convenience? The app asks you to name it.</div></li>
-    <li><div class="step-num">3</div><div class="step-body"><strong>Choose the envelope</strong> the purchase comes from.</div></li>
-    <li><div class="step-num">4</div><div class="step-body"><strong>Make your decision.</strong> Three options are presented:</div></li>
-  </ul>
-
-  <div class="gate-buttons avoid-break">
-    <div class="gate-btn gb-skip">
-      <span class="gb-label">Skip it</span>
-      <span class="gb-sub">"Don't need it." — discards the purchase, logs nothing.</span>
     </div>
-    <div class="gate-btn gb-sleep">
-      <span class="gb-label">Sleep on it</span>
-      <span class="gb-sub">"Decide tomorrow." — parks the item for 24 hours, then prompts you to return and decide.</span>
+  </div>
+</div>
+
+<!-- SECTION 10: QUICK REFERENCE -->
+<div class="page page-break">
+  <div class="section-label"><span class="section-number">10</span> Quick Reference</div>
+  <h2 class="section-title">Quick <em>reference</em> card</h2>
+
+  <div class="ref-grid">
+
+    <div class="ref-card">
+      <div class="ref-label">The Four Profiles</div>
+      <div class="ref-profile-row">
+        <div class="ref-emoji">🌱</div>
+        <div>
+          <div class="ref-profile-name">Building from Zero</div>
+          <div class="ref-profile-sub">Foundation Arc · Money Allocator</div>
+        </div>
+      </div>
+      <div class="ref-profile-row">
+        <div class="ref-emoji">💼</div>
+        <div>
+          <div class="ref-profile-name">Salary</div>
+          <div class="ref-profile-sub">Fixed income · Surplus Allocator</div>
+        </div>
+      </div>
+      <div class="ref-profile-row">
+        <div class="ref-emoji">📈</div>
+        <div>
+          <div class="ref-profile-name">Trading / Self-Employed</div>
+          <div class="ref-profile-sub">Variable income · Profit Allocator · P&L tab</div>
+        </div>
+      </div>
+      <div class="ref-profile-row">
+        <div class="ref-emoji">⚡</div>
+        <div>
+          <div class="ref-profile-name">Hybrid</div>
+          <div class="ref-profile-sub">Salary + side income · Profit Allocator</div>
+        </div>
+      </div>
     </div>
-    <div class="gate-btn gb-buy">
-      <span class="gb-label">Buy now</span>
-      <span class="gb-sub">"I'm sure." — logs the purchase immediately to the selected envelope.</span>
+
+    <div class="ref-card">
+      <div class="ref-label">Key Tabs</div>
+      <div class="ref-row"><div class="ref-key">Command</div><div class="ref-val">Balances, snapshots, net worth, stage progress</div></div>
+      <div class="ref-row"><div class="ref-key">Impulse</div><div class="ref-val">Spending Gate — log and review impulse purchases</div></div>
+      <div class="ref-row"><div class="ref-key">Budget</div><div class="ref-val">Envelopes — spending categories and monthly caps</div></div>
+      <div class="ref-row"><div class="ref-key">Allocator</div><div class="ref-val">Waterfall allocation of surplus or profit</div></div>
+      <div class="ref-row"><div class="ref-key">Ritual</div><div class="ref-val">Daily checkpoints — 5-habit card</div></div>
+      <div class="ref-row"><div class="ref-key">Settings</div><div class="ref-val">Profile, currency, PIN, backup &amp; restore</div></div>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-label">Voucher Criteria (all 4 required)</div>
+      <div class="ref-row"><div class="ref-key">Gate</div><div class="ref-val">5+ items through the Spending Gate</div></div>
+      <div class="ref-row"><div class="ref-key">Snapshots</div><div class="ref-val">3+ balance snapshots taken</div></div>
+      <div class="ref-row"><div class="ref-key">Pulse</div><div class="ref-val">2+ Weekly Pulse check-ins completed</div></div>
+      <div class="ref-row"><div class="ref-key">Feedback</div><div class="ref-val">1+ piece of structured feedback submitted</div></div>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-label">Spending Gate Triggers</div>
+      <div class="ref-row"><div class="ref-key" style="min-width: 56px;">😑</div><div class="ref-val">Bored</div></div>
+      <div class="ref-row"><div class="ref-key" style="min-width: 56px;">😰</div><div class="ref-val">Stressed</div></div>
+      <div class="ref-row"><div class="ref-key" style="min-width: 56px;">😴</div><div class="ref-val">Tired</div></div>
+      <div class="ref-row"><div class="ref-key" style="min-width: 56px;">👨‍👩‍👧</div><div class="ref-val">Family pressure</div></div>
+      <div class="ref-row"><div class="ref-key" style="min-width: 56px;">📱</div><div class="ref-val">Scrolling</div></div>
+      <div class="ref-row"><div class="ref-key" style="min-width: 56px;">📣</div><div class="ref-val">Saw an ad</div></div>
+      <div class="ref-row" style="border-top: 1px solid var(--border); margin-top: 4px;">
+        <div class="ref-key" style="min-width: 56px; color: var(--dim); font-size: 10px;">+Variable</div>
+        <div class="ref-val" style="color: var(--dim); font-size: 12px;">Won a trade · Lost a trade</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="spacer-sm"></div>
+
+  <div class="card">
+    <div class="card-title">Support contact</div>
+    <div class="card-body">
+      <p>All feedback, bug reports, questions, and support requests go via WhatsApp to the owner. This is the only support channel during closed beta.</p>
+      <p style="margin-top: 12px;">For the fastest response on bugs: include the tab name, what you were doing, what you expected, and what happened. Screenshots speed things up significantly. Start urgent messages with "BLOCKER:" for same-day attention.</p>
     </div>
   </div>
 
-  <p>If you chose <strong>Sleep on it</strong>, the item sits in a pending queue. After 24 hours the app prompts you to return and make a final decision — at that point you can choose to log it or discard it.</p>
-
-  <h3 class="sub-sub-title">Trading Guard <span class="tag tag-blue">Variable only</span></h3>
-  <p>When a negative P&amp;L is logged in the Trading tab, the Trading Guard <strong>activates automatically</strong> — no user action is required. For the next <strong>24 hours</strong>, any purchase at or above the threshold is forced into the "Sleep on it" queue. The "Buy now" option is temporarily removed during this window. The guard expires on its own after 24 hours. A banner on the Command tab shows how long remains.</p>
-
-  <p>This prevents emotional spending after a trading loss — one of the most common destructive financial behaviours for active traders.</p>
-
-  <div class="box green">
-    <span class="box-label">Tester tip</span>
-    Test all three gate options. Test Hard block mode — confirm it refuses at the cap. Test PIN override — wrong PIN must not bypass the block. Log a negative P&amp;L (Trading tab) and confirm the Guard banner appears and "Buy now" is removed from the gate.
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════ §9 HISTORY TAB -->
-<div class="page page-break" id="sec-history">
-  <div class="section-eyebrow">Section 9</div>
-  <h1 class="section-title">History Tab</h1>
-  <div class="profile-row"><span class="profile-badge pb-all">All profiles</span></div>
-
-  <p>The History tab is your <strong>financial archive</strong>. It stores monthly snapshots, expense records, impulse logs, and a net worth chart over time.</p>
-
-  <h2 class="sub-title">Monthly Snapshots</h2>
-  <p>A snapshot is a point-in-time capture of your financial position, recording: date, buffer balance, trading capital, long-term savings, total assets (net worth), and salary reference.</p>
-  <p>Take a snapshot at month-end as part of your Monthly Review routine. Over time, snapshots form the data behind your net worth chart.</p>
-
-  <h2 class="sub-title">Net Worth Chart</h2>
-  <p>A line chart plotting your total assets over every snapshot taken. This is the most honest measure of financial progress — it removes month-to-month noise and shows the long-term trajectory. Requires at least two snapshots to draw a line.</p>
-
-  <h2 class="sub-title">Expense History</h2>
-  <p>Every purchase logged through the Spending Gate or Quick Log. Filter by month, category, or envelope. Use this to review actual spending patterns — not what you planned, what you actually did.</p>
-
-  <h2 class="sub-title">Impulse Log</h2>
-  <p>A record of every Spending Gate decision: what you wanted to buy, the trigger you identified, whether you bought it or slept on it, and what you decided after the wait. Over time this becomes a powerful behavioural audit — you can see patterns in your own impulse triggers.</p>
-
-  <div class="box green">
-    <span class="box-label">Tester tip</span>
-    Log several test expenses and impulses. Take at least two snapshots across different dates and verify the chart draws both points correctly. Reload the page and confirm records persist.
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════ §10 TRADING P&L TAB -->
-<div class="page page-break" id="sec-trading">
-  <div class="section-eyebrow">Section 10</div>
-  <h1 class="section-title">Trading P&amp;L Tab</h1>
-  <div class="profile-row">
-    <span class="profile-badge pb-var">Variable</span>
-  </div>
-
-  <p>Visible only to Variable profile users. Tracks trading profit and loss by entry, month, and year.</p>
-
-  <h2 class="sub-title">Log P&amp;L</h2>
-  <p>After each trading session or at end of day, log your result — profit or loss — with a note. The entry is recorded against the current month.</p>
-  <p>If the amount logged is <strong>negative</strong> (a loss), the <strong>Trading Guard activates automatically</strong> for 24 hours — see Section 8. No separate action is required.</p>
-
-  <h2 class="sub-title">Monthly P&amp;L Summary</h2>
-  <p>Running total for the current month. When you run the Profit Allocator at month-end, this figure is used as the gross input. The tax reserve percentage (default 25%) is deducted first; the remainder is split per your stage rules.</p>
-
-  <h2 class="sub-title">P&amp;L History</h2>
-  <p>Month-by-month record of every result. Shows your best months, worst months, and overall trend.</p>
-
-  <h2 class="sub-title">Year-to-Date (YTD)</h2>
-  <p>Running YTD total displayed here and as a quick figure on the Command tab. Resets at the start of each calendar year.</p>
-
-  <div class="box green">
-    <span class="box-label">Tester tip</span>
-    Log a negative P&amp;L and confirm: (1) the Trading Guard banner appears immediately on Command tab, (2) the "Buy now" button is absent from the Spending Gate for 24 hours, (3) the guard expires automatically. Then log a positive result and run the Profit Allocator — confirm tax is deducted before the split.
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════ §11 RULES TAB -->
-<div class="page page-break" id="sec-rules">
-  <div class="section-eyebrow">Section 11</div>
-  <h1 class="section-title">Rules Tab</h1>
-  <div class="profile-row"><span class="profile-badge pb-all">All profiles</span></div>
-
-  <p>Every number the system uses to make decisions. PIN-protected — click <strong>"Locked · click to edit"</strong> to unlock for 60 seconds. The lock re-engages automatically. Foundation profile sees a simplified version of this tab.</p>
-
-  <h2 class="sub-title">Tax Reserve <span class="tag tag-grey">Variable / Fixed / Mixed</span></h2>
-  <p>Percentage of gross profit or surplus ring-fenced for tax before any allocation. This money is never distributed. Default: <strong>25%.</strong> Consult your tax adviser for your actual rate.</p>
-
-  <h2 class="sub-title">Profit Allocation by Stage <span class="tag tag-grey">Variable / Fixed / Mixed</span></h2>
-  <p>For each stage, you define how net profit (after tax) is split across five buckets. Each row must total exactly <strong>100%</strong> — the app warns you in red if it doesn't.</p>
-
-  <table class="avoid-break">
-    <thead><tr><th>Stage</th><th>Buffer</th><th>Long-term</th><th>Trading</th><th>Goals</th><th>Lifestyle</th></tr></thead>
-    <tbody>
-      <tr><td><strong>Stage 1</strong> — Build the Floor</td><td>100%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr>
-      <tr><td><strong>Stage 1.5</strong> — Grow the Cushion</td><td>55%</td><td>30%</td><td>0%</td><td>15%</td><td>0%</td></tr>
-      <tr><td><strong>Stage 2</strong> — Reach Fortified</td><td>65%</td><td>20%</td><td>0%</td><td>15%</td><td>0%</td></tr>
-      <tr><td><strong>Stage 3</strong> — Full Waterfall</td><td>0%</td><td>30%</td><td>30%</td><td>20%</td><td>20%</td></tr>
-    </tbody>
-  </table>
-
-  <h2 class="sub-title">Spending Gate Threshold</h2>
-  <p>The amount at or above which the full gate triggers. Default: <strong>50</strong> in your currency. Set it to the number where you want friction — where purchases require deliberate thought rather than reflex.</p>
-
-  <h2 class="sub-title">Future Goals</h2>
-  <p>Named financial targets drawing from your shared Goals balance — a car, a course, a home deposit, a holiday. Set a name and a target amount for each. Progress shows the current Goals pool as a percentage of each target.</p>
-</div>
-
-<!-- ══════════════════════════════════════════════════ §12 SETTINGS TAB -->
-<div class="page page-break" id="sec-settings">
-  <div class="section-eyebrow">Section 12</div>
-  <h1 class="section-title">Settings Tab</h1>
-  <div class="profile-row"><span class="profile-badge pb-all">All profiles</span></div>
-
-  <p>Four sub-tabs: <strong>Account</strong>, <strong>Sessions</strong>, <strong>Data &amp; Sync</strong>, and <strong>Danger Zone.</strong></p>
-
-  <h2 class="sub-title">Account sub-tab</h2>
-
-  <h3 class="sub-sub-title">Profile</h3>
-  <p>Set your display name — shown in the app header in place of your email address. Cosmetic only; does not affect login.</p>
-
-  <h3 class="sub-sub-title">Password</h3>
-  <p>Update your login password. Minimum 8 characters. Session stays active after the change. If you forget your password, use "Forgot password?" on the sign-in screen.</p>
-
-  <h3 class="sub-sub-title">Security PIN</h3>
-  <p>A 4–6 digit PIN that locks structural settings and the Rules tab. Stored locally, hashed — never sent to a server. If forgotten, submit a reset request from within the app. Support approves it and you set a new PIN on next login.</p>
-
-  <h3 class="sub-sub-title">Notifications</h3>
-  <p>Push notifications for daily morning check-ins, weekly pulse reminders, and monthly review alerts. Requires the app installed to your home screen on iOS. Set your timezone so alerts fire at the correct local time.</p>
-
-  <h3 class="sub-sub-title">Currency</h3>
-  <p>Displays your onboarding currency — read-only. Locked to prevent silent misrepresentation of historical data. Email support@royalledger.app to change it.</p>
-
-  <h3 class="sub-sub-title">Income Profile</h3>
-  <p>Displays your current profile — read-only. Email support@royalledger.app to request a change.</p>
-
-  <h2 class="sub-title">Sessions sub-tab</h2>
-  <p>Shows your current active session and lets you sign out other devices. Sessions expire automatically after 7 days of inactivity.</p>
-
-  <h2 class="sub-title">Data &amp; Sync sub-tab</h2>
-  <h3 class="sub-sub-title">Cloud Sync</h3>
-  <p>Data syncs automatically when signed in. Use <strong>Upload local → cloud</strong> to push this device's data up, or <strong>Download cloud → device</strong> to pull from another device.</p>
-
-  <h3 class="sub-sub-title">Backup &amp; Restore</h3>
-  <p>Export a JSON backup regularly — especially before clearing cookies or switching devices. To restore, choose the exported file or paste clipboard content. <strong>Restoring replaces all current data permanently.</strong> Export before testing this feature.</p>
-
-  <div class="box red">
-    <span class="box-label">Danger Zone</span>
-    The Danger Zone sub-tab contains <strong>Delete account</strong> — permanently wipes all data including snapshots, P&amp;L history, envelopes, buffer config, and PIN. Cannot be undone. Always export a backup before testing this.
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════ §13 DAILY CHECKPOINTS -->
-<div class="page page-break" id="sec-checkpoints">
-  <div class="section-eyebrow">Section 13</div>
-  <h1 class="section-title">Daily Checkpoints</h1>
-  <div class="profile-row"><span class="profile-badge pb-all">All profiles</span></div>
-
-  <p>The Daily Checkpoints card on the Command tab is a set of <strong>five intentional check-ins</strong> that keep you financially aware without consuming more than a few minutes a day. Each resets automatically on its own schedule.</p>
-
-  <table>
-    <thead><tr><th>Checkpoint</th><th>Action</th><th>Resets</th></tr></thead>
-    <tbody>
-      <tr>
-        <td><strong>Morning check (30s)</strong></td>
-        <td>Open the Command tab. Glance at your buffer, stage, and any active alerts.</td>
-        <td>Daily</td>
-      </tr>
-      <tr>
-        <td><strong>Before purchase</strong></td>
-        <td>Before any purchase above the threshold, run the Spending Gate.</td>
-        <td>Daily</td>
-      </tr>
-      <tr>
-        <td><strong>After purchase</strong></td>
-        <td>Log what you bought using Quick Log. Keep your records current.</td>
-        <td>Daily</td>
-      </tr>
-      <tr>
-        <td><strong>Sunday Pulse check</strong></td>
-        <td>Run the Weekly Pulse. Review your week's spending, buffer movement, and trading result.</td>
-        <td>Weekly</td>
-      </tr>
-      <tr>
-        <td><strong>Month-end Review</strong></td>
-        <td>Complete the Monthly Review: roll envelopes, take a snapshot, run the Allocator.</td>
-        <td>Monthly</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <p>Check off each item as you complete it. The card shows <strong>"X remaining"</strong> until all five are done, then switches to <strong>"All done today."</strong> The card can be collapsed (state persists across reloads) or dismissed for the current session.</p>
-</div>
-
-<!-- ══════════════════════════════════════════════════ §14 PULSE & REVIEW -->
-<div class="page page-break" id="sec-pulse">
-  <div class="section-eyebrow">Section 14</div>
-  <h1 class="section-title">Weekly Pulse &amp; Monthly Review</h1>
-
-  <h2 class="sub-title">Weekly Pulse</h2>
-  <div class="profile-row"><span class="profile-badge pb-all">All profiles</span></div>
-  <p>A structured end-of-week review covering: spending this week vs. envelope caps, envelopes near or over limit, buffer movement, and trading P&amp;L for the week (Variable/Mixed).</p>
-  <p>Triggered automatically on <strong>Sundays</strong> and manually at any time via the <strong>"Check Pulse"</strong> button on the Command tab. Resets weekly.</p>
-
-  <h2 class="sub-title">Monthly Review</h2>
-  <div class="profile-row"><span class="profile-badge pb-all">All profiles</span></div>
-  <p>The most important ritual in the system. Do this at the end of every calendar month:</p>
-
-  <ul class="step-list">
-    <li><div class="step-num">1</div><div class="step-body"><strong>Roll envelopes.</strong> Apply each envelope's rollover rule. Sweep balances move to your buffer automatically.</div></li>
-    <li><div class="step-num">2</div><div class="step-body"><strong>Take a snapshot.</strong> Record your current buffer, capital, long-term, and net worth. Creates a data point on your History chart.</div></li>
-    <li><div class="step-num">3</div><div class="step-body"><strong>Run the Allocator.</strong> Enter this month's profit (Variable/Mixed) or surplus (Fixed). The Allocator splits it per your stage rules.</div></li>
-    <li><div class="step-num">4</div><div class="step-body"><strong>Log trading P&amp;L for the month</strong> (Variable/Mixed). Confirm the final monthly figure before allocating.</div></li>
-    <li><div class="step-num">5</div><div class="step-body"><strong>Review and reset.</strong> Look at spending patterns and impulse log. Set your intention for the month ahead.</div></li>
-  </ul>
-</div>
-
-<!-- ══════════════════════════════════════════════════ §15 GLOSSARY -->
-<div class="page page-break" id="sec-concepts">
-  <div class="section-eyebrow">Section 15</div>
-  <h1 class="section-title">Key Concepts Glossary</h1>
-
-  <table>
-    <thead><tr><th style="width:26%">Term</th><th>Definition</th></tr></thead>
-    <tbody>
-      <tr><td><strong>Buffer</strong></td><td>Your primary financial safety net — a dedicated savings pool measured in months of salary. All stages work toward filling it.</td></tr>
-      <tr><td><strong>Stage</strong></td><td>One of four levels (1, 1.5, 2, 3) that determines how income is split. Changes automatically as your buffer grows.</td></tr>
-      <tr><td><strong>Protect Mode</strong></td><td>Triggered when buffer drops below 16× monthly salary. Redirects 100% of income to buffer rebuild until recovered.</td></tr>
-      <tr><td><strong>Spending Gate</strong></td><td>Impulse control gate for purchases at or above the threshold (default 50). Presents three options: Skip it, Sleep on it, or Buy now.</td></tr>
-      <tr><td><strong>Trading Guard</strong></td><td>24-hour restriction activated automatically when a trading loss is logged. Forces "Sleep on it" for all gated purchases. Prevents emotional spending post-loss.</td></tr>
-      <tr><td><strong>Envelope</strong></td><td>A named spending category with a monthly cap, a block mode, and a rollover rule.</td></tr>
-      <tr><td><strong>Block Mode</strong></td><td>How an envelope enforces its cap: Soft (warn only), Hard (block), or PIN override (block with bypass).</td></tr>
-      <tr><td><strong>Rollover Mode</strong></td><td>What happens to unspent envelope balance at month-end: Reset (lose it), Rollover (carry forward), or Sweep (move to buffer).</td></tr>
-      <tr><td><strong>Snapshot</strong></td><td>A point-in-time record of all balances. The building block of the net worth chart in History.</td></tr>
-      <tr><td><strong>Allocator</strong></td><td>The tool that splits income or profit into buckets per your stage rules. Called Profit, Surplus, or Money Allocator depending on profile.</td></tr>
-      <tr><td><strong>Tax Reserve</strong></td><td>Percentage withheld from gross profit before allocation. Ring-fenced — never distributed. Default 25%.</td></tr>
-      <tr><td><strong>Pulse</strong></td><td>Weekly structured review of spending, buffer, and trading performance. Resets every Sunday.</td></tr>
-      <tr><td><strong>Cloud Sync</strong></td><td>Automatic background sync of your app data when signed in. One row per user — all data in one blob.</td></tr>
-      <tr><td><strong>Security PIN</strong></td><td>4–6 digit local PIN protecting structural settings. Hashed locally, never transmitted.</td></tr>
-      <tr><td><strong>Income Profile</strong></td><td>Foundation, Variable, Fixed, or Mixed — set at onboarding and locked. Controls available tabs and allocator type.</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- ══════════════════════════════════════════════════ §16 KNOWN LIMITATIONS -->
-<div class="page page-break" id="sec-limits">
-  <div class="section-eyebrow">Section 16</div>
-  <h1 class="section-title">Known Limitations</h1>
-
-  <p>The following are <strong>deliberate design decisions</strong> in this version — not bugs. Please do not report them as issues. If you feel strongly that one of these should change, note it as feedback rather than a bug report.</p>
-
-  <table>
-    <thead><tr><th style="width:38%">Limitation</th><th>Why it's by design</th></tr></thead>
-    <tbody>
-      <tr>
-        <td><strong>No bank account integration</strong></td>
-        <td>Manual entry is intentional. Automatic import removes the friction and awareness that the system is built on. Connecting to a bank would undermine the discipline mechanic.</td>
-      </tr>
-      <tr>
-        <td><strong>No automatic transaction categorisation</strong></td>
-        <td>You categorise purchases yourself at the Spending Gate. The act of categorising is part of the deliberate spending practice.</td>
-      </tr>
-      <tr>
-        <td><strong>Single currency per account</strong></td>
-        <td>Currency is set at onboarding and locked. Multi-currency wallets are not in this version. All balances are in one currency.</td>
-      </tr>
-      <tr>
-        <td><strong>No shared / couples accounts</strong></td>
-        <td>Each account is one user. Shared household budgeting is not in this version.</td>
-      </tr>
-      <tr>
-        <td><strong>No native mobile app</strong></td>
-        <td>Royal Ledger is a PWA (web app installed to your home screen). It is not in the App Store or Play Store. Install from royalledger.app via your browser.</td>
-      </tr>
-      <tr>
-        <td><strong>No investment recommendations</strong></td>
-        <td>The app tracks allocations to a "Long-term savings" bucket but does not recommend specific funds, stocks, or investment products. This is not a financial adviser.</td>
-      </tr>
-      <tr>
-        <td><strong>No receipt scanning or OCR</strong></td>
-        <td>All amounts are entered manually. Receipt scanning is not in this version.</td>
-      </tr>
-      <tr>
-        <td><strong>No recurring transaction tracking</strong></td>
-        <td>Fixed expenses are entered as a single monthly total in Setup, not as individual recurring items. Detailed subscription tracking is not in this version.</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- ══════════════════════════════════════════════════ §17 FAQ -->
-<div class="page page-break" id="sec-faq">
-  <div class="section-eyebrow">Section 17</div>
-  <h1 class="section-title">Frequently Asked Questions</h1>
-
-  <div class="faq-item">
-    <div class="faq-q">How is my data secured?</div>
-    <div class="faq-a">Your data is stored in Supabase (encrypted at rest, EU/US region). Your Security PIN is hashed locally using your email as salt — the raw PIN is never stored or transmitted. No bank credentials are ever requested. Cloud sync uses row-level security so only your account can read or write your data.</div>
-  </div>
-
-  <div class="faq-item">
-    <div class="faq-q">Can I use this on multiple devices?</div>
-    <div class="faq-a">Yes. Sign in with the same email on each device — data syncs automatically in the background. If you've made changes on one device and need them on another immediately, use Settings → Data &amp; Sync → Upload local → cloud on the first device, then Download cloud → device on the second.</div>
-  </div>
-
-  <div class="faq-item">
-    <div class="faq-q">What happens to my data after the testing period ends?</div>
-    <div class="faq-a">You can keep using the app. Your data stays intact. If you choose to delete your account (Settings → Danger Zone), all data is wiped immediately. We do not delete tester accounts automatically after the 30-day period.</div>
-  </div>
-
-  <div class="faq-item">
-    <div class="faq-q">How is this different from YNAB, Mint, or 22seven?</div>
-    <div class="faq-a">Those tools track your spending after the fact and aggregate bank accounts. Royal Ledger is a discipline system — it gates purchases <em>before</em> they happen, uses a stage-based buffer model, and deliberately avoids bank integration. The goal is behavioural change, not categorised reporting.</div>
-  </div>
-
-  <div class="faq-item">
-    <div class="faq-q">I forgot my PIN — what do I do?</div>
-    <div class="faq-a">Open Settings → Security PIN → Forgot PIN? and submit a reset request with a short reason. Support reviews it and approves within 24 hours. You will be prompted to set a new PIN on your next login. Do not try to guess your PIN repeatedly — it has no lockout in this version, but incorrect guesses are logged.</div>
-  </div>
-
-  <div class="faq-item">
-    <div class="faq-q">My invite code says expired — what now?</div>
-    <div class="faq-a">Invite codes expire 30 days after they are issued. Email support@royalledger.app with your name and the email address you registered with — a new code will be issued within 24 hours.</div>
-  </div>
-
-  <div class="faq-item">
-    <div class="faq-q">Can I change my income profile or currency after setup?</div>
-    <div class="faq-a">Not from within the app — both are locked after onboarding to protect your historical data. Email support@royalledger.app with the change you need. Admin can update both remotely without data loss. Turnaround is typically within 24 hours.</div>
-  </div>
-
-  <div class="faq-item">
-    <div class="faq-q">What if I need to speak to someone urgently?</div>
-    <div class="faq-a">Email support@royalledger.app — replies within 24 hours during the testing period, usually faster. There is no live chat in this version.</div>
-  </div>
-
-  <div class="faq-item">
-    <div class="faq-q">Does the app work offline?</div>
-    <div class="faq-a">Partially. Installed as a PWA, the app loads and most features work offline. Changes made offline are queued and sync when connectivity returns. Cloud sync, backup upload, and PIN reset requests require internet.</div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════ §18 WHAT TO TEST -->
-<div class="page page-break" id="sec-testing">
-  <div class="section-eyebrow">Section 18</div>
-  <h1 class="section-title">What to Test &amp; How to Report</h1>
-
-  <h2 class="sub-title">Issue priority — how to triage before reporting</h2>
-
-  <div class="box red avoid-break" style="margin-bottom:10px;">
-    <span class="box-label"><span class="priority-badge p-critical">Critical</span> — report immediately by email</span>
-    Data loss or corruption. Cannot sign in. Spending Gate not blocking when it should. Balance numbers visibly wrong. App crashes or goes blank. Backup/restore destroys data unexpectedly. Trading Guard not activating after a loss is logged.
-  </div>
-
-  <div class="box avoid-break" style="margin-bottom:10px;">
-    <span class="box-label"><span class="priority-badge p-important">Important</span> — report within 48 hours</span>
-    Confusing flow that required multiple attempts to complete. Button that does nothing or does the wrong thing. Mobile rendering broken. Copy that is misleading or contradicts this guide. Feature that works on desktop but not mobile.
-  </div>
-
-  <div class="box grey avoid-break">
-    <span class="box-label"><span class="priority-badge p-note">Nice to know</span> — note for the 30-day debrief</span>
-    Small UI preferences. "I wish it did X." Aesthetic feedback. Suggestions for new features. Things that work correctly but feel slightly awkward.
-  </div>
-
-  <h2 class="sub-title">Priority test areas</h2>
-
-  <h3 class="sub-sub-title">Onboarding</h3>
-  <ul>
-    <li>Complete onboarding as your assigned profile. Note anything unclear at each step.</li>
-    <li>Try invalid inputs — blank salary, zero expenses. Does the app handle them gracefully?</li>
-    <li>Confirm currency and income profile cannot be changed after completion.</li>
-  </ul>
-
-  <h3 class="sub-sub-title">Command tab</h3>
-  <ul>
-    <li>Verify your stage matches your buffer vs. target.</li>
-    <li>Update a balance using "Unlock to edit" — confirm stage recalculates immediately.</li>
-    <li>Set your buffer below 16× salary and confirm Protect Mode activates.</li>
-    <li>Tap "Check Pulse" on a non-Sunday and confirm the Pulse opens.</li>
-  </ul>
-
-  <h3 class="sub-sub-title">Spending Gate &amp; Budget</h3>
-  <ul>
-    <li>Log a purchase below 50 — it should skip the gate entirely.</li>
-    <li>Run the full gate on a purchase above 50 — verify all three buttons appear (Skip it, Sleep on it, Buy now).</li>
-    <li>Choose "Sleep on it" — confirm the item appears in a pending queue and a 24-hour timer is set.</li>
-    <li>Return after 24 hours and make a final decision on the parked item.</li>
-    <li>Test Hard block — create an envelope, cap it, spend to the cap, confirm it blocks.</li>
-    <li>Test PIN override — confirm wrong PIN does not bypass.</li>
-    <li>Run month-end rollover with a Sweep envelope and confirm balance moves to buffer.</li>
-  </ul>
-
-  <h3 class="sub-sub-title">Trading P&amp;L (Variable / Mixed only)</h3>
-  <ul>
-    <li>Log a negative P&amp;L — confirm Trading Guard banner appears on Command <em>immediately</em>.</li>
-    <li>Try to use the Spending Gate with Guard active — confirm "Buy now" is absent.</li>
-    <li>Wait 24 hours and confirm Guard expires automatically.</li>
-    <li>Log a positive month and run the Profit Allocator — confirm 25% tax is deducted first.</li>
-  </ul>
-
-  <h3 class="sub-sub-title">History &amp; Snapshots</h3>
-  <ul>
-    <li>Take at least two snapshots on different dates. Confirm both appear and the chart draws a line.</li>
-    <li>Reload the page and confirm records persist.</li>
-  </ul>
-
-  <h3 class="sub-sub-title">Rules tab</h3>
-  <ul>
-    <li>Unlock with PIN using "Locked · click to edit".</li>
-    <li>Set a stage row that totals ≠ 100% — confirm the red warning appears.</li>
-    <li>Change the Spending Gate threshold and test a purchase at the new threshold.</li>
-  </ul>
-
-  <h3 class="sub-sub-title">Settings</h3>
-  <ul>
-    <li>Change display name and confirm it appears in the header.</li>
-    <li>Change password and sign back in with the new one.</li>
-    <li>Export backup → import it on a different browser → confirm all data restored.</li>
-    <li>Test cloud sync across two devices simultaneously.</li>
-  </ul>
-
-  <h3 class="sub-sub-title">Mobile &amp; PWA</h3>
-  <ul>
-    <li>Test the full app on a phone browser.</li>
-    <li>Install as PWA and test all tabs from the home screen icon.</li>
-    <li>Confirm bottom navigation works and all tabs are reachable on small screens.</li>
-    <li>Check all tooltip (?) icons open and close correctly on touch.</li>
-    <li>Test "Check Pulse" on mobile for Fixed and Variable profiles specifically.</li>
-  </ul>
-
-  <h2 class="sub-title">How to report an issue</h2>
-  <p>Email <strong>support@royalledger.app</strong> and include:</p>
-  <ol>
-    <li><strong>What you were doing</strong> — which tab, which step, what action you took.</li>
-    <li><strong>What you expected</strong> — the intended result.</li>
-    <li><strong>What actually happened</strong> — the actual result, including any error message verbatim.</li>
-    <li><strong>Screenshot or screen recording</strong> — attach if possible; a picture resolves ambiguity faster than any description.</li>
-    <li><strong>Device and browser</strong> — e.g. iPhone 15 / Safari 17, Windows 11 / Chrome 124.</li>
-    <li><strong>Your income profile</strong> — Foundation, Variable, Fixed, or Mixed.</li>
-    <li><strong>Priority level</strong> — Critical, Important, or Nice to know (see top of this section).</li>
-  </ol>
-
-  <div class="box blue">
-    <span class="box-label">Confusion reports are equally valuable</span>
-    Beyond bugs — anything that was hard to understand, a label that meant nothing, a step that felt wrong, or a moment where you had to re-read something twice. These reports shape the UX as much as bug reports do.
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════ §19 CHECKLIST -->
-<div class="page page-break" id="sec-checklist">
-  <div class="section-eyebrow">Section 19</div>
-  <h1 class="section-title">Tester Checklist</h1>
-  <p>Print this page or work through it digitally. Most testers will use this as their primary guide.</p>
-
-  <h2 class="sub-title">Initial Setup</h2>
-  <ul class="checklist">
-    <li>Opened app at royalledger.app and signed in with invite code</li>
-    <li>Completed onboarding — chose profile, currency, income, expenses, buffer</li>
-    <li>Installed app to home screen as PWA</li>
-    <li>Set a Security PIN in Settings → Security PIN</li>
-    <li>Exported first backup: Settings → Data &amp; Sync → Backup &amp; Restore</li>
-  </ul>
-
-  <h2 class="sub-title">Command Tab</h2>
-  <ul class="checklist">
-    <li>Confirmed stage banner matches buffer level</li>
-    <li>Clicked "Unlock to edit" and updated a balance</li>
-    <li>Confirmed stage recalculated after balance change</li>
-    <li>Checked Daily Checkpoints card and ticked at least one checkpoint</li>
-    <li>Tapped "Check Pulse" manually (on a non-Sunday)</li>
-    <li>Reviewed all tooltip (?) icons on Command tab</li>
-  </ul>
-
-  <h2 class="sub-title">Spending Gate &amp; Budget</h2>
-  <ul class="checklist">
-    <li>Logged a purchase below threshold — confirmed no gate appeared</li>
-    <li>Ran the full gate on a purchase above threshold</li>
-    <li>Confirmed three buttons appeared: Skip it / Sleep on it / Buy now</li>
-    <li>Tested "Sleep on it" — item parked in pending queue</li>
-    <li>Returned to a parked item after wait and made a final decision</li>
-    <li>Created at least two envelopes with different block modes</li>
-    <li>Tested Hard block — confirmed it refused at the cap</li>
-    <li>Tested PIN override — confirmed wrong PIN did not bypass</li>
-    <li>Ran month-end rollover with a Sweep envelope</li>
-  </ul>
-
-  <h2 class="sub-title">Trading P&amp;L (Variable testers only)</h2>
-  <ul class="checklist">
-    <li>Logged a trading loss — Guard banner appeared immediately</li>
-    <li>Confirmed "Buy now" was absent from gate during Guard</li>
-    <li>Confirmed Guard expired after 24 hours</li>
-    <li>Logged a trading profit and ran the Profit Allocator</li>
-    <li>Confirmed 25% tax reserve deducted before allocation split</li>
-    <li>Checked Trading P&amp;L YTD on Command tab</li>
-  </ul>
-
-  <h2 class="sub-title">History &amp; Snapshots</h2>
-  <ul class="checklist">
-    <li>Taken at least one monthly snapshot</li>
-    <li>Confirmed snapshot appears in History tab</li>
-    <li>Taken a second snapshot and confirmed chart draws a line</li>
-    <li>Browsed expense history and confirmed records persist after reload</li>
-  </ul>
-
-  <h2 class="sub-title">Rules Tab</h2>
-  <ul class="checklist">
-    <li>Unlocked Rules with PIN via "Locked · click to edit"</li>
-    <li>Set a stage row to ≠ 100% — confirmed red warning appeared</li>
-    <li>Changed Spending Gate threshold and tested a purchase at the new value</li>
-    <li>Added a Future Goal with a target amount</li>
-  </ul>
-
-  <h2 class="sub-title">Settings</h2>
-  <ul class="checklist">
-    <li>Set display name and confirmed it shows in header</li>
-    <li>Changed password and signed back in</li>
-    <li>Exported backup JSON file</li>
-    <li>Imported backup on a second browser or device</li>
-    <li>Tested cloud sync across two sessions</li>
-    <li>Reviewed tooltip (?) icons in Settings</li>
-  </ul>
-
-  <h2 class="sub-title">Mobile &amp; Cross-Device</h2>
-  <ul class="checklist">
-    <li>Tested full app on mobile phone browser</li>
-    <li>Installed as PWA to home screen</li>
-    <li>Confirmed all tabs accessible via bottom navigation on mobile</li>
-    <li>Tested Spending Gate on mobile</li>
-    <li>Tested "Check Pulse" on mobile</li>
-    <li>Confirmed all tooltip (?) icons open/close on touch</li>
-  </ul>
-
-  <h2 class="sub-title">Reporting</h2>
-  <ul class="checklist">
-    <li>Submitted at least one bug or feedback report to support@royalledger.app</li>
-    <li>Included device, browser, income profile, and steps to reproduce</li>
-    <li>Labelled each report as Critical, Important, or Nice to know</li>
-  </ul>
-
-  <div class="box green" style="margin-top:28px;">
-    <span class="box-label">Thank you</span>
-    Every bug you find, every confusing label you flag, and every moment of hesitation you document makes Royal Ledger better for the users who come after you. We read every report. Your R200 voucher will be issued within 7 days of the testing period closing — conditional on reasonable app usage and at least one report submitted.
-  </div>
-
-  <div class="footer">
-    <span>Royal Ledger — Tester User Guide v2 · Confidential</span>
-    <span>support@royalledger.app</span>
+  <div class="spacer"></div>
+
+  <div style="text-align: center; padding: 32px 0; border-top: 1px solid var(--border);">
+    <div style="font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; font-style: italic; color: var(--gold); margin-bottom: 8px;">Thank you for testing.</div>
+    <div style="font-family: 'Inter', sans-serif; font-size: 14px; color: var(--dim); margin-bottom: 20px;">Your feedback shapes what Royal Ledger becomes.</div>
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--subtle); letter-spacing: 0.06em;">Royal-Icon Ledger · Beta Tester Guide v2.0 · May 2026 · Confidential</div>
   </div>
 </div>
 
