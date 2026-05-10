@@ -2585,7 +2585,13 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             value={data.futureGoals || 0}
             onChange={(v) => setData(d => ({ ...d, futureGoals: v }))}
             readOnly={hasPinProtection && balancesLocked}
-            note={(data.goals || []).length > 0 ? `${(data.goals || []).length} goal${(data.goals || []).length === 1 ? '' : 's'}` : 'Add goals in Setup'}
+            note={
+              isFoundation && (data.futureGoals || 0) === 0
+                ? 'Starts at Stage 2'
+                : (data.goals || []).length > 0
+                  ? `${(data.goals || []).length} goal${(data.goals || []).length === 1 ? '' : 's'}`
+                  : 'Add goals in Setup'
+            }
             currency={data.currency}
           />
         </div>
