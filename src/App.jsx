@@ -1529,6 +1529,7 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
     setGoalError('');
   };
   const { attempt: attemptUnlock, gate: unlockGate } = usePinGate();
+  const { attempt: attemptGoalEdit, gate: goalEditGate } = usePinGate();
 
   // ── Foundation nudge state (behavioural — no date fields available) ──────────
   const hasLoggedExpense =
@@ -2314,7 +2315,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             <button
               onClick={() => {
                 if (foundationNudge.ctaAction === 'budget') setTab('budget');
-                else if (foundationNudge.ctaAction === 'goal') openGoalEditor();
+                else if (foundationNudge.ctaAction === 'goal') attemptGoalEdit(openGoalEditor);
               }}
               style={{
                 background: 'transparent',
@@ -2413,7 +2414,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                   <div style={{ fontSize: '15px', fontWeight: 500, color: '#E8E2D5' }}>{primaryGoal.name}</div>
                 </div>
                 <button
-                  onClick={openGoalEditor}
+                  onClick={() => attemptGoalEdit(openGoalEditor)}
                   style={{
                     background: 'transparent', color: '#8B8478', border: '1px solid #26221C',
                     borderRadius: '3px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer',
@@ -2454,7 +2455,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 Set a goal for your savings — a laptop, course, trip, or anything worth working toward.
               </p>
               <button
-                onClick={openGoalEditor}
+                onClick={() => attemptGoalEdit(openGoalEditor)}
                 style={{
                   background: 'transparent', color: '#7FA068', border: '1px solid #2A4A2A',
                   borderRadius: '3px', padding: '8px 16px', fontSize: '13px', fontWeight: 600,
@@ -2534,6 +2535,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           </div>
         </div>
         {unlockGate}
+        {goalEditGate}
         <p className="text-sm mb-5" style={{ color: '#B0A898' }}>
           Update these whenever you want. Hit "Save snapshot" to record this moment in your history.
         </p>
@@ -2769,21 +2771,21 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 {data.goals[0].target > 0 ? (
                   <>
                     <div className="flex justify-between text-xs mb-2" style={{ color: '#B0A898' }}>
-                      <span>{fmt(data.futureGoals || 0)} saved</span>
+                      <span>{fmt(_goalSaved)} saved</span>
                       <span>{fmt(data.goals[0].target)} target</span>
                     </div>
                     <div className="h-1.5 rounded-full mb-3" style={{ background: '#2A2520' }}>
                       <div
                         className="h-1.5 rounded-full"
                         style={{
-                          width: `${Math.min(100, ((data.futureGoals || 0) / data.goals[0].target) * 100)}%`,
+                          width: `${Math.min(100, (_goalSaved / data.goals[0].target) * 100)}%`,
                           background: '#7FA068',
                           transition: 'width 0.4s ease'
                         }}
                       />
                     </div>
                     <p className="text-xs" style={{ color: '#5C5648' }}>
-                      {Math.min(100, (((data.futureGoals || 0) / data.goals[0].target) * 100)).toFixed(0)}% of target
+                      {Math.min(100, (_goalSaved / data.goals[0].target) * 100).toFixed(0)}% of target
                       {data.goals.length > 1 ? ` · ${data.goals.length - 1} more goal${data.goals.length > 2 ? 's' : ''} in Setup` : ''}
                     </p>
                   </>
