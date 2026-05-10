@@ -1536,8 +1536,17 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
     (data.envelopes || []).some(e => (e.spent || 0) > 0);
   const primaryGoal = (data.goals || [])[0];
   const hasSavingsGoal = !!(primaryGoal?.name && primaryGoal?.target > 0);
+  // Stage 1 Foundation: all money routes to buffer — measure goal progress against
+  // buffer so the bar actually moves as the user saves. Stage 2+: the waterfall
+  // feeds the dedicated futureGoals pool, so switch to that for goal tracking.
+  // Non-Foundation profiles always use futureGoals (they have the full waterfall).
+  const _goalSaved = isFoundation
+    ? (stats.progressStage < 2
+        ? (data.buffer || 0)          // Stage 1 / 1.5 — buffer is all they have
+        : (data.futureGoals || 0))    // Stage 2+ — dedicated goals pool
+    : (data.futureGoals || 0);
   const savingsProgress = primaryGoal?.target > 0
-    ? (data.futureGoals || 0) / primaryGoal.target
+    ? _goalSaved / primaryGoal.target
     : 0;
   const foundationNudge = isFoundation
     ? getFoundationNudge({ hasLoggedExpense, hasSavingsGoal, savingsProgress })
@@ -2396,7 +2405,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               </div>
             </div>
           ) : primaryGoal?.name ? (
-            /* Goal exists — show progress against futureGoals pool */
+            /* Goal exists — show progress. Stage 1: tracks buffer. Stage 2+: tracks futureGoals. */
             <div style={{ borderTop: '1px solid #2A3E2A', paddingTop: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <div>
@@ -2415,10 +2424,11 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 </button>
               </div>
               {(() => {
-                const saved = data.futureGoals || 0;
+                const saved = _goalSaved;
                 const pct = primaryGoal.target > 0
                   ? Math.min(100, Math.round((saved / primaryGoal.target) * 100))
                   : 0;
+                const inStage1 = stats.progressStage < 2;
                 return (
                   <>
                     <div className="progress mb-2">
@@ -2428,9 +2438,9 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                       <span>{fmt(saved)} of {fmt(primaryGoal.target)} · {pct}%</span>
                       <span>{saved >= primaryGoal.target ? '🎉 Goal reached!' : `${fmt(primaryGoal.target - saved)} to go`}</span>
                     </div>
-                    {stats.progressStage < 2 && saved === 0 && (
+                    {inStage1 && (
                       <p style={{ fontSize: '11px', color: '#5C5648', marginTop: '8px' }}>
-                        Goal funding starts at Stage 2 — keep building your buffer first.
+                        Tracking your savings toward this goal. Hit Stage 2 to unlock a dedicated goals account.
                       </p>
                     )}
                   </>
