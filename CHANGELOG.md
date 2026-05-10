@@ -4,6 +4,92 @@ All changes are listed newest-first. Each entry records the **user/tester feedba
 
 ---
 
+## Session — 2026-05-10 (F036–F039: Goal progress tracking, dashboard card, PIN gate, subtitle)
+
+---
+
+### [Bug] F036 — Foundation goal progress bar used wrong source in Stage 1; stage-boundary cliff caused bar to reset to $0
+
+**Trigger:** Owner tested YOUR SAVINGS after adding money via Money Allocator. Progress bar showed $0 despite the savings balance growing. Separately, at ~$106K savings (Stage 2 boundary), the bar disappeared entirely — confirmed the bar was switching sources on the stage boundary.
+
+**Root cause (Stage 1 zero):** The F034 fix correctly pointed `savingsProgress` at `data.futureGoals` but `data.futureGoals` is always $0 in Stage 1 — the waterfall doesn't feed the goals account until Stage 2. The bar was technically correct per the formula but useless to the user for the entire first stage.
+
+**Root cause (stage-boundary cliff):** A hard `progressStage < 2` guard switched the tracking source from `data.buffer` to `data.futureGoals` the instant the user crossed the Stage 2 threshold. At the moment of crossing, `data.futureGoals` was $0, so the bar jumped from ~$106K progress to $0.
+
+**Fix — `_goalSaved` balance-driven derivation:**
+```js
+const _goalSaved = isFoundation
+  ? ((data.futureGoals || 0) > 0
+      ? (data.futureGoals || 0)   // Goals pool funded — track that
+      : (data.buffer || 0))       // Not yet funded — proxy with buffer
+  : (data.futureGoals || 0);
+```
+- Stage 1: bar tracks `data.buffer` → rises as savings build, gives the user meaningful feedback
+- Stage 2+: switches to `data.futureGoals` only once that pool is non-zero → no cliff
+- Non-Foundation: reads `data.futureGoals` directly (unchanged)
+
+**Also changed:** Stage 1 note in the goal display block updated to: *"Tracking your savings toward this goal. Hit Stage 2 to unlock a dedicated goals account."*
+
+**Build:** Verified clean (commit `b5b9d0d`).
+
+---
+
+### [Bug] F037 — Foundation dashboard goal card read data.futureGoals directly — showed $0 and broken progress bar in Stage 1
+
+**Trigger:** After F036 fixed the YOUR SAVINGS card, owner screenshots confirmed the Foundation Command tab goal card (a second, separate display component) still showed $0 saved and a flat progress bar. The card appeared correct in the header but wrong in the body.
+
+**Root cause:** Two independent goal display components existed in App.jsx. F034/F036 fixed the YOUR SAVINGS card. The Foundation Command dashboard card (lines ~2769–2787) was a separate render block that read `data.futureGoals` directly — not via `_goalSaved` — so it was untouched by the earlier fix.
+
+**Fix — `src/App.jsx`:**
+Replaced all three `data.futureGoals` references in the dashboard card with `_goalSaved`:
+- Amount label: `{fmt(_goalSaved)} saved`
+- Progress bar width: `Math.min(100, (_goalSaved / data.goals[0].target) * 100)`
+- Percentage text: `{Math.min(100, (_goalSaved / data.goals[0].target) * 100).toFixed(0)}% of target`
+
+**Build:** Verified clean (commit `b5b9d0d`).
+
+---
+
+### [Bug] F038 — Edit goal and Add goal entry points had no PIN protection
+
+**Trigger:** Owner noticed the goal editor opened immediately on tap — no PIN challenge — despite Setup → Goals being PIN-locked.
+
+**Root cause:** `openGoalEditor` was called directly at all three entry points. The `usePinGate` hook existed and was used for other sensitive actions but was not wired to goal editing.
+
+**Fix — `src/App.jsx`:**
+- Added `const { attempt: attemptGoalEdit, gate: goalEditGate } = usePinGate();`
+- Rendered `{goalEditGate}` in the gate portal block (alongside `{unlockGate}`)
+- Changed all three call sites from `openGoalEditor` to `() => attemptGoalEdit(openGoalEditor)`:
+  1. Edit goal button in YOUR SAVINGS card
+  2. "+ Add goal" button in YOUR SAVINGS card
+  3. Foundation savings nudge CTA (`ctaAction === 'goal'`)
+
+**Build:** Verified clean (commit `ff28288`).
+
+---
+
+### [Bug] F039 — Future Goals balance card subtitle showed "1 goal" for Foundation Stage 1 users (goals pool $0)
+
+**Trigger:** Owner observed the Future Goals card on the Command tab showed "1 goal" as the subtitle for a Foundation user who had set a goal during onboarding — even though `data.futureGoals` was $0 and the account hadn't started receiving funds.
+
+**Root cause:** The `note` prop counted `data.goals.length` regardless of whether the goals pool had any money. A goal defined in `data.goals` but with no funding in `data.futureGoals` reads as active, creating the misleading "1 goal" subtitle before the account is live.
+
+**Fix — `src/App.jsx`:**
+```jsx
+note={
+  isFoundation && (data.futureGoals || 0) === 0
+    ? 'Starts at Stage 2'
+    : (data.goals || []).length > 0
+      ? `${(data.goals || []).length} goal${(data.goals || []).length === 1 ? '' : 's'}`
+      : 'Add goals in Setup'
+}
+```
+Foundation users now see "Starts at Stage 2" until their goals account receives its first allocation. Once funded, they see the goal count. Non-Foundation users unaffected.
+
+**Build:** Verified clean (commit `7609dfd`).
+
+---
+
 ## Session — 2026-05-10 (F034 + F035: Goal system consolidation + Foundation onboarding goal step)
 
 ---
