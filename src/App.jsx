@@ -1254,7 +1254,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
               id: 'mixed',
               label: 'Hybrid',
               icon: '⚡',
-              desc: 'Steady salary, plus business or side income.',
+              desc: 'Steady salary, plus side income or business.',
             },
           ];
           return (
@@ -5499,7 +5499,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                     <strong style={{ color: '#E8E2D5' }}>🌱 Building from zero</strong> — for savings from scratch. Simplified Money Allocator, no trading features.<br />
                     <strong style={{ color: '#E8E2D5' }}>💼 Salary</strong> — for a steady monthly paycheck. No Trading P&L tab; Surplus Allocator replaces Profit Allocator.<br />
                     <strong style={{ color: '#E8E2D5' }}>📈 Trading / Self-employed</strong> — for income that changes month to month. Includes Trading P&L tab and full Profit Allocator.<br />
-                    <strong style={{ color: '#E8E2D5' }}>⚡ Hybrid</strong> — for a salary earner with a business or side income. Profit Allocator with full rules; no Trading P&L tab.<br /><br />
+                    <strong style={{ color: '#E8E2D5' }}>⚡ Hybrid</strong> — for a salary earner with side income or a business. Profit Allocator with full rules; no Trading P&L tab.<br /><br />
                     This is set during onboarding and cannot be changed without assisted re-onboarding.
                   </HelpTip>
                 </h2>
@@ -5514,7 +5514,7 @@ function AccountSettings({ user, onLogout, onChangePassword, onSignOutOthers, da
                     { id: 'foundation', emoji: '🌱', title: 'Building from zero',         desc: 'For people starting savings from scratch.' },
                     { id: 'fixed',      emoji: '💼', title: 'Salary',                     desc: 'Steady paycheck every month.' },
                     { id: 'variable',   emoji: '📈', title: 'Trading / Self-employed',    desc: 'Income changes month to month.' },
-                    { id: 'mixed',      emoji: '⚡', title: 'Hybrid',                     desc: 'Steady salary, plus business or side income.' },
+                    { id: 'mixed',      emoji: '⚡', title: 'Hybrid',                     desc: 'Steady salary, plus side income or business.' },
                   ].map(({ id, emoji, title, desc }) => {
                     const isFoundationAccount = data.mode === 'foundation' || data.incomeType === 'foundation';
                     const active = isFoundationAccount ? id === 'foundation' : (data.incomeType ?? 'variable') === id;
