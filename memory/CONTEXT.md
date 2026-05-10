@@ -75,7 +75,8 @@ Key fields:
 
 - Closed beta. Invite-only signup.
 - F039 is the most recent shipped fix (Future Goals subtitle)
-- 6 commits pending push to GitHub (from `f8f0ad1` to `1624200`)
+- Branch fully synced — `origin/main` at `5628f28` ("Add repository operating instructions")
+- Full knowledge base complete: 24 files across `docs/`, `memory/`, `runbooks/`, `workflows/`
 - Known open design gap: Foundation Arc time guard (F024 — monitoring, no code yet)
 - Fixed profile "Capital %" column label mismatch (F029 — pending tester surface)
 - AdminDashboard + EarlyAccess still show "Mixed" instead of "Hybrid" (F031 — deliberate hold)
