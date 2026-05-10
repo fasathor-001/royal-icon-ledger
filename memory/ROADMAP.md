@@ -59,14 +59,6 @@ Invite-only. Core loop is functional across all four income profiles. Focus: iro
 
 ---
 
-### Push to GitHub
-
-**What:** 6 commits are currently local-only (from `f8f0ad1` to `1624200`). Need to push to remote.
-
-**Action:** `git push` via Git Bash. No conflicts expected. Owner handles pushes manually.
-
----
-
 ## Medium-term (Feature Roadmap)
 
 ### Profile-routing intelligence
