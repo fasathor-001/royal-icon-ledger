@@ -796,28 +796,41 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
     const stage15End = data.stage15End || (salary * 12);
     const stage2End = bufferTarget;
 
+    // Variable users: protective wealth = buffer + trading capital.
+    // Trading capital is a liquid resource that protects against income loss.
+    // Fixed, Hybrid, and Foundation use buffer alone — only Variable has
+    // trading capital as an active protective resource (showTrading invariant).
+    // longTerm excluded — earmarked as investment, not immediate protection.
+    // Protect-mode override stays buffer-only (Resolution A).
+    const protectiveWealth = data.incomeType === 'variable'
+      ? data.buffer + (data.tradingCapital || 0)
+      : data.buffer;
+    const wealthCovered = salary > 0 ? protectiveWealth / salary : 0;
+
     // Determine current stage
     let stage = 1;
-    if (data.bufferProtectActive) stage = 'protect';
-    else if (data.buffer >= stage2End) stage = 3;
-    else if (data.buffer >= stage15End) stage = 2;
-    else if (data.buffer >= stage1End) stage = 1.5;
+    if (data.bufferProtectActive) stage = 'protect';          // buffer-only, unchanged
+    else if (protectiveWealth >= stage2End) stage = 3;
+    else if (protectiveWealth >= stage15End) stage = 2;
+    else if (protectiveWealth >= stage1End) stage = 1.5;
 
-    // Buffer position in progression — independent of protect mode
-    const progressStage = data.buffer >= stage2End ? 3
-      : data.buffer >= stage15End ? 2
-      : data.buffer >= stage1End ? 1.5
+    // Wealth position in progression — independent of protect mode
+    const progressStage = protectiveWealth >= stage2End ? 3
+      : protectiveWealth >= stage15End ? 2
+      : protectiveWealth >= stage1End ? 1.5
       : 1;
 
-    const monthsCovered = salary > 0 ? data.buffer / salary : 0;
+    const monthsCovered = salary > 0 ? data.buffer / salary : 0;  // buffer-only, unchanged
 
     let nextThreshold = bufferTarget;
     let progressPct = 100;
-    if (stage === 1) { nextThreshold = stage1End; progressPct = stage1End > 0 ? (data.buffer / stage1End) * 100 : 0; }
-    else if (stage === 1.5) { nextThreshold = stage15End; progressPct = ((data.buffer - stage1End) / (stage15End - stage1End)) * 100; }
-    else if (stage === 2) { nextThreshold = stage2End; progressPct = ((data.buffer - stage15End) / (stage2End - stage15End)) * 100; }
+    if (stage === 1) { nextThreshold = stage1End; progressPct = stage1End > 0 ? (protectiveWealth / stage1End) * 100 : 0; }
+    else if (stage === 1.5) { nextThreshold = stage15End; progressPct = ((protectiveWealth - stage1End) / (stage15End - stage1End)) * 100; }
+    else if (stage === 2) { nextThreshold = stage2End; progressPct = ((protectiveWealth - stage15End) / (stage2End - stage15End)) * 100; }
+    // Protect mode shows buffer rebuild progress specifically (Resolution A).
+    // Stage gate uses protectiveWealth but the visible progress matches what
+    // the allocator is doing — routing profits to buffer until rebuilt.
     else if (stage === 'protect') {
-      // Show the next stage milestone the user needs to reach, not the full target
       if (progressStage === 1)        { nextThreshold = stage1End;   progressPct = stage1End > 0 ? (data.buffer / stage1End) * 100 : 0; }
       else if (progressStage === 1.5) { nextThreshold = stage15End;  progressPct = ((data.buffer - stage1End) / (stage15End - stage1End)) * 100; }
       else if (progressStage === 2)   { nextThreshold = stage2End;   progressPct = ((data.buffer - stage15End) / (stage2End - stage15End)) * 100; }
@@ -896,6 +909,7 @@ function OpenFinanceApp({ saveToCloud, loadFromCloud, user, onLogout, onChangePa
       totalExpenses, salary, bufferTarget, bufferProtectThreshold,
       stage1End, stage15End, stage2End, stage, progressStage,
       monthsCovered, nextThreshold, progressPct,
+      protectiveWealth, wealthCovered,
       thisMonthSpend, thisMonthImpulses, spendingLeft, discCap,
       totalMonthSpend, totalBudgetAllEnvelopes, envelopeBreakdown,
       totalAssets, ytdPnL,
