@@ -10,23 +10,11 @@ All changes are listed newest-first. Each entry records the **user/tester feedba
 
 ### [Bug] F040 — Quick Log sub-tab rendered blank for all profiles due to undeclared `showTrading`
 
-**Trigger:** Katleho Mokoma (WhatsApp, 2026-05-11) reported that the Quick Log tab "loads blank when they click OK to log expenses" on their Fixed profile account.
+**Trigger:** Katleho Mokoma (WhatsApp, 2026-05-11) — Quick Log tab blank on Fixed profile. Bug affects all profiles; Katleho is the first tester to use the Quick Log sub-tab.
 
-**Root cause:** `QuickLog` (App.jsx line 4332) is a separate top-level function from `ImpulseTab` (line 3981). It referenced `showTrading` at line 4366 in its JSX trigger chip filter — `showTrading ? TRIGGERS : TRIGGERS.filter(...)` — but never declared it. `ImpulseTab`'s `const showTrading` (line 3985) is local to that function; `QuickLog` has no closure access. Referencing an undeclared identifier in strict-mode ES modules throws `ReferenceError: showTrading is not defined`, crashing the component. React renders blank without an error boundary. Build does not catch it — Vite does not validate undefined identifiers inside function bodies (same class as F019/P018).
+**Root cause:** `QuickLog` (App.jsx line 4332) is a top-level function separate from `ImpulseTab` — no closure access to `ImpulseTab`'s `const showTrading`. `QuickLog` referenced `showTrading` at line 4366 without declaring it, throwing `ReferenceError: showTrading is not defined` at render time. Same class of undefined-identifier crash as F019/P018 — build does not catch it.
 
-**Why Fixed-profile-specific in the report:** It isn't. The bug affects all profiles equally. Katleho is the first tester to navigate to the Quick Log sub-tab; owner testing had focused on the Spending Gate sub-tab rather than Quick Log.
-
-**Fix — `src/App.jsx`:**
-
-Added one line at the top of `QuickLog`'s function body, immediately after the `fmt` declaration:
-
-```js
-const showTrading = data?.incomeType === 'variable'; // P002 — declare locally, not inherited from ImpulseTab
-```
-
-Canonical P002 pattern — identical to the declaration in `ImpulseTab`, `Command`, `Setup`, `ProfitAllocator`, `AccountSettings`, and all other trading-conditional components.
-
-**What does NOT change:** No logic, no data model, no other component. One line added. All profiles unaffected beyond the fix.
+**Fix — `src/App.jsx`:** Added `const showTrading = data?.incomeType === 'variable';` at the top of `QuickLog`'s function body. Canonical P002 pattern.
 
 **Build:** Verified clean (commit `2147f4b`).
 
