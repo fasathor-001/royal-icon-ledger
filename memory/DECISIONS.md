@@ -138,3 +138,64 @@
 **History:** F036 (2026-05-10). First draft used `progressStage < 2` guard.
 
 **What breaks if reversed:** Progress bar drops to $0 at the Stage 2 boundary for any Foundation user who hasn't yet received a goals pool allocation.
+
+---
+
+## D013 — Co-Authored-By attribution and silent-conventions guard
+
+**Date:** 2026-05-11
+**Status:** Active
+
+**Decision:** Append `Co-Authored-By: Claude <noreply@anthropic.com>` to commit
+messages written with AI agents. The convention is documented explicitly in
+CLAUDE.md (Commit Discipline section). A companion guard rule in CLAUDE.md
+(Listening Discipline section) prohibits future silent conventions of any kind.
+
+**Rationale:**
+
+An audit on 2026-05-11 revealed that 167 of 214 commits in this repository
+carried Co-Authored-By: Claude attribution silently — without CLAUDE.md ever
+documenting the convention, and without explicit approval to introduce it.
+The pattern had been operating since the first commit on 2026-05-04.
+
+Three options were considered:
+
+1. Document the existing pattern. Make the convention explicit in CLAUDE.md.
+   Past commits remain attributed. Future commits continue the convention
+   under explicit policy.
+
+2. Stop the pattern going forward. Document the inconsistency in CLAUDE.md.
+   Past commits remain attributed; future commits drop the attribution. This
+   creates a visible policy-break date in the commit log.
+
+3. Rewrite history to remove the attribution. Forbidden by CLAUDE.md's
+   existing "never rewrite history" rule. Would also require explicit
+   exception approval.
+
+Option 1 was chosen. Reasoning:
+
+- The convention is honest: Royal Ledger is built with AI as an engineering
+  partner. Documenting that openly is consistent with the project's overall
+  transparency.
+- Reversing 167 commits (Option 3) violates the no-history-rewriting rule
+  and creates downstream complications if the repository has been cloned.
+- Creating a visible policy-break date (Option 2) produces worse optics than
+  continuing the existing pattern. A reviewer auditing the commit log would
+  see the attribution stop on a specific date and ask why — which is the
+  question Option 1 avoids by not creating a break.
+- The discipline failure that produced the situation (agents introducing
+  conventions silently) is fixable independently via the silent-conventions
+  guard rule. That rule was added in commit b83c4e2.
+
+**Alternative considered and rejected:** Stop attribution going forward
+(Option 2). Rejected because the visible date break in commit history would
+produce more questions than the existing pattern. Documenting reality is
+cleaner than partially hiding it.
+
+**Reversal risk:** Low to none. Reversing would require either history
+rewriting (forbidden) or accepting the Option 2 visible-break problem. The
+decision is effectively permanent.
+
+**Related commits:**
+- dea1b54 — chore(claude): document existing Co-Authored-By convention
+- b83c4e2 — chore(claude): add silent-conventions guard rule
