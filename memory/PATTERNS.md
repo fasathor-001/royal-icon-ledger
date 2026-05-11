@@ -28,6 +28,15 @@ Hybrid has Capital Pool and Profit Allocator, but **not** Trading P&L tab, not D
 
 Every component that renders trading-conditional copy must declare its own `const showTrading`. It is not inherited from a parent.
 
+**F040 addendum (2026-05-11):** QuickLog (a top-level function in App.jsx,
+separate from ImpulseTab) was missing from the original P002 enumeration.
+The bug surfaced via Katleho Mokoma's tester report — Quick Log sub-tab
+rendered blank because QuickLog referenced showTrading without declaring
+it locally, throwing ReferenceError at render time (P018 class). Fix:
+added the canonical declaration to QuickLog's function body. Lesson: every
+top-level component function in App.jsx must declare its own showTrading,
+regardless of where sibling or parent components declare theirs.
+
 ---
 
 ## P003 — Drawdown Protocol gate
