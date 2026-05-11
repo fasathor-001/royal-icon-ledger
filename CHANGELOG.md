@@ -4,6 +4,34 @@ All changes are listed newest-first. Each entry records the **user/tester feedba
 
 ---
 
+## Session — 2026-05-11 (F040: Quick Log blank render — P002 violation in QuickLog)
+
+---
+
+### [Bug] F040 — Quick Log sub-tab rendered blank for all profiles due to undeclared `showTrading`
+
+**Trigger:** Katleho Mokoma (WhatsApp, 2026-05-11) reported that the Quick Log tab "loads blank when they click OK to log expenses" on their Fixed profile account.
+
+**Root cause:** `QuickLog` (App.jsx line 4332) is a separate top-level function from `ImpulseTab` (line 3981). It referenced `showTrading` at line 4366 in its JSX trigger chip filter — `showTrading ? TRIGGERS : TRIGGERS.filter(...)` — but never declared it. `ImpulseTab`'s `const showTrading` (line 3985) is local to that function; `QuickLog` has no closure access. Referencing an undeclared identifier in strict-mode ES modules throws `ReferenceError: showTrading is not defined`, crashing the component. React renders blank without an error boundary. Build does not catch it — Vite does not validate undefined identifiers inside function bodies (same class as F019/P018).
+
+**Why Fixed-profile-specific in the report:** It isn't. The bug affects all profiles equally. Katleho is the first tester to navigate to the Quick Log sub-tab; owner testing had focused on the Spending Gate sub-tab rather than Quick Log.
+
+**Fix — `src/App.jsx`:**
+
+Added one line at the top of `QuickLog`'s function body, immediately after the `fmt` declaration:
+
+```js
+const showTrading = data?.incomeType === 'variable'; // P002 — declare locally, not inherited from ImpulseTab
+```
+
+Canonical P002 pattern — identical to the declaration in `ImpulseTab`, `Command`, `Setup`, `ProfitAllocator`, `AccountSettings`, and all other trading-conditional components.
+
+**What does NOT change:** No logic, no data model, no other component. One line added. All profiles unaffected beyond the fix.
+
+**Build:** Verified clean (commit `2147f4b`).
+
+---
+
 ## Session — 2026-05-10 (F036–F039: Goal progress tracking, dashboard card, PIN gate, subtitle)
 
 ---
