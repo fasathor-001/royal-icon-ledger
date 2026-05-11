@@ -203,6 +203,19 @@ When multiple changes could ship together but address different concerns (cosmet
 - Build status
 - Any new risks or follow-ons
 
+## AI attribution
+
+Commits written with Claude Code or another AI agent must append a
+Co-Authored-By line to the commit message:
+
+  Co-Authored-By: Claude <noreply@anthropic.com>
+
+This is a transparency convention reflecting that Royal Ledger is built
+with AI as an engineering partner. It is not a legal requirement.
+
+This convention has been in effect since the project began. Documenting
+it here makes the existing pattern explicit.
+
 ## Git rules
 
 Always:
