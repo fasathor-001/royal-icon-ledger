@@ -74,14 +74,22 @@ Key fields:
 ## Current State (2026-05-11)
 
 - Closed beta. Invite-only signup.
-- F039 is the most recent shipped product fix (Future Goals subtitle)
-- Branch fully synced — `origin/main` at `99b5ffd`
-- Knowledge base complete: 26 files — `docs/README.md` added as navigation index
-- **Co-Authored-By convention resolved** — audited, documented, and decided (D013). Three commits: `dea1b54`, `b83c4e2`, `99b5ffd`. Silent-conventions guard rule now active in CLAUDE.md (Listening Discipline section).
+- F040 is the most recent shipped fix — Quick Log blank render for all profiles
+  (P018-class ReferenceError: QuickLog referenced showTrading without declaring
+  it locally). Surfaced by Katleho Mokoma (WhatsApp, 2026-05-11). Fix shipped
+  same day. Tester confirmation pending — Katleho needs to retry and confirm.
+- Knowledge base integrity gap from 14e51cb closed — ENGINEERING_DOCTRINE.md
+  existed on disk but was never staged in the original knowledge-base commit.
+  Closed in 327cb19.
+- Branch fully synced — `origin/main` at `0a9db24`
+- Knowledge base complete: 26 files — `docs/README.md` is the navigation index
+- Co-Authored-By convention documented (D013). Silent-conventions guard rule
+  active in CLAUDE.md (Listening Discipline section).
 - Known open design gap: Foundation Arc time guard (KI001 — monitoring, no code yet)
 - Fixed profile "Capital %" column label mismatch (KI002 — pending tester surface)
-- AdminDashboard + EarlyAccess still show "Mixed" instead of "Hybrid" (KI003 — deliberate hold)
-- **Next session:** product work — KI001, KI002, KI003, or ROADMAP.md priorities
+- AdminDashboard + EarlyAccess still show "Mixed" instead of "Hybrid" (KI003 —
+  interrupted by F040, ready to resume next session)
+- **Next session:** open to ROADMAP.md priorities — no active work in flight
 
 ---
 
