@@ -4,6 +4,24 @@ All changes are listed newest-first. Each entry records the **user/tester feedba
 
 ---
 
+## Session — 2026-05-11 (F041: Stage calculation — Variable profile protective wealth)
+
+---
+
+### [Feature] F041 — Stage calculation now reflects total protective wealth for Variable profile
+
+**Trigger:** Lebo (WhatsApp, 2026-05-11) — Profit Allocator "trading field doesn't do anything" on Variable profile. Diagnosis confirmed: stage was computed from buffer alone, placing her in Stage 1 (tradingPct: 0%) despite holding existing trading capital.
+
+**Root cause:** Stage gate used `data.buffer` for all profiles. Variable users with existing trading capital were staged below their actual protective position, locking them into Stage 1 stageRules where tradingPct defaults to 0. The allocator silently produced zero trading capital output and the allocation row was hidden.
+
+**Fix:** Variable users now stage on `protectiveWealth = buffer + tradingCapital`. Fixed, Hybrid, and Foundation unchanged. `longTerm` excluded as earmarked wealth (three converging signals: AllocationBlock note text, stage progression copy, and Profit Allocator description all frame long-term as funded-after-protection, not constituting-protection). Protect-mode override and protect-mode progress display both remain buffer-only (Resolution A). Command tab UI, progress bar, StageRow checkmarks, HelpTip copy, and "X buffer months" label updated to match.
+
+**Tester thread resolved:** Lebo's protective wealth (₦30,000) does not cross the Stage 1.5 threshold (₦141,000), so her observed stage is unchanged. Conversation surfaced a separate positioning observation (she expected trading-profit projection, which Royal Ledger does not provide); product line held. No further code action.
+
+**Commits:** `a974596` (core calculation), `282c01a` (UI + copy).
+
+---
+
 ## Session — 2026-05-11 (F040: Quick Log blank render — P002 violation in QuickLog)
 
 ---

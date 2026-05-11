@@ -199,3 +199,26 @@ decision is effectively permanent.
 **Related commits:**
 - dea1b54 — chore(claude): document existing Co-Authored-By convention
 - b83c4e2 — chore(claude): add silent-conventions guard rule
+
+---
+
+## D014 — Stage calculation uses protective wealth for Variable profile
+
+**Date:** 2026-05-11
+**Status:** Active
+
+**Decision:** For Variable profile users (`incomeType === 'variable'`), the stage gate computes `protectiveWealth = data.buffer + data.tradingCapital` and compares that against stage thresholds. All other profiles (Fixed, Hybrid, Foundation) continue using `data.buffer` alone.
+
+**Why:** Stage gate previously used buffer alone for all profiles. For Variable users, trading capital is a liquid resource that protects against income loss — the same role buffer plays. A trader with large trading capital and a temporarily thin buffer is not at Stage 1; their protective position is materially stronger. Staging them on buffer alone produced wrong stageRule selection in the Profit Allocator, causing tradingPct to silently evaluate to 0 and the Trading Capital allocation row to be hidden. Surfaced by tester Lebo (F041, 2026-05-11).
+
+**Why not longTerm:** Three converging signals confirmed longTerm is earmarked wealth, not protective: (1) AllocationBlock note text says "Index funds / long-term investments. Family's future independence." (2) Stage 1.5 progression copy frames longTerm as funded-after-protection, not constituting-protection. (3) Profit Allocator description lists longTerm alongside goals and lifestyle — things allocated after protection is established.
+
+**Why not Fixed or Hybrid:** Fixed users have no active trading capital — Capital % redirects to Goals per the F033 architecture. Hybrid was explicitly excluded from trading features in the Mix → Hybrid rename work (Frankie's decision, prior to F041); the showTrading === 'variable' invariant enforces this mechanically. Extending Option 3 to Hybrid would reverse that earlier product decision, which is out of scope for F041 and would require a separate decision record.
+
+**Protect mode (Resolution A):** Protect-mode override stays buffer-only. A depleted buffer still routes 100% of profits to rebuild regardless of trading capital. The protect-mode progress bar also stays buffer-only — showing protectiveWealth there would produce >100% progress while the allocator is routing to buffer, which visually contradicts the rebuild message.
+
+**Migration:** None required. Stage is derived, not stored. Existing users land in the correct stage on next load.
+
+**What breaks if reversed:** Variable users with trading capital revert to buffer-only staging. Lebo's class of issue recurs — tradingPct evaluates to 0 for Stage 1 users and the trading allocation disappears silently.
+
+**Related commits:** `a974596` (core calculation), `282c01a` (UI + copy).

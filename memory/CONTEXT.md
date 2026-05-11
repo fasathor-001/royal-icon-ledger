@@ -74,21 +74,26 @@ Key fields:
 ## Current State (2026-05-11)
 
 - Closed beta. Invite-only signup.
-- F040 is the most recent shipped fix — Quick Log blank render for all profiles
-  (P018-class ReferenceError: QuickLog referenced showTrading without declaring
-  it locally). Surfaced by Katleho Mokoma (WhatsApp, 2026-05-11). Fix shipped
-  same day. Tester confirmation pending — Katleho needs to retry and confirm.
-- Knowledge base integrity gap from 14e51cb closed — ENGINEERING_DOCTRINE.md
-  existed on disk but was never staged in the original knowledge-base commit.
-  Closed in 327cb19.
-- Branch fully synced — `origin/main` at `0a9db24`
+- F041 is the most recent shipped fix — stage calculation for Variable profile now uses
+  `protectiveWealth = buffer + tradingCapital` instead of buffer alone. Surfaced by Lebo
+  (WhatsApp, 2026-05-11): Profit Allocator trading field produced zero output because
+  buffer-only staging placed her at Stage 1 (tradingPct: 0%). Fix shipped same day.
+  **Tester thread resolved** — Lebo's wealth (₦30,000 protective wealth vs ₦141,000
+  Stage 1.5 threshold) does not cross any stage gate, so her observed behavior is
+  unchanged. Conversation surfaced a separate positioning observation (she expected
+  trading-profit projection, which Royal Ledger does not provide); product line held.
+  No further code action.
+- F040 (Quick Log blank render, Katleho Mokoma) — confirmed working 2026-05-11.
+  Katleho: "Quick log working fine." Thread closed.
+- Branch fully synced — `origin/main` at `282c01a` (F041 UI commit; this knowledge
+  base commit follows immediately)
 - Knowledge base complete: 26 files — `docs/README.md` is the navigation index
 - Co-Authored-By convention documented (D013). Silent-conventions guard rule
   active in CLAUDE.md (Listening Discipline section).
 - Known open design gap: Foundation Arc time guard (KI001 — monitoring, no code yet)
 - Fixed profile "Capital %" column label mismatch (KI002 — pending tester surface)
 - AdminDashboard + EarlyAccess still show "Mixed" instead of "Hybrid" (KI003 —
-  interrupted by F040, ready to resume next session)
+  interrupted by F040/F041, ready to resume next session)
 - **Next session:** open to ROADMAP.md priorities — no active work in flight
 
 ---
