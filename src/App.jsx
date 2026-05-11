@@ -1466,6 +1466,10 @@ function Command({ data, stats, setData, setTab, takeSnapshot, showWeeklyPulse, 
   // writing mode (mode was the legacy field). Checking only one leaves new users undetected.
   const isFoundation = data?.mode === 'foundation' || data?.incomeType === 'foundation';
   const showTrading  = data?.incomeType === 'variable';
+  // For Variable users, stage progress tracks protective wealth (buffer + trading capital).
+  // All other profiles: displayedWealth === data.buffer, so all downstream expressions
+  // render identically to before for Fixed, Hybrid, and Foundation users.
+  const displayedWealth = showTrading ? stats.protectiveWealth : data.buffer;
   const hasPinProtection = !!(data.pinHash || data.overridePin);
   const [balancesLocked, setBalancesLocked] = useState(hasPinProtection);
   const [goalEditing, setGoalEditing] = useState(false);
@@ -2487,12 +2491,22 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
             <div className="label" style={{ color: stageInfo.color, display: 'flex', alignItems: 'center' }}>
               {stageInfo.name} — {stageInfo.title}
               <HelpTip title="Buffer Stages">
-                <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Protect Mode</strong> — buffer is below your protection floor. 100% of {data.incomeType === 'fixed' ? 'surplus' : 'profits'} goes to rebuilding it before anything else is allocated.<br /><br />
-                <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Building</strong> — buffer is growing toward your target number of months of expenses.<br /><br />
-                <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Foundation Solid</strong> — target reached. {data.incomeType === 'fixed' ? 'Surplus' : 'Profits'} flow to your {data.incomeType === 'fixed' ? 'Surplus' : 'Profit'} Allocator rules instead.
+                {showTrading ? (
+                  <>
+                    <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Protect Mode</strong> — your protective wealth (buffer + trading capital) is below your protection floor. 100% of profits goes to rebuilding buffer before anything else is allocated.<br /><br />
+                    <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Building</strong> — your protective wealth is growing toward your target.<br /><br />
+                    <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Foundation Solid</strong> — target reached. Profits flow to your Profit Allocator rules instead.
+                  </>
+                ) : (
+                  <>
+                    <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Protect Mode</strong> — buffer is below your protection floor. 100% of {data.incomeType === 'fixed' ? 'surplus' : 'profits'} goes to rebuilding it before anything else is allocated.<br /><br />
+                    <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Building</strong> — buffer is growing toward your target number of months of expenses.<br /><br />
+                    <strong style={{ color: '#E8E2D5', fontWeight: 600 }}>Foundation Solid</strong> — target reached. {data.incomeType === 'fixed' ? 'Surplus' : 'Profits'} flow to your {data.incomeType === 'fixed' ? 'Surplus' : 'Profit'} Allocator rules instead.
+                  </>
+                )}
               </HelpTip>
             </div>
-            <div className="mono text-xs" style={{ color: '#B0A898' }}>{stats.monthsCovered.toFixed(1)} months stored</div>
+            <div className="mono text-xs" style={{ color: '#B0A898' }}>{stats.monthsCovered.toFixed(1)} {showTrading ? 'buffer months' : 'months stored'}</div>
           </div>
           <h2 className="display text-3xl mb-3" style={{ fontWeight: 300, lineHeight: 1.2 }}>
             {stats.stage === 3
@@ -2507,8 +2521,8 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
                 <div className="progress-fill" style={{ width: Math.min(100, stats.progressPct) + '%', background: stageInfo.color }} />
               </div>
               <div className="flex justify-between text-xs mono" style={{ color: '#B0A898' }}>
-                <span>{fmt(data.buffer)} / {fmt(stats.nextThreshold)}</span>
-                <span>{fmt(stats.nextThreshold - data.buffer)} to go</span>
+                <span>{fmt(displayedWealth)} / {fmt(stats.nextThreshold)}</span>
+                <span>{fmt(stats.nextThreshold - displayedWealth)} to go</span>
               </div>
             </>
           )}
@@ -2702,7 +2716,10 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
         <h2 className="display text-2xl mb-2" style={{ display: 'flex', alignItems: 'center' }}>
           Progression
           <HelpTip title="Stage Progression">
-            Your journey to financial security is broken into four stages based on how many months of expenses your buffer covers.<br /><br />
+            {showTrading
+              ? 'Your journey to financial security is broken into four stages based on how many months of expenses your protective wealth (buffer + trading capital) covers.'
+              : 'Your journey to financial security is broken into four stages based on how many months of expenses your buffer covers.'
+            }<br /><br />
             <strong style={{ color: '#C56B5A' }}>Stage 1</strong> — Crisis floor. 100% of {data.incomeType === 'fixed' ? 'surplus' : 'profits'} goes to buffer until 6 months is reached.<br />
             <strong style={{ color: '#D97757' }}>Stage 1.5</strong> — Comfort zone. Buffer keeps growing; long-term investing begins.<br />
             <strong style={{ color: '#B89968' }}>Stage 2</strong> — Fortified. Buffer priority continues to your full target.<br />
@@ -2713,8 +2730,8 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
           Salary {fmt(stats.salary)}/month · Target {data.bufferTargetMonths} months ({fmt(stats.bufferTarget)})
         </p>
         <div className="space-y-3">
-          <StageRow label="Stage 1" target={`${fmt(0)} → ${fmt(stats.stage1End)}`} subtitle="Crisis floor — 6 months · 100% to buffer" done={data.buffer >= stats.stage1End} active={stats.progressStage === 1} />
-          <StageRow label="Stage 1.5" target={`${fmt(stats.stage1End)} → ${fmt(stats.stage15End)}`} subtitle="Comfort zone — long-term investing begins" done={data.buffer >= stats.stage15End} active={stats.progressStage === 1.5} />
+          <StageRow label="Stage 1" target={`${fmt(0)} → ${fmt(stats.stage1End)}`} subtitle="Crisis floor — 6 months · 100% to buffer" done={displayedWealth >= stats.stage1End} active={stats.progressStage === 1} />
+          <StageRow label="Stage 1.5" target={`${fmt(stats.stage1End)} → ${fmt(stats.stage15End)}`} subtitle="Comfort zone — long-term investing begins" done={displayedWealth >= stats.stage15End} active={stats.progressStage === 1.5} />
           {/* Stage 2: always shown. When bufferTarget ≤ stage15End the user's target sits below
               Stage 1.5, so Stage 2 is unreachable at current settings — display a prompt instead
               of a backwards range. */}
@@ -2724,7 +2741,7 @@ const needsBackup = daysSinceBackup === null || daysSinceBackup >= 7;
               ? `${fmt(stats.stage15End)} → ${fmt(stats.bufferTarget)}`
               : `Raise buffer target above ${fmt(stats.stage15End)} to unlock`}
             subtitle={`Fortified — ${data.bufferTargetMonths} months · buffer priority`}
-            done={stats.bufferTarget > stats.stage15End && data.buffer >= stats.bufferTarget}
+            done={stats.bufferTarget > stats.stage15End && displayedWealth >= stats.bufferTarget}
             active={stats.progressStage === 2}
           />
           <StageRow label="Stage 3" target="Full waterfall" subtitle={showTrading ? "Trading · lifestyle · goals all active" : "Lifestyle · goals all active"} done={false} active={stats.progressStage === 3} />
