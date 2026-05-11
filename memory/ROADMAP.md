@@ -1,6 +1,6 @@
 # Royal Ledger — Roadmap
 
-> Prioritised list of planned work, deferred features, and open questions. Not a commitment calendar — this is a living document for decision-making. Last updated: 2026-05-10.
+> Prioritised list of planned work, deferred features, and open questions. Not a commitment calendar — this is a living document for decision-making. Last updated: 2026-05-11.
 
 ---
 
@@ -38,16 +38,6 @@ Invite-only. Core loop is functional across all four income profiles. Focus: iro
 ---
 
 ## Near-term (Next 2–4 Weeks)
-
-### AdminDashboard / EarlyAccess "Hybrid" label (KI003)
-
-**What:** Rename "Mixed" → "Hybrid" in AdminDashboard.jsx and EarlyAccess.jsx.
-
-**Why now:** Small two-line change. Consistency cleanup.
-
-**Risk:** Zero — display-only rename. `id: 'mixed'` field unchanged.
-
----
 
 ### PIN reset UX improvement
 
@@ -108,12 +98,6 @@ Two testers independently suggested requiring a goal before the app becomes usab
 ### Wealth-signal onboarding prompt (F024 Priority 2)
 
 Detect when a Foundation user's starting balances suggest they're already past the Foundation Arc. Deferred until the basic time guard (Option A, KI001) is shipped and validated.
-
-### Admin → "Mixed" label (F031)
-
-Deferred — no urgency. Admin-only view; no testers see it.
-
----
 
 ## Open Questions
 
