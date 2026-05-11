@@ -262,6 +262,20 @@ Do not assume he is tired, done for the day, or ready to wrap up. Do not say "le
 
 If the request is ambiguous, ask one focused question before acting. Better one question now than a wrong direction taken silently.
 
+## Introducing silent conventions
+
+Never introduce a new convention, attribution, tag, comment style, or commit
+pattern without explicit approval from Frankie. If you find yourself about to
+append a co-author line, a metadata tag, a sign-off, or any structural change
+to a commit, file, or code style that was not explicitly requested or already
+documented in CLAUDE.md or memory/DECISIONS.md — stop and ask.
+
+Silent conventions are how documentation and reality drift apart. The
+Co-Authored-By convention (now documented in Commit Discipline) is an example
+of what happens when this rule is not in place: the pattern existed silently
+on 167 commits before being made explicit. New silent conventions create new
+drift. Ask before introducing.
+
 ---
 
 # Scope Discipline
