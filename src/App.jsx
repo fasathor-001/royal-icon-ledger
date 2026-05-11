@@ -4331,6 +4331,7 @@ function ImpulseTab({ data, stats, setData, user }) {
 
 function QuickLog({ data, setData }) {
   const fmt = makeFmt(data.currency);
+  const showTrading = data?.incomeType === 'variable'; // P002 — declare locally, not inherited from ImpulseTab
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [trigger, setTrigger] = useState('');
