@@ -112,7 +112,7 @@ const INCOME_SITUATION_LABELS = {
   freelance_gigs: 'Freelance / Gigs',
   business:       'Business income',
   trading:        'Trading income',
-  mixed:          'Mixed',
+  mixed:          'Hybrid',
 };
 
 // ── Referral source labels ────────────────────────────────────────────────────
@@ -422,7 +422,7 @@ const INCOME_PROFILES = [
   { id: 'foundation', label: 'Foundation' },
   { id: 'variable',   label: 'Variable'   },
   { id: 'fixed',      label: 'Fixed'      },
-  { id: 'mixed',      label: 'Mixed'      },
+  { id: 'mixed',      label: 'Hybrid'     },
 ];
 
 function AccountOverrideManager({ lead }) {

@@ -69,7 +69,7 @@ const INCOME_SITUATIONS = [
   { id: 'freelance_gigs',  label: 'Freelance / Gigs' },
   { id: 'business',        label: 'Business income' },
   { id: 'trading',         label: 'Trading income' },
-  { id: 'mixed',           label: 'Mixed' },
+  { id: 'mixed',           label: 'Hybrid' },
 ];
 
 const REFERRAL_SOURCES = [
