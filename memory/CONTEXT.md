@@ -71,15 +71,17 @@ Key fields:
 
 ---
 
-## Current State (2026-05-10)
+## Current State (2026-05-11)
 
 - Closed beta. Invite-only signup.
-- F039 is the most recent shipped fix (Future Goals subtitle)
-- Branch fully synced — `origin/main` at `5628f28` ("Add repository operating instructions")
-- Full knowledge base complete: 24 files across `docs/`, `memory/`, `runbooks/`, `workflows/`
-- Known open design gap: Foundation Arc time guard (F024 — monitoring, no code yet)
-- Fixed profile "Capital %" column label mismatch (F029 — pending tester surface)
-- AdminDashboard + EarlyAccess still show "Mixed" instead of "Hybrid" (F031 — deliberate hold)
+- F039 is the most recent shipped product fix (Future Goals subtitle)
+- Branch fully synced — `origin/main` at `99b5ffd`
+- Knowledge base complete: 26 files — `docs/README.md` added as navigation index
+- **Co-Authored-By convention resolved** — audited, documented, and decided (D013). Three commits: `dea1b54`, `b83c4e2`, `99b5ffd`. Silent-conventions guard rule now active in CLAUDE.md (Listening Discipline section).
+- Known open design gap: Foundation Arc time guard (KI001 — monitoring, no code yet)
+- Fixed profile "Capital %" column label mismatch (KI002 — pending tester surface)
+- AdminDashboard + EarlyAccess still show "Mixed" instead of "Hybrid" (KI003 — deliberate hold)
+- **Next session:** product work — KI001, KI002, KI003, or ROADMAP.md priorities
 
 ---
 
