@@ -115,3 +115,31 @@ No urgency — the stale field causes no errors and takes negligible storage.
 **Risk:** If a Foundation or Fixed user somehow has a non-zero `tradingCapital` balance (e.g. from a pre-F033 era or admin data patch), the high-water mark won't track it. Not currently a live issue.
 
 **Status:** Intentional. Documented here for discoverability.
+
+---
+
+## KI008 — Commit message file count mismatch (14e51cb)
+
+**Discovered:** 2026-05-11
+**Status:** Closed
+**Severity:** Low (process)
+**Class:** Process / Tooling
+
+The 14e51cb knowledge-base commit message stated "23 files across docs/,
+memory/, runbooks/, workflows/" but only 10 files were actually staged in
+docs/. docs/ENGINEERING_DOCTRINE.md existed on disk but was silently
+omitted from the staging step.
+
+Detected on 2026-05-11 during the F040 work when git status surfaced the
+untracked doctrine file. Resolved in commit 327cb19 by staging and
+committing the file.
+
+**Lesson:** Commit messages must describe what was actually staged, not
+what was intended. Going forward, verify file counts in commit messages
+against `git diff --cached --name-only` before committing. The
+silent-conventions guard rule in CLAUDE.md (b83c4e2) is the policy-level
+prevention for this class of drift.
+
+**Related:** dea1b54, b83c4e2, 99b5ffd (Co-Authored-By work and
+silent-conventions guard rule). 327cb19 (the doctrine commit that
+closed this gap).
