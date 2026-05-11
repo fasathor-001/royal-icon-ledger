@@ -46,14 +46,14 @@ Option A is display-only and safe. Option B touches the allocation engine.
 ## KI003 — AdminDashboard and EarlyAccess show "Mixed" instead of "Hybrid"
 
 **Feedback ID:** F031  
-**Status:** Deliberate hold  
+**Status:** Closed — 2026-05-11 (commit `8cd47c7`)
 **Severity:** ⚪ Housekeeping
 
 **What happens:** `AdminDashboard.jsx` and `EarlyAccess.jsx` display the label "Mixed" for `incomeType === 'mixed'`. The user-facing label was renamed to "Hybrid" in F030, but these two surfaces were excluded from scope.
 
 **Why held:** AdminDashboard is owner-only (no tester sees it). EarlyAccess is a pre-signup funnel page where profile terminology hasn't landed. Neither causes user confusion today.
 
-**When to fix:** When the owner next touches either file, or when an admin needs a consistent vocabulary. Resolution is a display-only rename — `id: 'mixed'` field unchanged, zero data impact.
+**Resolution:** Display-only rename applied to all three occurrences (AdminDashboard.jsx ×2, EarlyAccess.jsx ×1). `id: 'mixed'` internal identifier unchanged. Zero data impact.
 
 ---
 
